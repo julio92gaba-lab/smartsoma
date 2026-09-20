@@ -11,14 +11,102 @@ const sb = createClient(SUPABASE_URL, SUPABASE_KEY, {
     }
 });
 
-// Verificar sessão — redireciona para login se não autenticado
+// ── Cache em memória ───────────────────────────────────────────────────
+// Todos os dados do utilizador são carregados de uma vez do Supabase no
+// arranque (ver _initCloudCache). As leituras (cloudGet) são servidas do
+// cache local — imediatas e síncronas. As escritas (cloudSet/cloudRemove)
+// actualizam o cache primeiro e persistem no Supabase em background.
+// Assim todas as funções existentes funcionam sem precisar de async/await.
+let _cloudCache = null;         // null = ainda não carregado
+let _cacheReady = false;
+let _cacheWaiters = [];
+
+function _markCacheReady() {
+    _cacheReady = true;
+    _cacheWaiters.forEach(fn => fn());
+    _cacheWaiters = [];
+}
+
+function _waitForCache() {
+    if (_cacheReady) return Promise.resolve();
+    return new Promise(resolve => _cacheWaiters.push(resolve));
+}
+
+async function _initCloudCache(userId) {
+    try {
+        const { data, error } = await sb
+            .from('user_data')
+            .select('key, value')
+            .eq('user_id', userId);
+        _cloudCache = {};
+        if (data && !error) {
+            data.forEach(row => {
+                try { _cloudCache[row.key] = JSON.parse(row.value); }
+                catch(e) { _cloudCache[row.key] = row.value; }
+            });
+        }
+    } catch(e) {
+        _cloudCache = {};
+    }
+    _markCacheReady();
+}
+
+// cloudGet — leitura síncrona do cache (retorna o valor directamente, não uma Promise)
+// Mantemos a assinatura async para compatibilidade, mas resolve imediatamente do cache.
+async function cloudGet(key) {
+    await _waitForCache();
+    if (!_cloudCache) return null;
+    const val = _cloudCache[key];
+    if (val === undefined || val === null) return null;
+    // Se o valor já foi parsed no cache, serializar para string para manter
+    // compatibilidade com o código que faz JSON.parse(raw)
+    if (typeof val === 'string') return val;
+    return JSON.stringify(val);
+}
+
+// cloudSet — actualiza cache imediatamente, persiste no Supabase em background
+async function cloudSet(key, value) {
+    await _waitForCache();
+    if (!window.currentUser) return;
+    // Actualiza cache local primeiro (para leituras imediatas)
+    try {
+        _cloudCache[key] = (typeof value === 'string') ? value : JSON.stringify(value);
+    } catch(e) {}
+    // Persiste no Supabase em background (não bloqueia a UI)
+    const persistValue = (typeof value === 'string') ? value : JSON.stringify(value);
+    sb.from('user_data')
+        .upsert({
+            user_id: window.currentUser.id,
+            key: key,
+            value: persistValue
+        }, { onConflict: 'user_id,key' })
+        .then(({ error }) => {
+            if (error) console.warn('cloudSet error:', key, error.message);
+        });
+}
+
+// cloudRemove — remove do cache e do Supabase
+async function cloudRemove(key) {
+    await _waitForCache();
+    if (!window.currentUser) return;
+    if (_cloudCache) delete _cloudCache[key];
+    sb.from('user_data')
+        .delete()
+        .eq('user_id', window.currentUser.id)
+        .eq('key', key)
+        .then(({ error }) => {
+            if (error) console.warn('cloudRemove error:', key, error.message);
+        });
+}
+
+// ── Autenticação e arranque ────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async function() {
     const { data } = await sb.auth.getSession();
     if (!data.session) {
         window.location.href = 'login.html';
         return;
     }
-    // Utilizador autenticado — guarda info no estado global
+    // Utilizador autenticado
     window.currentUser = data.session.user;
     window.currentUserEmail = data.session.user.email;
 
@@ -35,62 +123,10 @@ document.addEventListener('DOMContentLoaded', async function() {
         });
     }
 
-    // Sessão pronta — liberta todas as chamadas cloud que estavam à espera
-    _markSessionReady();
+    // Carrega todos os dados do utilizador para o cache antes de libertar a app
+    await _initCloudCache(data.session.user.id);
 });
-// ── Dados na nuvem (Supabase) ─────────────────────────────────────────
-// Garante que a sessão está pronta antes de qualquer pedido à BD
-let _sessionReady = false;
-let _sessionResolvers = [];
 
-function _markSessionReady() {
-    _sessionReady = true;
-    _sessionResolvers.forEach(fn => fn());
-    _sessionResolvers = [];
-}
-
-function _waitForSession() {
-    if (_sessionReady) return Promise.resolve();
-    return new Promise(resolve => _sessionResolvers.push(resolve));
-}
-
-async function cloudGet(key) {
-    await _waitForSession();
-    if (!window.currentUser) return null;
-    try {
-        const { data, error } = await sb.from('user_data')
-            .select('value')
-            .eq('user_id', window.currentUser.id)
-            .eq('key', key)
-            .maybeSingle();
-        if (!data) return null;
-        return JSON.parse(data.value);
-    } catch (e) { return null; }
-}
-
-async function cloudSet(key, value) {
-    await _waitForSession();
-    if (!window.currentUser) return;
-    try {
-        await sb.from('user_data')
-            .upsert({
-                user_id: window.currentUser.id,
-                key: key,
-                value: JSON.stringify(value)
-            }, { onConflict: 'user_id,key' });
-    } catch (e) { }
-}
-
-async function cloudRemove(key) {
-    await _waitForSession();
-    if (!window.currentUser) return;
-    try {
-        await sb.from('user_data')
-            .delete()
-            .eq('user_id', window.currentUser.id)
-            .eq('key', key);
-    } catch (e) { }
-}
 
 
     /* ===================================================================
