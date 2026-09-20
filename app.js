@@ -2,10 +2,17 @@
 const SUPABASE_URL = 'https://ojhnierbhqrwxvabrzkt.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9qaG5pZXJiaHFyd3h2YWJyemt0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk4NTAxODAsImV4cCI6MjEwNTQyNjE4MH0.zXsVvTVKiEh_Y6t9xpnaPC-JXgPwCKCOqA_sPgNbPoE';
 const { createClient } = supabase;
-const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+const sb = createClient(SUPABASE_URL, SUPABASE_KEY, {
+    auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+        storage: window.localStorage
+    }
+});
 
 // Verificar sessão — redireciona para login se não autenticado
-(async function verificarSessao() {
+document.addEventListener('DOMContentLoaded', async function() {
     const { data } = await sb.auth.getSession();
     if (!data.session) {
         window.location.href = 'login.html';
@@ -14,12 +21,12 @@ const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
     // Utilizador autenticado — guarda info no estado global
     window.currentUser = data.session.user;
     window.currentUserEmail = data.session.user.email;
+
     // Mostrar email no header se existir elemento
     const emailEl = document.getElementById('userEmail');
     if (emailEl) emailEl.textContent = data.session.user.email;
-})();
-// ── Botão Sair ────────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', function() {
+
+    // Botão Sair
     const btnSair = document.getElementById('btnSair');
     if (btnSair) {
         btnSair.addEventListener('click', async function() {
