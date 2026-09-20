@@ -1,144 +1,4 @@
-// ── Autenticação Supabase ─────────────────────────────────────────────
-const SUPABASE_URL = 'https://ojhnierbhqrwxvabrzkt.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9qaG5pZXJiaHFyd3h2YWJyemt0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk4NTAxODAsImV4cCI6MjEwNTQyNjE4MH0.zXsVvTVKiEh_Y6t9xpnaPC-JXgPwCKCOqA_sPgNbPoE';
-const { createClient } = supabase;
-const sb = createClient(SUPABASE_URL, SUPABASE_KEY, {
-    auth: {
-        persistSession: true,
-        autoRefreshToken: true,
-        detectSessionInUrl: true,
-        storage: window.localStorage
-    }
-});
-
-// ── Cache em memória ───────────────────────────────────────────────────
-// Todos os dados do utilizador são carregados de uma vez do Supabase no
-// arranque (ver _initCloudCache). As leituras (cloudGet) são servidas do
-// cache local — imediatas e síncronas. As escritas (cloudSet/cloudRemove)
-// actualizam o cache primeiro e persistem no Supabase em background.
-// Assim todas as funções existentes funcionam sem precisar de async/await.
-let _cloudCache = null;         // null = ainda não carregado
-let _cacheReady = false;
-let _cacheWaiters = [];
-
-function _markCacheReady() {
-    _cacheReady = true;
-    _cacheWaiters.forEach(fn => fn());
-    _cacheWaiters = [];
-    // Dispara cloudCacheReady e depois força re-render de todos os módulos
-    document.dispatchEvent(new Event('cloudCacheReady'));
-    // Re-render via eventos que os módulos já escutam
-    setTimeout(function() {
-        document.dispatchEvent(new Event('homeBadgesSaved'));
-        document.dispatchEvent(new Event('despesasFixasChanged'));
-        document.dispatchEvent(new Event('metaSemanalConfigChanged'));
-    }, 0);
-}
-
-function _waitForCache() {
-    if (_cacheReady) return Promise.resolve();
-    return new Promise(resolve => _cacheWaiters.push(resolve));
-}
-
-async function _initCloudCache(userId) {
-    try {
-        const { data, error } = await sb
-            .from('user_data')
-            .select('key, value')
-            .eq('user_id', userId);
-        _cloudCache = {};
-        if (data && !error) {
-            data.forEach(row => {
-                try { _cloudCache[row.key] = JSON.parse(row.value); }
-                catch(e) { _cloudCache[row.key] = row.value; }
-            });
-        }
-    } catch(e) {
-        _cloudCache = {};
-    }
-    console.log('Cache carregado:', Object.keys(_cloudCache).length, 'chaves');
-    _markCacheReady();
-}
-
-// cloudGet — leitura síncrona do cache (retorna o valor directamente, não uma Promise)
-// Mantemos a assinatura async para compatibilidade, mas resolve imediatamente do cache.
-async function cloudGet(key) {
-    await _waitForCache();
-    if (!_cloudCache) return null;
-    const val = _cloudCache[key];
-    if (val === undefined || val === null) return null;
-    // Se o valor já foi parsed no cache, serializar para string para manter
-    // compatibilidade com o código que faz JSON.parse(raw)
-    if (typeof val === 'string') return val;
-    return JSON.stringify(val);
-}
-
-// cloudSet — actualiza cache imediatamente, persiste no Supabase em background
-async function cloudSet(key, value) {
-    await _waitForCache();
-    if (!window.currentUser) return;
-    // Actualiza cache local primeiro (para leituras imediatas)
-    try {
-        _cloudCache[key] = (typeof value === 'string') ? value : JSON.stringify(value);
-    } catch(e) {}
-    // Persiste no Supabase em background (não bloqueia a UI)
-    const persistValue = (typeof value === 'string') ? value : JSON.stringify(value);
-    sb.from('user_data')
-        .upsert({
-            user_id: window.currentUser.id,
-            key: key,
-            value: persistValue
-        }, { onConflict: 'user_id,key' })
-        .then(({ error }) => {
-            if (error) console.warn('cloudSet error:', key, error.message);
-        });
-}
-
-// cloudRemove — remove do cache e do Supabase
-async function cloudRemove(key) {
-    await _waitForCache();
-    if (!window.currentUser) return;
-    if (_cloudCache) delete _cloudCache[key];
-    sb.from('user_data')
-        .delete()
-        .eq('user_id', window.currentUser.id)
-        .eq('key', key)
-        .then(({ error }) => {
-            if (error) console.warn('cloudRemove error:', key, error.message);
-        });
-}
-
-// ── Autenticação e arranque ────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', async function() {
-    const { data } = await sb.auth.getSession();
-    if (!data.session) {
-        window.location.href = 'login.html';
-        return;
-    }
-    // Utilizador autenticado
-    window.currentUser = data.session.user;
-    window.currentUserEmail = data.session.user.email;
-
-    // Mostrar email no header se existir elemento
-    const emailEl = document.getElementById('userEmail');
-    if (emailEl) emailEl.textContent = data.session.user.email;
-
-    // Botão Sair
-    const btnSair = document.getElementById('btnSair');
-    if (btnSair) {
-        btnSair.addEventListener('click', async function() {
-            await sb.auth.signOut();
-            window.location.href = 'login.html';
-        });
-    }
-
-    // Carrega todos os dados do utilizador para o cache antes de libertar a app
-    await _initCloudCache(data.session.user.id);
-});
-
-
-
-    /* ===================================================================
+/* ===================================================================
        i18n — sistema de idiomas da aplicação (Português / English /
        Español). O dicionário abaixo guarda TODOS os textos da app; os
        elementos estáticos do HTML são marcados com data-i18n (texto),
@@ -1730,12 +1590,8 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
       });
 
-      function _initDespesas() {
-        loadDespesas();
-        renderDespesas();
-      }
-      if (_cacheReady) { _initDespesas(); }
-      else { document.addEventListener('cloudCacheReady', _initDespesas, { once: true }); }
+      loadDespesas();
+      renderDespesas();
       setTipo('percentual');
       document.addEventListener('languageChanged', renderDespesas);
 
@@ -2773,23 +2629,19 @@ document.addEventListener('DOMContentLoaded', async function() {
         });
       }
 
-      function _initMetaSemanal() {
-        loadConfig();
-        if (!config && !isMetaZeradaForWeek(currentWeekKey())) {
-          var herdada = carryOverMetaFromPreviousWeeks();
-          if (herdada) {
-            config = herdada;
-            metaMantidaDaSemanaAnterior = { valor: herdada.valor, tipo: herdada.tipo };
-            saveConfig();
-          }
+      loadConfig();
+      if (!config && !isMetaZeradaForWeek(currentWeekKey())) {
+        var herdada = carryOverMetaFromPreviousWeeks();
+        if (herdada) {
+          config = herdada;
+          metaMantidaDaSemanaAnterior = { valor: herdada.valor, tipo: herdada.tipo };
+          saveConfig();
         }
-        recomputePercent();
-        setTipo(config ? config.tipo : 'bruto');
-        renderCurrent();
-        renderPeriodLabel();
       }
-      if (_cacheReady) { _initMetaSemanal(); }
-      else { document.addEventListener('cloudCacheReady', _initMetaSemanal, { once: true }); }
+      recomputePercent();
+      setTipo(config ? config.tipo : 'bruto');
+      renderCurrent();
+      renderPeriodLabel();
       renderFixasSection();
 
       function showWelcome () {
@@ -2954,9 +2806,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         if (e.key === 'Escape' && histBackdrop && histBackdrop.classList.contains('visible')) closeHistModal();
       });
 
-      function _initWeekBox() { renderWeekBox(); }
-      if (_cacheReady) { _initWeekBox(); }
-      else { document.addEventListener('cloudCacheReady', _initWeekBox, { once: true }); }
+      renderWeekBox();
       if (window.GanhosDate && typeof window.GanhosDate.onChange === 'function') {
         window.GanhosDate.onChange(renderWeekBox);
       }
@@ -3455,12 +3305,8 @@ document.addEventListener('DOMContentLoaded', async function() {
         });
       }
 
-      function _initBadges() {
-        loadBadges();
-        renderBadges();
-      }
-      if (_cacheReady) { _initBadges(); }
-      else { document.addEventListener('cloudCacheReady', _initBadges, { once: true }); }
+      loadBadges();
+      renderBadges();
 
       if (window.GanhosDate && typeof window.GanhosDate.onChange === 'function') {
         window.GanhosDate.onChange(function () {
@@ -4334,8 +4180,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       };
 
       resetToCurrentWeek();
-      if (_cacheReady) { renderMonth(); }
-      else { document.addEventListener('cloudCacheReady', renderMonth, { once: true }); }
+      renderMonth();
     })();
 
 
@@ -4783,8 +4628,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       }
     }
 
-    if (_cacheReady) { loadProfileFromStorage(); }
-    else { document.addEventListener('cloudCacheReady', loadProfileFromStorage, { once: true }); }
+    loadProfileFromStorage();
 
     var AVATAR_PLACEHOLDER =
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' +
