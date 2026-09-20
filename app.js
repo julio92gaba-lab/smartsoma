@@ -25,8 +25,14 @@ function _markCacheReady() {
     _cacheReady = true;
     _cacheWaiters.forEach(fn => fn());
     _cacheWaiters = [];
-    // Avisa todos os módulos que o cache está pronto
+    // Dispara cloudCacheReady e depois força re-render de todos os módulos
     document.dispatchEvent(new Event('cloudCacheReady'));
+    // Re-render via eventos que os módulos já escutam
+    setTimeout(function() {
+        document.dispatchEvent(new Event('homeBadgesSaved'));
+        document.dispatchEvent(new Event('despesasFixasChanged'));
+        document.dispatchEvent(new Event('metaSemanalConfigChanged'));
+    }, 0);
 }
 
 function _waitForCache() {
@@ -50,6 +56,7 @@ async function _initCloudCache(userId) {
     } catch(e) {
         _cloudCache = {};
     }
+    console.log('Cache carregado:', Object.keys(_cloudCache).length, 'chaves');
     _markCacheReady();
 }
 
