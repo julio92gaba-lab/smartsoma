@@ -62,8 +62,8 @@ async function cloudGet(key) {
             .select('value')
             .eq('user_id', window.currentUser.id)
             .eq('key', key)
-            .single();
-        if (error || !data) return null;
+            .maybeSingle();
+        if (!data) return null;
         return JSON.parse(data.value);
     } catch (e) { return null; }
 }
