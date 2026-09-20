@@ -25,6 +25,8 @@ function _markCacheReady() {
     _cacheReady = true;
     _cacheWaiters.forEach(fn => fn());
     _cacheWaiters = [];
+    // Avisa todos os módulos que o cache está pronto
+    document.dispatchEvent(new Event('cloudCacheReady'));
 }
 
 function _waitForCache() {
@@ -1721,8 +1723,12 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
       });
 
-      loadDespesas();
-      renderDespesas();
+      function _initDespesas() {
+        loadDespesas();
+        renderDespesas();
+      }
+      if (_cacheReady) { _initDespesas(); }
+      else { document.addEventListener('cloudCacheReady', _initDespesas, { once: true }); }
       setTipo('percentual');
       document.addEventListener('languageChanged', renderDespesas);
 
@@ -2760,19 +2766,23 @@ document.addEventListener('DOMContentLoaded', async function() {
         });
       }
 
-      loadConfig();
-      if (!config && !isMetaZeradaForWeek(currentWeekKey())) {
-        var herdada = carryOverMetaFromPreviousWeeks();
-        if (herdada) {
-          config = herdada;
-          metaMantidaDaSemanaAnterior = { valor: herdada.valor, tipo: herdada.tipo };
-          saveConfig();
+      function _initMetaSemanal() {
+        loadConfig();
+        if (!config && !isMetaZeradaForWeek(currentWeekKey())) {
+          var herdada = carryOverMetaFromPreviousWeeks();
+          if (herdada) {
+            config = herdada;
+            metaMantidaDaSemanaAnterior = { valor: herdada.valor, tipo: herdada.tipo };
+            saveConfig();
+          }
         }
+        recomputePercent();
+        setTipo(config ? config.tipo : 'bruto');
+        renderCurrent();
+        renderPeriodLabel();
       }
-      recomputePercent();
-      setTipo(config ? config.tipo : 'bruto');
-      renderCurrent();
-      renderPeriodLabel();
+      if (_cacheReady) { _initMetaSemanal(); }
+      else { document.addEventListener('cloudCacheReady', _initMetaSemanal, { once: true }); }
       renderFixasSection();
 
       function showWelcome () {
@@ -2937,7 +2947,9 @@ document.addEventListener('DOMContentLoaded', async function() {
         if (e.key === 'Escape' && histBackdrop && histBackdrop.classList.contains('visible')) closeHistModal();
       });
 
-      renderWeekBox();
+      function _initWeekBox() { renderWeekBox(); }
+      if (_cacheReady) { _initWeekBox(); }
+      else { document.addEventListener('cloudCacheReady', _initWeekBox, { once: true }); }
       if (window.GanhosDate && typeof window.GanhosDate.onChange === 'function') {
         window.GanhosDate.onChange(renderWeekBox);
       }
@@ -3436,8 +3448,12 @@ document.addEventListener('DOMContentLoaded', async function() {
         });
       }
 
-      loadBadges();
-      renderBadges();
+      function _initBadges() {
+        loadBadges();
+        renderBadges();
+      }
+      if (_cacheReady) { _initBadges(); }
+      else { document.addEventListener('cloudCacheReady', _initBadges, { once: true }); }
 
       if (window.GanhosDate && typeof window.GanhosDate.onChange === 'function') {
         window.GanhosDate.onChange(function () {
@@ -4311,7 +4327,8 @@ document.addEventListener('DOMContentLoaded', async function() {
       };
 
       resetToCurrentWeek();
-      renderMonth();
+      if (_cacheReady) { renderMonth(); }
+      else { document.addEventListener('cloudCacheReady', renderMonth, { once: true }); }
     })();
 
 
@@ -4759,7 +4776,8 @@ document.addEventListener('DOMContentLoaded', async function() {
       }
     }
 
-    loadProfileFromStorage();
+    if (_cacheReady) { loadProfileFromStorage(); }
+    else { document.addEventListener('cloudCacheReady', loadProfileFromStorage, { once: true }); }
 
     var AVATAR_PLACEHOLDER =
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' +
