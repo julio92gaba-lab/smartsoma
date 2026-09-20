@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Documentos Legais — SmartSoma</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --green:#2ECC71;
+  --green-dark:#1fa854;
+  --navy:#0d1117;
+  --navy2:#161b22;
+  --border:rgba(255,255,255,.08);
+  --text:#e6edf3;
+  --muted:#8b949e;
+  --white:#fff;
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Plus Jakarta Sans',sans-serif;
+  background:var(--navy);
+  color:var(--text);
+  line-height:1.7;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* NAV */
+nav{
+  position:sticky;top:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 5vw;
+  background:rgba(13,17,23,.92);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--border);
+  gap:16px;flex-wrap:wrap;
+}
+.nav-logo{font-size:20px;font-weight:800;color:var(--white)}
+.nav-logo span{color:var(--green)}
+.nav-tabs{display:flex;gap:8px}
+.tab-btn{
+  padding:8px 18px;border-radius:50px;font-size:13px;font-weight:600;
+  cursor:pointer;border:1.5px solid var(--border);background:transparent;
+  color:var(--muted);font-family:inherit;transition:all .2s;
+}
+.tab-btn.active{background:var(--green);color:var(--navy);border-color:var(--green)}
+.nav-date{font-size:12px;color:var(--muted)}
+
+/* LAYOUT */
+.doc{display:none;max-width:760px;margin:0 auto;padding:56px 5vw 96px}
+.doc.active{display:block}
+
+/* HEADER DO DOCUMENTO */
+.doc-header{margin-bottom:48px;padding-bottom:32px;border-bottom:1px solid var(--border)}
+.doc-tag{
+  display:inline-block;
+  background:rgba(46,204,113,.12);border:1px solid rgba(46,204,113,.25);
+  color:var(--green);font-size:11px;font-weight:700;letter-spacing:.08em;
+  padding:4px 12px;border-radius:50px;margin-bottom:16px;text-transform:uppercase;
+}
+.doc-header h1{
+  font-size:clamp(28px,5vw,40px);font-weight:800;
+  letter-spacing:-.02em;color:var(--white);margin-bottom:12px;
+}
+.doc-meta{font-size:13px;color:var(--muted);line-height:1.8}
+.doc-meta strong{color:var(--text)}
+
+/* ÍNDICE */
+.toc{
+  background:var(--navy2);border:1px solid var(--border);
+  border-radius:14px;padding:24px 28px;margin-bottom:48px;
+}
+.toc-title{font-size:13px;font-weight:700;color:var(--muted);margin-bottom:14px;letter-spacing:.05em;text-transform:uppercase}
+.toc ol{padding-left:20px;display:flex;flex-direction:column;gap:6px}
+.toc ol li{font-size:14px}
+.toc a{color:var(--green);text-decoration:none;font-weight:500}
+.toc a:hover{text-decoration:underline}
+
+/* SECÇÕES */
+.doc-section{margin-bottom:48px;scroll-margin-top:80px}
+.doc-section h2{
+  font-size:19px;font-weight:800;color:var(--white);
+  margin-bottom:16px;padding-bottom:10px;
+  border-bottom:1px solid var(--border);
+}
+.doc-section h3{
+  font-size:15px;font-weight:700;color:var(--text);
+  margin:22px 0 10px;
+}
+.doc-section p{font-size:15px;color:var(--muted);margin-bottom:12px;line-height:1.75}
+.doc-section ul,.doc-section ol{
+  padding-left:22px;display:flex;flex-direction:column;gap:8px;margin-bottom:14px;
+}
+.doc-section li{font-size:15px;color:var(--muted);line-height:1.7}
+.doc-section li strong{color:var(--text)}
+
+/* CAIXA DE DESTAQUE */
+.highlight-box{
+  background:rgba(46,204,113,.06);border:1px solid rgba(46,204,113,.2);
+  border-radius:12px;padding:20px 22px;margin:20px 0;
+}
+.highlight-box p{margin:0;color:var(--text);font-size:14px}
+
+/* CAIXA DE AVISO */
+.warn-box{
+  background:rgba(255,180,0,.05);border:1px solid rgba(255,180,0,.2);
+  border-radius:12px;padding:20px 22px;margin:20px 0;
+}
+.warn-box p{margin:0;color:#e0b84a;font-size:14px}
+
+/* TABELA */
+.legal-table{width:100%;border-collapse:collapse;margin:16px 0 20px;font-size:14px}
+.legal-table th{
+  text-align:left;padding:10px 14px;
+  background:var(--navy2);color:var(--text);font-weight:700;font-size:13px;
+  border:1px solid var(--border);
+}
+.legal-table td{
+  padding:10px 14px;color:var(--muted);
+  border:1px solid var(--border);vertical-align:top;line-height:1.6;
+}
+.legal-table tr:hover td{background:rgba(255,255,255,.02)}
+
+/* FOOTER */
+footer{
+  border-top:1px solid var(--border);padding:28px 5vw;
+  text-align:center;font-size:13px;color:var(--muted);
+}
+footer strong{color:var(--white)}
+footer span{color:var(--green)}
+
+@media(max-width:480px){
+  .nav-tabs{gap:6px}
+  .tab-btn{padding:7px 14px;font-size:12px}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">smart<span>soma</span></div>
+  <div class="nav-tabs">
+    <button class="tab-btn active" onclick="showDoc('pp')">Política de Privacidade</button>
+    <button class="tab-btn" onclick="showDoc('tu')">Termos de Utilização</button>
+  </div>
+  <div class="nav-date">Versão 1.0 · Setembro 2026</div>
+</nav>
+
+
+<!-- ═══════════════════════════════════════════
+     POLÍTICA DE PRIVACIDADE
+═══════════════════════════════════════════ -->
+<div class="doc active" id="doc-pp">
+
+  <div class="doc-header">
+    <div class="doc-tag">RGPD Conforme</div>
+    <h1>Política de Privacidade</h1>
+    <div class="doc-meta">
+      <strong>SmartSoma, Lda.</strong> · contacto@smartsoma.pt<br>
+      Última atualização: <strong>20 de setembro de 2026</strong> · Versão 1.0<br>
+      Aplicável à aplicação web SmartSoma (PWA) disponível em smartsoma.pt
+    </div>
+  </div>
+
+  <div class="toc">
+    <div class="toc-title">Índice</div>
+    <ol>
+      <li><a href="#pp1">Quem somos e como contactar</a></li>
+      <li><a href="#pp2">Que dados recolhemos e porquê</a></li>
+      <li><a href="#pp3">Dados financeiros introduzidos pelo utilizador</a></li>
+      <li><a href="#pp4">Base legal do tratamento</a></li>
+      <li><a href="#pp5">Com quem partilhamos os dados</a></li>
+      <li><a href="#pp6">Transferências internacionais de dados</a></li>
+      <li><a href="#pp7">Durante quanto tempo guardamos os dados</a></li>
+      <li><a href="#pp8">Os seus direitos</a></li>
+      <li><a href="#pp9">Segurança dos dados</a></li>
+      <li><a href="#pp10">Cookies e armazenamento local</a></li>
+      <li><a href="#pp11">Menores de idade</a></li>
+      <li><a href="#pp12">Alterações a esta política</a></li>
+      <li><a href="#pp13">Contacto e reclamações</a></li>
+    </ol>
+  </div>
+
+  <div class="doc-section" id="pp1">
+    <h2>1. Quem somos e como contactar</h2>
+    <p>A <strong>SmartSoma, Lda.</strong> é a entidade responsável pelo tratamento dos dados pessoais recolhidos através da aplicação web SmartSoma (doravante "Aplicação" ou "Serviço").</p>
+    <table class="legal-table">
+      <tr><th>Responsável pelo Tratamento</th><td>SmartSoma, Lda.</td></tr>
+      <tr><th>Email de contacto</th><td>contacto@smartsoma.pt</td></tr>
+      <tr><th>Canal preferencial</th><td>Email (resposta em até 15 dias úteis)</td></tr>
+    </table>
+    <p>Para qualquer questão relacionada com privacidade, proteção de dados ou exercício de direitos, o utilizador deve contactar-nos através do endereço de email indicado acima.</p>
+  </div>
+
+  <div class="doc-section" id="pp2">
+    <h2>2. Que dados recolhemos e porquê</h2>
+    <p>Recolhemos apenas os dados estritamente necessários para prestar o Serviço. A tabela seguinte descreve cada categoria de dados, a sua finalidade e a base legal aplicável.</p>
+    <table class="legal-table">
+      <tr>
+        <th>Dados</th>
+        <th>Finalidade</th>
+        <th>Base legal (RGPD)</th>
+      </tr>
+      <tr>
+        <td><strong>Nome</strong></td>
+        <td>Identificação na conta e personalização da interface</td>
+        <td>Execução de contrato (Art. 6.º, n.º 1, al. b))</td>
+      </tr>
+      <tr>
+        <td><strong>Endereço de email</strong></td>
+        <td>Criação e autenticação de conta; comunicações de serviço (reset de password, avisos de conta)</td>
+        <td>Execução de contrato (Art. 6.º, n.º 1, al. b))</td>
+      </tr>
+      <tr>
+        <td><strong>Data e hora de registo</strong></td>
+        <td>Segurança da conta e registo de auditoria</td>
+        <td>Interesse legítimo (Art. 6.º, n.º 1, al. f))</td>
+      </tr>
+      <tr>
+        <td><strong>Preferências locais</strong> (tema, idioma)</td>
+        <td>Persistência das preferências de interface no dispositivo do utilizador</td>
+        <td>Interesse legítimo (Art. 6.º, n.º 1, al. f))</td>
+      </tr>
+    </table>
+    <div class="highlight-box">
+      <p>✓ <strong>Não recolhemos</strong> dados de localização, dados biométricos, dados de saúde, dados de tráfego de rede, identificadores publicitários, nem qualquer outra categoria de dados sensíveis nos termos do Art. 9.º do RGPD.</p>
+    </div>
+  </div>
+
+  <div class="doc-section" id="pp3">
+    <h2>3. Dados financeiros introduzidos pelo utilizador</h2>
+    <div class="highlight-box">
+      <p>✓ Os dados financeiros inseridos na Aplicação (ganhos, despesas, distâncias percorridas, metas semanais) são de <strong>controlo exclusivo do utilizador</strong>. A SmartSoma, Lda. e os seus colaboradores <strong>não acedem, não visualizam, não analisam e não utilizam</strong> estes dados para qualquer finalidade comercial, publicitária ou estatística.</p>
+    </div>
+    <p>Estes dados são armazenados de forma cifrada na infraestrutura do Supabase (ver secção 5) e associados exclusivamente à conta do utilizador. O único objetivo do armazenamento é permitir ao utilizador consultar o seu próprio histórico financeiro.</p>
+    <p>O utilizador pode eliminar permanentemente todos os seus dados financeiros a qualquer momento, através das definições da conta ou mediante pedido enviado para contacto@smartsoma.pt.</p>
+  </div>
+
+  <div class="doc-section" id="pp4">
+    <h2>4. Base legal do tratamento</h2>
+    <p>Nos termos do Art. 6.º do Regulamento (UE) 2016/679 (RGPD), o tratamento de dados pessoais pela SmartSoma, Lda. assenta nas seguintes bases legais:</p>
+    <ul>
+      <li><strong>Execução de contrato (al. b))</strong> — tratamento necessário para a criação e gestão da conta do utilizador e para a prestação do Serviço.</li>
+      <li><strong>Interesse legítimo (al. f))</strong> — tratamento necessário para garantir a segurança da plataforma, prevenir fraude e manter a integridade técnica do Serviço, desde que não prevaleçam os interesses ou direitos fundamentais do utilizador.</li>
+      <li><strong>Cumprimento de obrigação legal (al. c))</strong> — quando aplicável, tratamento necessário para cumprir obrigações legais a que a SmartSoma, Lda. esteja sujeita.</li>
+    </ul>
+    <p>A SmartSoma, Lda. <strong>não trata dados pessoais com base em consentimento</strong> para as finalidades acima descritas, pelo que não existe necessidade de o utilizador prestar ou retirar consentimento para o funcionamento normal do Serviço.</p>
+  </div>
+
+  <div class="doc-section" id="pp5">
+    <h2>5. Com quem partilhamos os dados</h2>
+    <p>A SmartSoma, Lda. não vende, não aluga e não comercializa dados pessoais dos utilizadores. Os dados podem ser partilhados exclusivamente com o seguinte subcontratante, na qualidade de prestador de infraestrutura técnica:</p>
+    <table class="legal-table">
+      <tr>
+        <th>Subcontratante</th>
+        <th>Função</th>
+        <th>Localização dos servidores</th>
+        <th>Garantias</th>
+      </tr>
+      <tr>
+        <td><strong>Supabase, Inc.</strong></td>
+        <td>Base de dados, autenticação e armazenamento em nuvem</td>
+        <td>Europa (UE) e/ou EUA</td>
+        <td>Acordo de Subcontratação (DPA) celebrado; cláusulas contratuais-tipo da Comissão Europeia (CCT) aplicáveis para transferências para os EUA</td>
+      </tr>
+    </table>
+    <p>Não utilizamos quaisquer outros subcontratantes que processem dados pessoais dos utilizadores. Não partilhamos dados com anunciantes, redes de análise comportamental, corretores de dados, ou qualquer terceiro para fins comerciais.</p>
+    <p>Podemos divulgar dados pessoais a autoridades públicas quando tal seja exigido por lei, decisão judicial ou ordem de autoridade competente, nos termos do Art. 6.º, n.º 1, al. c) do RGPD.</p>
+  </div>
+
+  <div class="doc-section" id="pp6">
+    <h2>6. Transferências internacionais de dados</h2>
+    <p>Os dados dos utilizadores são armazenados na infraestrutura do Supabase, que opera servidores tanto na União Europeia como nos Estados Unidos da América.</p>
+    <p>Para as transferências para os EUA, a SmartSoma, Lda. assegura que o Supabase oferece garantias adequadas através das <strong>Cláusulas Contratuais-Tipo (CCT)</strong> aprovadas pela Comissão Europeia, nos termos do Art. 46.º, n.º 2, al. c) do RGPD.</p>
+    <p>O utilizador pode solicitar informação sobre as transferências internacionais de dados e as garantias aplicáveis através do email contacto@smartsoma.pt.</p>
+    <div class="warn-box">
+      <p>⚠ Recomendamos que, para maior controlo sobre a localização dos dados, o utilizador consulte a política de privacidade do Supabase em <strong>supabase.com/privacy</strong>.</p>
+    </div>
+  </div>
+
+  <div class="doc-section" id="pp7">
+    <h2>7. Durante quanto tempo guardamos os dados</h2>
+    <table class="legal-table">
+      <tr>
+        <th>Categoria de dados</th>
+        <th>Prazo de conservação</th>
+        <th>Justificação</th>
+      </tr>
+      <tr>
+        <td>Dados de conta (nome, email)</td>
+        <td>Enquanto a conta estiver ativa + 30 dias após pedido de eliminação</td>
+        <td>Prestação do Serviço; período de graça para recuperação</td>
+      </tr>
+      <tr>
+        <td>Dados financeiros do utilizador</td>
+        <td>Enquanto a conta estiver ativa; eliminados imediatamente após pedido</td>
+        <td>Controlo exclusivo do utilizador</td>
+      </tr>
+      <tr>
+        <td>Registos de segurança (logs técnicos)</td>
+        <td>Máximo de 90 dias</td>
+        <td>Deteção de fraude e segurança da plataforma</td>
+      </tr>
+      <tr>
+        <td>Preferências locais (tema, idioma)</td>
+        <td>Até o utilizador limpar o armazenamento do browser</td>
+        <td>Guardadas apenas no dispositivo do utilizador (localStorage)</td>
+      </tr>
+    </table>
+    <p>Após o termo do prazo de conservação, os dados são eliminados de forma segura e irreversível ou anonimizados, de modo a não permitir a identificação do utilizador.</p>
+  </div>
+
+  <div class="doc-section" id="pp8">
+    <h2>8. Os seus direitos</h2>
+    <p>Ao abrigo do RGPD e da Lei n.º 58/2019, de 8 de agosto, o utilizador dispõe dos seguintes direitos relativamente aos seus dados pessoais:</p>
+    <ul>
+      <li><strong>Direito de acesso (Art. 15.º RGPD)</strong> — obter confirmação de que os seus dados são tratados e receber uma cópia dos mesmos.</li>
+      <li><strong>Direito de retificação (Art. 16.º RGPD)</strong> — corrigir dados inexatos ou incompletos.</li>
+      <li><strong>Direito ao apagamento / "direito a ser esquecido" (Art. 17.º RGPD)</strong> — solicitar a eliminação dos seus dados, sem prejuízo de obrigações legais de conservação.</li>
+      <li><strong>Direito à limitação do tratamento (Art. 18.º RGPD)</strong> — restringir o tratamento em determinadas circunstâncias.</li>
+      <li><strong>Direito à portabilidade (Art. 20.º RGPD)</strong> — receber os seus dados num formato estruturado e legível por máquina.</li>
+      <li><strong>Direito de oposição (Art. 21.º RGPD)</strong> — opor-se ao tratamento baseado em interesse legítimo.</li>
+      <li><strong>Direito de não ficar sujeito a decisões automatizadas (Art. 22.º RGPD)</strong> — a SmartSoma não utiliza decisões automatizadas nem definição de perfis.</li>
+    </ul>
+    <div class="highlight-box">
+      <p>Para exercer qualquer um destes direitos, envie um email para <strong>contacto@smartsoma.pt</strong> com o assunto "Exercício de Direito RGPD". Responderemos no prazo máximo de <strong>30 dias</strong> a contar da receção do pedido, podendo este prazo ser prorrogado por mais 60 dias em casos complexos, com notificação prévia.</p>
+    </div>
+    <p>O utilizador tem ainda o direito de apresentar reclamação junto da autoridade de controlo competente:</p>
+    <table class="legal-table">
+      <tr>
+        <th>Autoridade</th>
+        <td>Comissão Nacional de Proteção de Dados (CNPD)</td>
+      </tr>
+      <tr>
+        <th>Website</th>
+        <td>www.cnpd.pt</td>
+      </tr>
+      <tr>
+        <th>Email</th>
+        <td>geral@cnpd.pt</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="doc-section" id="pp9">
+    <h2>9. Segurança dos dados</h2>
+    <p>A SmartSoma, Lda. adota medidas técnicas e organizativas adequadas para proteger os dados pessoais dos utilizadores contra acesso não autorizado, perda acidental, destruição ou divulgação, incluindo:</p>
+    <ul>
+      <li>Transmissão de dados exclusivamente através de ligações cifradas (HTTPS / TLS 1.2+);</li>
+      <li>Armazenamento em base de dados com controlo de acesso por linha (Row Level Security), garantindo que cada utilizador acede apenas aos seus próprios dados;</li>
+      <li>Autenticação segura gerida pelo Supabase Auth, com suporte a passwords cifradas (bcrypt);</li>
+      <li>Acesso interno aos sistemas restrito ao pessoal técnico estritamente necessário, em regime de privilégio mínimo.</li>
+    </ul>
+    <p>Em caso de violação de dados pessoais suscetível de implicar risco para os direitos e liberdades dos utilizadores, a SmartSoma, Lda. compromete-se a notificar a CNPD no prazo de 72 horas e a informar os utilizadores afetados sem demora injustificada, nos termos dos Art. 33.º e 34.º do RGPD.</p>
+  </div>
+
+  <div class="doc-section" id="pp10">
+    <h2>10. Cookies e armazenamento local</h2>
+    <p>A Aplicação SmartSoma <strong>não utiliza cookies</strong> de rastreamento, cookies analíticos, cookies publicitários nem qualquer tecnologia de rastreamento de terceiros.</p>
+    <p>São utilizados exclusivamente os seguintes mecanismos de armazenamento local, técnicos e estritamente necessários ao funcionamento da Aplicação:</p>
+    <table class="legal-table">
+      <tr>
+        <th>Mecanismo</th>
+        <th>Dados guardados</th>
+        <th>Finalidade</th>
+        <th>Duração</th>
+      </tr>
+      <tr>
+        <td>localStorage (browser)</td>
+        <td>Preferência de tema (claro/escuro) e idioma</td>
+        <td>Manter as preferências do utilizador entre sessões, sem necessidade de conta</td>
+        <td>Permanente no dispositivo até limpeza manual</td>
+      </tr>
+      <tr>
+        <td>Token de sessão (Supabase Auth)</td>
+        <td>Token de autenticação cifrado</td>
+        <td>Manter a sessão ativa após login</td>
+        <td>Até ao logout ou expiração</td>
+      </tr>
+    </table>
+    <p>Dado que estes armazenamentos são estritamente necessários ao funcionamento do Serviço e não envolvem rastreamento ou publicidade, não é exigida a apresentação de banner de consentimento de cookies, em conformidade com a Diretiva ePrivacy (2002/58/CE) e as orientações da CNPD.</p>
+  </div>
+
+  <div class="doc-section" id="pp11">
+    <h2>11. Menores de idade</h2>
+    <p>O Serviço SmartSoma é destinado a utilizadores com <strong>18 anos de idade ou mais</strong>. Não recolhemos intencionalmente dados pessoais de menores de 18 anos.</p>
+    <p>Se tomarmos conhecimento de que recolhemos dados pessoais de um menor sem o consentimento verificável do titular das responsabilidades parentais, eliminaremos esses dados imediatamente. Caso tenha conhecimento de tal situação, pedimos que nos contacte em contacto@smartsoma.pt.</p>
+  </div>
+
+  <div class="doc-section" id="pp12">
+    <h2>12. Alterações a esta política</h2>
+    <p>A SmartSoma, Lda. reserva-se o direito de atualizar esta Política de Privacidade para refletir alterações legislativas, tecnológicas ou ao Serviço. Em caso de alterações materiais, o utilizador será notificado através do email associado à sua conta com pelo menos <strong>15 dias de antecedência</strong>.</p>
+    <p>A data da última atualização consta sempre no cabeçalho deste documento. Recomendamos a consulta periódica desta página.</p>
+  </div>
+
+  <div class="doc-section" id="pp13">
+    <h2>13. Contacto e reclamações</h2>
+    <p>Para qualquer questão relacionada com privacidade, proteção de dados, exercício de direitos ou esclarecimentos sobre esta Política:</p>
+    <div class="highlight-box">
+      <p><strong>SmartSoma, Lda.</strong><br>
+      Email: <strong>contacto@smartsoma.pt</strong><br>
+      Assunto recomendado: "Privacidade — [descrição breve]"<br>
+      Prazo de resposta: até 30 dias úteis</p>
+    </div>
+    <p>O utilizador tem sempre o direito de apresentar reclamação junto da <strong>Comissão Nacional de Proteção de Dados (CNPD)</strong> em www.cnpd.pt, sem prejuízo de outros recursos administrativos ou judiciais.</p>
+  </div>
+
+</div><!-- fim doc-pp -->
+
+
+<!-- ═══════════════════════════════════════════
+     TERMOS DE UTILIZAÇÃO
+═══════════════════════════════════════════ -->
+<div class="doc" id="doc-tu">
+
+  <div class="doc-header">
+    <div class="doc-tag">Termos Legais</div>
+    <h1>Termos de Utilização</h1>
+    <div class="doc-meta">
+      <strong>SmartSoma, Lda.</strong> · contacto@smartsoma.pt<br>
+      Última atualização: <strong>20 de setembro de 2026</strong> · Versão 1.0<br>
+      Aplicável à aplicação web SmartSoma (PWA) disponível em smartsoma.pt
+    </div>
+  </div>
+
+  <div class="toc">
+    <div class="toc-title">Índice</div>
+    <ol>
+      <li><a href="#tu1">Identificação e aceitação</a></li>
+      <li><a href="#tu2">Descrição do Serviço</a></li>
+      <li><a href="#tu3">Criação de conta e elegibilidade</a></li>
+      <li><a href="#tu4">Planos e faturação</a></li>
+      <li><a href="#tu5">Obrigações do utilizador</a></li>
+      <li><a href="#tu6">Propriedade intelectual</a></li>
+      <li><a href="#tu7">Dados e privacidade</a></li>
+      <li><a href="#tu8">Disponibilidade e limitações do Serviço</a></li>
+      <li><a href="#tu9">Exclusão de garantias e limitação de responsabilidade</a></li>
+      <li><a href="#tu10">Suspensão e rescisão</a></li>
+      <li><a href="#tu11">Alterações aos Termos</a></li>
+      <li><a href="#tu12">Lei aplicável e resolução de litígios</a></li>
+      <li><a href="#tu13">Contacto</a></li>
+    </ol>
+  </div>
+
+  <div class="doc-section" id="tu1">
+    <h2>1. Identificação e aceitação</h2>
+    <p>Estes Termos de Utilização ("Termos") regulam o acesso e a utilização da aplicação web SmartSoma ("Serviço" ou "Aplicação"), desenvolvida e operada pela <strong>SmartSoma, Lda.</strong>, com email de contacto contacto@smartsoma.pt.</p>
+    <p>Ao criar uma conta ou utilizar o Serviço, o utilizador declara ter lido, compreendido e aceite integralmente os presentes Termos, bem como a <strong>Política de Privacidade</strong> da SmartSoma, que faz parte integrante deste documento.</p>
+    <div class="warn-box">
+      <p>⚠ Se não concordar com estes Termos, não deverá criar conta nem utilizar o Serviço.</p>
+    </div>
+  </div>
+
+  <div class="doc-section" id="tu2">
+    <h2>2. Descrição do Serviço</h2>
+    <p>O SmartSoma é uma aplicação web progressiva (PWA) de controlo financeiro pessoal, desenvolvida especificamente para estafetas e motoristas de plataformas de transporte e entrega em Portugal (designadamente Uber, Bolt e similares).</p>
+    <p>O Serviço permite ao utilizador:</p>
+    <ul>
+      <li>Registar ganhos diários por plataforma;</li>
+      <li>Registar despesas diárias e despesas fixas recorrentes (em valor ou percentagem);</li>
+      <li>Registar distâncias percorridas;</li>
+      <li>Consultar resumos financeiros por dia, semana e mês;</li>
+      <li>Definir e acompanhar metas semanais de rendimento líquido;</li>
+      <li>Exportar relatórios em formato PDF (plano Pro);</li>
+      <li>Utilizar a interface em português, inglês e espanhol.</li>
+    </ul>
+    <p>O SmartSoma é uma ferramenta de organização pessoal e <strong>não constitui aconselhamento financeiro, fiscal, contabilístico ou jurídico</strong>. As informações apresentadas baseiam-se exclusivamente nos dados introduzidos pelo utilizador.</p>
+  </div>
+
+  <div class="doc-section" id="tu3">
+    <h2>3. Criação de conta e elegibilidade</h2>
+    <h3>3.1 Elegibilidade</h3>
+    <p>O Serviço destina-se a utilizadores com idade igual ou superior a <strong>18 anos</strong>. Ao criar uma conta, o utilizador declara ter pelo menos 18 anos de idade.</p>
+    <h3>3.2 Criação de conta</h3>
+    <p>Para aceder à totalidade das funcionalidades, o utilizador deve criar uma conta com nome e endereço de email válido. O utilizador é responsável por:</p>
+    <ul>
+      <li>Fornecer informações verdadeiras, precisas e atualizadas;</li>
+      <li>Manter a confidencialidade das suas credenciais de acesso;</li>
+      <li>Notificar a SmartSoma imediatamente em caso de acesso não autorizado à sua conta, através do email contacto@smartsoma.pt.</li>
+    </ul>
+    <p>Cada utilizador pode criar uma única conta pessoal. A partilha de conta com terceiros não é permitida.</p>
+    <h3>3.3 Responsabilidade pela conta</h3>
+    <p>O utilizador é inteiramente responsável por todas as atividades realizadas com as suas credenciais de acesso. A SmartSoma não será responsável por perdas ou danos resultantes de acesso não autorizado à conta do utilizador.</p>
+  </div>
+
+  <div class="doc-section" id="tu4">
+    <h2>4. Planos e faturação</h2>
+    <h3>4.1 Plano Gratuito</h3>
+    <p>O SmartSoma oferece um plano gratuito com funcionalidades básicas, sem custo e sem prazo definido. As funcionalidades disponíveis no plano gratuito podem ser alteradas com aviso prévio de 30 dias.</p>
+    <h3>4.2 Plano Pro</h3>
+    <p>O plano Pro disponibiliza funcionalidades avançadas mediante pagamento de uma subscrição mensal. O preço, a forma de pagamento e as condições de renovação serão apresentados na página de subscrição no momento da aquisição.</p>
+    <h3>4.3 Cancelamento e reembolso</h3>
+    <p>O utilizador pode cancelar a subscrição Pro a qualquer momento. O cancelamento produz efeitos no final do período de faturação em curso, mantendo-se o acesso às funcionalidades Pro até essa data. Ao abrigo do Art. 10.º do Decreto-Lei n.º 24/2014 (regime dos contratos à distância), o utilizador dispõe de <strong>14 dias</strong> a contar da data de subscrição para exercer o direito de arrependimento e solicitar reembolso integral, salvo se o Serviço já tiver sido plenamente executado com o consentimento expresso do utilizador.</p>
+    <h3>4.4 Alterações de preço</h3>
+    <p>A SmartSoma reserva-se o direito de alterar os preços dos planos pagos, com notificação prévia de pelo menos <strong>30 dias</strong> por email. O utilizador que não concorde com a alteração pode cancelar a subscrição antes da data de entrada em vigor do novo preço.</p>
+  </div>
+
+  <div class="doc-section" id="tu5">
+    <h2>5. Obrigações do utilizador</h2>
+    <p>Ao utilizar o Serviço, o utilizador compromete-se a:</p>
+    <ul>
+      <li>Utilizar o Serviço de forma lícita, ética e de acordo com os presentes Termos;</li>
+      <li>Não tentar aceder, alterar ou interferir com dados de outros utilizadores;</li>
+      <li>Não utilizar meios automatizados (bots, scrapers, etc.) para aceder ao Serviço sem autorização prévia por escrito;</li>
+      <li>Não realizar engenharia inversa, descompilação ou tentativa de extração do código-fonte da Aplicação;</li>
+      <li>Não utilizar o Serviço para fins ilegais, fraudulentos ou que violem direitos de terceiros;</li>
+      <li>Não sobrecarregar intencionalmente a infraestrutura do Serviço.</li>
+    </ul>
+    <p>O incumprimento destas obrigações pode resultar na suspensão ou encerramento imediato da conta, sem prejuízo de responsabilidade civil ou criminal aplicável.</p>
+  </div>
+
+  <div class="doc-section" id="tu6">
+    <h2>6. Propriedade intelectual</h2>
+    <p>Todo o conteúdo da Aplicação SmartSoma — incluindo, sem limitação, o código-fonte, design visual, logótipo, textos, ícones, estrutura e funcionalidades — é propriedade da SmartSoma, Lda. e está protegido pela legislação portuguesa e europeia aplicável em matéria de propriedade intelectual, designadamente pelo Código do Direito de Autor e dos Direitos Conexos (CDADC).</p>
+    <p>É concedida ao utilizador uma licença pessoal, não exclusiva, não transferível e revogável para utilizar o Serviço de acordo com os presentes Termos. Esta licença não inclui qualquer direito de reproduzir, distribuir, modificar, criar obras derivadas ou explorar comercialmente qualquer componente da Aplicação.</p>
+    <p>Os <strong>dados introduzidos pelo utilizador</strong> (ganhos, despesas, metas, etc.) pertencem exclusivamente ao utilizador. A SmartSoma não reivindica qualquer direito de propriedade sobre esses dados.</p>
+  </div>
+
+  <div class="doc-section" id="tu7">
+    <h2>7. Dados e privacidade</h2>
+    <p>O tratamento de dados pessoais no âmbito do Serviço é regulado pela <strong>Política de Privacidade</strong> da SmartSoma, disponível neste mesmo documento, que o utilizador declara ter lido e aceite.</p>
+    <p>O utilizador pode solicitar a exportação ou eliminação de todos os seus dados a qualquer momento, através do email contacto@smartsoma.pt. A eliminação da conta implica a remoção permanente e irreversível de todos os dados associados, incluindo os dados financeiros, no prazo máximo de 30 dias após o pedido.</p>
+  </div>
+
+  <div class="doc-section" id="tu8">
+    <h2>8. Disponibilidade e limitações do Serviço</h2>
+    <p>A SmartSoma envidará esforços razoáveis para manter o Serviço disponível de forma contínua. Contudo, a disponibilidade pode ser interrompida por razões incluindo, sem limitação:</p>
+    <ul>
+      <li>Manutenção programada, com aviso prévio sempre que possível;</li>
+      <li>Falhas técnicas de fornecedores de infraestrutura (incluindo o Supabase);</li>
+      <li>Circunstâncias de força maior (desastres naturais, falhas de energia, ataques informáticos, etc.).</li>
+    </ul>
+    <p>A SmartSoma não garante que o Serviço estará disponível de forma ininterrupta, sem erros ou totalmente isento de falhas. A Aplicação é fornecida <em>"tal como está"</em> (<em>as-is</em>) e <em>"conforme disponível"</em> (<em>as-available</em>).</p>
+  </div>
+
+  <div class="doc-section" id="tu9">
+    <h2>9. Exclusão de garantias e limitação de responsabilidade</h2>
+    <div class="warn-box">
+      <p>⚠ <strong>Importante:</strong> O SmartSoma é uma ferramenta de organização pessoal. Os cálculos e resumos apresentados baseiam-se exclusivamente nos dados introduzidos pelo utilizador. A SmartSoma, Lda. não garante a exatidão, integridade ou adequação dos resultados para qualquer finalidade fiscal, contabilística ou legal.</p>
+    </div>
+    <p>Na máxima extensão permitida pela lei aplicável, a SmartSoma, Lda. não será responsável por:</p>
+    <ul>
+      <li>Perdas de dados resultantes de falhas técnicas ou erros do utilizador;</li>
+      <li>Decisões financeiras, fiscais ou profissionais tomadas com base nos dados apresentados pela Aplicação;</li>
+      <li>Danos indiretos, incidentais, especiais ou consequenciais resultantes da utilização ou impossibilidade de utilização do Serviço;</li>
+      <li>Atos ou omissões de subcontratantes, incluindo o Supabase, fora do controlo razoável da SmartSoma.</li>
+    </ul>
+    <p>Esta limitação não afeta os direitos legais do consumidor previstos na legislação portuguesa aplicável, designadamente a Lei n.º 24/96, de 31 de julho (Lei de Defesa do Consumidor), na sua redação atual.</p>
+  </div>
+
+  <div class="doc-section" id="tu10">
+    <h2>10. Suspensão e rescisão</h2>
+    <h3>10.1 Por iniciativa do utilizador</h3>
+    <p>O utilizador pode encerrar a sua conta a qualquer momento, através das definições da conta ou por pedido enviado para contacto@smartsoma.pt. O encerramento é gratuito e não sujeito a penalizações.</p>
+    <h3>10.2 Por iniciativa da SmartSoma</h3>
+    <p>A SmartSoma reserva-se o direito de suspender ou encerrar a conta de um utilizador, com ou sem aviso prévio, em caso de:</p>
+    <ul>
+      <li>Violação dos presentes Termos;</li>
+      <li>Utilização fraudulenta ou abusiva do Serviço;</li>
+      <li>Incumprimento de obrigações de pagamento (plano Pro);</li>
+      <li>Decisão de descontinuar o Serviço, com aviso mínimo de 60 dias por email.</li>
+    </ul>
+    <h3>10.3 Efeitos do encerramento</h3>
+    <p>Após o encerramento da conta, os dados do utilizador serão eliminados nos termos descritos na Política de Privacidade. O utilizador pode solicitar a exportação dos seus dados antes do encerramento definitivo.</p>
+  </div>
+
+  <div class="doc-section" id="tu11">
+    <h2>11. Alterações aos Termos</h2>
+    <p>A SmartSoma pode atualizar os presentes Termos de Utilização. Em caso de alterações materiais, o utilizador será notificado por email com pelo menos <strong>15 dias de antecedência</strong>.</p>
+    <p>A continuação da utilização do Serviço após a data de entrada em vigor das alterações implica a aceitação dos novos Termos. Caso o utilizador não concorde, pode encerrar a sua conta antes dessa data.</p>
+  </div>
+
+  <div class="doc-section" id="tu12">
+    <h2>12. Lei aplicável e resolução de litígios</h2>
+    <p>Os presentes Termos são regidos e interpretados de acordo com a <strong>lei portuguesa</strong>, sem prejuízo das normas imperativas de proteção do consumidor que sejam aplicáveis no país de residência do utilizador.</p>
+    <p>Em caso de litígio, o utilizador pode recorrer às seguintes vias:</p>
+    <ul>
+      <li><strong>Contacto direto</strong> — o primeiro passo deve ser sempre o contacto com a SmartSoma através de contacto@smartsoma.pt;</li>
+      <li><strong>Resolução alternativa de litígios (RAL)</strong> — o utilizador pode recorrer a entidades de RAL registadas em Portugal, disponíveis em <strong>www.consumidor.gov.pt</strong>;</li>
+      <li><strong>Plataforma europeia de resolução de litígios em linha (RLL)</strong> — disponível em <strong>ec.europa.eu/consumers/odr</strong>;</li>
+      <li><strong>Tribunais competentes</strong> — os tribunais portugueses são competentes para dirimir litígios emergentes dos presentes Termos, sem prejuízo do direito do utilizador consumidor de intentar ação nos tribunais do seu país de residência.</li>
+    </ul>
+  </div>
+
+  <div class="doc-section" id="tu13">
+    <h2>13. Contacto</h2>
+    <p>Para qualquer questão relacionada com os presentes Termos de Utilização:</p>
+    <div class="highlight-box">
+      <p><strong>SmartSoma, Lda.</strong><br>
+      Email: <strong>contacto@smartsoma.pt</strong><br>
+      Assunto recomendado: "Termos de Utilização — [descrição breve]"<br>
+      Prazo de resposta: até 15 dias úteis</p>
+    </div>
+  </div>
+
+</div><!-- fim doc-tu -->
+
+
+<footer>
+  <p><strong>smart<span>soma</span></strong> &nbsp;·&nbsp; Documentos Legais &nbsp;·&nbsp; Versão 1.0 &nbsp;·&nbsp; Setembro 2026 &nbsp;·&nbsp; contacto@smartsoma.pt</p>
+</footer>
+
+<script>
+function showDoc(id) {
+  document.querySelectorAll('.doc').forEach(function(d){ d.classList.remove('active'); });
+  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+  document.getElementById('doc-' + id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+</script>
+</body>
+</html>
