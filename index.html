@@ -85,7 +85,7 @@ section{padding:96px 5vw}
 .phone-frame{width:100%;background:#111;border-radius:28px;padding:8px;box-shadow:0 0 0 2px #2a2a2a,0 20px 50px rgba(0,0,0,.5),inset 0 0 0 1px #333;position:relative}
 .phone-frame::before{content:'';position:absolute;top:12px;left:50%;transform:translateX(-50%);width:48px;height:4px;background:#222;border-radius:99px;z-index:2}
 .phone-screen{width:100%;border-radius:22px;display:block;aspect-ratio:9/19.5;object-fit:cover;object-position:top}
-.phone-caption{font-size:11px;color:var(--muted);text-align:center;line-height:1.5;max-width:160px}
+.phone-caption{display:none}
 
 .feat-card{flex:1;background:var(--navy2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;transition:border-color .2s,transform .2s}
 .feat-card:hover{border-color:rgba(46,204,113,.3);transform:translateY(-2px)}
@@ -104,8 +104,8 @@ section{padding:96px 5vw}
 
 /* COMO FUNCIONA */
 .how{background:var(--navy2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
-.steps{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:32px;max-width:1000px;margin:0 auto}
-.step{display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:32px;max-width:800px;margin:0 auto;justify-items:center}
+.step{display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px;max-width:240px}
 .step-num{font-size:13px;font-weight:800;color:var(--green);width:36px;height:36px;border-radius:50%;border:2px solid var(--green);display:flex;align-items:center;justify-content:center}
 .step h3{font-size:16px;font-weight:700;color:var(--white)}
 .step p{font-size:14px;color:var(--muted);line-height:1.65}
@@ -367,12 +367,11 @@ footer{padding:48px 5vw;font-size:13px;color:var(--muted)}
   <div class="plans-row">
     <div class="plan-card">
       <div class="plan-name">Gratuito</div>
-      <div class="plan-price">€ 0 <span>/ para sempre</span></div>
+      <div class="plan-price">€ 0 <span>/ mês</span></div>
       <p class="plan-desc">Ideal para controlar ganhos e despesas do dia a dia, com anúncios.</p>
       <ul class="plan-features">
         <li>Registo de ganhos e despesas</li>
         <li>Metas semanais</li>
-        <li>Relatórios básicos</li>
         <li class="off">Sem anúncios</li>
         <li class="off">Relatório PDF mensal</li>
       </ul>
@@ -380,14 +379,14 @@ footer{padding:48px 5vw;font-size:13px;color:var(--muted)}
     </div>
     <div class="plan-card featured">
       <div class="plan-badge">1º MÊS TOTALMENTE GRÁTIS</div>
-      <div class="plan-name">Plano PRO</div>
+      <div class="plan-name" style="margin-top:8px;">Plano PRO</div>
       <div class="plan-price">€ 5 <span>/ mês</span></div>
-      <p class="plan-desc">Acesso ilimitado e sem restrições a todas as ferramentas.</p>
+      <p class="plan-desc">Acesso ilimitado e sem restrições a todas as ferramentas, sem anúncios.</p>
       <ul class="plan-features">
+        <li>TODOS os benefícios do Gratuito</li>
         <li>Registo ilimitado de ganhos</li>
         <li>Gestão de despesas avançada</li>
-        <li>Relatório PDF mensal detalhado</li>
-        <li>Sem anúncios</li>
+        <li>Suporte Prioritário</li>
       </ul>
       <a href="login.html" class="plan-btn primary">Experimentar PRO Grátis</a>
     </div>
