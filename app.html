@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>SmartSoma</title>
+    <link rel="stylesheet" href="app.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js" defer></script>
+</head>
+<body>
+
+
+
+
+<div id="splash">
+    <img class="splash-logo" src="logo-home.png" alt="Logo">
+</div>
+
+<div id="appRoot">
+
+    <svg style="position:absolute;width:0;height:0" aria-hidden="true">
+        <defs>
+            <symbol id="wp-car" viewBox="0 0 24 24">
+                <path d="M4 16v-2.2L5.6 9.4A2 2 0 0 1 7.5 8h9a2 2 0 0 1 1.9 1.4L20 13.8V16"/>
+                <path d="M4 16h16v2.4a1 1 0 0 1-1 1h-1.4a1 1 0 0 1-1-1V17H7.4v1.4a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V16Z"/>
+                <line x1="7" y1="12" x2="17" y2="12"/>
+                <circle cx="7.5" cy="16.4" r="1.1"/>
+                <circle cx="16.5" cy="16.4" r="1.1"/>
+            </symbol>
+            <symbol id="wp-coin" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="9"/>
+                <path d="M15 8.5a5 5 0 1 0 0 7"/>
+                <line x1="7.5" y1="10.5" x2="14" y2="10.5"/>
+                <line x1="7.5" y1="13.5" x2="14" y2="13.5"/>
+            </symbol>
+            <symbol id="wp-wheel" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="9"/>
+                <circle cx="12" cy="12" r="2.4"/>
+                <path d="M12 5v4.6M6.2 15.5l3.9-2.3M17.8 15.5l-3.9-2.3"/>
+            </symbol>
+            <symbol id="wp-pin" viewBox="0 0 24 24">
+                <path d="M12 21s-6.5-6.1-6.5-11A6.5 6.5 0 0 1 18.5 10c0 4.9-6.5 11-6.5 11Z"/>
+                <circle cx="12" cy="10" r="2.2"/>
+            </symbol>
+            <symbol id="wp-wallet" viewBox="0 0 24 24">
+                <rect x="3" y="7" width="18" height="12" rx="2.2"/>
+                <path d="M3 10h18"/>
+                <path d="M15.5 14a1.5 1.5 0 1 0 0-3H21v3h-5.5Z"/>
+            </symbol>
+            <symbol id="wp-chart" viewBox="0 0 24 24">
+                <line x1="4" y1="20" x2="20" y2="20"/>
+                <rect x="6" y="13" width="3.2" height="7"/>
+                <rect x="10.4" y="9" width="3.2" height="11"/>
+                <rect x="14.8" y="5" width="3.2" height="15"/>
+            </symbol>
+            <symbol id="wp-fuel" viewBox="0 0 24 24">
+                <path d="M5 20V6a2 2 0 0 1 2-2h5a2 2 0 0 1 2 2v14"/>
+                <path d="M5 20h9"/>
+                <path d="M14 9h2l2.5 2.5V17a1.5 1.5 0 0 1-3 0v-1a1 1 0 0 0-1-1h-.5"/>
+                <path d="M7.5 6.5h5"/>
+            </symbol>
+        </defs>
+    </svg>
+
+    <div class="app-wallpaper" aria-hidden="true">
+        <svg style="width:60px;height:60px;top:81.6%;left:27.6%;transform:rotate(-20deg)"><use href="#wp-car"/></svg>
+        <svg style="width:72px;height:72px;top:14.7%;left:4.5%;transform:rotate(-13deg)"><use href="#wp-coin"/></svg>
+        <svg style="width:81px;height:81px;top:61.4%;left:4.3%;transform:rotate(21deg)"><use href="#wp-wheel"/></svg>
+        <svg style="width:86px;height:86px;top:104.7%;left:93.4%;transform:rotate(-10deg)"><use href="#wp-pin"/></svg>
+        <svg style="width:50px;height:50px;top:18%;left:49%;transform:rotate(14deg)"><use href="#wp-wallet"/></svg>
+        <svg style="width:89px;height:89px;top:101.6%;left:69.5%;transform:rotate(12deg)"><use href="#wp-chart"/></svg>
+        <svg style="width:83px;height:83px;top:16.1%;left:95.4%;transform:rotate(7deg)"><use href="#wp-fuel"/></svg>
+
+        <svg style="width:57px;height:57px;top:-6%;left:2.9%;transform:rotate(22deg)"><use href="#wp-car"/></svg>
+        <svg style="width:65px;height:65px;top:35.9%;left:75.2%;transform:rotate(11deg)"><use href="#wp-coin"/></svg>
+        <svg style="width:74px;height:74px;top:16.3%;left:73%;transform:rotate(-4deg)"><use href="#wp-wheel"/></svg>
+        <svg style="width:78px;height:78px;top:100.6%;left:50.9%;transform:rotate(4deg)"><use href="#wp-pin"/></svg>
+        <svg style="width:77px;height:77px;top:81.1%;left:47.3%;transform:rotate(4deg)"><use href="#wp-wallet"/></svg>
+        <svg style="width:81px;height:81px;top:105.3%;left:23.3%;transform:rotate(14deg)"><use href="#wp-chart"/></svg>
+        <svg style="width:67px;height:67px;top:41.7%;left:98.3%;transform:rotate(22deg)"><use href="#wp-fuel"/></svg>
+
+        <svg style="width:75px;height:75px;top:82.4%;left:71.8%;transform:rotate(-18deg)"><use href="#wp-car"/></svg>
+        <svg style="width:76px;height:76px;top:86%;left:98.7%;transform:rotate(22deg)"><use href="#wp-coin"/></svg>
+        <svg style="width:90px;height:90px;top:57.3%;left:97.3%;transform:rotate(-3deg)"><use href="#wp-wheel"/></svg>
+        <svg style="width:74px;height:74px;top:21.5%;left:28.2%;transform:rotate(-4deg)"><use href="#wp-pin"/></svg>
+        <svg style="width:68px;height:68px;top:63.9%;left:28.7%;transform:rotate(-21deg)"><use href="#wp-wallet"/></svg>
+        <svg style="width:85px;height:85px;top:102.8%;left:7.5%;transform:rotate(-15deg)"><use href="#wp-chart"/></svg>
+        <svg style="width:64px;height:64px;top:58.5%;left:73%;transform:rotate(-14deg)"><use href="#wp-fuel"/></svg>
+
+        <svg style="width:77px;height:77px;top:38.4%;left:28.9%;transform:rotate(-17deg)"><use href="#wp-car"/></svg>
+        <svg style="width:63px;height:63px;top:-4.8%;left:70.3%;transform:rotate(-14deg)"><use href="#wp-coin"/></svg>
+        <svg style="width:63px;height:63px;top:63.7%;left:52.6%;transform:rotate(4deg)"><use href="#wp-wheel"/></svg>
+        <svg style="width:70px;height:70px;top:-2.5%;left:53.9%;transform:rotate(-8deg)"><use href="#wp-pin"/></svg>
+        <svg style="width:60px;height:60px;top:-6.6%;left:24.2%;transform:rotate(20deg)"><use href="#wp-wallet"/></svg>
+        <svg style="width:83px;height:83px;top:82.3%;left:1.9%;transform:rotate(-11deg)"><use href="#wp-chart"/></svg>
+        <svg style="width:72px;height:72px;top:35.2%;left:48.1%;transform:rotate(12deg)"><use href="#wp-fuel"/></svg>
+    </div>
+
+    <header class="app-header">
+    <div class="header-inner">
+        <div class="header-actions">
+            <button type="button" class="header-menu-btn" id="headerAvatarBtn" data-i18n-aria="header.menuAria" aria-label="Abrir menu principal" aria-haspopup="true" aria-expanded="false">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="4" y1="7" x2="20" y2="7"/>
+                    <line x1="4" y1="12" x2="20" y2="12"/>
+                    <line x1="4" y1="17" x2="20" y2="17"/>
+                </svg>
+            </button>
+        </div>
+
+        <button type="button" class="header-logo" data-i18n-aria="header.logoAria" aria-label="Rolar para o início da página" id="headerLogoLink">
+            <img src="logo-home.png" alt="Logo">
+            <span class="header-slogan" data-i18n="header.slogan">Para Estafetas e Motoristas de App.</span>
+        </button>
+
+        <div class="header-actions" style="display:flex;align-items:center;gap:4px;">
+            <button type="button" class="header-icon-btn" id="btnToggleTheme" data-i18n-aria="header.themeAria" aria-label="Alternar tema claro ou escuro" aria-pressed="false">
+                <svg class="icon-default" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.6A9 9 0 1 1 11.4 3a7 7 0 0 0 9.6 9.6Z"/>
+                </svg>
+                <svg class="icon-alt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="4.2"/>
+                    <line x1="12" y1="2.5" x2="12" y2="5.2"/>
+                    <line x1="12" y1="18.8" x2="12" y2="21.5"/>
+                    <line x1="4.2" y1="4.2" x2="6.1" y2="6.1"/>
+                    <line x1="17.9" y1="17.9" x2="19.8" y2="19.8"/>
+                    <line x1="2.5" y1="12" x2="5.2" y2="12"/>
+                    <line x1="18.8" y1="12" x2="21.5" y2="12"/>
+                    <line x1="4.2" y1="19.8" x2="6.1" y2="17.9"/>
+                    <line x1="17.9" y1="6.1" x2="19.8" y2="4.2"/>
+                </svg>
+            </button>
+            <button type="button" id="btnSair" style="background:none;border:none;color:#8FA6B8;font-size:12px;cursor:pointer;padding:6px 8px;border-radius:8px;line-height:1;" aria-label="Sair da conta">Sair</button>
+        </div>
+    </div>
+</header>
+
+    <main class="page">
+        <div class="container app-view active" id="homeView">
+            <div class="sub-header" id="homeSubHeader">
+                <div class="sub-header-inner">
+                    <div class="sub-header-left" id="subHeaderLeft">
+                        <div class="sub-header-left-inner is-visible" id="subHeaderLeftDefault">
+                            <span class="sub-header-title" data-i18n="sub.ganhosEm">Ganhos em..</span>
+                            <button type="button" class="sub-header-date-btn" id="subHeaderDateBtn" aria-haspopup="true" aria-expanded="false">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3.5" y="5" width="17" height="16" rx="2.5"/>
+                                    <line x1="3.5" y1="10" x2="20.5" y2="10"/>
+                                    <line x1="8" y1="3" x2="8" y2="6.6"/>
+                                    <line x1="16" y1="3" x2="16" y2="6.6"/>
+                                </svg>
+                                <span id="subHeaderDateLabel">Hoje</span>
+                            </button>
+                            <span class="sub-header-today-label" id="subHeaderTodayLabel" data-i18n="app.today" hidden>Hoje</span>
+                        </div>
+                        <div class="sub-header-left-inner" id="subHeaderLeftResumo">
+                            <span class="sub-header-title" data-i18n="sub.resumo">Resumo Financeiro</span>
+                        </div>
+                        <div class="sub-header-left-inner" id="subHeaderLeftSemana">
+                            <span class="sub-header-title" data-i18n="sub.semana">Detalhes da Semana</span>
+                        </div>
+                        <div class="sub-header-left-inner" id="subHeaderLeftTermos">
+                            <button type="button" class="sub-header-back-arrow-btn" id="termosBackBtn" data-i18n-aria="sub.backAria" aria-label="Voltar para Ganhos">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="15 6 9 12 15 18"/>
+                                </svg>
+                            </button>
+                            <span class="sub-header-title" data-i18n="sub.termos">Termos e Privacidade</span>
+                        </div>
+                        <div class="sub-header-left-inner" id="subHeaderLeftRelatorio">
+                            <button type="button" class="sub-header-back-arrow-btn" id="relatorioBackBtn" data-i18n-aria="sub.backAria" aria-label="Voltar para Ganhos">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="15 6 9 12 15 18"/>
+                                </svg>
+                            </button>
+                            <span class="sub-header-title" data-i18n="sub.relatorio">Download Relatório</span>
+                        </div>
+                    </div>
+                    <div class="sub-header-view-toggle-group" id="subHeaderViewToggleGroup" hidden>
+                        <button type="button" class="sub-header-view-toggle-btn" id="viewToggleBtnList" data-i18n-aria="sub.viewListAria" aria-label="Ver em lista" aria-pressed="false">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="8" y1="6" x2="21" y2="6"/>
+                                <line x1="8" y1="12" x2="21" y2="12"/>
+                                <line x1="8" y1="18" x2="21" y2="18"/>
+                                <circle cx="3.5" cy="6" r="1" fill="currentColor" stroke="none"/>
+                                <circle cx="3.5" cy="12" r="1" fill="currentColor" stroke="none"/>
+                                <circle cx="3.5" cy="18" r="1" fill="currentColor" stroke="none"/>
+                            </svg>
+                        </button>
+                        <span class="sub-header-view-toggle-divider" aria-hidden="true"></span>
+                        <button type="button" class="sub-header-view-toggle-btn is-active" id="viewToggleBtnTable" data-i18n-aria="sub.viewTableAria" aria-label="Ver em tabela" aria-pressed="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3.5" y="3.5" width="17" height="17" rx="2"/>
+                                <line x1="3.5" y1="9.5" x2="20.5" y2="9.5"/>
+                                <line x1="3.5" y1="15" x2="20.5" y2="15"/>
+                                <line x1="9.5" y1="3.5" x2="9.5" y2="20.5"/>
+                                <line x1="15" y1="3.5" x2="15" y2="20.5"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="home-content" id="homeContent">
+                <div class="home-list-view" id="homeListView">
+                    <div class="home-list-inner">
+                        <div class="home-list-page" id="homeListPageGanhos">
+                            <div class="home-card ganhos-input-card ganhos-hero-card">
+                                <span class="ganhos-hero-glow" aria-hidden="true"></span>
+                                <div class="tech-card-header ganhos-hero-header">
+                                    <span class="ganhos-hero-icon" aria-hidden="true">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="3" y="6.5" width="18" height="13" rx="2.5"/>
+                                            <path d="M3 10.5h18"/>
+                                            <circle cx="16.5" cy="14.3" r="1.3" fill="currentColor" stroke="none"/>
+                                        </svg>
+                                    </span>
+                                    <span class="ganhos-hero-header-text">
+                                        <p class="home-card-resumo-title" data-i18n="ganhos.registroDoDia">Registro do dia</p>
+                                        <p class="ganhos-hint-caption" data-i18n="ganhos.hint">Insira aqui seus ganhos e despesas.</p>
+                                    </span>
+                                </div>
+                                <div class="home-list-rows ganhos-tile-grid">
+                                    <button type="button" class="list-row ganhos-tile ganhos-tile-income" id="listRowUber" data-i18n-aria="ganhos.uber" aria-label="Rendimentos Uber" aria-haspopup="true" aria-expanded="false">
+                                        <span class="ganhos-tile-icon-row">
+                                            <span class="list-row-icon"><img src="01uber.png" alt="" draggable="false"></span>
+                                            <span class="ganhos-tile-arrow" aria-hidden="true">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                                                    <line x1="5" y1="12" x2="19" y2="12"/>
+                                                    <polyline points="13 6 19 12 13 18"/>
+                                                </svg>
+                                            </span>
+                                        </span>
+                                        <span class="list-row-title" data-i18n="ganhos.uber">Rendimentos Uber</span>
+                                        <span class="list-row-value" id="badgeUber">€ 0.00</span>
+                                        <span class="ganhos-tile-ticks" aria-hidden="true"></span>
+                                    </button>
+                                    <button type="button" class="list-row ganhos-tile ganhos-tile-income" id="listRowBolt" data-i18n-aria="ganhos.bolt" aria-label="Rendimentos Bolt" aria-haspopup="true" aria-expanded="false">
+                                        <span class="ganhos-tile-icon-row">
+                                            <span class="list-row-icon"><img src="02bolt.png" alt="" draggable="false"></span>
+                                            <span class="ganhos-tile-arrow" aria-hidden="true">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                                                    <line x1="5" y1="12" x2="19" y2="12"/>
+                                                    <polyline points="13 6 19 12 13 18"/>
+                                                </svg>
+                                            </span>
+                                        </span>
+                                        <span class="list-row-title" data-i18n="ganhos.bolt">Rendimentos Bolt</span>
+                                        <span class="list-row-value" id="badgeBolt">€ 0.00</span>
+                                        <span class="ganhos-tile-ticks" aria-hidden="true"></span>
+                                    </button>
+                                    <button type="button" class="list-row ganhos-tile ganhos-tile-expense" id="listRowDespesas" data-i18n-aria="ganhos.despesas" aria-label="Despesas" aria-haspopup="true" aria-expanded="false">
+                                        <span class="ganhos-tile-icon-row">
+                                            <span class="list-row-icon"><img src="04despesas.png" alt="" draggable="false"></span>
+                                            <span class="ganhos-tile-arrow" aria-hidden="true">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                                                    <line x1="5" y1="12" x2="19" y2="12"/>
+                                                    <polyline points="13 6 19 12 13 18"/>
+                                                </svg>
+                                            </span>
+                                        </span>
+                                        <span class="list-row-title" data-i18n="ganhos.despesas">Despesas</span>
+                                        <span class="list-row-value" id="badgeDespesas">€ 0.00</span>
+                                        <span class="list-row-subtitle" id="despesasTileSubtitle" data-i18n="ganhos.despesasSub">Despesas fixas entram na segunda-feira.</span>
+                                        <span class="ganhos-tile-ticks" aria-hidden="true"></span>
+                                    </button>
+                                    <button type="button" class="list-row ganhos-tile ganhos-tile-distance" id="listRowDistancia" data-i18n-aria="ganhos.distanciaAria" aria-label="Distância percorrida" aria-haspopup="true" aria-expanded="false">
+                                        <span class="ganhos-tile-icon-row">
+                                            <span class="list-row-icon"><img src="05distancia.png" alt="" draggable="false"></span>
+                                            <span class="ganhos-tile-arrow" aria-hidden="true">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                                                    <line x1="5" y1="12" x2="19" y2="12"/>
+                                                    <polyline points="13 6 19 12 13 18"/>
+                                                </svg>
+                                            </span>
+                                        </span>
+                                        <span class="list-row-title" data-i18n="ganhos.distancia">Distância</span>
+                                        <span class="list-row-value" id="badgeDistancia">0.0 km</span>
+                                        <span class="list-row-subtitle" data-i18n="ganhos.distanciaSub">Escolha entre 'início e fim' ou 'km total'.</span>
+                                        <span class="ganhos-tile-ticks" aria-hidden="true"></span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="ganhos-resumo-link-row ganhos-cta-row ganhos-resumo-link-row-left">
+                                <button type="button" class="ganhos-resumo-link-btn" id="btnVerMeuResumo">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <line x1="19" y1="12" x2="5" y2="12"/>
+                                        <polyline points="11 6 5 12 11 18"/>
+                                    </svg>
+                                    <span data-i18n="ganhos.verResumo">Ver meu resumo</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="home-list-page" id="homeListPageResumo" hidden>
+                            <div class="home-card resumo-tech-card" id="resumoTechCard">
+                                <div class="resumo-live-content" id="resumoLiveContent">
+                                    <div class="period-filter-row">
+                                        <button type="button" class="period-chip" id="periodChipDia" data-period="dia" aria-pressed="false" data-i18n="resumo.dia">Dia</button>
+                                        <button type="button" class="period-chip selected" id="periodChipSemana" data-period="semana" aria-pressed="true" data-i18n="resumo.semana">Semana</button>
+                                        <button type="button" class="period-chip" id="periodChipMes" data-period="mes" aria-pressed="false" data-i18n="resumo.mes">Mês</button>
+                                    </div>
+                                    <div class="period-nav-row">
+                                        <button type="button" class="period-nav-btn" id="periodNavPrev" data-i18n-aria="resumo.prevAria" aria-label="Período anterior">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <polyline points="15 18 9 12 15 6"/>
+                                            </svg>
+                                        </button>
+                                        <div class="period-label" id="periodLabel"></div>
+                                        <button type="button" class="period-nav-btn" id="periodNavNext" data-i18n-aria="resumo.nextAria" aria-label="Próximo período">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <polyline points="9 18 15 12 9 6"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+
+                                    <div class="dash-cluster">
+                                        <div class="dash-main-row" id="dashMainRow">
+                                            <div class="dash-main-gauge">
+                                                <svg class="dash-main-ring" viewBox="0 0 120 120" aria-hidden="true">
+                                                    <circle class="dash-ring-track" cx="60" cy="60" r="52"/>
+                                                    <circle class="dash-ring-progress" id="dashRingProgress" cx="60" cy="60" r="52"/>
+                                                </svg>
+                                                <div class="dash-main-inner">
+                                            <span class="dash-main-icon" id="dashLiquidoIcon" aria-hidden="true">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M5 21V4"/>
+                                                    <path d="M5 4h13l-3 4 3 4H5"/>
+                                                </svg>
+                                            </span>
+                                                    <span class="dash-main-label" id="dashLiquidoLabel" data-i18n="resumo.liquido">Líquido</span>
+                                                    <span class="dash-main-value" id="summaryLiquidoValue">€0.00</span>
+                                                </div>
+                                            </div>
+
+                                            <div class="dash-meta-panel" id="dashMetaPanel" hidden>
+                                                <div class="dash-meta-filled" id="dashMetaFilled">
+                                                    <span class="dash-meta-title" data-i18n="resumo.metaSemanal">Meta Semanal</span>
+                                                    <span class="dash-meta-value" id="dashMetaGoalValue" data-i18n="resumo.metaExemplo">200 euros brutos</span>
+                                                    <span class="dash-meta-sep" aria-hidden="true"></span>
+                                                    <span class="dash-meta-percent" id="dashMetaPercentText">50% concluída</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="dash-sub-row">
+                                            <div class="dash-sub-tile dash-tile-bruto" id="dashSwapTile">
+                                        <span class="dash-tile-icon" id="dashBrutoIcon" aria-hidden="true">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M12 15l3.5-3.5"/>
+                                                <path d="M20.3 18a9 9 0 1 0-16.6 0"/>
+                                            </svg>
+                                        </span>
+                                                <span class="dash-tile-label" id="dashBrutoLabel" data-i18n="resumo.bruto">Bruto</span>
+                                                <span class="dash-tile-value" id="summaryBrutoValue">€0.00</span>
+                                                <span class="dash-tile-ticks" aria-hidden="true"></span>
+                                            </div>
+
+                                            <div class="dash-sub-tile dash-tile-despesas">
+                                        <span class="dash-tile-icon" aria-hidden="true">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                                <line x1="3" y1="22" x2="15" y2="22"/>
+                                                <line x1="4" y1="9" x2="14" y2="9"/>
+                                                <path d="M14 22V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v18"/>
+                                                <path d="M14 13h1.5a2 2 0 0 1 2 2v2a1.5 1.5 0 0 0 3 0V9.5L17 6"/>
+                                            </svg>
+                                        </span>
+                                                <span class="dash-tile-label" data-i18n="resumo.despesas">Despesas</span>
+                                                <span class="dash-tile-value" id="summaryDespesasValue">€0.00</span>
+                                                <span class="dash-tile-ticks" aria-hidden="true"></span>
+                                            </div>
+
+                                            <div class="dash-sub-tile dash-tile-distancia">
+                                        <span class="dash-tile-icon" aria-hidden="true">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M12 21s-6.5-6.1-6.5-11A6.5 6.5 0 0 1 18.5 10c0 4.9-6.5 11-6.5 11Z"/>
+                                                <circle cx="12" cy="10" r="2.2"/>
+                                            </svg>
+                                        </span>
+                                                <span class="dash-tile-label" data-i18n="resumo.distancia">Distância</span>
+                                                <span class="dash-tile-value" id="summaryDistanciaValue">0.0 km</span>
+                                                <span class="dash-tile-ticks" aria-hidden="true"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="ganhos-resumo-link-row">
+                                <button type="button" class="ganhos-resumo-link-btn" id="btnRegistrarGanhos">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <line x1="5" y1="12" x2="19" y2="12"/>
+                                        <polyline points="13 6 19 12 13 18"/>
+                                    </svg>
+                                    <span data-i18n="ganhos.registrar">Registrar ganhos</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="home-list-page" id="homeListPageSemana" hidden>
+                            <div class="home-card" id="semanaTechCard">
+                                <div class="semana-live-content" id="semanaLiveContent">
+                                    <div class="period-nav-row">
+                                        <button type="button" class="period-nav-btn" id="semanaMonthPrev" data-i18n-aria="semana.prevMesAria" aria-label="Mês anterior">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <polyline points="15 18 9 12 15 6"/>
+                                            </svg>
+                                        </button>
+                                        <div class="period-label" id="semanaMonthLabel"></div>
+                                        <button type="button" class="period-nav-btn" id="semanaMonthNext" data-i18n-aria="semana.nextMesAria" aria-label="Próximo mês">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <polyline points="9 18 15 12 9 6"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <div class="semana-week-picker" id="semanaWeekPicker">
+                                        <button type="button" class="semana-week-picker-btn" id="semanaWeekPickerBtn" aria-haspopup="true" aria-expanded="false">
+                                            <span id="semanaWeekPickerLabel"></span>
+                                            <svg class="semana-week-picker-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                                <polyline points="6 9 12 15 18 9"/>
+                                            </svg>
+                                        </button>
+                                        <div class="semana-week-picker-panel" id="semanaWeekPickerPanel" hidden></div>
+                                    </div>
+                                    <div class="semana-weeks-container" id="semanaWeeksContainer"></div>
+                                    <div class="semana-list-placeholder" id="semanaListPlaceholder" hidden></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="home-list-page" id="homeListPageTermos" hidden>
+                            <div class="termos-toggle-wrap" id="termosToggleWrap">
+                                <button type="button" class="termos-toggle-btn is-active" id="btnTermosUtilizacao" data-i18n="sheet.termos">Termos de Utilização</button>
+                                <button type="button" class="termos-toggle-btn" id="btnPoliticaPrivacidade" data-i18n="sheet.privacidade">Política de Privacidade</button>
+                            </div>
+                            <div class="home-card legal-content" id="termosUtilizacaoContent" data-i18n-html="legal.termos.html">
+                                <h2 class="legal-title">Termos de Utilização</h2>
+
+                                <p>Conteúdo disponível brevemente.</p>
+                            </div>
+                            <div class="home-card legal-content" id="politicaPrivacidadeContent" data-i18n-html="legal.privacidade.html" hidden>
+                                <h2 class="legal-title">Política de Privacidade</h2>
+
+                                <p>Conteúdo disponível brevemente.</p>
+                            </div>
+                        </div>
+                        <div class="home-list-page" id="homeListPageRelatorio" hidden>
+                            <div class="home-card">
+                                <h2 class="legal-title" data-i18n="relatorio.title">Download Relatório</h2>
+                                <p class="ajuda-intro-text is-centered" data-i18n="relatorio.intro">O relatório reúne os detalhes diários do mês escolhido, todos juntos em um único PDF. Selecione o mês desejado no filtro abaixo.</p>
+                                <div class="period-nav-row">
+                                    <button type="button" class="period-nav-btn" id="relatorioPageMonthPrev" data-i18n-aria="semana.prevMesAria" aria-label="Mês anterior">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="15 18 9 12 15 6"/>
+                                        </svg>
+                                    </button>
+                                    <div class="period-label" id="relatorioPageMonthLabel">setembro de 2026</div>
+                                    <button type="button" class="period-nav-btn" id="relatorioPageMonthNext" data-i18n-aria="semana.nextMesAria" aria-label="Próximo mês">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="9 18 15 12 9 6"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <button type="button" class="dp-save-btn has-icon" id="relatorioPageDownloadBtn">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M12 3v11.5"/>
+                                        <polyline points="7.5 10.5 12 15 16.5 10.5"/>
+                                        <line x1="5" y1="19.5" x2="19" y2="19.5"/>
+                                    </svg>
+                                    <span data-i18n="relatorio.download">Baixar PDF</span>
+                                </button>
+                                <div class="relatorio-pdf-preview" data-i18n="relatorio.preview">IMG EXEMPLO DE PDF</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="screen-overlay" id="screenOverlay"></div>
+
+            <div class="meta-slot-list" id="metaSlotList">
+                <div class="meta-nav-container" id="navContainer">
+                    <div class="floating-menu" id="floatingMenu">
+                        <button type="button" class="menu-item" data-nav="ganhos">
+                            <span data-i18n="nav.rendimentos">Rendimentos</span>
+                            <span class="menu-item-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                            </span>
+                        </button>
+                        <button type="button" class="menu-item" data-nav="resumo">
+                            <span data-i18n="nav.resumo">Resumo Financeiro</span>
+                            <span class="menu-item-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="20" x2="5" y2="12"/><line x1="12" y1="20" x2="12" y2="6"/><line x1="19" y1="20" x2="19" y2="15"/></svg>
+                            </span>
+                        </button>
+                        <button type="button" class="menu-item" data-nav="semana">
+                            <span data-i18n="nav.semana">Detalhes da Semana</span>
+                            <span class="menu-item-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="16" rx="2.5"/><line x1="3.5" y1="10" x2="20.5" y2="10"/><line x1="8" y1="3" x2="8" y2="6.6"/><line x1="16" y1="3" x2="16" y2="6.6"/></svg>
+                            </span>
+                        </button>
+                        <button type="button" class="menu-item" data-nav="relatorio">
+                            <span data-i18n="nav.relatorio">Download Relatório</span>
+                            <span class="menu-item-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v11.5"/><polyline points="7.5 10.5 12 15 16.5 10.5"/><line x1="5" y1="19.5" x2="19" y2="19.5"/></svg>
+                            </span>
+                        </button>
+                    </div>
+
+                    <button type="button" class="svg-button-wrapper" id="svgMenuBtn" data-i18n-aria="nav.quickAria" aria-label="Abrir menu rápido de páginas">
+                        <svg viewBox="0 0 50 60" width="42" height="50" style="overflow:visible" xmlns="http://www.w3.org/2000/svg">
+                            <g class="sheet-left">
+                                <rect x="8" y="6" width="24" height="34" rx="2" fill="white" stroke="#64748b" stroke-width="2" stroke-linejoin="round"/>
+                                <line x1="13" y1="13" x2="27" y2="13" stroke="#cbd5e1" stroke-width="1.8" stroke-linecap="round"/>
+                                <line x1="13" y1="18" x2="25" y2="18" stroke="#cbd5e1" stroke-width="1.8" stroke-linecap="round"/>
+                                <line x1="13" y1="23" x2="21" y2="23" stroke="#cbd5e1" stroke-width="1.8" stroke-linecap="round"/>
+                            </g>
+                            <g class="sheet-right">
+                                <rect x="18" y="10" width="24" height="34" rx="2" fill="white" stroke="#475569" stroke-width="2" stroke-linejoin="round"/>
+                                <line x1="23" y1="17" x2="37" y2="17" stroke="#94a3b8" stroke-width="1.8" stroke-linecap="round"/>
+                                <line x1="23" y1="22" x2="35" y2="22" stroke="#94a3b8" stroke-width="1.8" stroke-linecap="round"/>
+                                <line x1="23" y1="27" x2="31" y2="27" stroke="#94a3b8" stroke-width="1.8" stroke-linecap="round"/>
+                            </g>
+                        </svg>
+                    </button>
+
+                    <canvas class="meta-confetti-canvas" id="metaConfettiCanvas" aria-hidden="true"></canvas>
+
+                    <div class="meta-semanal-fixed-inner home-card" id="metaSemanalCard">
+                        <div class="meta-semanal-week-box" id="metaSemanalWeekBox" hidden>
+                            <button type="button" class="meta-semanal-week-box-btn" id="btnMetaSemanalSemanaConsultada" aria-haspopup="true">
+                                <span class="meta-semanal-week-box-period" id="metaSemanalWeekBoxPeriod"></span>
+                                <span class="meta-semanal-week-box-percent"><span id="metaSemanalWeekBoxPercentValue">0%</span><span class="meta-semanal-week-box-thumb" id="metaSemanalWeekBoxThumb"></span></span>
+                            </button>
+                        </div>
+                        <div class="meta-semanal-current-content" id="metaSemanalCurrentContent">
+                            <button type="button" class="meta-semanal-link" id="btnMetaSemanal" aria-haspopup="true" aria-expanded="false">
+                                <span><span class="meta-semanal-strong" data-i18n="metacard.label">Meta semanal</span>: <span class="meta-semanal-percent" id="metaSemanalPercentText">0%</span><span data-i18n="metacard.suffix"> concluída</span></span>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M12 20h9"/>
+                                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/>
+                                </svg>
+                            </button>
+                            <span class="meta-semanal-period" id="metaSemanalPeriodLabel"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="sheet-backdrop" id="sheetBackdrop"></div>
+    <div class="profile-sheet" id="profileSheet" role="dialog" aria-modal="true" aria-hidden="true" data-i18n-aria="sheet.ariaLabel" aria-label="Perfil e configurações">
+        <div class="sheet-handle-area" id="sheetHandleArea">
+            <span class="sheet-handle-title" id="sheetHandleTitle" data-i18n="sheet.title">Ajustes</span>
+            <button type="button" class="sheet-close-btn" id="sheetCloseBtn" data-i18n-aria="app.close" aria-label="Fechar">
+                <svg class="icon-default" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+                <svg class="icon-alt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"/>
+                    <polyline points="12 19 5 12 12 5"/>
+                </svg>
+            </button>
+        </div>
+        <div class="sheet-screens" id="sheetScreens">
+            <div class="sheet-screen is-active" id="sheetScreenDefault">
+                <div class="sheet-content">
+                    <div class="sheet-profile-row">
+                        <div class="sheet-avatar" id="sheetAvatar"></div>
+                        <div class="sheet-profile-info">
+                            <p class="sheet-username" id="sheetUsername">Utilizador</p>
+                            <p class="sheet-subinfo" id="sheetVehicleInfo"></p>
+                            <p class="sheet-subinfo" id="sheetDriverSince">0 dias nos Apps.</p>
+                        </div>
+                    </div>
+                    <div class="sheet-divider"></div>
+                    <div class="sheet-actions">
+                        <button type="button" class="sheet-action-btn" id="openDadosPessoaisBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="8" r="3.4"/><path d="M4.5 20c1.2-3.6 4.2-5.6 7.5-5.6s6.3 2 7.5 5.6"/>
+                            </svg>
+                            <span data-i18n="sheet.perfil">Perfil e Dados da Conta</span>
+                        </button>
+                        <button type="button" class="sheet-action-btn" id="openDespesasFixasBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3.5" y="5" width="17" height="14" rx="2.5"/>
+                                <line x1="3.5" y1="9.5" x2="20.5" y2="9.5"/>
+                                <line x1="7" y1="14" x2="12" y2="14"/>
+                            </svg>
+                            <span data-i18n="sheet.despesasFixas">Despesas Fixas</span>
+                        </button>
+                        <button type="button" class="sheet-action-btn sheet-action-btn-split" id="openIdiomaBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="9"/>
+                                <path d="M3.2 9.5h17.6M3.2 14.5h17.6"/>
+                                <path d="M12 3c2.3 2.4 3.5 5.4 3.5 9s-1.2 6.6-3.5 9c-2.3-2.4-3.5-5.4-3.5-9s1.2-6.6 3.5-9Z"/>
+                            </svg>
+                            <span data-i18n="sheet.idioma">Idioma</span>
+                            <span class="sheet-action-value" id="idiomaCurrentValue">
+                                <span class="lang-flag" id="idiomaCurrentFlag" aria-hidden="true"></span>
+                                <span class="lang-name" id="idiomaCurrentName">Português</span>
+                            </span>
+                        </button>
+                        <button type="button" class="sheet-action-btn" id="openTutorialBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="9"/>
+                                <path d="M9.5 9.3c.3-1 1.2-1.7 2.5-1.7 1.5 0 2.6.9 2.6 2.1 0 1-.6 1.5-1.6 2.1-.9.5-1.3.9-1.3 1.8"/>
+                                <circle cx="12" cy="16.3" r="0.9" fill="currentColor" stroke="none"/>
+                            </svg>
+                            <span data-i18n="sheet.tutorial">Tutorial</span>
+                        </button>
+                        <button type="button" class="sheet-action-btn" id="openAjudaBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="9"/>
+                                <path d="M9.3 9.2c.3-1.1 1.3-1.9 2.7-1.9 1.6 0 2.8 1 2.8 2.3 0 1.1-.7 1.6-1.7 2.3-1 .6-1.4 1-1.4 1.9"/>
+                                <circle cx="12" cy="16.5" r="0.9" fill="currentColor" stroke="none"/>
+                            </svg>
+                            <span data-i18n="sheet.ajuda">Ajuda</span>
+                        </button>
+                    </div>
+                    <div class="sheet-divider"></div>
+                    <div class="sheet-actions">
+                        <button type="button" class="sheet-action-btn" id="openTermosMenuBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M6 3.5h9l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-16a1 1 0 0 1 1-1z"/>
+                                <path d="M15 3.5v4h4"/>
+                                <line x1="8" y1="12" x2="16" y2="12"/>
+                                <line x1="8" y1="15.5" x2="16" y2="15.5"/>
+                            </svg>
+                            <span data-i18n="sheet.termos">Termos de Utilização</span>
+                        </button>
+                        <button type="button" class="sheet-action-btn" id="openPrivacidadeMenuBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 3.5l7 2.6v5.4c0 4.6-3 8.3-7 9.4-4-1.1-7-4.8-7-9.4V6.1z"/>
+                                <path d="M9 12l2 2 4-4.2"/>
+                            </svg>
+                            <span data-i18n="sheet.privacidade">Política de Privacidade</span>
+                        </button>
+                    </div>
+                    <div class="sheet-divider"></div>
+                    <p class="sheet-credit-text">By <strong>JC</strong></p>
+                </div>
+            </div>
+            <div class="sheet-screen" id="sheetScreenDadosPessoais" hidden>
+                <div class="sheet-content sheet-page-content">
+                    <div class="dp-photo-row">
+                        <div class="dp-photo-thumb" id="dpPhotoThumb"></div>
+                        <button type="button" class="dp-upload-btn" id="dpUploadPhotoBtn" data-i18n="dp.upload">Carregar imagem..</button>
+                    </div>
+
+                    <div class="dp-field-row dp-field-row-single">
+                        <label class="dp-field">
+                            <span class="dp-field-label" data-i18n="dp.nome">Nome</span>
+                            <input type="text" class="dp-input" id="dpNomeInput" data-i18n-ph="dp.nomePh" placeholder="Seu nome" maxlength="60">
+                        </label>
+                    </div>
+
+                    <div class="dp-field-row dp-field-row-single">
+                        <div class="dp-field">
+                            <span class="dp-field-label" id="dpEmailLabel" data-i18n="dp.email">Email</span>
+                            <input type="email" class="dp-input dp-input-readonly" id="dpEmailInput" value="" readonly aria-readonly="true" aria-labelledby="dpEmailLabel" tabindex="-1" autocomplete="off">
+                        </div>
+                    </div>
+
+                    <label class="dp-field dp-field-full">
+                        <span class="dp-field-label" data-i18n="dp.desdeQuando">Desde quando trabalha com apps?</span>
+                        <button type="button" class="dp-date-btn" id="dpDriverSinceBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3.5" y="5" width="17" height="16" rx="2.5"/>
+                                <line x1="3.5" y1="10" x2="20.5" y2="10"/>
+                                <line x1="8" y1="3" x2="8" y2="6.6"/>
+                                <line x1="16" y1="3" x2="16" y2="6.6"/>
+                            </svg>
+                            <span id="dpDriverSinceLabel" data-i18n="dp.selecionarData">Selecionar data</span>
+                        </button>
+                    </label>
+
+                    <div class="sheet-divider"></div>
+
+                    <button type="button" class="dp-save-btn" id="dpSaveBtn" data-i18n="dp.atualizarDados">Atualizar Dados Pessoais</button>
+                </div>
+            </div>
+            <div class="sheet-screen" id="sheetScreenIdioma" hidden>
+                <div class="sheet-content sheet-page-content">
+                    <p class="ajuda-intro-text" data-i18n="idioma.intro">Escolha o idioma da aplicação. Todos os textos serão apresentados no idioma selecionado.</p>
+                    <div class="lang-options" id="langOptionsList" role="radiogroup" data-i18n-aria="sheet.idioma" aria-label="Idioma"></div>
+                    <div class="sheet-divider"></div>
+                    <button type="button" class="dp-save-btn" id="langSaveBtn" data-i18n="idioma.save">Salvar</button>
+                </div>
+            </div>
+            <div class="sheet-screen" id="sheetScreenAjuda" hidden>
+                <div class="sheet-content sheet-page-content">
+                    <p class="ajuda-intro-text" data-i18n="ajuda.intro">Precisa de ajuda? Preencha o formulário abaixo e a nossa equipa entrará em contacto consigo o mais breve possível.</p>
+                    <div class="ajuda-form" id="ajudaForm">
+                        <label class="dp-field dp-field-full">
+                            <span class="dp-field-label" data-i18n="ajuda.nome">Nome</span>
+                            <input type="text" class="dp-input" id="ajudaNomeInput" data-i18n-ph="ajuda.nomePh" placeholder="Seu nome">
+                        </label>
+                        <label class="dp-field dp-field-full">
+                            <span class="dp-field-label" data-i18n="ajuda.assunto">Assunto</span>
+                            <input type="text" class="dp-input" id="ajudaAssuntoInput" data-i18n-ph="ajuda.assuntoPh" placeholder="Sobre o que é?">
+                        </label>
+                        <label class="dp-field dp-field-full">
+                            <span class="dp-field-label" data-i18n="ajuda.mensagem">Mensagem</span>
+                            <textarea class="dp-input ajuda-textarea" id="ajudaMensagemInput" rows="5" data-i18n-ph="ajuda.mensagemPh" placeholder="Descreva a sua dúvida ou problema..."></textarea>
+                        </label>
+                        <button type="button" class="dp-save-btn" id="ajudaEnviarBtn" data-i18n="ajuda.enviar">Enviar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-backdrop" id="driverSinceModalBackdrop">
+        <div class="modal-card mm-wheel-card" role="dialog" aria-modal="true" aria-labelledby="driverSinceModalTitle" id="driverSinceModalCard">
+            <h3 class="modal-title" id="driverSinceModalTitle" data-i18n="wheel.title">Desde quando é motorista?</h3>
+            <div class="mm-wheel-picker">
+                <div class="mm-wheel-highlight" aria-hidden="true"></div>
+                <div class="mm-wheel-col" id="wheelDayCol"></div>
+                <div class="mm-wheel-col" id="wheelMonthCol"></div>
+                <div class="mm-wheel-col" id="wheelYearCol"></div>
+            </div>
+            <button type="button" class="dp-save-btn mm-wheel-save-btn" id="wheelSaveBtn" data-i18n="app.save">Salvar</button>
+        </div>
+    </div>
+
+    <input type="file" accept="image/*" id="fileInput" hidden>
+
+    <div class="modal-backdrop" id="photoModalBackdrop">
+        <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="photoModalTitle" id="photoModalCard">
+            <h3 class="modal-title" id="photoModalTitle" data-i18n="photo.title">Alterar foto de perfil</h3>
+
+            <div id="photoStepCrop">
+                <p class="crop-hint" data-i18n="photo.hint">Arraste para posicionar e use o controle para dar zoom.</p>
+                <div class="crop-stage" id="cropStage">
+                    <img class="crop-image" id="cropImage" data-i18n-alt="photo.previewAlt" alt="Pré-visualização da foto">
+                    <div class="crop-mask" aria-hidden="true"></div>
+                </div>
+                <div class="zoom-row">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="6"/><line x1="20" y1="20" x2="15" y2="15"/><line x1="7" y1="10" x2="13" y2="10"/></svg>
+                    <input type="range" class="zoom-slider" id="zoomRange" min="1" max="3" step="0.01" value="1" data-i18n-aria="photo.zoomAria" aria-label="Zoom">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="6"/><line x1="20" y1="20" x2="15" y2="15"/><line x1="10" y1="7" x2="10" y2="13"/><line x1="7" y1="10" x2="13" y2="10"/></svg>
+                </div>
+                <div class="crop-actions">
+                    <button type="button" class="modal-btn-secondary" id="cropCancelBtn" data-i18n="app.cancel">Cancelar</button>
+                    <button type="button" class="modal-btn-primary" id="cropApplyBtn" data-i18n="photo.aplicar">Aplicar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mm-backdrop" id="despesasModalBackdrop">
+        <div class="mm-card" role="dialog" aria-modal="true" aria-labelledby="despesasModalTitle" id="despesasModalCard">
+            <h3 class="mm-title" id="despesasModalTitle" data-i18n="fixas.title">Despesas Fixas</h3>
+            <p class="mm-helper-text" data-i18n="fixas.helper">Despesas que se repetem toda SEMANA (ex: Aluguel do carro, Taxa plataforma). Escolha % do valor bruto (atualizado automaticamente conforme os ganhos são inseridos), ou valor fixo em €. Este valor é lançado na segunda feira de cada semana.</p>
+
+            <div class="despesa-form">
+                <input type="text" class="despesa-desc-input" id="despesaDescInput" data-i18n-ph="fixas.descPh" placeholder="DESCRIÇÃO" data-i18n-aria="fixas.descAria" aria-label="Descrição da despesa">
+
+                <div class="despesa-row2">
+                    <input type="text" inputmode="decimal" class="despesa-valor-input" id="despesaValorInput" placeholder="%" data-i18n-aria="fixas.valorAria" aria-label="Valor da despesa">
+
+                    <button type="button" class="despesa-type-btn active" id="despesaTipoPercentBtn" data-tipo="percentual" data-i18n-aria="fixas.percentAria" aria-label="Percentual" aria-pressed="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="19" y1="5" x2="5" y2="19"/>
+                            <circle cx="6.5" cy="6.5" r="2.5"/>
+                            <circle cx="17.5" cy="17.5" r="2.5"/>
+                        </svg>
+                    </button>
+
+                    <button type="button" class="despesa-type-btn" id="despesaTipoEuroBtn" data-tipo="euro" data-i18n-aria="fixas.euroAria" aria-label="Euro" aria-pressed="false">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17.5 6.5c-1.1-1.3-2.7-2-4.5-2-3.6 0-6.5 3.4-6.5 7.5s2.9 7.5 6.5 7.5c1.8 0 3.4-.7 4.5-2"/>
+                            <line x1="4" y1="10" x2="13" y2="10"/>
+                            <line x1="4" y1="14" x2="12" y2="14"/>
+                        </svg>
+                    </button>
+
+                    <span class="despesa-weekly-label" data-i18n="fixas.semanal">Semanal</span>
+                </div>
+
+                <button type="button" class="mm-save-btn" id="despesaSalvarBtn" data-i18n="app.save">Salvar</button>
+            </div>
+
+            <h4 class="despesa-list-title" data-i18n="fixas.listTitle">Despesas Cadastradas</h4>
+            <div class="despesa-list" id="despesaListEl"></div>
+        </div>
+    </div>
+
+    <div class="mm-backdrop" id="despesaConfirmBackdrop" data-mm-nested="true">
+        <div class="mm-card" role="dialog" aria-modal="true" aria-labelledby="despesaConfirmTitle" id="despesaConfirmCard">
+            <h3 class="mm-title" id="despesaConfirmTitle" data-i18n="fixas.confirmTitle">Excluir despesa</h3>
+            <p class="despesa-confirm-text" id="despesaConfirmText" data-i18n="fixas.confirmText">Tem certeza que deseja excluir esta despesa?</p>
+            <div class="despesa-confirm-actions">
+                <button type="button" class="despesa-confirm-cancel" id="despesaConfirmCancelBtn" data-i18n="app.cancel">Cancelar</button>
+                <button type="button" class="despesa-confirm-delete" id="despesaConfirmDeleteBtn" data-i18n="app.delete">Excluir</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="mm-backdrop" id="calendarModalBackdrop">
+        <div class="mm-card" role="dialog" aria-modal="true" aria-labelledby="calendarModalTitle" id="calendarModalCard">
+            <h3 class="mm-title" id="calendarModalTitle" data-i18n="cal.title">Selecionar Data</h3>
+            <p class="mm-cal-today-label" id="mmCalTodayLabel"></p>
+            <div class="mm-title-divider"></div>
+            <div class="mm-calendar">
+                <div class="mm-cal-nav">
+                    <button type="button" id="mmCalPrevBtn" data-i18n-aria="cal.prevAria" aria-label="Mês anterior">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"/></svg>
+                    </button>
+                    <span class="mm-cal-month-label" id="mmCalendarMonthLabel"></span>
+                    <button type="button" id="mmCalNextBtn" data-i18n-aria="cal.nextAria" aria-label="Próximo mês">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
+                    </button>
+                </div>
+                <div class="mm-cal-weekdays">
+                    <span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span><span>D</span>
+                </div>
+                <div class="mm-cal-days" id="mmCalendarDays"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mm-backdrop" id="uberModalBackdrop">
+        <div class="mm-card" role="dialog" aria-modal="true" aria-labelledby="uberModalTitle" id="uberModalCard">
+            <h3 class="mm-title" id="uberModalTitle" data-i18n="uber.title">Rendimentos Uber</h3>
+            <p class="mm-subtitle-date" id="uberModalDate"></p>
+            <div class="mm-value-form">
+                <div class="mm-value-input-wrap">
+                    <span class="mm-value-prefix">€</span>
+                    <input type="text" inputmode="decimal" class="mm-value-input" id="uberValorInput" placeholder="0.00" data-i18n-aria="uber.valorAria" aria-label="Valor recebido na Uber">
+                </div>
+                <button type="button" class="mm-save-btn" id="uberSalvarBtn" data-i18n="app.save">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="mm-backdrop" id="boltModalBackdrop">
+        <div class="mm-card" role="dialog" aria-modal="true" aria-labelledby="boltModalTitle" id="boltModalCard">
+            <h3 class="mm-title" id="boltModalTitle" data-i18n="bolt.title">Rendimentos Bolt</h3>
+            <p class="mm-subtitle-date" id="boltModalDate"></p>
+            <div class="mm-value-form">
+                <div class="mm-value-input-wrap">
+                    <span class="mm-value-prefix">€</span>
+                    <input type="text" inputmode="decimal" class="mm-value-input" id="boltValorInput" placeholder="0.00" data-i18n-aria="bolt.valorAria" aria-label="Valor recebido na Bolt">
+                </div>
+                <button type="button" class="mm-save-btn" id="boltSalvarBtn" data-i18n="app.save">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="mm-backdrop" id="despesasSemanaModalBackdrop">
+        <div class="mm-card" role="dialog" aria-modal="true" aria-labelledby="despesasSemanaModalTitle" id="despesasSemanaModalCard">
+            <h3 class="mm-title" id="despesasSemanaModalTitle" data-i18n="dia.title">Despesas do dia</h3>
+            <p class="mm-subtitle-date" id="despesasSemanaModalDate"></p>
+            <p class="mm-helper-text" data-i18n="dia.helper">Insira quantas despesas quiser.</p>
+            <div class="mm-value-form">
+                <input type="text" class="mm-desc-input" id="despesasSemanaDescInput" data-i18n-ph="dia.descPh" placeholder="DESCRIÇÃO" data-i18n-aria="dia.descAria" aria-label="Descrição da despesa">
+                <div class="mm-value-input-wrap">
+                    <span class="mm-value-prefix">€</span>
+                    <input type="text" inputmode="decimal" class="mm-value-input" id="despesasSemanaValorInput" placeholder="0.00" data-i18n-aria="dia.valorAria" aria-label="Valor gasto em despesas">
+                </div>
+                <button type="button" class="mm-save-btn" id="despesasSemanaSalvarBtn" data-i18n="app.save">Salvar</button>
+            </div>
+
+            <div id="despesaFixaLembreteEl"></div>
+
+            <h4 class="despesa-list-title" data-i18n="dia.listTitle">Despesas do dia</h4>
+            <div class="despesa-list" id="despesasDiariasListEl"></div>
+
+            <div class="mm-secondary-action">
+                <button type="button" class="mm-text-link" id="btnCadastrarDespesasFixas" data-i18n="dia.cadastrarFixas">Cadastrar despesas fixas</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="mm-backdrop" id="despesaDiariaConfirmBackdrop" data-mm-nested="true">
+        <div class="mm-card" role="dialog" aria-modal="true" aria-labelledby="despesaDiariaConfirmTitle" id="despesaDiariaConfirmCard">
+            <h3 class="mm-title" id="despesaDiariaConfirmTitle" data-i18n="fixas.confirmTitle">Excluir despesa</h3>
+            <p class="despesa-confirm-text" id="despesaDiariaConfirmText" data-i18n="fixas.confirmText">Tem certeza que deseja excluir esta despesa?</p>
+            <div class="despesa-confirm-actions">
+                <button type="button" class="despesa-confirm-cancel" id="despesaDiariaConfirmCancelBtn" data-i18n="app.cancel">Cancelar</button>
+                <button type="button" class="despesa-confirm-delete" id="despesaDiariaConfirmDeleteBtn" data-i18n="app.delete">Excluir</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="mm-backdrop" id="distanciaModalBackdrop">
+        <div class="mm-card" role="dialog" aria-modal="true" aria-labelledby="distanciaModalTitle" id="distanciaModalCard">
+            <h3 class="mm-title" id="distanciaModalTitle" data-i18n="dist.title">Quilometros Percorridos:</h3>
+            <p class="mm-subtitle-date" id="distanciaModalDate"></p>
+
+            <div class="distancia-mode-row">
+                <button type="button" class="distancia-mode-btn active" id="distanciaModoTotalBtn" data-modo="total" aria-pressed="true" data-i18n="dist.modoTotal">Km Total</button>
+                <button type="button" class="distancia-mode-btn" id="distanciaModoInicioFimBtn" data-modo="inicio-fim" aria-pressed="false" data-i18n="dist.modoInicioFim">Início e Fim</button>
+            </div>
+            <p class="mm-helper-text" id="distanciaModoHelperText">Insira os quilômetros percorridos durante o dia, apenas o valor total.</p>
+
+            <div class="mm-value-form" id="distanciaTotalForm">
+                <div class="mm-value-input-wrap">
+                    <input type="text" inputmode="numeric" class="mm-value-input" id="distanciaValorInput" placeholder="0" maxlength="4" data-i18n-aria="dist.valorAria" aria-label="Distância percorrida em quilómetros">
+                </div>
+            </div>
+
+            <div class="distancia-inicio-fim-form" id="distanciaInicioFimForm" hidden>
+                <div class="distancia-km-row" id="distanciaKmInicioRow">
+                    <span class="distancia-km-row-label" data-i18n="dist.kmInicio">Km Início:</span>
+                    <div class="mm-value-input-wrap distancia-km-input-wrap">
+                        <input type="text" inputmode="numeric" class="mm-value-input" id="distanciaKmInicioInput" placeholder="0" maxlength="6" data-i18n-aria="dist.kmInicioAria" aria-label="Km inicial">
+                    </div>
+                    <button type="button" class="distancia-km-update-btn" id="distanciaKmInicioUpdateBtn" data-i18n-aria="dist.kmInicioUpdAria" aria-label="Atualizar km início">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="distancia-km-row is-locked" id="distanciaKmFimRow">
+                    <span class="distancia-km-row-label" data-i18n="dist.kmFim">Km Fim</span>
+                    <div class="mm-value-input-wrap distancia-km-input-wrap">
+                        <input type="text" inputmode="numeric" class="mm-value-input" id="distanciaKmFimInput" placeholder="0" maxlength="6" data-i18n-aria="dist.kmFimAria" aria-label="Km final" disabled>
+                    </div>
+                    <button type="button" class="distancia-km-update-btn" id="distanciaKmFimUpdateBtn" data-i18n-aria="dist.kmFimUpdAria" aria-label="Atualizar km fim" disabled>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                    </button>
+                </div>
+                <p class="distancia-status-text" id="distanciaStatusText">Insira Km Início</p>
+            </div>
+
+            <button type="button" class="mm-save-btn" id="distanciaSalvarBtn" data-i18n="app.save">Salvar</button>
+        </div>
+    </div>
+
+    <div class="mm-backdrop" id="metaSemanalModalBackdrop">
+        <div class="mm-card" role="dialog" aria-modal="true" aria-labelledby="metaSemanalModalTitle" id="metaSemanalModalCard">
+            <h3 class="mm-title" id="metaSemanalModalTitle" data-i18n="meta.title">Meta Semanal</h3>
+
+            <p class="meta-semanal-welcome" id="metaSemanalWelcomeText" data-i18n="meta.welcome">Defina sua meta de ganhos da semana. Pode alterar quando quiser.</p>
+
+            <div class="meta-semanal-row">
+                <div class="mm-value-input-wrap meta-semanal-input-wrap">
+                    <span class="mm-value-prefix">€</span>
+                    <input type="text" inputmode="decimal" class="mm-value-input" id="metaSemanalValorInput" placeholder="0.00" data-i18n-aria="meta.valorAria" aria-label="Valor da meta semanal">
+                </div>
+                <button type="button" class="meta-tipo-btn active" id="metaTipoBrutoBtn" data-tipo="bruto" aria-pressed="true" data-i18n="meta.bruto">Bruto</button>
+                <button type="button" class="meta-tipo-btn" id="metaTipoLiquidoBtn" data-tipo="liquido" aria-pressed="false" data-i18n="meta.liquido">Líquido</button>
+            </div>
+
+            <div class="meta-semanal-row-compact">
+                <span class="meta-semanal-row-compact-label" data-i18n="meta.atual">Meta atual</span>
+                <span class="meta-semanal-row-compact-value" id="metaSemanalCurrentText" data-i18n="meta.nenhuma">Nenhuma</span>
+            </div>
+
+            <div class="meta-fixas-section" id="metaFixasSection" hidden>
+                <p class="meta-fixas-question" data-i18n="meta.fixasQuestion">Manter as mesmas despesas fixas da semana passada?</p>
+                <div class="meta-fixas-list" id="metaFixasListEl"></div>
+                <p class="meta-fixas-empty" id="metaFixasEmptyEl" data-i18n="meta.fixasEmpty" hidden>Nenhuma despesa fixa cadastrada. Para usar esta opção, cadastre em Ajustes &rsaquo; Despesas Fixas.</p>
+                <div class="meta-fixas-row">
+                    <button type="button" class="meta-tipo-btn active" id="metaFixasManterBtn" data-fixas="manter" aria-pressed="true" data-i18n="meta.fixasManter">Manter</button>
+                    <button type="button" class="meta-tipo-btn" id="metaFixasPularBtn" data-fixas="pular" aria-pressed="false" data-i18n="meta.fixasZerar">Zerar Despesas</button>
+                </div>
+                <p class="mm-helper-text" data-i18n="meta.podeAlterar">Pode alterar quando quiser.</p>
+            </div>
+
+            <button type="button" class="mm-save-btn" id="metaSemanalSalvarBtn" data-i18n="app.save">Salvar</button>
+
+            <div class="mm-secondary-action">
+                <button type="button" class="mm-zerar-link" id="btnZerarMetaSemanal">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M16.5 3.5l4 4-10 10H6l-3-3z"/>
+                        <path d="M10.5 20.5h10"/>
+                        <path d="M8.5 13.5l4 4"/>
+                    </svg>
+                    <span data-i18n="meta.zerar">Zerar</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="mm-backdrop" id="metaSemanalHistModalBackdrop">
+        <div class="mm-card" role="dialog" aria-modal="true" aria-labelledby="metaSemanalHistModalTitle" id="metaSemanalHistModalCard">
+            <h3 class="mm-title" id="metaSemanalHistModalTitle" data-i18n="meta.title">Meta Semanal</h3>
+            <p class="meta-semanal-hist-period" id="metaSemanalHistPeriodText"></p>
+            <div class="meta-semanal-hist-body" id="metaSemanalHistBody"></div>
+            <button type="button" class="mm-save-btn" id="metaSemanalHistFecharBtn" data-i18n="app.close">Fechar</button>
+        </div>
+    </div>
+
+
+</div>
+
+
+<div class="mm-backdrop" id="tutorialStartBackdrop">
+    <div class="mm-card" role="dialog" aria-modal="true" aria-labelledby="tutorialStartTitle" id="tutorialStartCard">
+        <h3 class="mm-title" id="tutorialStartTitle" data-i18n="tut.popup.title">Tutorial</h3>
+        <p class="mm-helper-text" data-i18n="tut.popup.text">Quer ver uma visita guiada pela aplicação? Leva menos de um minuto e pode sair quando quiser.</p>
+        <button type="button" class="mm-save-btn" id="tutorialStartBtn" data-i18n="tut.popup.start">Iniciar</button>
+        <div class="mm-secondary-action">
+            <button type="button" class="mm-text-link" id="tutorialLaterBtn" data-i18n="tut.popup.later">Agora não</button>
+        </div>
+    </div>
+</div>
+
+<div class="tut-overlay" id="tutorialOverlay" hidden>
+    <div class="tut-spot" id="tutorialSpot"></div>
+    <div class="tut-balloon" id="tutorialBalloon" role="dialog" aria-modal="true" aria-live="polite">
+        <span class="tut-arrow" id="tutorialArrow" aria-hidden="true"></span>
+        <button type="button" class="tut-close" id="tutorialCloseBtn" data-i18n-aria="tut.closeAria" aria-label="Fechar tutorial">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+        </button>
+        <p class="tut-title" id="tutorialTitle"></p>
+        <p class="tut-text" id="tutorialText"></p>
+        <div class="tut-actions">
+            <button type="button" class="tut-btn tut-btn-ghost" id="tutorialBackBtn"></button>
+            <span class="tut-counter" id="tutorialCounter"></span>
+            <button type="button" class="tut-btn tut-btn-primary" id="tutorialNextBtn"></button>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

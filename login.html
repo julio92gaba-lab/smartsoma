@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>SmartSoma — Entrar</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: #0B141F;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .login-card {
+            background: #1C2B3A;
+            border-radius: 20px;
+            padding: 40px 32px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        }
+
+        .login-logo {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .login-logo img {
+            height: 40px;
+            object-fit: contain;
+        }
+
+        .login-title {
+            color: #F3F8FA;
+            font-size: 22px;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .login-sub {
+            color: #8FA6B8;
+            font-size: 14px;
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #8FA6B8;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .form-group input {
+            width: 100%;
+            background: #0B141F;
+            border: 1.5px solid rgba(143,166,184,0.2);
+            border-radius: 12px;
+            padding: 14px 16px;
+            color: #F3F8FA;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus {
+            border-color: #1e9e5a;
+        }
+
+        .btn-primary {
+            width: 100%;
+            background: #1e9e5a;
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: background 0.2s;
+        }
+
+        .btn-primary:hover { background: #29b568; }
+        .btn-primary:disabled { background: #2F455C; cursor: not-allowed; }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(143,166,184,0.15);
+        }
+
+        .divider span {
+            color: #8FA6B8;
+            font-size: 13px;
+        }
+
+        .btn-google {
+            width: 100%;
+            background: transparent;
+            color: #F3F8FA;
+            border: 1.5px solid rgba(143,166,184,0.25);
+            border-radius: 12px;
+            padding: 14px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .btn-google:hover {
+            background: rgba(255,255,255,0.05);
+            border-color: rgba(143,166,184,0.5);
+        }
+
+        .btn-google svg { width: 20px; height: 20px; }
+
+        .toggle-mode {
+            text-align: center;
+            margin-top: 24px;
+            color: #8FA6B8;
+            font-size: 14px;
+        }
+
+        .toggle-mode button {
+            background: none;
+            border: none;
+            color: #1e9e5a;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .error-msg {
+            background: rgba(228,87,76,0.15);
+            border: 1px solid rgba(228,87,76,0.3);
+            color: #E4574C;
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 14px;
+            margin-bottom: 16px;
+            display: none;
+        }
+
+        .error-msg.visible { display: block; }
+
+        .forgot-link {
+            text-align: right;
+            margin-top: -8px;
+            margin-bottom: 16px;
+        }
+
+        .forgot-link button {
+            background: none;
+            border: none;
+            color: #8FA6B8;
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .success-msg {
+            background: rgba(30,158,90,0.15);
+            border: 1px solid rgba(30,158,90,0.3);
+            color: #1e9e5a;
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 14px;
+            margin-bottom: 16px;
+            display: none;
+        }
+
+        .success-msg.visible { display: block; }
+    </style>
+</head>
+<body>
+
+<div class="login-card">
+    <div class="login-logo">
+        <img src="logo-home.png" alt="SmartSoma">
+    </div>
+
+    <h1 class="login-title" id="loginTitle">Bem-vindo de volta</h1>
+    <p class="login-sub" id="loginSub">Entra na tua conta SmartSoma</p>
+
+    <div class="error-msg" id="errorMsg"></div>
+    <div class="success-msg" id="successMsg"></div>
+
+    <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="inputEmail" placeholder="o.teu@email.com" autocomplete="email">
+    </div>
+
+    <div class="form-group" id="passwordGroup">
+        <label>Palavra-passe</label>
+        <input type="password" id="inputPassword" placeholder="••••••••" autocomplete="current-password">
+    </div>
+
+    <div class="forgot-link" id="forgotLink">
+        <button type="button" id="btnForgot">Esqueci a palavra-passe</button>
+    </div>
+
+    <button class="btn-primary" id="btnMain">Entrar</button>
+
+    <div class="divider"><span>ou</span></div>
+
+    <button class="btn-google" id="btnGoogle">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+        </svg>
+        Continuar com Google
+    </button>
+
+    <div class="toggle-mode">
+        <span id="toggleText">Não tens conta?</span>
+        <button type="button" id="btnToggleMode">Registar</button>
+    </div>
+</div>
+
+<script>
+    // ── Supabase ──────────────────────────────────────────────────────
+    const SUPABASE_URL = 'https://ojhnierbhqrwxvabrzkt.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9qaG5pZXJiaHFyd3h2YWJyemt0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk4NTAxODAsImV4cCI6MjEwNTQyNjE4MH0.zXsVvTVKiEh_Y6t9xpnaPC-JXgPwCKCOqA_sPgNbPoE';
+    const { createClient } = supabase;
+    const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    // ── Estado ────────────────────────────────────────────────────────
+    let modo = 'login'; // 'login' | 'registro' | 'recuperar'
+
+    // ── Elementos ─────────────────────────────────────────────────────
+    const loginTitle    = document.getElementById('loginTitle');
+    const loginSub      = document.getElementById('loginSub');
+    const inputEmail    = document.getElementById('inputEmail');
+    const inputPassword = document.getElementById('inputPassword');
+    const passwordGroup = document.getElementById('passwordGroup');
+    const forgotLink    = document.getElementById('forgotLink');
+    const btnMain       = document.getElementById('btnMain');
+    const btnGoogle     = document.getElementById('btnGoogle');
+    const btnToggle     = document.getElementById('btnToggleMode');
+    const toggleText    = document.getElementById('toggleText');
+    const errorMsg      = document.getElementById('errorMsg');
+    const successMsg    = document.getElementById('successMsg');
+
+    // ── Verificar se já está autenticado ──────────────────────────────
+    sb.auth.getSession().then(({ data }) => {
+        if (data.session) window.location.href = 'app.html';
+    });
+
+    // ── Mostrar mensagens ─────────────────────────────────────────────
+    function showError(msg) {
+        errorMsg.textContent = msg;
+        errorMsg.classList.add('visible');
+        successMsg.classList.remove('visible');
+    }
+
+    function showSuccess(msg) {
+        successMsg.textContent = msg;
+        successMsg.classList.add('visible');
+        errorMsg.classList.remove('visible');
+    }
+
+    function clearMsgs() {
+        errorMsg.classList.remove('visible');
+        successMsg.classList.remove('visible');
+    }
+
+    // ── Mudar modo ────────────────────────────────────────────────────
+    function setModo(novoModo) {
+        modo = novoModo;
+        clearMsgs();
+        if (modo === 'login') {
+            loginTitle.textContent = 'Bem-vindo de volta';
+            loginSub.textContent = 'Entra na tua conta SmartSoma';
+            btnMain.textContent = 'Entrar';
+            toggleText.textContent = 'Não tens conta?';
+            btnToggle.textContent = 'Registar';
+            passwordGroup.style.display = '';
+            forgotLink.style.display = '';
+        } else if (modo === 'registro') {
+            loginTitle.textContent = 'Criar conta';
+            loginSub.textContent = 'É grátis, sem cartão necessário';
+            btnMain.textContent = 'Criar conta';
+            toggleText.textContent = 'Já tens conta?';
+            btnToggle.textContent = 'Entrar';
+            passwordGroup.style.display = '';
+            forgotLink.style.display = 'none';
+        } else if (modo === 'recuperar') {
+            loginTitle.textContent = 'Recuperar palavra-passe';
+            loginSub.textContent = 'Enviamos um link para o teu email';
+            btnMain.textContent = 'Enviar link';
+            passwordGroup.style.display = 'none';
+            forgotLink.style.display = 'none';
+        }
+    }
+
+    // ── Botão principal ───────────────────────────────────────────────
+    btnMain.addEventListener('click', async () => {
+        clearMsgs();
+        const email = inputEmail.value.trim();
+        const password = inputPassword.value;
+
+        if (!email) return showError('Introduz o teu email.');
+
+        btnMain.disabled = true;
+        btnMain.textContent = 'A carregar...';
+
+        try {
+            if (modo === 'login') {
+                if (!password) { showError('Introduz a palavra-passe.'); return; }
+                const { error } = await sb.auth.signInWithPassword({ email, password });
+                if (error) throw error;
+                window.location.href = 'app.html';
+
+            } else if (modo === 'registro') {
+                if (!password || password.length < 6) {
+                    showError('A palavra-passe deve ter pelo menos 6 caracteres.');
+                    return;
+                }
+                const { error } = await sb.auth.signUp({ email, password });
+                if (error) throw error;
+                showSuccess('Conta criada! Verifica o teu email para confirmar.');
+
+            } else if (modo === 'recuperar') {
+                const { error } = await sb.auth.resetPasswordForEmail(email, {
+                    redirectTo: window.location.origin + '/login.html'
+                });
+                if (error) throw error;
+                showSuccess('Link enviado! Verifica o teu email.');
+            }
+        } catch (err) {
+            const msgs = {
+                'Invalid login credentials': 'Email ou palavra-passe incorrectos.',
+                'Email not confirmed': 'Confirma o teu email antes de entrar.',
+                'User already registered': 'Este email já tem conta. Entra em vez de registar.',
+                'Password should be at least 6 characters': 'A palavra-passe deve ter pelo menos 6 caracteres.',
+            };
+            showError(msgs[err.message] || 'Algo correu mal. Tenta novamente.');
+        } finally {
+            btnMain.disabled = false;
+            setModo(modo);
+        }
+    });
+
+    // ── Google ────────────────────────────────────────────────────────
+    btnGoogle.addEventListener('click', async () => {
+        await sb.auth.signInWithOAuth({
+            provider: 'google',
+            options: { redirectTo: window.location.origin + '/app.html' }
+        });
+    });
+
+    // ── Alternar modo ─────────────────────────────────────────────────
+    btnToggle.addEventListener('click', () => {
+        setModo(modo === 'login' ? 'registro' : 'login');
+    });
+
+    // ── Recuperar palavra-passe ───────────────────────────────────────
+    document.getElementById('btnForgot').addEventListener('click', () => {
+        setModo('recuperar');
+    });
+
+    // ── Enter para submeter ───────────────────────────────────────────
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') btnMain.click();
+    });
+</script>
+
+</body>
+</html>
