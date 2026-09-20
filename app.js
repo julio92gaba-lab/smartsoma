@@ -34,47 +34,62 @@ document.addEventListener('DOMContentLoaded', async function() {
             window.location.href = 'login.html';
         });
     }
+
+    // Sessão pronta — liberta todas as chamadas cloud que estavam à espera
+    _markSessionReady();
 });
-// =====================================================================
-// Camada de dados na nuvem (Supabase) — TODO: Supabase
-// Estas funções substituem o antigo uso de localStorage para dados do
-// utilizador (ganhos, despesas, metas, perfil, badges, etc.). Por agora
-// são placeholders que apenas registam a operação na consola; quando a
-// integração com Supabase for feita, cada uma deve ler/escrever na base
-// de dados na nuvem (associada ao utilizador autenticado) em vez disto.
-// Nota: como ainda não persistem nada, os dados destas categorias não
-// sobrevivem a um recarregar da página — isso só ficará resolvido
-// quando o Supabase for ligado. O tema (claro/escuro) e o idioma
-// continuam a usar localStorage diretamente, pois são preferências
-// puramente locais ao dispositivo.
-// =====================================================================
-// ── Dados na nuvem (Supabase) — TODO: implementar ─────────────────────
+// ── Dados na nuvem (Supabase) ─────────────────────────────────────────
+// Garante que a sessão está pronta antes de qualquer pedido à BD
+let _sessionReady = false;
+let _sessionResolvers = [];
+
+function _markSessionReady() {
+    _sessionReady = true;
+    _sessionResolvers.forEach(fn => fn());
+    _sessionResolvers = [];
+}
+
+function _waitForSession() {
+    if (_sessionReady) return Promise.resolve();
+    return new Promise(resolve => _sessionResolvers.push(resolve));
+}
+
 async function cloudGet(key) {
+    await _waitForSession();
     if (!window.currentUser) return null;
-    const { data } = await sb.from('user_data')
-        .select('value')
-        .eq('user_id', window.currentUser.id)
-        .eq('key', key)
-        .single();
-    return data ? JSON.parse(data.value) : null;
+    try {
+        const { data, error } = await sb.from('user_data')
+            .select('value')
+            .eq('user_id', window.currentUser.id)
+            .eq('key', key)
+            .single();
+        if (error || !data) return null;
+        return JSON.parse(data.value);
+    } catch (e) { return null; }
 }
 
 async function cloudSet(key, value) {
+    await _waitForSession();
     if (!window.currentUser) return;
-    await sb.from('user_data')
-        .upsert({
-            user_id: window.currentUser.id,
-            key: key,
-            value: JSON.stringify(value)
-        }, { onConflict: 'user_id,key' });
+    try {
+        await sb.from('user_data')
+            .upsert({
+                user_id: window.currentUser.id,
+                key: key,
+                value: JSON.stringify(value)
+            }, { onConflict: 'user_id,key' });
+    } catch (e) { }
 }
 
 async function cloudRemove(key) {
+    await _waitForSession();
     if (!window.currentUser) return;
-    await sb.from('user_data')
-        .delete()
-        .eq('user_id', window.currentUser.id)
-        .eq('key', key);
+    try {
+        await sb.from('user_data')
+            .delete()
+            .eq('user_id', window.currentUser.id)
+            .eq('key', key);
+    } catch (e) { }
 }
 
 
