@@ -1,6 +1,6 @@
 /* ===================================================================
-       i18n — sistema de idiomas da aplicação (Português / English /
-       Español). O dicionário abaixo guarda TODOS os textos da app; os
+       i18n — sistema de idiomas da aplicação (Português /
+       English). O dicionário abaixo guarda TODOS os textos da app; os
        elementos estáticos do HTML são marcados com data-i18n (texto),
        data-i18n-html (bloco HTML), data-i18n-ph (placeholder),
        data-i18n-aria (aria-label) e data-i18n-alt (alt). Os textos
@@ -125,7 +125,6 @@
 "sub.ganhosEm": "Ganhos em..",
 "sub.resumo": "Resumo Financeiro",
 "sub.semana": "Detalhes da Semana",
-"sub.termos": "Termos e Privacidade",
 "sub.relatorio": "Download Relatório",
 "sub.backAria": "Voltar para Ganhos",
 "sub.viewListAria": "Ver em lista",
@@ -202,8 +201,8 @@
 "sheet.idioma": "Idioma",
 "sheet.tutorial": "Tutorial",
 "sheet.ajuda": "Ajuda",
-"sheet.termos": "Termos de Utilização",
-"sheet.privacidade": "Política de Privacidade",
+"sheet.termosPrivacidade": "Termos e Privacidade",
+"sheet.sair": "Sair",
 "idioma.title": "Idioma",
 "idioma.intro": "Escolha o idioma da aplicação. Todos os textos serão apresentados no idioma selecionado.",
 "idioma.save": "Salvar",
@@ -311,8 +310,6 @@
 "meta.histGanho": "Ganho no período:",
 "meta.histAcima": "Você ultrapassou a meta, atingindo {p}% dela.",
 "meta.histAbaixo": "Você atingiu {p}% da meta até então.",
-"legal.termos.title": "Termos de Utilização",
-"legal.privacidade.title": "Política de Privacidade",
 "tut.popup.title": "Tutorial",
 "tut.popup.text": "Quer ver uma visita guiada pela aplicação? Leva menos de um minuto e pode sair quando quiser.",
 "tut.popup.start": "Iniciar",
@@ -349,9 +346,7 @@
 "tut.s13.title": "Idioma, tutorial e ajuda",
 "tut.s13.text": "Aqui muda o idioma da aplicação, volta a ver este tutorial quando quiser, ou fala connosco através da Ajuda.",
 "tut.s14.title": "Tema e relatórios",
-"tut.s14.text": "Este botão alterna entre tema claro e escuro. No menu de páginas encontra ainda o Download do Relatório em PDF. Bom trabalho!",
-"legal.termos.html": "<h2 class=\"legal-title\">Termos de Utilização</h2>\n\n<p>Conteúdo disponível brevemente.</p>",
-"legal.privacidade.html": "<h2 class=\"legal-title\">Política de Privacidade</h2>\n\n<p>Conteúdo disponível brevemente.</p>"
+"tut.s14.text": "Este botão alterna entre tema claro e escuro. No menu de páginas encontra ainda o Download do Relatório em PDF. Bom trabalho!"
 },
 "en": {
 "lang.code": "en",
@@ -464,7 +459,6 @@
 "sub.ganhosEm": "Earnings on..",
 "sub.resumo": "Financial Summary",
 "sub.semana": "Week Details",
-"sub.termos": "Terms and Privacy",
 "sub.relatorio": "Download Report",
 "sub.backAria": "Back to Earnings",
 "sub.viewListAria": "List view",
@@ -541,8 +535,8 @@
 "sheet.idioma": "Language",
 "sheet.tutorial": "Tutorial",
 "sheet.ajuda": "Help",
-"sheet.termos": "Terms of Use",
-"sheet.privacidade": "Privacy Policy",
+"sheet.termosPrivacidade": "Terms and Privacy",
+"sheet.sair": "Log out",
 "idioma.title": "Language",
 "idioma.intro": "Choose the app language. All texts will be shown in the selected language.",
 "idioma.save": "Save",
@@ -650,8 +644,6 @@
 "meta.histGanho": "Earned in the period:",
 "meta.histAcima": "You went past the goal, reaching {p}% of it.",
 "meta.histAbaixo": "You reached {p}% of the goal so far.",
-"legal.termos.title": "Terms of Use",
-"legal.privacidade.title": "Privacy Policy",
 "tut.popup.title": "Tutorial",
 "tut.popup.text": "Would you like a guided tour of the app? It takes less than a minute and you can leave whenever you want.",
 "tut.popup.start": "Start",
@@ -688,354 +680,13 @@
 "tut.s13.title": "Language, tutorial and help",
 "tut.s13.text": "Here you can change the app language, replay this tutorial whenever you like, or reach us through Help.",
 "tut.s14.title": "Theme and reports",
-"tut.s14.text": "This button switches between light and dark theme. In the page menu you will also find the PDF report download. Nice work!",
-"legal.termos.html": "<h2 class=\"legal-title\">Terms of Use</h2>\n\n<p>Content coming soon.</p>",
-"legal.privacidade.html": "<h2 class=\"legal-title\">Privacy Policy</h2>\n\n<p>Content coming soon.</p>"
-},
-"es": {
-"lang.code": "es",
-"lang.name": "Español",
-"months.full": [
-"Enero",
-"Febrero",
-"Marzo",
-"Abril",
-"Mayo",
-"Junio",
-"Julio",
-"Agosto",
-"Septiembre",
-"Octubre",
-"Noviembre",
-"Diciembre"
-],
-"months.lower": [
-"enero",
-"febrero",
-"marzo",
-"abril",
-"mayo",
-"junio",
-"julio",
-"agosto",
-"septiembre",
-"octubre",
-"noviembre",
-"diciembre"
-],
-"months.abbr": [
-"ene",
-"feb",
-"mar",
-"abr",
-"may",
-"jun",
-"jul",
-"ago",
-"sep",
-"oct",
-"nov",
-"dic"
-],
-"months.abbrCap": [
-"Ene",
-"Feb",
-"Mar",
-"Abr",
-"May",
-"Jun",
-"Jul",
-"Ago",
-"Sep",
-"Oct",
-"Nov",
-"Dic"
-],
-"weekday.abbr": [
-"Lun",
-"Mar",
-"Mié",
-"Jue",
-"Vie",
-"Sáb",
-"Dom"
-],
-"weekday.full": [
-"Lunes",
-"Martes",
-"Miércoles",
-"Jueves",
-"Viernes",
-"Sábado",
-"Domingo"
-],
-"weekday.letters": [
-"L",
-"M",
-"X",
-"J",
-"V",
-"S",
-"D"
-],
-"fmt.dayMonth": "{d} de {m}",
-"fmt.monthYear": "{m} de {y}",
-"fmt.rangeSameMonth": "{d1} a {d2} de {m}",
-"fmt.rangeCrossMonth": "{d1} de {m1} a {d2} de {m2}",
-"fmt.rangeSameMonthDot": "{d1} a {d2} de {m}.",
-"fmt.rangeCrossMonthDot": "{d1} de {m1}. a {d2} de {m2}.",
-"fmt.rangeCrossMonthDot2": "{d1} de {m1}. a {d2} de {m2}.",
-"fmt.rangeFullSameMonth": "{d1} a {d2} de {m} de {y}",
-"fmt.rangeFullCrossMonth": "{d1} de {m1} a {d2} de {m2} de {y}",
-"fmt.compactSameMonth": "{d1}–{d2} {m}",
-"fmt.dpDate": "{d} {m} de {y}",
-"fmt.todayIs": "Hoy: {d} de {m}",
-"app.save": "Guardar",
-"app.cancel": "Cancelar",
-"app.delete": "Eliminar",
-"app.close": "Cerrar",
-"app.back": "Volver",
-"app.today": "Hoy",
-"header.menuAria": "Abrir menú principal",
-"header.themeAria": "Cambiar entre tema claro y oscuro",
-"header.logoAria": "Desplazarse al inicio de la página",
-"header.slogan": "Para Repartidores y Conductores VTC.",
-"sub.ganhosEm": "Ingresos del..",
-"sub.resumo": "Resumen Financiero",
-"sub.semana": "Detalles de la Semana",
-"sub.termos": "Términos y Privacidad",
-"sub.relatorio": "Descargar Informe",
-"sub.backAria": "Volver a Ingresos",
-"sub.viewListAria": "Ver en lista",
-"sub.viewTableAria": "Ver en tabla",
-"ganhos.registroDoDia": "Registro del día",
-"ganhos.hint": "Introduce aquí tus ingresos y gastos.",
-"ganhos.uber": "Ingresos Uber",
-"ganhos.bolt": "Ingresos Bolt",
-"ganhos.despesas": "Gastos",
-"ganhos.despesasSub": "Los gastos fijos se cargan el lunes.",
-"ganhos.distancia": "Distancia",
-"ganhos.distanciaAria": "Distancia recorrida",
-"ganhos.distanciaSub": "Elige entre 'inicio y fin' o 'km total'.",
-"ganhos.verResumo": "Ver mi resumen",
-"ganhos.registrar": "Registrar ingresos",
-"resumo.dia": "Día",
-"resumo.semana": "Semana",
-"resumo.mes": "Mes",
-"resumo.prevAria": "Período anterior",
-"resumo.nextAria": "Período siguiente",
-"resumo.liquido": "Neto",
-"resumo.bruto": "Bruto",
-"resumo.despesas": "Gastos",
-"resumo.distancia": "Distancia",
-"resumo.metaSemanal": "Meta Semanal",
-"resumo.metaExemplo": "200 euros brutos",
-"resumo.percentConcluida": "{p}% completada",
-"resumo.definir": "Definir ➚",
-"semana.prevMesAria": "Mes anterior",
-"semana.nextMesAria": "Mes siguiente",
-"semana.th.data": "Fecha",
-"semana.th.uber": "Uber",
-"semana.th.bolt": "Bolt",
-"semana.th.despesas": "Gastos",
-"semana.th.km": "Km",
-"semana.th.total": "Total",
-"semana.th.liquido": "Neto",
-"semana.weekNum": "SEMANA {n}",
-"semana.ganhosDoDia": "Ingresos del día",
-"semana.liquido": "Neto",
-"semana.verDespesas": "ver gastos",
-"semana.verGanhos": "Ingresos",
-"semana.scrollUpAria": "Ver gastos anteriores",
-"semana.scrollDownAria": "Ver más gastos",
-"semana.tileGanhos": "Ingresos",
-"semana.tileDespesas": "Gastos",
-"semana.tileDistancia": "Distancia",
-"semana.totalLiquido": "Total neto de la semana",
-"semana.despesasTitle": "Gastos de la semana",
-"semana.dth.dia": "Día",
-"semana.dth.valor": "Importe",
-"semana.dth.desc": "Descripción",
-"semana.rowUber": "Uber:",
-"semana.rowBolt": "Bolt:",
-"semana.rowDespesas": "Gastos:",
-"semana.rowDistancia": "Distancia:",
-"nav.quickAria": "Abrir menú rápido de páginas",
-"nav.rendimentos": "Ingresos",
-"nav.resumo": "Resumen Financiero",
-"nav.semana": "Detalles de la Semana",
-"nav.relatorio": "Descargar Informe",
-"metacard.label": "Meta semanal",
-"metacard.suffix": " completada",
-"relatorio.title": "Descargar Informe",
-"relatorio.intro": "El informe reúne los detalles diarios del mes elegido, todos juntos en un único PDF. Selecciona el mes deseado en el filtro de abajo.",
-"relatorio.download": "Descargar PDF",
-"relatorio.preview": "IMG EJEMPLO DE PDF",
-"sheet.title": "Ajustes",
-"sheet.ariaLabel": "Perfil y configuración",
-"sheet.defaultUser": "Usuario",
-"sheet.daysZero": "0 días en las Apps.",
-"sheet.perfil": "Perfil y Datos de la Cuenta",
-"sheet.despesasFixas": "Gastos Fijos",
-"sheet.idioma": "Idioma",
-"sheet.tutorial": "Tutorial",
-"sheet.ajuda": "Ayuda",
-"sheet.termos": "Términos de Uso",
-"sheet.privacidade": "Política de Privacidad",
-"idioma.title": "Idioma",
-"idioma.intro": "Elige el idioma de la aplicación. Todos los textos se mostrarán en el idioma seleccionado.",
-"idioma.save": "Guardar",
-"dp.upload": "Subir imagen..",
-"dp.nome": "Nombre",
-"dp.nomePh": "Tu nombre",
-"dp.email": "Correo electrónico",
-"dp.desdeQuando": "¿Desde cuándo trabajas con apps?",
-"dp.selecionarData": "Seleccionar fecha",
-"dp.atualizarDados": "Actualizar Datos Personales",
-"dp.daysOnApps": "{n} días en las Apps.",
-"dp.yearOne": "{n} año",
-"dp.yearMany": "{n} años",
-"dp.monthOne": "{n} mes",
-"dp.monthMany": "{n} meses",
-"dp.join": " y ",
-"dp.onApps": " en las Apps.",
-"ajuda.intro": "¿Necesitas ayuda? Rellena el formulario de abajo y nuestro equipo se pondrá en contacto contigo lo antes posible.",
-"ajuda.nome": "Nombre",
-"ajuda.nomePh": "Tu nombre",
-"ajuda.assunto": "Asunto",
-"ajuda.assuntoPh": "¿Sobre qué es?",
-"ajuda.mensagem": "Mensaje",
-"ajuda.mensagemPh": "Describe tu duda o problema...",
-"ajuda.enviar": "Enviar",
-"wheel.title": "¿Desde cuándo eres conductor?",
-"photo.title": "Cambiar foto de perfil",
-"photo.hint": "Arrastra para colocar y usa el control para hacer zoom.",
-"photo.previewAlt": "Vista previa de la foto",
-"photo.avatarAlt": "Foto de perfil",
-"photo.zoomAria": "Zoom",
-"photo.aplicar": "Aplicar",
-"fixas.title": "Gastos Fijos",
-"fixas.helper": "Gastos que se repiten cada SEMANA (ej.: alquiler del coche, comisión de plataforma). Elige % del importe bruto (actualizado automáticamente a medida que se introducen los ingresos), o un importe fijo en €. Este importe se carga el lunes de cada semana.",
-"fixas.descPh": "DESCRIPCIÓN",
-"fixas.descAria": "Descripción del gasto",
-"fixas.valorAria": "Importe del gasto",
-"fixas.percentAria": "Porcentaje",
-"fixas.euroAria": "Euro",
-"fixas.semanal": "Semanal",
-"fixas.listTitle": "Gastos Registrados",
-"fixas.empty": "Sin gastos por el momento.",
-"fixas.cardSub": "{v} - Semanal (lunes)",
-"fixas.deleteAria": "Eliminar gasto",
-"fixas.confirmTitle": "Eliminar gasto",
-"fixas.confirmText": "¿Seguro que quieres eliminar este gasto?",
-"fixas.confirmNamed": "¿Seguro que quieres eliminar \"{n}\"?",
-"fixas.tagFixa": "Fijo",
-"fixas.tagDia": "Del día",
-"fixas.oncePerWeek": "€{v} (1x por semana)",
-"fixas.percentOfWeek": "€{v} ({p}% del bruto de la semana)",
-"fixas.weeklyShort": "€{v} (semanal)",
-"fixas.sufixoFixa": "{d} (FIJO)",
-"fixas.sufixoFixaPct": "{d} {p}% del Bruto (FIJO)",
-"cal.title": "Seleccionar Fecha",
-"cal.prevAria": "Mes anterior",
-"cal.nextAria": "Mes siguiente",
-"uber.title": "Ingresos Uber",
-"uber.valorAria": "Importe recibido en Uber",
-"bolt.title": "Ingresos Bolt",
-"bolt.valorAria": "Importe recibido en Bolt",
-"dia.title": "Gastos del día",
-"dia.helper": "Introduce todos los gastos que quieras.",
-"dia.descPh": "DESCRIPCIÓN",
-"dia.descAria": "Descripción del gasto",
-"dia.valorAria": "Importe gastado",
-"dia.listTitle": "Gastos del día",
-"dia.cadastrarFixas": "Registrar gastos fijos",
-"dist.title": "Kilómetros Recorridos:",
-"dist.modoTotal": "Km Total",
-"dist.modoInicioFim": "Inicio y Fin",
-"dist.helperTotal": "Introduce los kilómetros recorridos durante el día, solo el valor total.",
-"dist.helperInicioFim": "Introduce los km iniciales de tu vehículo y vuelve al terminar el día para introducir los km finales; nosotros hacemos las cuentas.",
-"dist.valorAria": "Distancia recorrida en kilómetros",
-"dist.kmInicio": "Km Inicio:",
-"dist.kmFim": "Km Fin",
-"dist.kmInicioAria": "Km inicial",
-"dist.kmFimAria": "Km final",
-"dist.kmInicioUpdAria": "Actualizar km inicio",
-"dist.kmFimUpdAria": "Actualizar km fin",
-"dist.insiraInicio": "Introduce Km Inicio",
-"dist.insiraFim": "Introduce Km Fin",
-"dist.percorridos": "{v} km recorridos",
-"meta.title": "Meta Semanal",
-"meta.welcome": "Define tu meta de ingresos de la semana. Puedes cambiarla cuando quieras.",
-"meta.welcomeKept": "¡Nueva semana! Hemos mantenido tu meta anterior ({v}€ {t}). Puedes cambiarla cuando quieras.",
-"meta.valorAria": "Importe de la meta semanal",
-"meta.bruto": "Bruto",
-"meta.liquido": "Neto",
-"meta.brutos": "Brutos",
-"meta.liquidos": "Netos",
-"meta.atual": "Meta actual",
-"meta.nenhuma": "Ninguna",
-"meta.current": "{v}€ {t} / {p}%",
-"meta.fixasQuestion": "¿Mantener los mismos gastos fijos de la semana pasada?",
-"meta.fixasEmpty": "No hay gastos fijos registrados. Para usar esta opción, regístralos en Ajustes › Gastos Fijos.",
-"meta.fixasManter": "Mantener",
-"meta.fixasZerar": "Poner Gastos a Cero",
-"meta.podeAlterar": "Puedes cambiarlo cuando quieras.",
-"meta.zerar": "Poner a Cero",
-"meta.fixasLinhaEuro": "{v} Eur",
-"meta.fixasLinhaPct": "{v}% del importe bruto",
-"meta.histNaoDefinida": "No se definió una meta para esta semana.",
-"meta.histDefinida": "Meta definida:",
-"meta.histGanho": "Ingresos del período:",
-"meta.histAcima": "Has superado la meta, alcanzando el {p}% de ella.",
-"meta.histAbaixo": "Has alcanzado el {p}% de la meta hasta ahora.",
-"legal.termos.title": "Términos de Uso",
-"legal.privacidade.title": "Política de Privacidad",
-"tut.popup.title": "Tutorial",
-"tut.popup.text": "¿Quieres una visita guiada por la aplicación? Dura menos de un minuto y puedes salir cuando quieras.",
-"tut.popup.start": "Iniciar",
-"tut.popup.later": "Ahora no",
-"tut.next": "Siguiente",
-"tut.back": "Volver",
-"tut.finish": "Finalizar",
-"tut.closeAria": "Cerrar tutorial",
-"tut.counter": "{a} de {b}",
-"tut.s1.title": "Fecha del registro",
-"tut.s1.text": "Todo lo que introduzcas se guarda en el día elegido aquí. Toca para registrar en un día anterior.",
-"tut.s2.title": "Tus ingresos",
-"tut.s2.text": "Registra cuánto has recibido en Uber y en Bolt. Si ya introdujiste un importe ese día, el campo se abre relleno para poder corregirlo.",
-"tut.s3.title": "Gastos del día",
-"tut.s3.text": "Gastos sueltos: combustible, comidas, peajes. Puedes introducir todos los que quieras y borrarlos después.",
-"tut.s4.title": "Distancia recorrida",
-"tut.s4.text": "Dos modos: «Km Total» para introducir solo el total del día, o «Inicio y Fin» para introducir el km del cuentakilómetros por la mañana y el final por la noche; nosotros hacemos la cuenta.",
-"tut.s5.title": "Meta semanal",
-"tut.s5.text": "Define cuánto quieres ganar esta semana, en bruto o en neto, y sigue aquí el porcentaje ya completado.",
-"tut.s6.title": "Menú de páginas",
-"tut.s6.text": "Este botón abre el menú de páginas: desde aquí llegas al Resumen Financiero, a los Detalles de la Semana y a la descarga de un informe detallado en PDF.",
-"tut.s7.title": "Navegar entre páginas",
-"tut.s7.text": "Este botón te lleva al Resumen Financiero. Vamos a verlo.",
-"tut.s8.title": "Elegir el período",
-"tut.s8.text": "Consulta los totales por Día, Semana o Mes y usa las flechas para ver períodos anteriores.",
-"tut.s9.title": "Tus números",
-"tut.s9.text": "El anillo muestra el progreso de la meta de la semana. Bruto y Neto cambian de sitio según el tipo de meta que hayas definido.",
-"tut.s10.title": "Semana a semana",
-"tut.s10.text": "Elige el mes y la semana que quieres consultar. Una semana pertenece al mes donde tiene más días.",
-"tut.s11.title": "Tabla o lista",
-"tut.s11.text": "Alterna entre la tabla de la semana y una tarjeta por día, donde puedes ver los gastos de cada día en detalle.",
-"tut.s12.title": "Gastos fijos",
-"tut.s12.text": "Gastos que se repiten cada semana (alquiler del coche, comisión de la plataforma). En euros o en % del bruto; en ese caso el importe crece solo a medida que registras ingresos. Se carga siempre el lunes.",
-"tut.s13.title": "Idioma, tutorial y ayuda",
-"tut.s13.text": "Aquí cambias el idioma de la aplicación, vuelves a ver este tutorial cuando quieras, o hablas con nosotros desde Ayuda.",
-"tut.s14.title": "Tema e informes",
-"tut.s14.text": "Este botón alterna entre tema claro y oscuro. En el menú de páginas encontrarás también la descarga del informe en PDF. ¡Buen trabajo!",
-"legal.termos.html": "<h2 class=\"legal-title\">Términos de Uso</h2>\n\n<p>Contenido disponible próximamente.</p>",
-"legal.privacidade.html": "<h2 class=\"legal-title\">Política de Privacidad</h2>\n\n<p>Contenido disponible próximamente.</p>"
+"tut.s14.text": "This button switches between light and dark theme. In the page menu you will also find the PDF report download. Nice work!"
 }
 };
 
-      var FLAGS = {"pt": "<svg viewBox=\"0 0 30 20\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><rect width=\"12\" height=\"20\" fill=\"#046A38\"/><rect x=\"12\" width=\"18\" height=\"20\" fill=\"#DA291C\"/><circle cx=\"12\" cy=\"10\" r=\"5.2\" fill=\"#FFE800\" stroke=\"#fff\" stroke-width=\"0.5\"/><path d=\"M12 5.4a4.6 4.6 0 0 0 0 9.2 4.6 4.6 0 0 0 0-9.2Z\" fill=\"none\" stroke=\"#046A38\" stroke-width=\"0.7\"/><rect x=\"9.7\" y=\"7.3\" width=\"4.6\" height=\"5.6\" rx=\"1.2\" fill=\"#fff\" stroke=\"#DA291C\" stroke-width=\"0.8\"/><rect x=\"11\" y=\"8.6\" width=\"2\" height=\"3\" rx=\"0.5\" fill=\"#046A38\"/></svg>", "en": "<svg viewBox=\"0 0 60 30\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><rect width=\"60\" height=\"30\" fill=\"#012169\"/><path d=\"M0 0 L60 30 M60 0 L0 30\" stroke=\"#fff\" stroke-width=\"7\"/><path d=\"M0 0 L60 30 M60 0 L0 30\" stroke=\"#C8102E\" stroke-width=\"4\"/><path d=\"M30 0 V30 M0 15 H60\" stroke=\"#fff\" stroke-width=\"11\"/><path d=\"M30 0 V30 M0 15 H60\" stroke=\"#C8102E\" stroke-width=\"6.5\"/></svg>", "es": "<svg viewBox=\"0 0 60 40\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><rect width=\"60\" height=\"40\" fill=\"#AA151B\"/><rect y=\"10\" width=\"60\" height=\"20\" fill=\"#F1BF00\"/><rect x=\"12\" y=\"15\" width=\"7\" height=\"9\" rx=\"1\" fill=\"#AA151B\" opacity=\"0.85\"/></svg>"};
+      var FLAGS = {"pt": "<svg viewBox=\"0 0 30 20\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><rect width=\"12\" height=\"20\" fill=\"#046A38\"/><rect x=\"12\" width=\"18\" height=\"20\" fill=\"#DA291C\"/><circle cx=\"12\" cy=\"10\" r=\"5.2\" fill=\"#FFE800\" stroke=\"#fff\" stroke-width=\"0.5\"/><path d=\"M12 5.4a4.6 4.6 0 0 0 0 9.2 4.6 4.6 0 0 0 0-9.2Z\" fill=\"none\" stroke=\"#046A38\" stroke-width=\"0.7\"/><rect x=\"9.7\" y=\"7.3\" width=\"4.6\" height=\"5.6\" rx=\"1.2\" fill=\"#fff\" stroke=\"#DA291C\" stroke-width=\"0.8\"/><rect x=\"11\" y=\"8.6\" width=\"2\" height=\"3\" rx=\"0.5\" fill=\"#046A38\"/></svg>", "en": "<svg viewBox=\"0 0 60 30\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><rect width=\"60\" height=\"30\" fill=\"#012169\"/><path d=\"M0 0 L60 30 M60 0 L0 30\" stroke=\"#fff\" stroke-width=\"7\"/><path d=\"M0 0 L60 30 M60 0 L0 30\" stroke=\"#C8102E\" stroke-width=\"4\"/><path d=\"M30 0 V30 M0 15 H60\" stroke=\"#fff\" stroke-width=\"11\"/><path d=\"M30 0 V30 M0 15 H60\" stroke=\"#C8102E\" stroke-width=\"6.5\"/></svg>"};
 
-      var ORDER = ['pt', 'en', 'es'];
+      var ORDER = ['pt', 'en'];
 
       var lang = DEFAULT_LANG;
       try {
@@ -4249,34 +3900,6 @@
     })();
 
     (function () {
-      var btnTermos          = document.getElementById('btnTermosUtilizacao');
-      var btnPrivacidade     = document.getElementById('btnPoliticaPrivacidade');
-      var contentTermos      = document.getElementById('termosUtilizacaoContent');
-      var contentPrivacidade = document.getElementById('politicaPrivacidadeContent');
-      if (!btnTermos || !btnPrivacidade || !contentTermos || !contentPrivacidade) return;
-
-      function selectTab (tab) {
-        var isTermos = tab !== 'privacidade';
-        btnTermos.classList.toggle('is-active', isTermos);
-        btnPrivacidade.classList.toggle('is-active', !isTermos);
-        contentTermos.hidden = !isTermos;
-        contentPrivacidade.hidden = isTermos;
-        var listViewEl = document.getElementById('homeListView');
-        if (listViewEl) listViewEl.scrollTop = 0;
-      }
-
-      btnTermos.addEventListener('click', function () { selectTab('termos'); });
-      btnPrivacidade.addEventListener('click', function () { selectTab('privacidade'); });
-
-      window.TermosView = { select: selectTab };
-
-      var termosBackBtn = document.getElementById('termosBackBtn');
-      if (termosBackBtn) {
-        termosBackBtn.addEventListener('click', function () {
-          if (window.HomeNav) window.HomeNav.goToSection('ganhos');
-        });
-      }
-
       var relatorioBackBtn = document.getElementById('relatorioBackBtn');
       if (relatorioBackBtn) {
         relatorioBackBtn.addEventListener('click', function () {
@@ -4292,16 +3915,14 @@
       var subHeaderLeftDefault = document.getElementById('subHeaderLeftDefault');
       var subHeaderLeftResumo  = document.getElementById('subHeaderLeftResumo');
       var subHeaderLeftSemana  = document.getElementById('subHeaderLeftSemana');
-      var subHeaderLeftTermos  = document.getElementById('subHeaderLeftTermos');
       var subHeaderLeftRelatorio = document.getElementById('subHeaderLeftRelatorio');
       var homeListPageGanhos = document.getElementById('homeListPageGanhos');
       var homeListPageResumo = document.getElementById('homeListPageResumo');
       var homeListPageSemana = document.getElementById('homeListPageSemana');
-      var homeListPageTermos = document.getElementById('homeListPageTermos');
       var homeListPageRelatorio = document.getElementById('homeListPageRelatorio');
       if (!listView) return;
 
-      var currentHeaderState = 'default'; // 'default' | 'resumo' | 'semana' | 'termos' | 'relatorio'
+      var currentHeaderState = 'default'; // 'default' | 'resumo' | 'semana' | 'relatorio'
       var subHeaderViewToggleBtn = document.getElementById('subHeaderViewToggleGroup');
       var metaSlotList = document.getElementById('metaSlotList');
 
@@ -4311,11 +3932,10 @@
         if (subHeaderLeftDefault) subHeaderLeftDefault.classList.toggle('is-visible', state === 'default');
         if (subHeaderLeftResumo) subHeaderLeftResumo.classList.toggle('is-visible', state === 'resumo');
         if (subHeaderLeftSemana) subHeaderLeftSemana.classList.toggle('is-visible', state === 'semana');
-        if (subHeaderLeftTermos) subHeaderLeftTermos.classList.toggle('is-visible', state === 'termos');
         if (subHeaderLeftRelatorio) subHeaderLeftRelatorio.classList.toggle('is-visible', state === 'relatorio');
         if (subHeaderViewToggleBtn) subHeaderViewToggleBtn.hidden = (state !== 'semana');
-        if (metaSlotList) metaSlotList.hidden = (state === 'termos' || state === 'relatorio');
-        if ((state === 'termos' || state === 'relatorio') && window.QuickNavMenu) window.QuickNavMenu.close();
+        if (metaSlotList) metaSlotList.hidden = (state === 'relatorio');
+        if (state === 'relatorio' && window.QuickNavMenu) window.QuickNavMenu.close();
       }
 
       // ---- Botões de alternar modo de visualização (tabela / lista) em
@@ -4395,7 +4015,6 @@
         { key: 'ganhos', el: homeListPageGanhos },
         { key: 'resumo', el: homeListPageResumo },
         { key: 'semana', el: homeListPageSemana },
-        { key: 'termos', el: homeListPageTermos },
         { key: 'relatorio', el: homeListPageRelatorio }
       ];
       var homeListInner = listView ? listView.querySelector('.home-list-inner') : null;
@@ -4544,12 +4163,6 @@
       applyTheme();
     })();
 
-    var header = document.querySelector('.app-header');
-    window.addEventListener('scroll', function () {
-      header.classList.toggle('scrolled', window.scrollY > 4);
-      header.style.setProperty('--top-fade', Math.min(window.scrollY / 32, 1));
-    }, { passive: true });
-
     (function () {
       var vv = window.visualViewport;
       if (!vv) return;
@@ -4654,8 +4267,6 @@
     var openAjudaBtn          = document.getElementById('openAjudaBtn');
     var openIdiomaBtn         = document.getElementById('openIdiomaBtn');
     var ajudaNomeInput        = document.getElementById('ajudaNomeInput');
-    var openTermosMenuBtn       = document.getElementById('openTermosMenuBtn');
-    var openPrivacidadeMenuBtn  = document.getElementById('openPrivacidadeMenuBtn');
     var dpNomeInput      = document.getElementById('dpNomeInput');
     var dpDriverSinceBtn   = document.getElementById('dpDriverSinceBtn');
     var dpDriverSinceLabel = document.getElementById('dpDriverSinceLabel');
@@ -4898,7 +4509,7 @@
 
     // ---- Dados Pessoais: seletor de data rotativo (dia / mês / ano) ----
     function DP_MONTH_ABBR () { return I18N.list('months.abbrCap'); }
-    var WHEEL_ITEM_H = 36;
+    var WHEEL_ITEM_H = 30;
     var wheelYearsList = [];
 
     function buildWheelColumn (el, labels, initialIndex) {
@@ -5040,26 +4651,6 @@
         openIdiomaBtn.addEventListener('click', function () {
           if (window.IdiomaScreen) window.IdiomaScreen.prepare();
           openSheetScreen(sheetScreenIdioma, I18N.t('sheet.idioma'));
-        });
-      }
-      if (openTermosMenuBtn) {
-        openTermosMenuBtn.addEventListener('click', function () {
-          if (window.HomeNav) window.HomeNav.hideAllInstant();
-          if (window.TermosView) window.TermosView.select('termos');
-          closeProfileSheet();
-          setTimeout(function () {
-            if (window.HomeNav) window.HomeNav.fadeInSection('termos');
-          }, 220);
-        });
-      }
-      if (openPrivacidadeMenuBtn) {
-        openPrivacidadeMenuBtn.addEventListener('click', function () {
-          if (window.HomeNav) window.HomeNav.hideAllInstant();
-          if (window.TermosView) window.TermosView.select('privacidade');
-          closeProfileSheet();
-          setTimeout(function () {
-            if (window.HomeNav) window.HomeNav.fadeInSection('termos');
-          }, 220);
         });
       }
 
@@ -5741,7 +5332,7 @@
         var els = alvosDe(step);
         if (!els.length) { avancar(); return; }
 
-        var PAD = 8;
+        var PAD = 6;
         var r = rectDe(els);
         var vw = window.innerWidth;
         var vh = window.innerHeight;
@@ -5753,7 +5344,7 @@
 
         var bw = balloon.offsetWidth;
         var bh = balloon.offsetHeight;
-        var GAP = 16;
+        var GAP = 12;
 
         var abaixo = (r.bottom + GAP + bh + 12 <= vh);
         if (!abaixo && (r.top - GAP - bh < 12)) {
@@ -5769,11 +5360,11 @@
         balloon.style.top  = top + 'px';
         balloon.style.left = left + 'px';
 
-        var ax = r.left + r.width / 2 - left - 7;
+        var ax = r.left + r.width / 2 - left - 6;
         ax = Math.max(16, Math.min(ax, bw - 30));
         arrow.style.left = ax + 'px';
-        arrow.style.top    = abaixo ? '-6px' : '';
-        arrow.style.bottom = abaixo ? '' : '-6px';
+        arrow.style.top    = abaixo ? '-5px' : '';
+        arrow.style.bottom = abaixo ? '' : '-5px';
 
         overlay.classList.add('is-ready');
       }
