@@ -501,18 +501,17 @@
                                 <span class="lang-name" id="idiomaCurrentName">Português</span>
                             </span>
                         </button>
-                        <div class="sheet-action-btn sheet-action-btn-split" id="tamanhoRow">
+                        <button type="button" class="sheet-action-btn sheet-action-btn-split" id="openTamanhoBtn">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M4 7V4h16v3"/>
                                 <path d="M9 20h6"/>
                                 <path d="M12 4v16"/>
                             </svg>
-                            <span data-i18n="sheet.tamanho">Tamanho</span>
-                            <span class="size-toggle" id="sizeToggle" role="radiogroup" data-i18n-aria="sheet.tamanhoAria" aria-label="Tamanho do texto e dos elementos">
-                                <button type="button" class="size-toggle-btn" id="sizeBtnP" role="radio" data-i18n="sheet.tamanhoP">P</button>
-                                <button type="button" class="size-toggle-btn" id="sizeBtnM" role="radio" data-i18n="sheet.tamanhoM">M</button>
+                            <span data-i18n="sheet.tamanho">Tamanho da fonte</span>
+                            <span class="sheet-action-value">
+                                <span class="lang-name" id="tamanhoCurrentLabel">Pequeno</span>
                             </span>
-                        </div>
+                        </button>
                         <button type="button" class="sheet-action-btn" id="openTutorialBtn">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                                 <circle cx="12" cy="12" r="9"/>
@@ -637,6 +636,24 @@
     </div>
 
     <input type="file" accept="image/*" id="fileInput" hidden>
+
+    <div class="modal-backdrop" id="tamanhoModalBackdrop">
+        <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="tamanhoModalTitle" id="tamanhoModalCard">
+            <h3 class="modal-title" id="tamanhoModalTitle" data-i18n="tamanho.popupTitle">Tamanho da fonte</h3>
+            <p class="dp-notice-text" data-i18n="tamanho.popupTexto">Escolha para aumentar ou diminuir a fonte e os elementos em todo o app.</p>
+            <div class="tamanho-illustration">
+                <button type="button" class="tamanho-option" id="tamanhoOptionP">
+                    <span class="tamanho-option-letter">P</span>
+                    <span class="tamanho-option-label" data-i18n="sheet.tamanhoPequeno">Pequeno</span>
+                </button>
+                <button type="button" class="tamanho-option" id="tamanhoOptionG">
+                    <span class="tamanho-option-letter">G</span>
+                    <span class="tamanho-option-label" data-i18n="sheet.tamanhoGrande">Grande</span>
+                </button>
+            </div>
+            <button type="button" class="dp-save-btn" id="tamanhoConcluirBtn" data-i18n="tamanho.concluir">Concluído</button>
+        </div>
+    </div>
 
     <div class="modal-backdrop" id="emailChangeModalBackdrop">
         <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="emailChangeModalTitle" id="emailChangeModalCard">

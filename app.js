@@ -199,10 +199,12 @@
 "sheet.perfil": "Perfil e Dados da Conta",
 "sheet.despesasFixas": "Despesas Fixas",
 "sheet.idioma": "Idioma",
-"sheet.tamanho": "Tamanho",
-"sheet.tamanhoP": "P",
-"sheet.tamanhoM": "M",
-"sheet.tamanhoAria": "Tamanho do texto e dos elementos",
+"sheet.tamanho": "Tamanho da fonte",
+"sheet.tamanhoPequeno": "Pequeno",
+"sheet.tamanhoGrande": "Grande",
+"tamanho.popupTitle": "Tamanho da fonte",
+"tamanho.popupTexto": "Escolha para aumentar ou diminuir a fonte e os elementos em todo o app.",
+"tamanho.concluir": "Concluído",
 "sheet.tutorial": "Tutorial",
 "sheet.ajuda": "Ajuda",
 "sheet.termosPrivacidade": "Termos e Privacidade",
@@ -563,10 +565,12 @@
 "sheet.perfil": "Profile and Account Details",
 "sheet.despesasFixas": "Fixed Expenses",
 "sheet.idioma": "Language",
-"sheet.tamanho": "Size",
-"sheet.tamanhoP": "S",
-"sheet.tamanhoM": "M",
-"sheet.tamanhoAria": "Text and element size",
+"sheet.tamanho": "Font size",
+"sheet.tamanhoPequeno": "Small",
+"sheet.tamanhoGrande": "Large",
+"tamanho.popupTitle": "Font size",
+"tamanho.popupTexto": "Choose to make the font and elements bigger or smaller across the whole app.",
+"tamanho.concluir": "Done",
 "sheet.tutorial": "Tutorial",
 "sheet.ajuda": "Help",
 "sheet.termosPrivacidade": "Terms and Privacy",
@@ -856,10 +860,12 @@
 
 
 
-    /* ---- Tamanho da app: Pequeno (padrão) e Médio ----
+    /* ---- Tamanho da fonte: Pequeno (padrão) e Grande ----
        Só troca a classe no <html>; como o CSS está em rem, o app inteiro
        redimensiona de uma vez. Aplicado cedo, ainda com o splash a cobrir
-       o ecrã, para não haver nenhum "salto" visível. */
+       o ecrã, para não haver nenhum "salto" visível. A escolha em si
+       acontece num popup (ver openTamanhoBtn mais abaixo), com uma
+       ilustração das letras P e G nos dois tamanhos. */
     (function () {
       var STORAGE_KEY = 'appTamanho';
       var saved = 'pequeno';
@@ -869,36 +875,69 @@
       } catch (e) {  }
       document.documentElement.classList.toggle('tam-medio', saved === 'medio');
 
-      function wireButtons () {
-        var btnP = document.getElementById('sizeBtnP');
-        var btnM = document.getElementById('sizeBtnM');
-        if (!btnP || !btnM) return;
+      function isGrande () { return document.documentElement.classList.contains('tam-medio'); }
 
-        function render () {
-          var isMedio = document.documentElement.classList.contains('tam-medio');
-          btnP.classList.toggle('is-active', !isMedio);
-          btnP.setAttribute('aria-checked', String(!isMedio));
-          btnM.classList.toggle('is-active', isMedio);
-          btnM.setAttribute('aria-checked', String(isMedio));
+      function refreshRowLabel () {
+        var labelEl = document.getElementById('tamanhoCurrentLabel');
+        if (labelEl) labelEl.textContent = I18N.t(isGrande() ? 'sheet.tamanhoGrande' : 'sheet.tamanhoPequeno');
+      }
+
+      function refreshPopupState () {
+        var optP = document.getElementById('tamanhoOptionP');
+        var optG = document.getElementById('tamanhoOptionG');
+        if (!optP || !optG) return;
+        optP.classList.toggle('is-active', !isGrande());
+        optG.classList.toggle('is-active', isGrande());
+      }
+
+      function choose (size) {
+        var grande = size === 'medio';
+        if (isGrande() === grande) return;
+        document.documentElement.classList.toggle('tam-medio', grande);
+        try { if (typeof cloudSet === 'function') cloudSet(STORAGE_KEY, size); } catch (e) {  }
+        refreshRowLabel();
+        refreshPopupState();
+      }
+
+      function wireUI () {
+        var openBtn    = document.getElementById('openTamanhoBtn');
+        var backdrop   = document.getElementById('tamanhoModalBackdrop');
+        var card       = document.getElementById('tamanhoModalCard');
+        var optP       = document.getElementById('tamanhoOptionP');
+        var optG       = document.getElementById('tamanhoOptionG');
+        var concluirBtn = document.getElementById('tamanhoConcluirBtn');
+        if (!openBtn || !backdrop) return;
+
+        function openPopup () {
+          if (typeof closeProfileSheet === 'function') closeProfileSheet();
+          refreshPopupState();
+          backdrop.classList.add('visible');
+          if (typeof syncBodyScroll === 'function') syncBodyScroll();
+        }
+        function closePopup () {
+          backdrop.classList.remove('visible');
+          if (typeof syncBodyScroll === 'function') syncBodyScroll();
         }
 
-        function choose (size) {
-          var isMedio = size === 'medio';
-          if (document.documentElement.classList.contains('tam-medio') === isMedio) return;
-          document.documentElement.classList.toggle('tam-medio', isMedio);
-          render();
-          try { if (typeof cloudSet === 'function') cloudSet(STORAGE_KEY, size); } catch (e) {  }
-        }
+        openBtn.addEventListener('click', openPopup);
+        optP.addEventListener('click', function () { choose('pequeno'); });
+        optG.addEventListener('click', function () { choose('medio'); });
+        if (concluirBtn) concluirBtn.addEventListener('click', closePopup);
+        backdrop.addEventListener('click', function (e) { if (e.target === backdrop) closePopup(); });
+        if (card) card.addEventListener('click', function (e) { e.stopPropagation(); });
 
-        btnP.addEventListener('click', function () { choose('pequeno'); });
-        btnM.addEventListener('click', function () { choose('medio'); });
-        render();
+        window.TamanhoModal = { open: openPopup, close: closePopup };
+
+        refreshRowLabel();
+        document.addEventListener('languageChanged', function () {
+          refreshRowLabel();
+        });
       }
 
       if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', wireButtons);
+        document.addEventListener('DOMContentLoaded', wireUI);
       } else {
-        wireButtons();
+        wireUI();
       }
     })();
 
@@ -5201,6 +5240,13 @@
 
         if (isVisible(photoModalBackdrop, 'visible')) {
           closePhotoModal();
+          cancelExitArm();
+          return;
+        }
+
+        var tamanhoBackdropEl = document.getElementById('tamanhoModalBackdrop');
+        if (isVisible(tamanhoBackdropEl, 'visible')) {
+          if (window.TamanhoModal) window.TamanhoModal.close();
           cancelExitArm();
           return;
         }
