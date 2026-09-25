@@ -380,7 +380,7 @@
                 <div class="meta-nav-container" id="navContainer">
                     <div class="floating-menu" id="floatingMenu">
                         <button type="button" class="menu-item" data-nav="ganhos">
-                            <span data-i18n="nav.rendimentos">Rendimentos</span>
+                            <span data-i18n="nav.rendimentos">Ganhos diários</span>
                             <span class="menu-item-icon">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                             </span>
@@ -466,7 +466,7 @@
             <div class="sheet-screen is-active" id="sheetScreenDefault">
                 <div class="sheet-content">
                     <div class="sheet-profile-row">
-                        <div class="sheet-avatar" id="sheetAvatar"></div>
+                        <div class="sheet-avatar" id="sheetAvatar" role="button" tabindex="0" data-i18n-aria="photo.viewAria" aria-label="Ver foto de perfil"></div>
                         <div class="sheet-profile-info">
                             <p class="sheet-username" id="sheetUsername">Utilizador</p>
                             <p class="sheet-subinfo" id="sheetVehicleInfo"></p>
@@ -700,6 +700,24 @@
                     <button type="button" class="modal-btn-primary" id="cropApplyBtn" data-i18n="photo.aplicar">Aplicar</button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div class="photo-view-backdrop" id="photoViewBackdrop">
+        <button type="button" class="photo-view-close" id="photoViewCloseBtn" data-i18n-aria="app.close" aria-label="Fechar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+        </button>
+        <div class="photo-view-stage" id="photoViewStage">
+            <img class="photo-view-image" id="photoViewImage" data-i18n-alt="photo.avatarAlt" alt="Foto de perfil" hidden>
+            <div class="photo-view-placeholder" id="photoViewPlaceholder" hidden>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="8" r="3.4"/><path d="M4.5 20c1.2-3.6 4.2-5.6 7.5-5.6s6.3 2 7.5 5.6"/>
+                </svg>
+            </div>
+            <button type="button" class="photo-view-change-btn" id="photoViewChangeBtn" data-i18n="photo.changeImage">Alterar imagem</button>
         </div>
     </div>
 

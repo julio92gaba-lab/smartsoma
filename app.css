@@ -2937,6 +2937,89 @@
         }
         .crop-actions .modal-btn-secondary,
         .crop-actions .modal-btn-primary{ flex:1; }
+        /* Visualização ampliada da foto de perfil: mesmo padrão visual dos
+           outros popups (fundo escurecido), mas sem o cartão branco — a
+           foto fica centrada, em tamanho grande, sobre o fundo escuro. */
+        .photo-view-backdrop{
+          position:fixed;
+          top:0; left:0; right:0; bottom:0;
+          background:rgba(12,19,26,0.82);
+          z-index:70;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          padding:2rem 1.5rem;
+          opacity:0;
+          pointer-events:none;
+        }
+        @media (prefers-reduced-motion:no-preference){
+          .photo-view-backdrop{ transition:opacity .15s ease; }
+        }
+        .photo-view-backdrop.visible{ opacity:1; pointer-events:auto; }
+        .photo-view-close{
+          position:absolute;
+          top:calc(env(safe-area-inset-top,0px) + 1rem);
+          right:1.1875rem;
+          width:2.375rem;
+          height:2.375rem;
+          border-radius:50%;
+          border:none;
+          background:rgba(255,255,255,0.14);
+          color:#fff;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          cursor:pointer;
+        }
+        .photo-view-close svg{ width:1.125rem; height:1.125rem; }
+        @media (prefers-reduced-motion:no-preference){
+          .photo-view-close{ transition:background .15s ease; }
+        }
+        .photo-view-close:hover{ background:rgba(255,255,255,0.22); }
+        .photo-view-stage{
+          position:relative;
+          width:100%;
+          max-width:21.875rem;
+          aspect-ratio:1/1;
+        }
+        .photo-view-image{
+          width:100%;
+          height:100%;
+          border-radius:50%;
+          object-fit:cover;
+          display:block;
+        }
+        .photo-view-placeholder{
+          width:100%;
+          height:100%;
+          border-radius:50%;
+          background:rgba(255,255,255,0.08);
+          color:rgba(255,255,255,0.55);
+          display:flex;
+          align-items:center;
+          justify-content:center;
+        }
+        .photo-view-placeholder svg{ width:35%; height:35%; }
+        .photo-view-change-btn{
+          position:absolute;
+          left:50%;
+          bottom:9%;
+          transform:translateX(-50%);
+          padding:0.5rem 1.0625rem;
+          border-radius:999px;
+          border:1px solid rgba(255,255,255,0.55);
+          background:rgba(12,19,26,0.4);
+          color:#fff;
+          font-size:0.75rem;
+          font-weight:600;
+          cursor:pointer;
+          white-space:nowrap;
+        }
+        @media (prefers-reduced-motion:no-preference){
+          .photo-view-change-btn{ transition:background .15s ease, border-color .15s ease; }
+        }
+        .photo-view-change-btn:hover{ background:rgba(12,19,26,0.6); border-color:rgba(255,255,255,0.8); }
+        .sheet-avatar{ cursor:pointer; }
         .despesa-form{ margin-top:0.8125rem; }
         .despesa-desc-input{
           width:100%;

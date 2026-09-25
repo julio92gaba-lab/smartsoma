@@ -182,7 +182,7 @@
 "semana.rowDespesas": "Despesas:",
 "semana.rowDistancia": "Distância:",
 "nav.quickAria": "Abrir menu rápido de páginas",
-"nav.rendimentos": "Rendimentos",
+"nav.rendimentos": "Ganhos diários",
 "nav.resumo": "Resumo Financeiro",
 "nav.semana": "Detalhes da Semana",
 "nav.relatorio": "Download Relatório",
@@ -260,6 +260,8 @@
 "photo.avatarAlt": "Foto de perfil",
 "photo.zoomAria": "Zoom",
 "photo.aplicar": "Aplicar",
+"photo.viewAria": "Ver foto de perfil",
+"photo.changeImage": "Alterar imagem",
 "fixas.title": "Despesas Fixas",
 "fixas.helper": "Despesas que se repetem toda SEMANA (ex: Aluguel do carro, Taxa plataforma). Escolha % do valor bruto (atualizado automaticamente conforme os ganhos são inseridos), ou valor fixo em €. Este valor é lançado na segunda feira de cada semana.",
 "fixas.descPh": "DESCRIÇÃO",
@@ -347,7 +349,7 @@
 "tut.s1.title": "Data do registo",
 "tut.s1.text": "Tudo o que inserir fica guardado no dia escolhido aqui. Toque para registar num dia anterior.",
 "tut.s2.title": "Os seus rendimentos",
-"tut.s2.text": "Registe quanto recebeu na Uber e na Bolt. Se já tiver lançado um valor nesse dia, o campo abre preenchido para poder corrigir.",
+"tut.s2.text": "Registe quanto recebeu nas plataformas. Se já tiver lançado um valor nesse dia, carregue novamente para poder corrigir.",
 "tut.s3.title": "Despesas do dia",
 "tut.s3.text": "Gastos avulsos: combustível, refeições, portagens. Pode inserir quantos quiser e apagar depois.",
 "tut.s4.title": "Distância percorrida",
@@ -355,7 +357,7 @@
 "tut.s5.title": "Meta semanal",
 "tut.s5.text": "Defina quanto quer ganhar na semana, em bruto ou em líquido, e acompanhe aqui a percentagem já concluída.",
 "tut.s6.title": "Menu de páginas",
-"tut.s6.text": "Este botão abre o menu de páginas: daqui chega ao Resumo Financeiro, aos Detalhes da Semana e ao download de um relatório detalhado em PDF.",
+"tut.s6.text": "Este botão abre o menu de páginas: daqui vai e volta entre as diferentes visualizações e detalhes dos seus ganhos.",
 "tut.s7.title": "Navegar entre páginas",
 "tut.s7.text": "Este botão leva-o ao Resumo Financeiro. Vamos espreitar.",
 "tut.s8.title": "Escolher o período",
@@ -619,6 +621,8 @@
 "photo.avatarAlt": "Profile photo",
 "photo.zoomAria": "Zoom",
 "photo.aplicar": "Apply",
+"photo.viewAria": "View profile photo",
+"photo.changeImage": "Change image",
 "fixas.title": "Fixed Expenses",
 "fixas.helper": "Expenses that repeat EVERY WEEK (e.g. car rental, platform fee). Choose % of the gross amount (updated automatically as earnings are entered), or a fixed amount in €. This amount is posted on the Monday of each week.",
 "fixas.descPh": "DESCRIPTION",
@@ -706,7 +710,7 @@
 "tut.s1.title": "Entry date",
 "tut.s1.text": "Everything you enter is saved under the day chosen here. Tap to log an entry on a previous day.",
 "tut.s2.title": "Your earnings",
-"tut.s2.text": "Log how much you made on Uber and Bolt. If you already entered an amount for that day, the field opens pre-filled so you can correct it.",
+"tut.s2.text": "Log how much you made on the platforms. If you've already entered an amount for that day, tap again to make a correction.",
 "tut.s3.title": "Expenses of the day",
 "tut.s3.text": "One-off costs: fuel, meals, tolls. Enter as many as you like and delete them later.",
 "tut.s4.title": "Distance travelled",
@@ -714,7 +718,7 @@
 "tut.s5.title": "Weekly goal",
 "tut.s5.text": "Set how much you want to earn this week, gross or net, and follow the percentage completed right here.",
 "tut.s6.title": "Page menu",
-"tut.s6.text": "This button opens the page menu: from here you reach the Financial Summary, the Week Details and the download of a detailed PDF report.",
+"tut.s6.text": "This button opens the page menu: from here you move back and forth between the different views and details of your earnings.",
 "tut.s7.title": "Moving between pages",
 "tut.s7.text": "This button takes you to the Financial Summary. Let's have a look.",
 "tut.s8.title": "Choosing the period",
@@ -4435,12 +4439,21 @@
     var zoomRange           = document.getElementById('zoomRange');
     var cropCancelBtn      = document.getElementById('cropCancelBtn');
     var cropApplyBtn       = document.getElementById('cropApplyBtn');
+    var photoViewBackdrop    = document.getElementById('photoViewBackdrop');
+    var photoViewCloseBtn    = document.getElementById('photoViewCloseBtn');
+    var photoViewStage       = document.getElementById('photoViewStage');
+    var photoViewImage       = document.getElementById('photoViewImage');
+    var photoViewPlaceholder = document.getElementById('photoViewPlaceholder');
+    var photoViewChangeBtn   = document.getElementById('photoViewChangeBtn');
 
     var PROFILE_UI_READY = !!(headerAvatarBtn && sheetAvatar && sheetUsername &&
       sheetBackdrop && profileSheet && sheetHandleArea && sheetCloseBtn &&
       photoModalBackdrop && photoModalCard && fileInput &&
       photoStepCrop && cropStage && cropImage && zoomRange &&
       cropCancelBtn && cropApplyBtn);
+
+    var PHOTO_VIEW_UI_READY = !!(photoViewBackdrop && photoViewCloseBtn &&
+      photoViewStage && photoViewImage && photoViewPlaceholder && photoViewChangeBtn);
 
     var DP_UI_READY = !!(sheetScreenDadosPessoais && dpNomeInput &&
       dpDriverSinceBtn && dpDriverSinceLabel && dpPhotoThumb &&
@@ -4463,6 +4476,7 @@
       var html = state.photo ? '<img src="' + state.photo + '" alt="' + I18N.t('photo.avatarAlt') + '">' : AVATAR_PLACEHOLDER;
       sheetAvatar.innerHTML = html;
       if (dpPhotoThumb) dpPhotoThumb.innerHTML = html;
+      renderPhotoView();
     }
 
     // Nome mostrado no painel: o nome guardado ou, se não houver nenhum,
@@ -4543,6 +4557,7 @@
       if (!PROFILE_UI_READY) return false;
       return profileSheet.classList.contains('open') ||
              photoModalBackdrop.classList.contains('visible') ||
+             (photoViewBackdrop && photoViewBackdrop.classList.contains('visible')) ||
              (driverSinceModalBackdrop && driverSinceModalBackdrop.classList.contains('visible'));
     }
     // Trava o scroll do fundo fixando o body no lugar (em vez de usar
@@ -4640,6 +4655,31 @@
       if (!PROFILE_UI_READY) return;
       photoModalBackdrop.classList.remove('visible');
       fileInput.value = '';
+      syncBodyScroll();
+    }
+
+    // ---- Visualização ampliada da foto de perfil (tela cheia) ----
+    function renderPhotoView () {
+      if (!PHOTO_VIEW_UI_READY) return;
+      if (state.photo) {
+        photoViewImage.src = state.photo;
+        photoViewImage.hidden = false;
+        photoViewPlaceholder.hidden = true;
+      } else {
+        photoViewImage.hidden = true;
+        photoViewImage.removeAttribute('src');
+        photoViewPlaceholder.hidden = false;
+      }
+    }
+    function openPhotoView () {
+      if (!PHOTO_VIEW_UI_READY) return;
+      renderPhotoView();
+      photoViewBackdrop.classList.add('visible');
+      syncBodyScroll();
+    }
+    function closePhotoView () {
+      if (!PHOTO_VIEW_UI_READY) return;
+      photoViewBackdrop.classList.remove('visible');
       syncBodyScroll();
     }
 
@@ -4782,6 +4822,7 @@
     function closeBlockingPopupsForMenu () {
       if (document.querySelector('.mm-backdrop.visible')) closeAllOverlays();
       if (photoModalBackdrop.classList.contains('visible')) closePhotoModal();
+      if (PHOTO_VIEW_UI_READY && photoViewBackdrop.classList.contains('visible')) closePhotoView();
       if (driverSinceModalBackdrop && driverSinceModalBackdrop.classList.contains('visible')) closeDriverSinceModal();
     }
 
@@ -4798,6 +4839,24 @@
         if (profileSheet.classList.contains('open')) { closeProfileSheet(); } else { openProfileSheet(); }
       });
       sheetBackdrop.addEventListener('click', closeProfileSheet);
+      if (PHOTO_VIEW_UI_READY) {
+        sheetAvatar.addEventListener('click', openPhotoView);
+        sheetAvatar.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+            e.preventDefault();
+            openPhotoView();
+          }
+        });
+        photoViewBackdrop.addEventListener('click', function (e) {
+          if (e.target === photoViewBackdrop) closePhotoView();
+        });
+        photoViewStage.addEventListener('click', function (e) { e.stopPropagation(); });
+        photoViewCloseBtn.addEventListener('click', closePhotoView);
+        photoViewChangeBtn.addEventListener('click', function () {
+          closePhotoView();
+          if (fileInput) fileInput.click();
+        });
+      }
       sheetCloseBtn.addEventListener('click', function () {
         if (sheetCloseBtn.classList.contains('is-alt')) {
           openSheetScreen(sheetScreenDefault, I18N.t('sheet.title'));
