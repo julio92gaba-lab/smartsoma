@@ -4475,6 +4475,7 @@
       if (!PROFILE_UI_READY) return;
       var html = state.photo ? '<img src="' + state.photo + '" alt="' + I18N.t('photo.avatarAlt') + '">' : AVATAR_PLACEHOLDER;
       sheetAvatar.innerHTML = html;
+      sheetAvatar.classList.toggle('has-photo', !!state.photo);
       if (dpPhotoThumb) dpPhotoThumb.innerHTML = html;
       renderPhotoView();
     }
@@ -4672,7 +4673,7 @@
       }
     }
     function openPhotoView () {
-      if (!PHOTO_VIEW_UI_READY) return;
+      if (!PHOTO_VIEW_UI_READY || !state.photo) return;
       renderPhotoView();
       photoViewBackdrop.classList.add('visible');
       syncBodyScroll();
@@ -5283,6 +5284,12 @@
 
         if (isVisible(photoModalBackdrop, 'visible')) {
           closePhotoModal();
+          cancelExitArm();
+          return;
+        }
+
+        if (PHOTO_VIEW_UI_READY && isVisible(photoViewBackdrop, 'visible')) {
+          closePhotoView();
           cancelExitArm();
           return;
         }
