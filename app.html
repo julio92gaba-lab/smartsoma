@@ -526,7 +526,7 @@
                                 <path d="M9.3 9.2c.3-1.1 1.3-1.9 2.7-1.9 1.6 0 2.8 1 2.8 2.3 0 1.1-.7 1.6-1.7 2.3-1 .6-1.4 1-1.4 1.9"/>
                                 <circle cx="12" cy="16.5" r="0.9" fill="currentColor" stroke="none"/>
                             </svg>
-                            <span data-i18n="sheet.ajuda">Ajuda</span>
+                            <span data-i18n="sheet.ajuda">Falar connosco</span>
                         </button>
                     </div>
                     <div class="sheet-divider"></div>
@@ -601,22 +601,7 @@
             </div>
             <div class="sheet-screen" id="sheetScreenAjuda" hidden>
                 <div class="sheet-content sheet-page-content">
-                    <p class="ajuda-intro-text" data-i18n="ajuda.intro">Precisa de ajuda? Preencha o formulário abaixo e a nossa equipa entrará em contacto consigo o mais breve possível.</p>
-                    <div class="ajuda-form" id="ajudaForm">
-                        <label class="dp-field dp-field-full">
-                            <span class="dp-field-label" data-i18n="ajuda.nome">Nome</span>
-                            <input type="text" class="dp-input" id="ajudaNomeInput" data-i18n-ph="ajuda.nomePh" placeholder="Seu nome">
-                        </label>
-                        <label class="dp-field dp-field-full">
-                            <span class="dp-field-label" data-i18n="ajuda.assunto">Assunto</span>
-                            <input type="text" class="dp-input" id="ajudaAssuntoInput" data-i18n-ph="ajuda.assuntoPh" placeholder="Sobre o que é?">
-                        </label>
-                        <label class="dp-field dp-field-full">
-                            <span class="dp-field-label" data-i18n="ajuda.mensagem">Mensagem</span>
-                            <textarea class="dp-input ajuda-textarea" id="ajudaMensagemInput" rows="5" data-i18n-ph="ajuda.mensagemPh" placeholder="Descreva a sua dúvida ou problema..."></textarea>
-                        </label>
-                        <button type="button" class="dp-save-btn" id="ajudaEnviarBtn" data-i18n="ajuda.enviar">Enviar</button>
-                    </div>
+                    <p class="ajuda-intro-text" data-i18n-html="ajuda.intro">Para qualquer questão, escreve-nos para <a href="mailto:contacto@smartsoma.pt">contacto@smartsoma.pt</a>, entraremos em contacto o mais breve possível.</p>
                 </div>
             </div>
         </div>
@@ -987,6 +972,15 @@
             <span class="tut-counter" id="tutorialCounter"></span>
             <button type="button" class="tut-btn tut-btn-primary" id="tutorialNextBtn"></button>
         </div>
+    </div>
+</div>
+
+<div class="mm-backdrop" id="tutorialEndBackdrop">
+    <div class="mm-card" role="dialog" aria-modal="true" aria-labelledby="tutorialEndTitle" id="tutorialEndCard">
+        <h3 class="mm-title" id="tutorialEndTitle" data-i18n="tut.end.title">Fim do tutorial</h3>
+        <p class="mm-helper-text" data-i18n="tut.end.text">Pode voltar a vê-lo sempre que quiser, através do menu Ajustes.</p>
+        <p class="tut-end-highlight" data-i18n="tut.end.highlight">Bons ganhos!</p>
+        <button type="button" class="mm-save-btn" id="tutorialEndCloseBtn" data-i18n="tut.end.fechar">Fechar</button>
     </div>
 </div>
 

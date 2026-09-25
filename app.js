@@ -206,7 +206,7 @@
 "tamanho.popupTexto": "Escolha para aumentar ou diminuir a fonte e os elementos em todo o app.",
 "tamanho.concluir": "Concluído",
 "sheet.tutorial": "Tutorial",
-"sheet.ajuda": "Ajuda",
+"sheet.ajuda": "Falar connosco",
 "sheet.termosPrivacidade": "Termos e Privacidade",
 "sheet.sair": "Sair",
 "idioma.title": "Idioma",
@@ -252,14 +252,7 @@
 "dp.monthMany": "{n} meses",
 "dp.join": " e ",
 "dp.onApps": " nos Apps.",
-"ajuda.intro": "Precisa de ajuda? Preencha o formulário abaixo e a nossa equipa entrará em contacto consigo o mais breve possível.",
-"ajuda.nome": "Nome",
-"ajuda.nomePh": "Seu nome",
-"ajuda.assunto": "Assunto",
-"ajuda.assuntoPh": "Sobre o que é?",
-"ajuda.mensagem": "Mensagem",
-"ajuda.mensagemPh": "Descreva a sua dúvida ou problema...",
-"ajuda.enviar": "Enviar",
+"ajuda.intro": "Para qualquer questão, escreve-nos para <a href=\"mailto:contacto@smartsoma.pt\">contacto@smartsoma.pt</a>, entraremos em contacto o mais breve possível.",
 "wheel.title": "Desde quando é motorista?",
 "photo.title": "Alterar foto de perfil",
 "photo.hint": "Arraste para posicionar e use o controle para dar zoom.",
@@ -375,10 +368,10 @@
 "tut.s11.text": "Alterne entre a tabela da semana e um card por dia, onde consegue ver as despesas de cada dia em detalhe.",
 "tut.s12.title": "Despesas fixas",
 "tut.s12.text": "Gastos que se repetem todas as semanas (aluguer do carro, comissão da plataforma). Em euros ou em % do bruto — neste caso o valor cresce sozinho conforme lança ganhos. É lançado sempre à segunda-feira.",
-"tut.s13.title": "Idioma, tutorial e ajuda",
-"tut.s13.text": "Aqui muda o idioma da aplicação, volta a ver este tutorial quando quiser, ou fala connosco através da Ajuda.",
-"tut.s14.title": "Tema e relatórios",
-"tut.s14.text": "Este botão alterna entre tema claro e escuro. No menu de páginas encontra ainda o Download do Relatório em PDF. Bom trabalho!"
+"tut.end.title": "Fim do tutorial",
+"tut.end.text": "Pode voltar a vê-lo sempre que quiser, através do menu Ajustes.",
+"tut.end.highlight": "Bons ganhos!",
+"tut.end.fechar": "Fechar"
 },
 "en": {
 "lang.code": "en",
@@ -572,7 +565,7 @@
 "tamanho.popupTexto": "Choose to make the font and elements bigger or smaller across the whole app.",
 "tamanho.concluir": "Done",
 "sheet.tutorial": "Tutorial",
-"sheet.ajuda": "Help",
+"sheet.ajuda": "Contact us",
 "sheet.termosPrivacidade": "Terms and Privacy",
 "sheet.sair": "Log out",
 "idioma.title": "Language",
@@ -618,14 +611,7 @@
 "dp.monthMany": "{n} months",
 "dp.join": " and ",
 "dp.onApps": " on the Apps.",
-"ajuda.intro": "Need help? Fill in the form below and our team will get back to you as soon as possible.",
-"ajuda.nome": "Name",
-"ajuda.nomePh": "Your name",
-"ajuda.assunto": "Subject",
-"ajuda.assuntoPh": "What is it about?",
-"ajuda.mensagem": "Message",
-"ajuda.mensagemPh": "Describe your question or problem...",
-"ajuda.enviar": "Send",
+"ajuda.intro": "For any question, write to us at <a href=\"mailto:contacto@smartsoma.pt\">contacto@smartsoma.pt</a>, we'll get back to you as soon as possible.",
 "wheel.title": "How long have you been driving?",
 "photo.title": "Change profile photo",
 "photo.hint": "Drag to position and use the slider to zoom.",
@@ -741,10 +727,10 @@
 "tut.s11.text": "Switch between the week's table and one card per day, where you can see each day's expenses in detail.",
 "tut.s12.title": "Fixed expenses",
 "tut.s12.text": "Costs that repeat every week (car rental, platform fee). In euros or as a % of the gross — in that case the amount grows on its own as you log earnings. It is always posted on Monday.",
-"tut.s13.title": "Language, tutorial and help",
-"tut.s13.text": "Here you can change the app language, replay this tutorial whenever you like, or reach us through Help.",
-"tut.s14.title": "Theme and reports",
-"tut.s14.text": "This button switches between light and dark theme. In the page menu you will also find the PDF report download. Nice work!"
+"tut.end.title": "Tutorial complete",
+"tut.end.text": "You can watch it again anytime from the Settings menu.",
+"tut.end.highlight": "Happy earning!",
+"tut.end.fechar": "Close"
 }
 };
 
@@ -879,7 +865,7 @@
 
       function refreshRowLabel () {
         var labelEl = document.getElementById('tamanhoCurrentLabel');
-        if (labelEl) labelEl.textContent = I18N.t(isGrande() ? 'sheet.tamanhoGrande' : 'sheet.tamanhoPequeno');
+        if (labelEl) labelEl.textContent = isGrande() ? 'G' : 'P';
       }
 
       function refreshPopupState () {
@@ -4427,7 +4413,6 @@
     var openDespesasFixasBtn = document.getElementById('openDespesasFixasBtn');
     var openAjudaBtn          = document.getElementById('openAjudaBtn');
     var openIdiomaBtn         = document.getElementById('openIdiomaBtn');
-    var ajudaNomeInput        = document.getElementById('ajudaNomeInput');
     var dpNomeInput      = document.getElementById('dpNomeInput');
     var dpDriverSinceBtn   = document.getElementById('dpDriverSinceBtn');
     var dpDriverSinceLabel = document.getElementById('dpDriverSinceLabel');
@@ -4835,7 +4820,6 @@
       }
       if (openAjudaBtn) {
         openAjudaBtn.addEventListener('click', function () {
-          if (ajudaNomeInput) ajudaNomeInput.value = state.name || '';
           openSheetScreen(sheetScreenAjuda, I18N.t('sheet.ajuda'));
         });
       }
@@ -5240,6 +5224,13 @@
 
         if (isVisible(photoModalBackdrop, 'visible')) {
           closePhotoModal();
+          cancelExitArm();
+          return;
+        }
+
+        var tutorialEndBackdropEl = document.getElementById('tutorialEndBackdrop');
+        if (isVisible(tutorialEndBackdropEl, 'visible')) {
+          tutorialEndBackdropEl.classList.remove('visible');
           cancelExitArm();
           return;
         }
@@ -5653,10 +5644,7 @@
         { sel: '.dash-cluster',            k: 'tut.s9',  page: 'resumo', sheet: false },
         { sel: '#semanaWeekPicker',        k: 'tut.s10', page: 'semana', sheet: false },
         { sel: '#subHeaderViewToggleGroup',k: 'tut.s11', page: 'semana', sheet: false },
-        { sel: '#openDespesasFixasBtn',    k: 'tut.s12', page: 'ganhos', sheet: true  },
-        { sel: ['#openIdiomaBtn', '#openTutorialBtn', '#openAjudaBtn'],
-                                           k: 'tut.s13', page: 'ganhos', sheet: true  },
-        { sel: '#btnToggleTheme',          k: 'tut.s14', page: 'ganhos', sheet: false }
+        { sel: '#openDespesasFixasBtn',    k: 'tut.s12', page: 'ganhos', sheet: true  }
       ];
 
       // Devolve os elementos de um passo (aceita um selector ou vários).
@@ -5793,7 +5781,7 @@
       }
 
       function avancar () {
-        if (index >= STEPS.length - 1) { terminar(); return; }
+        if (index >= STEPS.length - 1) { concluirTutorial(); return; }
         index++;
         mostrarPasso();
       }
@@ -5825,6 +5813,17 @@
         if (window.HomeNav) window.HomeNav.goToSection('ganhos');
       }
 
+      // Concluir o último passo (clicar em "Concluir", não fechar a meio):
+      // fecha o tutorial e mostra o popup de fim, a avisar que dá para
+      // rever tudo outra vez a partir de Ajustes.
+      function concluirTutorial () {
+        terminar();
+        var endBackdrop = document.getElementById('tutorialEndBackdrop');
+        if (endBackdrop) {
+          window.setTimeout(function () { endBackdrop.classList.add('visible'); }, 200);
+        }
+      }
+
       // ---- ligações ----
       openBtn.addEventListener('click', function () {
         if (typeof window.closeProfileSheetPublic === 'function') window.closeProfileSheetPublic();
@@ -5846,6 +5845,23 @@
       nextBtn.addEventListener('click', avancar);
       backBtn.addEventListener('click', recuar);
       closeBtn.addEventListener('click', terminar);
+
+      var tutorialEndBackdrop = document.getElementById('tutorialEndBackdrop');
+      var tutorialEndCloseBtn = document.getElementById('tutorialEndCloseBtn');
+      var tutorialEndCard     = document.getElementById('tutorialEndCard');
+      if (tutorialEndCloseBtn) {
+        tutorialEndCloseBtn.addEventListener('click', function () {
+          tutorialEndBackdrop.classList.remove('visible');
+        });
+      }
+      if (tutorialEndBackdrop) {
+        tutorialEndBackdrop.addEventListener('click', function (e) {
+          if (e.target === tutorialEndBackdrop) tutorialEndBackdrop.classList.remove('visible');
+        });
+      }
+      if (tutorialEndCard) {
+        tutorialEndCard.addEventListener('click', function (e) { e.stopPropagation(); });
+      }
 
       document.addEventListener('keydown', function (e) {
         if (!running) return;

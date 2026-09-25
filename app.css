@@ -479,6 +479,15 @@
           margin:0.5rem 0 0;
           text-align:center;
         }
+        /* Popup de fim do tutorial: "Bons ganhos!" em destaque, acima do
+           botão de fechar. */
+        .tut-end-highlight{
+          font-size:0.9688rem;
+          font-weight:800;
+          color:var(--brand-green);
+          text-align:center;
+          margin:0.75rem 0 1.125rem;
+        }
         .mm-cal-today-label{
           font-size:0.625rem;
           font-weight:600;
@@ -2610,6 +2619,11 @@
           margin:0 0 0.9062rem;
         }
         .ajuda-intro-text.is-centered{ text-align:center; }
+        .ajuda-intro-text a{
+          color:var(--brand-green);
+          font-weight:700;
+          text-decoration:underline;
+        }
         .ajuda-form{
           display:flex;
           flex-direction:column;
