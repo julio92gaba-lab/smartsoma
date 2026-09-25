@@ -501,6 +501,18 @@
                                 <span class="lang-name" id="idiomaCurrentName">Português</span>
                             </span>
                         </button>
+                        <div class="sheet-action-btn sheet-action-btn-split" id="tamanhoRow">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 7V4h16v3"/>
+                                <path d="M9 20h6"/>
+                                <path d="M12 4v16"/>
+                            </svg>
+                            <span data-i18n="sheet.tamanho">Tamanho</span>
+                            <span class="size-toggle" id="sizeToggle" role="radiogroup" data-i18n-aria="sheet.tamanhoAria" aria-label="Tamanho do texto e dos elementos">
+                                <button type="button" class="size-toggle-btn" id="sizeBtnP" role="radio" data-i18n="sheet.tamanhoP">P</button>
+                                <button type="button" class="size-toggle-btn" id="sizeBtnM" role="radio" data-i18n="sheet.tamanhoM">M</button>
+                            </span>
+                        </div>
                         <button type="button" class="sheet-action-btn" id="openTutorialBtn">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                                 <circle cx="12" cy="12" r="9"/>
@@ -577,6 +589,7 @@
                     <div class="sheet-divider"></div>
 
                     <button type="button" class="dp-save-btn" id="dpSaveBtn" data-i18n="dp.atualizarDados">Atualizar Dados Pessoais</button>
+                    <button type="button" class="dp-save-btn dp-save-btn-secondary" id="dpChangePasswordBtn" data-i18n="dp.atualizarPassword" hidden>Atualizar Password</button>
                 </div>
             </div>
             <div class="sheet-screen" id="sheetScreenIdioma" hidden>
@@ -624,6 +637,46 @@
     </div>
 
     <input type="file" accept="image/*" id="fileInput" hidden>
+
+    <div class="modal-backdrop" id="emailChangeModalBackdrop">
+        <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="emailChangeModalTitle" id="emailChangeModalCard">
+            <div id="emailChangeFormView">
+                <h3 class="modal-title" id="emailChangeModalTitle" data-i18n="emailChange.title">Confirmar novo email</h3>
+                <p class="dp-notice-text" data-i18n="emailChange.notice">Para trocar o email é preciso confirmar a sua password atual. Os seus dados continuam guardados e acessíveis; só falta confirmar o novo endereço através do link que vamos enviar para ele.</p>
+                <label class="dp-field dp-field-full">
+                    <span class="dp-field-label" data-i18n="emailChange.passwordLabel">Password atual</span>
+                    <input type="password" class="dp-input" id="emailChangePasswordInput" autocomplete="current-password" data-i18n-ph="emailChange.passwordPh" placeholder="A sua password">
+                </label>
+                <p class="dp-field-error" id="emailChangeError"></p>
+                <button type="button" class="dp-save-btn" id="emailChangeContinueBtn" data-i18n="emailChange.continuar">Continuar</button>
+            </div>
+            <div id="emailChangeSuccessView" hidden>
+                <h3 class="modal-title" data-i18n="emailChange.sucessoTitulo">Confirme o novo email</h3>
+                <p class="dp-notice-text" data-i18n="emailChange.sucessoTexto">Enviámos um link de confirmação para o novo endereço. O email só muda depois de confirmar por lá.</p>
+                <button type="button" class="dp-save-btn" id="emailChangeOkBtn" data-i18n="emailChange.entendi">Entendi</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-backdrop" id="passwordChangeModalBackdrop">
+        <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="passwordChangeModalTitle" id="passwordChangeModalCard">
+            <h3 class="modal-title" id="passwordChangeModalTitle" data-i18n="pwdChange.title">Alterar password</h3>
+            <label class="dp-field dp-field-full">
+                <span class="dp-field-label" data-i18n="pwdChange.atual">Password atual</span>
+                <input type="password" class="dp-input" id="pwdChangeOldInput" autocomplete="current-password" data-i18n-ph="pwdChange.atualPh" placeholder="A sua password atual">
+            </label>
+            <label class="dp-field dp-field-full">
+                <span class="dp-field-label" data-i18n="pwdChange.nova">Nova password</span>
+                <input type="password" class="dp-input" id="pwdChangeNewInput" autocomplete="new-password" data-i18n-ph="pwdChange.novaPh" placeholder="Mínimo 6 caracteres">
+            </label>
+            <label class="dp-field dp-field-full">
+                <span class="dp-field-label" data-i18n="pwdChange.confirmar">Confirmar nova password</span>
+                <input type="password" class="dp-input" id="pwdChangeConfirmInput" autocomplete="new-password" data-i18n-ph="pwdChange.confirmarPh" placeholder="Repita a nova password">
+            </label>
+            <p class="dp-field-error" id="pwdChangeError"></p>
+            <button type="button" class="dp-save-btn" id="pwdChangeConcluirBtn" data-i18n="pwdChange.concluir">Concluir</button>
+        </div>
+    </div>
 
     <div class="modal-backdrop" id="photoModalBackdrop">
         <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="photoModalTitle" id="photoModalCard">

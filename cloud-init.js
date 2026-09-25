@@ -158,6 +158,25 @@
     if (emailEl) emailEl.textContent = window.currentUserEmail || '';
   }
 
+  // API usada pelo ecrã "Perfil e Dados da Conta" para trocar email e
+  // password de quem entrou com email/senha. Cada troca pede a password
+  // atual primeiro (reautentica com signInWithPassword) antes de chamar
+  // updateUser — assim confirmamos que é mesmo a pessoa dona da conta.
+  window.AuthAPI = {
+    verifyPassword: function (password) {
+      return sb.auth.signInWithPassword({
+        email: window.currentUserEmail,
+        password: password
+      });
+    },
+    updateEmail: function (newEmail) {
+      return sb.auth.updateUser({ email: newEmail });
+    },
+    updatePassword: function (newPassword) {
+      return sb.auth.updateUser({ password: newPassword });
+    }
+  };
+
   // API global usada pelo app.js legado. cloudGet e sincrono apos o init.
   window.cloudGet = function cloudGet(key) {
     return valueForLegacyApp(cache[key]);
@@ -222,6 +241,18 @@
 
       window.currentUser = session.user;
       window.currentUserEmail = session.user.email || '';
+
+      // Como a pessoa entrou: 'google' ou 'email'. Usado pelo app.js para
+      // decidir o que mostrar em Perfil e Dados da Conta (ex.: o email só
+      // pode ser trocado por quem entrou com email e senha).
+      var provider = (session.user.app_metadata && session.user.app_metadata.provider) || 'email';
+      window.currentUserProvider = provider;
+
+      // Nome e foto vindos da conta Google, usados só como valor inicial
+      // (a pessoa pode substituir por outro nome/foto em Dados Pessoais).
+      var meta = session.user.user_metadata || {};
+      window.currentUserGoogleName = meta.full_name || meta.name || '';
+      window.currentUserGoogleAvatar = meta.avatar_url || meta.picture || '';
 
       await hydrateCloudCache(session.user.id);
       setupLogout();

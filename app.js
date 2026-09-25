@@ -199,6 +199,10 @@
 "sheet.perfil": "Perfil e Dados da Conta",
 "sheet.despesasFixas": "Despesas Fixas",
 "sheet.idioma": "Idioma",
+"sheet.tamanho": "Tamanho",
+"sheet.tamanhoP": "P",
+"sheet.tamanhoM": "M",
+"sheet.tamanhoAria": "Tamanho do texto e dos elementos",
 "sheet.tutorial": "Tutorial",
 "sheet.ajuda": "Ajuda",
 "sheet.termosPrivacidade": "Termos e Privacidade",
@@ -213,6 +217,32 @@
 "dp.desdeQuando": "Desde quando trabalha com apps?",
 "dp.selecionarData": "Selecionar data",
 "dp.atualizarDados": "Atualizar Dados Pessoais",
+"dp.atualizarPassword": "Atualizar Password",
+"emailChange.title": "Confirmar novo email",
+"emailChange.notice": "Para trocar o email é preciso confirmar a sua password atual. Os seus dados continuam guardados e acessíveis; só falta confirmar o novo endereço através do link que vamos enviar para ele.",
+"emailChange.passwordLabel": "Password atual",
+"emailChange.passwordPh": "A sua password",
+"emailChange.continuar": "Continuar",
+"emailChange.aguarde": "A confirmar...",
+"emailChange.erroSenha": "Password incorreta.",
+"emailChange.erroGenerico": "Não foi possível concluir. Tente novamente.",
+"emailChange.sucessoTitulo": "Confirme o novo email",
+"emailChange.sucessoTexto": "Enviámos um link de confirmação para o novo endereço. O email só muda depois de confirmar por lá.",
+"emailChange.entendi": "Entendi",
+"pwdChange.title": "Alterar password",
+"pwdChange.atual": "Password atual",
+"pwdChange.atualPh": "A sua password atual",
+"pwdChange.nova": "Nova password",
+"pwdChange.novaPh": "Mínimo 6 caracteres",
+"pwdChange.confirmar": "Confirmar nova password",
+"pwdChange.confirmarPh": "Repita a nova password",
+"pwdChange.concluir": "Concluir",
+"pwdChange.aguarde": "A concluir...",
+"pwdChange.erroSenha": "Password atual incorreta.",
+"pwdChange.erroCurta": "A nova password precisa de pelo menos 6 caracteres.",
+"pwdChange.erroDiferente": "As duas passwords novas não coincidem.",
+"pwdChange.erroGenerico": "Não foi possível concluir. Tente novamente.",
+"pwdChange.sucesso": "Password atualizada com sucesso.",
 "dp.daysOnApps": "{n} dias nos Apps.",
 "dp.yearOne": "{n} ano",
 "dp.yearMany": "{n} anos",
@@ -533,6 +563,10 @@
 "sheet.perfil": "Profile and Account Details",
 "sheet.despesasFixas": "Fixed Expenses",
 "sheet.idioma": "Language",
+"sheet.tamanho": "Size",
+"sheet.tamanhoP": "S",
+"sheet.tamanhoM": "M",
+"sheet.tamanhoAria": "Text and element size",
 "sheet.tutorial": "Tutorial",
 "sheet.ajuda": "Help",
 "sheet.termosPrivacidade": "Terms and Privacy",
@@ -547,6 +581,32 @@
 "dp.desdeQuando": "How long have you been working with apps?",
 "dp.selecionarData": "Select date",
 "dp.atualizarDados": "Update Personal Details",
+"dp.atualizarPassword": "Update Password",
+"emailChange.title": "Confirm new email",
+"emailChange.notice": "To change your email, confirm your current password first. Your data stays saved and accessible; you'll just need to confirm the new address via the link we'll send to it.",
+"emailChange.passwordLabel": "Current password",
+"emailChange.passwordPh": "Your password",
+"emailChange.continuar": "Continue",
+"emailChange.aguarde": "Confirming...",
+"emailChange.erroSenha": "Incorrect password.",
+"emailChange.erroGenerico": "Couldn't complete this. Please try again.",
+"emailChange.sucessoTitulo": "Confirm the new email",
+"emailChange.sucessoTexto": "We sent a confirmation link to the new address. The email only changes once you confirm it there.",
+"emailChange.entendi": "Got it",
+"pwdChange.title": "Change password",
+"pwdChange.atual": "Current password",
+"pwdChange.atualPh": "Your current password",
+"pwdChange.nova": "New password",
+"pwdChange.novaPh": "At least 6 characters",
+"pwdChange.confirmar": "Confirm new password",
+"pwdChange.confirmarPh": "Repeat the new password",
+"pwdChange.concluir": "Done",
+"pwdChange.aguarde": "Finishing...",
+"pwdChange.erroSenha": "Current password is incorrect.",
+"pwdChange.erroCurta": "The new password needs at least 6 characters.",
+"pwdChange.erroDiferente": "The two new passwords don't match.",
+"pwdChange.erroGenerico": "Couldn't complete this. Please try again.",
+"pwdChange.sucesso": "Password updated successfully.",
 "dp.daysOnApps": "{n} days on the Apps.",
 "dp.yearOne": "{n} year",
 "dp.yearMany": "{n} years",
@@ -793,6 +853,54 @@
        script da app correr — assim nenhum módulo guarda em cache um texto
        em português quando o utilizador escolheu outro idioma. */
     if (window.I18N) window.I18N.applyStatic();
+
+
+
+    /* ---- Tamanho da app: Pequeno (padrão) e Médio ----
+       Só troca a classe no <html>; como o CSS está em rem, o app inteiro
+       redimensiona de uma vez. Aplicado cedo, ainda com o splash a cobrir
+       o ecrã, para não haver nenhum "salto" visível. */
+    (function () {
+      var STORAGE_KEY = 'appTamanho';
+      var saved = 'pequeno';
+      try {
+        var raw = (typeof cloudGet === 'function') ? cloudGet(STORAGE_KEY) : null;
+        if (raw === 'medio') saved = 'medio';
+      } catch (e) {  }
+      document.documentElement.classList.toggle('tam-medio', saved === 'medio');
+
+      function wireButtons () {
+        var btnP = document.getElementById('sizeBtnP');
+        var btnM = document.getElementById('sizeBtnM');
+        if (!btnP || !btnM) return;
+
+        function render () {
+          var isMedio = document.documentElement.classList.contains('tam-medio');
+          btnP.classList.toggle('is-active', !isMedio);
+          btnP.setAttribute('aria-checked', String(!isMedio));
+          btnM.classList.toggle('is-active', isMedio);
+          btnM.setAttribute('aria-checked', String(isMedio));
+        }
+
+        function choose (size) {
+          var isMedio = size === 'medio';
+          if (document.documentElement.classList.contains('tam-medio') === isMedio) return;
+          document.documentElement.classList.toggle('tam-medio', isMedio);
+          render();
+          try { if (typeof cloudSet === 'function') cloudSet(STORAGE_KEY, size); } catch (e) {  }
+        }
+
+        btnP.addEventListener('click', function () { choose('pequeno'); });
+        btnM.addEventListener('click', function () { choose('medio'); });
+        render();
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', wireButtons);
+      } else {
+        wireButtons();
+      }
+    })();
 
 
 
@@ -4201,9 +4309,13 @@
       });
     })();
 
+    // Como a conta entrou. 'google' esconde a troca de email e de password
+    // (essas contas geram-se e mudam-se pela própria conta Google).
+    var IS_GOOGLE = window.currentUserProvider === 'google';
+
     var state = {
       name: '',
-      email: '', // TODO: Supabase — preencher a partir da conta autenticada
+      email: window.currentUserEmail || '',
       photo: null,
       vehicle: '',
       vehicleYear: '',
@@ -4213,18 +4325,28 @@
     var PROFILE_STORAGE_KEY = 'mydocs.profile';
 
     function loadProfileFromStorage () {
+      var hasSavedName = false;
+      var hasSavedPhoto = false;
       try {
         var raw = cloudGet(PROFILE_STORAGE_KEY);
-        if (!raw) return;
-        var saved = JSON.parse(raw);
-        if (saved && typeof saved === 'object') {
-          if (typeof saved.name === 'string' && saved.name.trim()) state.name = saved.name;
-          if (typeof saved.photo === 'string') state.photo = saved.photo;
-          if (typeof saved.vehicle === 'string') state.vehicle = saved.vehicle;
-          if (typeof saved.vehicleYear === 'string') state.vehicleYear = saved.vehicleYear;
-          if (typeof saved.driverSince === 'string') state.driverSince = saved.driverSince;
+        if (raw) {
+          var saved = JSON.parse(raw);
+          if (saved && typeof saved === 'object') {
+            if (typeof saved.name === 'string' && saved.name.trim()) { state.name = saved.name; hasSavedName = true; }
+            if (typeof saved.photo === 'string') { state.photo = saved.photo; hasSavedPhoto = true; }
+            if (typeof saved.vehicle === 'string') state.vehicle = saved.vehicle;
+            if (typeof saved.vehicleYear === 'string') state.vehicleYear = saved.vehicleYear;
+            if (typeof saved.driverSince === 'string') state.driverSince = saved.driverSince;
+          }
         }
       } catch (e) {
+      }
+      // Primeiro login com Google: usa o nome/foto já recolhidos pela conta
+      // como ponto de partida. A pessoa pode trocar os dois à vontade em
+      // Dados Pessoais — a partir daí o valor guardado é que manda.
+      if (IS_GOOGLE) {
+        if (!hasSavedName && window.currentUserGoogleName) state.name = window.currentUserGoogleName;
+        if (!hasSavedPhoto && window.currentUserGoogleAvatar) state.photo = window.currentUserGoogleAvatar;
       }
     }
 
@@ -4273,6 +4395,7 @@
     var dpPhotoThumb     = document.getElementById('dpPhotoThumb');
     var dpUploadPhotoBtn = document.getElementById('dpUploadPhotoBtn');
     var dpSaveBtn        = document.getElementById('dpSaveBtn');
+    var dpChangePasswordBtn = document.getElementById('dpChangePasswordBtn');
     var driverSinceModalBackdrop = document.getElementById('driverSinceModalBackdrop');
     var driverSinceModalCard     = document.getElementById('driverSinceModalCard');
     var wheelDayCol   = document.getElementById('wheelDayCol');
@@ -4369,9 +4492,15 @@
         sheetVehicleInfo.textContent = state.email;
       }
       if (sheetDriverSince) {
-        sheetDriverSince.textContent = state.driverSince
-          ? driverSinceText(state.driverSince)
-          : I18N.t('sheet.daysZero');
+        // Sem data preenchida ainda: esconde a linha em vez de mostrar
+        // "0 dias nos Apps.".
+        if (state.driverSince) {
+          sheetDriverSince.hidden = false;
+          sheetDriverSince.textContent = driverSinceText(state.driverSince);
+        } else {
+          sheetDriverSince.hidden = true;
+          sheetDriverSince.textContent = '';
+        }
       }
     }
 
@@ -4491,11 +4620,28 @@
     }
 
     // ---- Dados Pessoais: formulário ----
+    var dpEmailOriginal = '';
+
     function fillDadosPessoaisForm () {
       if (!DP_UI_READY) return;
       dpNomeInput.value = state.name || '';
       var dpEmailInputEl = document.getElementById('dpEmailInput');
-      if (dpEmailInputEl) dpEmailInputEl.value = state.email;
+      if (dpEmailInputEl) {
+        dpEmailInputEl.value = state.email;
+        dpEmailOriginal = state.email;
+        // Quem entrou com Google só troca o email pela própria conta
+        // Google; quem entrou com email/senha pode editá-lo aqui.
+        dpEmailInputEl.readOnly = IS_GOOGLE;
+        dpEmailInputEl.classList.toggle('dp-input-readonly', IS_GOOGLE);
+        if (IS_GOOGLE) {
+          dpEmailInputEl.setAttribute('aria-readonly', 'true');
+          dpEmailInputEl.setAttribute('tabindex', '-1');
+        } else {
+          dpEmailInputEl.removeAttribute('aria-readonly');
+          dpEmailInputEl.removeAttribute('tabindex');
+        }
+      }
+      if (dpChangePasswordBtn) dpChangePasswordBtn.hidden = IS_GOOGLE;
       dpDriverSinceLabel.textContent = state.driverSince
         ? formatDpDate(new Date(state.driverSince))
         : I18N.t('dp.selecionarData');
@@ -4509,7 +4655,13 @@
 
     // ---- Dados Pessoais: seletor de data rotativo (dia / mês / ano) ----
     function DP_MONTH_ABBR () { return I18N.list('months.abbrCap'); }
-    var WHEEL_ITEM_H = 30;
+    // A altura do item é lida do CSS (1.875rem) em vez de fixa, porque o
+    // tamanho de letra Pequeno/Médio muda o valor real em pixels.
+    function wheelItemHeightPx () {
+      var remPx = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+      return 1.875 * remPx;
+    }
+    var WHEEL_ITEM_H = wheelItemHeightPx();
     var wheelYearsList = [];
 
     function buildWheelColumn (el, labels, initialIndex) {
@@ -4537,6 +4689,7 @@
     }
 
     function openDriverSinceModal () {
+      WHEEL_ITEM_H = wheelItemHeightPx();
       if (!DP_UI_READY) return;
       var base = state.driverSince ? new Date(state.driverSince) : new Date();
       base.setHours(0, 0, 0, 0);
@@ -4773,20 +4926,213 @@
         closeDriverSinceModal();
       });
 
+      var dpEmailInputEl = document.getElementById('dpEmailInput');
+
+      function isValidEmail (v) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+      }
+
       dpSaveBtn.addEventListener('click', function () {
         var nome = dpNomeInput.value.trim();
-
         if (nome) state.name = nome;
 
+        // Só quem entrou com email/senha pode trocar o email, e só entra
+        // no fluxo de confirmação se o valor realmente mudou.
+        var novoEmail = (!IS_GOOGLE && dpEmailInputEl) ? dpEmailInputEl.value.trim() : '';
+        var emailMudou = novoEmail && novoEmail !== dpEmailOriginal && isValidEmail(novoEmail);
+
         renderName();
-        renderProfileSummary();
         saveProfileToStorage();
 
+        if (emailMudou) {
+          closeProfileSheet();
+          if (window.EmailChangeModal) window.EmailChangeModal.open(novoEmail);
+          return;
+        }
+
+        renderProfileSummary();
         openSheetScreen(sheetScreenDefault, I18N.t('sheet.title'));
       });
+
+      if (dpChangePasswordBtn) {
+        dpChangePasswordBtn.addEventListener('click', function () {
+          closeProfileSheet();
+          if (window.PasswordChangeModal) window.PasswordChangeModal.open();
+        });
+      }
     }
 
     renderAvatar();
+
+    /* ---- Popup "Confirmar novo email" ----
+       Só existe para quem entrou com email/senha (ver IS_GOOGLE). Pede a
+       password atual, reautentica com ela e só então chama updateUser —
+       a troca real só se completa quando a pessoa confirmar o link
+       enviado para o novo endereço. */
+    (function () {
+      var backdrop   = document.getElementById('emailChangeModalBackdrop');
+      var card       = document.getElementById('emailChangeModalCard');
+      var formView   = document.getElementById('emailChangeFormView');
+      var successView = document.getElementById('emailChangeSuccessView');
+      var passInput  = document.getElementById('emailChangePasswordInput');
+      var errorEl    = document.getElementById('emailChangeError');
+      var continueBtn = document.getElementById('emailChangeContinueBtn');
+      var okBtn      = document.getElementById('emailChangeOkBtn');
+      if (!backdrop || !card || !continueBtn) return;
+
+      var pendingEmail = '';
+
+      function reset () {
+        passInput.value = '';
+        errorEl.textContent = '';
+        formView.hidden = false;
+        successView.hidden = true;
+        continueBtn.disabled = false;
+        continueBtn.textContent = I18N.t('emailChange.continuar');
+      }
+
+      function open (novoEmail) {
+        pendingEmail = novoEmail;
+        reset();
+        backdrop.classList.add('visible');
+        syncBodyScroll();
+      }
+
+      function close () {
+        backdrop.classList.remove('visible');
+        syncBodyScroll();
+      }
+
+      continueBtn.addEventListener('click', function () {
+        var pass = passInput.value;
+        if (!pass) {
+          errorEl.textContent = I18N.t('emailChange.erroSenha');
+          return;
+        }
+        if (!window.AuthAPI) { errorEl.textContent = I18N.t('emailChange.erroGenerico'); return; }
+
+        continueBtn.disabled = true;
+        continueBtn.textContent = I18N.t('emailChange.aguarde');
+        errorEl.textContent = '';
+
+        window.AuthAPI.verifyPassword(pass).then(function (res) {
+          if (res && res.error) {
+            errorEl.textContent = I18N.t('emailChange.erroSenha');
+            continueBtn.disabled = false;
+            continueBtn.textContent = I18N.t('emailChange.continuar');
+            return;
+          }
+          window.AuthAPI.updateEmail(pendingEmail).then(function (res2) {
+            continueBtn.disabled = false;
+            continueBtn.textContent = I18N.t('emailChange.continuar');
+            if (res2 && res2.error) {
+              errorEl.textContent = I18N.t('emailChange.erroGenerico');
+              return;
+            }
+            formView.hidden = true;
+            successView.hidden = false;
+          }).catch(function () {
+            continueBtn.disabled = false;
+            continueBtn.textContent = I18N.t('emailChange.continuar');
+            errorEl.textContent = I18N.t('emailChange.erroGenerico');
+          });
+        }).catch(function () {
+          continueBtn.disabled = false;
+          continueBtn.textContent = I18N.t('emailChange.continuar');
+          errorEl.textContent = I18N.t('emailChange.erroGenerico');
+        });
+      });
+
+      if (okBtn) okBtn.addEventListener('click', close);
+      backdrop.addEventListener('click', function (e) { if (e.target === backdrop) close(); });
+      card.addEventListener('click', function (e) { e.stopPropagation(); });
+
+      window.EmailChangeModal = { open: open, close: close };
+    })();
+
+    /* ---- Popup "Alterar password" ----
+       Também só para quem entrou com email/senha. Confirma a password
+       atual antes de aceitar a nova, para evitar que alguém troque a
+       password de uma sessão aberta sem confirmar quem é. */
+    (function () {
+      var backdrop  = document.getElementById('passwordChangeModalBackdrop');
+      var card      = document.getElementById('passwordChangeModalCard');
+      var oldInput  = document.getElementById('pwdChangeOldInput');
+      var newInput  = document.getElementById('pwdChangeNewInput');
+      var confirmInput = document.getElementById('pwdChangeConfirmInput');
+      var errorEl   = document.getElementById('pwdChangeError');
+      var concluirBtn = document.getElementById('pwdChangeConcluirBtn');
+      if (!backdrop || !card || !concluirBtn) return;
+
+      function reset () {
+        oldInput.value = '';
+        newInput.value = '';
+        confirmInput.value = '';
+        errorEl.textContent = '';
+        concluirBtn.disabled = false;
+        concluirBtn.textContent = I18N.t('pwdChange.concluir');
+      }
+
+      function open () {
+        reset();
+        backdrop.classList.add('visible');
+        syncBodyScroll();
+      }
+
+      function close () {
+        backdrop.classList.remove('visible');
+        syncBodyScroll();
+      }
+
+      concluirBtn.addEventListener('click', function () {
+        var oldPass = oldInput.value;
+        var newPass = newInput.value;
+        var confirmPass = confirmInput.value;
+
+        if (!oldPass) { errorEl.textContent = I18N.t('pwdChange.erroSenha'); return; }
+        if (newPass.length < 6) { errorEl.textContent = I18N.t('pwdChange.erroCurta'); return; }
+        if (newPass !== confirmPass) { errorEl.textContent = I18N.t('pwdChange.erroDiferente'); return; }
+        if (!window.AuthAPI) { errorEl.textContent = I18N.t('pwdChange.erroGenerico'); return; }
+
+        concluirBtn.disabled = true;
+        concluirBtn.textContent = I18N.t('pwdChange.aguarde');
+        errorEl.textContent = '';
+
+        window.AuthAPI.verifyPassword(oldPass).then(function (res) {
+          if (res && res.error) {
+            errorEl.textContent = I18N.t('pwdChange.erroSenha');
+            concluirBtn.disabled = false;
+            concluirBtn.textContent = I18N.t('pwdChange.concluir');
+            return;
+          }
+          window.AuthAPI.updatePassword(newPass).then(function (res2) {
+            if (res2 && res2.error) {
+              concluirBtn.disabled = false;
+              concluirBtn.textContent = I18N.t('pwdChange.concluir');
+              errorEl.textContent = I18N.t('pwdChange.erroGenerico');
+              return;
+            }
+            errorEl.style.color = 'var(--brand-green)';
+            errorEl.textContent = I18N.t('pwdChange.sucesso');
+            concluirBtn.textContent = I18N.t('pwdChange.concluir');
+            setTimeout(function () { errorEl.style.color = ''; close(); }, 1200);
+          }).catch(function () {
+            concluirBtn.disabled = false;
+            concluirBtn.textContent = I18N.t('pwdChange.concluir');
+            errorEl.textContent = I18N.t('pwdChange.erroGenerico');
+          });
+        }).catch(function () {
+          concluirBtn.disabled = false;
+          concluirBtn.textContent = I18N.t('pwdChange.concluir');
+          errorEl.textContent = I18N.t('pwdChange.erroGenerico');
+        });
+      });
+
+      backdrop.addEventListener('click', function (e) { if (e.target === backdrop) close(); });
+      card.addEventListener('click', function (e) { e.stopPropagation(); });
+
+      window.PasswordChangeModal = { open: open, close: close };
+    })();
 
     // Usados pelo ecrã "Idioma" e pelo tutorial guiado para abrir/fechar
     // o painel de Ajustes a partir de fora deste bloco.
@@ -4855,6 +5201,20 @@
 
         if (isVisible(photoModalBackdrop, 'visible')) {
           closePhotoModal();
+          cancelExitArm();
+          return;
+        }
+
+        var emailChangeBackdropEl = document.getElementById('emailChangeModalBackdrop');
+        if (isVisible(emailChangeBackdropEl, 'visible')) {
+          if (window.EmailChangeModal) window.EmailChangeModal.close();
+          cancelExitArm();
+          return;
+        }
+
+        var pwdChangeBackdropEl = document.getElementById('passwordChangeModalBackdrop');
+        if (isVisible(pwdChangeBackdropEl, 'visible')) {
+          if (window.PasswordChangeModal) window.PasswordChangeModal.close();
           cancelExitArm();
           return;
         }
