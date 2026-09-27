@@ -189,6 +189,7 @@
 "nav.relatorio": "Download Relatório",
 "metacard.label": "Meta semanal",
 "metacard.suffix": " concluída",
+"metacard.porDefinir": "Por definir",
 "relatorio.title": "Download Relatório",
 "relatorio.intro": "O relatório reúne os detalhes diários do mês escolhido, todos juntos em um único PDF. Selecione o mês desejado no filtro abaixo.",
 "relatorio.download": "Baixar PDF",
@@ -324,8 +325,8 @@
 "dist.insiraFim": "Insira Km Fim",
 "dist.percorridos": "{v} km percorridos",
 "meta.title": "Meta Semanal",
-"meta.welcome": "Defina sua meta de ganhos da semana. Pode alterar quando quiser.",
-"meta.welcomeKept": "Nova semana! Mantivemos a sua meta anterior ({v}€ {t}). Pode alterar quando quiser.",
+"meta.welcome": "Defina sua meta de ganhos da semana na página inicial. Pode alterar sempre que quiser.",
+"meta.welcomeKept": "Mantivemos sua meta em €{v} {t}. Pode alterar sempre que quiser na página inicial.",
 "meta.valorAria": "Valor da meta semanal",
 "meta.bruto": "Bruto",
 "meta.liquido": "Líquido",
@@ -560,6 +561,7 @@
 "nav.relatorio": "Download Report",
 "metacard.label": "Weekly goal",
 "metacard.suffix": " complete",
+"metacard.porDefinir": "Not set",
 "relatorio.title": "Download Report",
 "relatorio.intro": "The report gathers the daily details of the chosen month, all together in a single PDF. Select the month you want in the filter below.",
 "relatorio.download": "Download PDF",
@@ -695,8 +697,8 @@
 "dist.insiraFim": "Enter End Km",
 "dist.percorridos": "{v} km travelled",
 "meta.title": "Weekly Goal",
-"meta.welcome": "Set your earnings goal for the week. You can change it whenever you like.",
-"meta.welcomeKept": "New week! We kept your previous goal (€{v} {t}). You can change it whenever you like.",
+"meta.welcome": "Set your weekly earnings goal on the home screen. You can change it whenever you like.",
+"meta.welcomeKept": "We kept your goal at €{v} {t}. You can change it whenever you like on the home screen.",
 "meta.valorAria": "Weekly goal amount",
 "meta.bruto": "Gross",
 "meta.liquido": "Net",
@@ -2327,14 +2329,23 @@
       });
 
       function renderCurrent () {
+        var btnInner    = document.getElementById('metaSemanalBtnInner');
+        var porDefinir  = document.getElementById('metaSemanalPorDefinir');
+        var lapis       = document.getElementById('metaSemanalLapis');
         if (config) {
           currentText.textContent = I18N.t('meta.current', { v: config.valor, t: TIPO_LABEL_OF(config.tipo), p: config.percent });
           currentText.classList.add('is-set');
           if (percentLink) percentLink.textContent = config.percent + '%';
+          if (btnInner)   btnInner.style.display   = '';
+          if (porDefinir) porDefinir.style.display  = 'none';
+          if (lapis)      lapis.style.display        = '';
         } else {
           currentText.textContent = I18N.t('meta.nenhuma');
           currentText.classList.remove('is-set');
           if (percentLink) percentLink.textContent = '0%';
+          if (btnInner)   btnInner.style.display   = 'none';
+          if (porDefinir) porDefinir.style.display  = '';
+          if (lapis)      lapis.style.display        = 'none';
         }
         window.getMetaSemanalConfig = function () { return config; };
         document.dispatchEvent(new CustomEvent('metaSemanalConfigChanged', { detail: config }));
@@ -2391,37 +2402,38 @@
 
         if (welcomeFixasEmptyEl) welcomeFixasEmptyEl.hidden = temFixas;
 
-        var pulada = temFixas && isFixasSkippedForWeek(currentWeekKey());
+        // Popup abre sempre com "Manter" pré-selecionado; o estado visual
+        // dos botões é gerido pela variável welcomeFixasEscolha (não pelo
+        // cloudGet), porque a escolha só é aplicada ao clicar em Salvar.
+        var selManter = (welcomeFixasEscolha === 'manter');
         if (welcomeFixasManterBtn) {
           welcomeFixasManterBtn.disabled = !temFixas;
-          welcomeFixasManterBtn.classList.toggle('active', temFixas && !pulada);
-          welcomeFixasManterBtn.setAttribute('aria-pressed', (temFixas && !pulada) ? 'true' : 'false');
+          welcomeFixasManterBtn.classList.toggle('active', selManter);
+          welcomeFixasManterBtn.setAttribute('aria-pressed', selManter ? 'true' : 'false');
         }
         if (welcomeFixasPularBtn) {
           welcomeFixasPularBtn.disabled = !temFixas;
-          welcomeFixasPularBtn.classList.toggle('active', pulada);
-          welcomeFixasPularBtn.setAttribute('aria-pressed', pulada ? 'true' : 'false');
+          welcomeFixasPularBtn.classList.toggle('active', !selManter);
+          welcomeFixasPularBtn.setAttribute('aria-pressed', (!selManter) ? 'true' : 'false');
         }
       }
 
+      // Variável local que guarda a escolha do utilizador dentro do popup.
+      // Começa sempre em 'manter' quando o popup abre.
+      var welcomeFixasEscolha = 'manter';
+
       if (welcomeFixasManterBtn) {
         welcomeFixasManterBtn.addEventListener('click', function () {
-          setFixasSkippedForWeek(currentWeekKey(), false);
-          document.dispatchEvent(new CustomEvent('despesasFixasChanged'));
+          welcomeFixasEscolha = 'manter';
+          renderWelcomeFixas();
         });
       }
       if (welcomeFixasPularBtn) {
         welcomeFixasPularBtn.addEventListener('click', function () {
-          // "Zerar Despesas" agora exclui de vez as despesas fixas
-          // cadastradas (mesma exclusão da página Despesas Fixas), em vez
-          // de só pular o lançamento desta semana — assim elas não voltam
-          // a ser perguntadas nas semanas seguintes.
-          if (window.DespesasCadastro && typeof window.DespesasCadastro.excluirTodasAtivas === 'function') {
-            window.DespesasCadastro.excluirTodasAtivas();
-          }
+          welcomeFixasEscolha = 'zerar';
+          renderWelcomeFixas();
         });
       }
-      document.addEventListener('despesasFixasChanged', renderWelcomeFixas);
 
       function openWelcomeModal () {
         if (!welcomeModalBackdrop) return;
@@ -2433,22 +2445,30 @@
             welcomeModalText.textContent = I18N.t('meta.welcome');
           }
         }
+        // Sempre abre com "Manter" pré-selecionado.
+        welcomeFixasEscolha = 'manter';
         renderWelcomeFixas();
         closeAllOverlays();
         welcomeModalBackdrop.classList.add('visible');
       }
-      function closeWelcomeModal () {
+      function closeWelcomeModal (aplicar) {
+        // Se aplicar=true (clique em Salvar), aplica a escolha actual.
+        // Se aplicar=false (fechar pelo backdrop ou outro meio), não altera nada.
+        if (aplicar) {
+          setFixasSkippedForWeek(currentWeekKey(), welcomeFixasEscolha === 'zerar');
+          document.dispatchEvent(new CustomEvent('despesasFixasChanged'));
+        }
         if (welcomeModalBackdrop) welcomeModalBackdrop.classList.remove('visible');
       }
 
-      if (welcomeSalvarBtn) welcomeSalvarBtn.addEventListener('click', closeWelcomeModal);
+      if (welcomeSalvarBtn) welcomeSalvarBtn.addEventListener('click', function () { closeWelcomeModal(true); });
       if (welcomeModalBackdrop) {
         welcomeModalBackdrop.addEventListener('click', function (e) {
-          if (e.target === welcomeModalBackdrop) closeWelcomeModal();
+          if (e.target === welcomeModalBackdrop) closeWelcomeModal(false);
         });
       }
 
-      window.MetaSemanalWelcomeModal = { open: openWelcomeModal, close: closeWelcomeModal };
+      window.MetaSemanalWelcomeModal = { open: openWelcomeModal, close: function () { closeWelcomeModal(false); } };
 
       function setTipo (tipo) {
         tipoAtual = tipo;
