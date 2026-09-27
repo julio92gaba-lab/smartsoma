@@ -134,35 +134,45 @@
                                         <p class="ganhos-hint-caption" data-i18n="ganhos.hint">Insira aqui seus ganhos e despesas.</p>
                                     </span>
                                 </div>
+                                <div class="ganhos-tile-scroll-wrap" id="ganhosIncomeScrollWrap">
+                                    <div class="ganhos-tile-scroll" id="ganhosIncomeScroll">
+                                        <button type="button" class="ganhos-tile-add" id="btnAddPlatform" data-i18n-aria="ganhos.addPlataforma" aria-label="Adicionar plataforma">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                                <line x1="12" y1="5" x2="12" y2="19"/>
+                                                <line x1="5" y1="12" x2="19" y2="12"/>
+                                            </svg>
+                                        </button>
+                                        <button type="button" class="list-row ganhos-tile ganhos-tile-income ganhos-tile-scroll-item" id="listRowUber" data-i18n-aria="ganhos.uber" aria-label="Ganhos Uber" aria-haspopup="true" aria-expanded="false">
+                                            <span class="ganhos-tile-icon-row">
+                                                <span class="list-row-icon"><img src="01uber.png" alt="" draggable="false"></span>
+                                                <span class="ganhos-tile-arrow" aria-hidden="true">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                                                        <line x1="5" y1="12" x2="19" y2="12"/>
+                                                        <polyline points="13 6 19 12 13 18"/>
+                                                    </svg>
+                                                </span>
+                                            </span>
+                                            <span class="list-row-title" data-i18n="ganhos.uber">Ganhos Uber</span>
+                                            <span class="list-row-value" id="badgeUber">€ 0.00</span>
+                                            <span class="ganhos-tile-ticks" aria-hidden="true"></span>
+                                        </button>
+                                        <button type="button" class="list-row ganhos-tile ganhos-tile-income ganhos-tile-scroll-item" id="listRowBolt" data-i18n-aria="ganhos.bolt" aria-label="Ganhos Bolt" aria-haspopup="true" aria-expanded="false">
+                                            <span class="ganhos-tile-icon-row">
+                                                <span class="list-row-icon"><img src="02bolt.png" alt="" draggable="false"></span>
+                                                <span class="ganhos-tile-arrow" aria-hidden="true">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                                                        <line x1="5" y1="12" x2="19" y2="12"/>
+                                                        <polyline points="13 6 19 12 13 18"/>
+                                                    </svg>
+                                                </span>
+                                            </span>
+                                            <span class="list-row-title" data-i18n="ganhos.bolt">Ganhos Bolt</span>
+                                            <span class="list-row-value" id="badgeBolt">€ 0.00</span>
+                                            <span class="ganhos-tile-ticks" aria-hidden="true"></span>
+                                        </button>
+                                    </div>
+                                </div>
                                 <div class="home-list-rows ganhos-tile-grid">
-                                    <button type="button" class="list-row ganhos-tile ganhos-tile-income" id="listRowUber" data-i18n-aria="ganhos.uber" aria-label="Rendimentos Uber" aria-haspopup="true" aria-expanded="false">
-                                        <span class="ganhos-tile-icon-row">
-                                            <span class="list-row-icon"><img src="01uber.png" alt="" draggable="false"></span>
-                                            <span class="ganhos-tile-arrow" aria-hidden="true">
-                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-                                                    <line x1="5" y1="12" x2="19" y2="12"/>
-                                                    <polyline points="13 6 19 12 13 18"/>
-                                                </svg>
-                                            </span>
-                                        </span>
-                                        <span class="list-row-title" data-i18n="ganhos.uber">Rendimentos Uber</span>
-                                        <span class="list-row-value" id="badgeUber">€ 0.00</span>
-                                        <span class="ganhos-tile-ticks" aria-hidden="true"></span>
-                                    </button>
-                                    <button type="button" class="list-row ganhos-tile ganhos-tile-income" id="listRowBolt" data-i18n-aria="ganhos.bolt" aria-label="Rendimentos Bolt" aria-haspopup="true" aria-expanded="false">
-                                        <span class="ganhos-tile-icon-row">
-                                            <span class="list-row-icon"><img src="02bolt.png" alt="" draggable="false"></span>
-                                            <span class="ganhos-tile-arrow" aria-hidden="true">
-                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-                                                    <line x1="5" y1="12" x2="19" y2="12"/>
-                                                    <polyline points="13 6 19 12 13 18"/>
-                                                </svg>
-                                            </span>
-                                        </span>
-                                        <span class="list-row-title" data-i18n="ganhos.bolt">Rendimentos Bolt</span>
-                                        <span class="list-row-value" id="badgeBolt">€ 0.00</span>
-                                        <span class="ganhos-tile-ticks" aria-hidden="true"></span>
-                                    </button>
                                     <button type="button" class="list-row ganhos-tile ganhos-tile-expense" id="listRowDespesas" data-i18n-aria="ganhos.despesas" aria-label="Despesas" aria-haspopup="true" aria-expanded="false">
                                         <span class="ganhos-tile-icon-row">
                                             <span class="list-row-icon"><img src="04despesas.png" alt="" draggable="false"></span>
@@ -469,7 +479,7 @@
                         <div class="sheet-avatar" id="sheetAvatar" role="button" tabindex="0" data-i18n-aria="photo.viewAria" aria-label="Ver foto de perfil"></div>
                         <div class="sheet-profile-info">
                             <p class="sheet-username" id="sheetUsername">Utilizador</p>
-                            <p class="sheet-subinfo" id="sheetVehicleInfo"></p>
+                            <p class="sheet-email" id="sheetVehicleInfo"></p>
                             <p class="sheet-subinfo" id="sheetDriverSince">0 dias nos Apps.</p>
                         </div>
                     </div>
@@ -488,6 +498,13 @@
                                 <line x1="7" y1="14" x2="12" y2="14"/>
                             </svg>
                             <span data-i18n="sheet.despesasFixas">Despesas Fixas</span>
+                        </button>
+                        <button type="button" class="sheet-action-btn" id="openMultiplataformaBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="8" cy="8" r="4.2"/>
+                                <circle cx="16" cy="16" r="4.2"/>
+                            </svg>
+                            <span data-i18n="sheet.multiplataforma">Multiplataforma</span>
                         </button>
                         <button type="button" class="sheet-action-btn sheet-action-btn-split" id="openIdiomaBtn">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -599,6 +616,68 @@
                     <button type="button" class="dp-save-btn" id="langSaveBtn" data-i18n="idioma.save">Salvar</button>
                 </div>
             </div>
+            <div class="sheet-screen" id="sheetScreenDespesasFixas" hidden>
+                <div class="sheet-content sheet-page-content">
+                    <p class="mm-helper-text" data-i18n="fixas.helper">Despesas que se repetem toda SEMANA (ex: Aluguel do carro, Taxa plataforma). Escolha % do valor bruto (atualizado automaticamente conforme os ganhos são inseridos), ou valor fixo em €. Este valor é lançado na segunda feira de cada semana.</p>
+
+                    <div class="despesa-form">
+                        <input type="text" class="despesa-desc-input" id="despesaDescInput" data-i18n-ph="fixas.descPh" placeholder="DESCRIÇÃO" data-i18n-aria="fixas.descAria" aria-label="Descrição da despesa">
+
+                        <div class="despesa-row2">
+                            <input type="text" inputmode="decimal" class="despesa-valor-input" id="despesaValorInput" placeholder="%" data-i18n-aria="fixas.valorAria" aria-label="Valor da despesa">
+
+                            <button type="button" class="despesa-type-btn active" id="despesaTipoPercentBtn" data-tipo="percentual" data-i18n-aria="fixas.percentAria" aria-label="Percentual" aria-pressed="true">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="19" y1="5" x2="5" y2="19"/>
+                                    <circle cx="6.5" cy="6.5" r="2.5"/>
+                                    <circle cx="17.5" cy="17.5" r="2.5"/>
+                                </svg>
+                            </button>
+
+                            <button type="button" class="despesa-type-btn" id="despesaTipoEuroBtn" data-tipo="euro" data-i18n-aria="fixas.euroAria" aria-label="Euro" aria-pressed="false">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M17.5 6.5c-1.1-1.3-2.7-2-4.5-2-3.6 0-6.5 3.4-6.5 7.5s2.9 7.5 6.5 7.5c1.8 0 3.4-.7 4.5-2"/>
+                                    <line x1="4" y1="10" x2="13" y2="10"/>
+                                    <line x1="4" y1="14" x2="12" y2="14"/>
+                                </svg>
+                            </button>
+
+                            <span class="despesa-weekly-label" data-i18n="fixas.semanal">Semanal</span>
+                        </div>
+
+                        <button type="button" class="mm-save-btn" id="despesaSalvarBtn" data-i18n="app.save">Salvar</button>
+                    </div>
+
+                    <h4 class="despesa-list-title" data-i18n="fixas.listTitle">Despesas Cadastradas</h4>
+                    <div class="despesa-list" id="despesaListEl"></div>
+                </div>
+            </div>
+            <div class="sheet-screen" id="sheetScreenMultiplataforma" hidden>
+                <div class="sheet-content sheet-page-content">
+                    <h4 class="despesa-list-title" id="mpAtuaisTitle" data-i18n="mp.atuais">Atuais:</h4>
+                    <div class="despesa-list" id="mpListaAtuais"></div>
+
+                    <h4 class="despesa-list-title" data-i18n="mp.adicionar">Adicionar</h4>
+                    <input type="text" class="despesa-desc-input" id="mpNovaInput" data-i18n-ph="mp.novaPh" placeholder="NOME (máx. 9)" maxlength="9" required data-i18n-aria="mp.novaAria" aria-label="Nome da nova plataforma">
+
+                    <button type="button" class="mm-save-btn" id="mpSalvarBtn" data-i18n="app.save">Salvar</button>
+                </div>
+            </div>
+            <div class="sheet-screen" id="sheetScreenTamanho" hidden>
+                <div class="sheet-content sheet-page-content">
+                    <p class="dp-notice-text" data-i18n="tamanho.popupTexto">Escolha para aumentar ou diminuir a fonte e os elementos em todo o app.</p>
+                    <div class="tamanho-illustration">
+                        <button type="button" class="tamanho-option" id="tamanhoOptionP">
+                            <span class="tamanho-option-letter">P</span>
+                            <span class="tamanho-option-label" data-i18n="sheet.tamanhoPequeno">Pequeno</span>
+                        </button>
+                        <button type="button" class="tamanho-option" id="tamanhoOptionG">
+                            <span class="tamanho-option-letter">G</span>
+                            <span class="tamanho-option-label" data-i18n="sheet.tamanhoGrande">Grande</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
             <div class="sheet-screen" id="sheetScreenAjuda" hidden>
                 <div class="sheet-content sheet-page-content">
                     <div class="ajuda-icon" aria-hidden="true">
@@ -662,24 +741,6 @@
 
     <input type="file" accept="image/*" id="fileInput" hidden>
 
-    <div class="modal-backdrop" id="tamanhoModalBackdrop">
-        <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="tamanhoModalTitle" id="tamanhoModalCard">
-            <h3 class="modal-title" id="tamanhoModalTitle" data-i18n="tamanho.popupTitle">Tamanho da fonte</h3>
-            <p class="dp-notice-text" data-i18n="tamanho.popupTexto">Escolha para aumentar ou diminuir a fonte e os elementos em todo o app.</p>
-            <div class="tamanho-illustration">
-                <button type="button" class="tamanho-option" id="tamanhoOptionP">
-                    <span class="tamanho-option-letter">P</span>
-                    <span class="tamanho-option-label" data-i18n="sheet.tamanhoPequeno">Pequeno</span>
-                </button>
-                <button type="button" class="tamanho-option" id="tamanhoOptionG">
-                    <span class="tamanho-option-letter">G</span>
-                    <span class="tamanho-option-label" data-i18n="sheet.tamanhoGrande">Grande</span>
-                </button>
-            </div>
-            <button type="button" class="dp-save-btn" id="tamanhoConcluirBtn" data-i18n="tamanho.concluir">Concluído</button>
-        </div>
-    </div>
-
     <div class="modal-backdrop" id="photoModalBackdrop">
         <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="photoModalTitle" id="photoModalCard">
             <h3 class="modal-title" id="photoModalTitle" data-i18n="photo.title">Alterar foto de perfil</h3>
@@ -721,44 +782,6 @@
         </div>
     </div>
 
-    <div class="mm-backdrop" id="despesasModalBackdrop">
-        <div class="mm-card" role="dialog" aria-modal="true" aria-labelledby="despesasModalTitle" id="despesasModalCard">
-            <h3 class="mm-title" id="despesasModalTitle" data-i18n="fixas.title">Despesas Fixas</h3>
-            <p class="mm-helper-text" data-i18n="fixas.helper">Despesas que se repetem toda SEMANA (ex: Aluguel do carro, Taxa plataforma). Escolha % do valor bruto (atualizado automaticamente conforme os ganhos são inseridos), ou valor fixo em €. Este valor é lançado na segunda feira de cada semana.</p>
-
-            <div class="despesa-form">
-                <input type="text" class="despesa-desc-input" id="despesaDescInput" data-i18n-ph="fixas.descPh" placeholder="DESCRIÇÃO" data-i18n-aria="fixas.descAria" aria-label="Descrição da despesa">
-
-                <div class="despesa-row2">
-                    <input type="text" inputmode="decimal" class="despesa-valor-input" id="despesaValorInput" placeholder="%" data-i18n-aria="fixas.valorAria" aria-label="Valor da despesa">
-
-                    <button type="button" class="despesa-type-btn active" id="despesaTipoPercentBtn" data-tipo="percentual" data-i18n-aria="fixas.percentAria" aria-label="Percentual" aria-pressed="true">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="19" y1="5" x2="5" y2="19"/>
-                            <circle cx="6.5" cy="6.5" r="2.5"/>
-                            <circle cx="17.5" cy="17.5" r="2.5"/>
-                        </svg>
-                    </button>
-
-                    <button type="button" class="despesa-type-btn" id="despesaTipoEuroBtn" data-tipo="euro" data-i18n-aria="fixas.euroAria" aria-label="Euro" aria-pressed="false">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M17.5 6.5c-1.1-1.3-2.7-2-4.5-2-3.6 0-6.5 3.4-6.5 7.5s2.9 7.5 6.5 7.5c1.8 0 3.4-.7 4.5-2"/>
-                            <line x1="4" y1="10" x2="13" y2="10"/>
-                            <line x1="4" y1="14" x2="12" y2="14"/>
-                        </svg>
-                    </button>
-
-                    <span class="despesa-weekly-label" data-i18n="fixas.semanal">Semanal</span>
-                </div>
-
-                <button type="button" class="mm-save-btn" id="despesaSalvarBtn" data-i18n="app.save">Salvar</button>
-            </div>
-
-            <h4 class="despesa-list-title" data-i18n="fixas.listTitle">Despesas Cadastradas</h4>
-            <div class="despesa-list" id="despesaListEl"></div>
-        </div>
-    </div>
-
     <div class="mm-backdrop" id="despesaConfirmBackdrop" data-mm-nested="true">
         <div class="mm-card" role="dialog" aria-modal="true" aria-labelledby="despesaConfirmTitle" id="despesaConfirmCard">
             <h3 class="mm-title" id="despesaConfirmTitle" data-i18n="fixas.confirmTitle">Excluir despesa</h3>
@@ -766,6 +789,17 @@
             <div class="despesa-confirm-actions">
                 <button type="button" class="despesa-confirm-cancel" id="despesaConfirmCancelBtn" data-i18n="app.cancel">Cancelar</button>
                 <button type="button" class="despesa-confirm-delete" id="despesaConfirmDeleteBtn" data-i18n="app.delete">Excluir</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="mm-backdrop" id="mpConfirmBackdrop" data-mm-nested="true">
+        <div class="mm-card" role="dialog" aria-modal="true" aria-labelledby="mpConfirmTitle" id="mpConfirmCard">
+            <h3 class="mm-title" id="mpConfirmTitle" data-i18n="mp.confirmTitle">Excluir plataforma</h3>
+            <p class="despesa-confirm-text" id="mpConfirmText" data-i18n="mp.confirmText">Tem certeza que deseja excluir esta plataforma?</p>
+            <div class="despesa-confirm-actions">
+                <button type="button" class="despesa-confirm-cancel" id="mpConfirmCancelBtn" data-i18n="app.cancel">Cancelar</button>
+                <button type="button" class="despesa-confirm-delete" id="mpConfirmDeleteBtn" data-i18n="app.delete">Excluir</button>
             </div>
         </div>
     </div>
@@ -947,6 +981,27 @@
                     <span data-i18n="meta.zerar">Zerar</span>
                 </button>
             </div>
+        </div>
+    </div>
+
+    <div class="mm-backdrop" id="metaSemanalWelcomeModalBackdrop">
+        <div class="mm-card" role="dialog" aria-modal="true" aria-labelledby="metaSemanalWelcomeModalTitle" id="metaSemanalWelcomeModalCard">
+            <h3 class="mm-title" id="metaSemanalWelcomeModalTitle" data-i18n="meta.title">Meta Semanal</h3>
+
+            <p class="meta-semanal-welcome visible" id="metaSemanalWelcomeModalText" data-i18n="meta.welcome">Defina sua meta de ganhos da semana. Pode alterar quando quiser.</p>
+
+            <div class="meta-fixas-section" id="metaFixasWelcomeSection">
+                <h3 class="mm-title" data-i18n="sheet.despesasFixas">Despesas Fixas</h3>
+                <div class="meta-fixas-list" id="metaFixasWelcomeListEl"></div>
+                <p class="meta-fixas-empty" id="metaFixasWelcomeEmptyEl" data-i18n="meta.fixasEmpty" hidden>Nenhuma despesa fixa cadastrada. Para usar esta opção, cadastre em Ajustes &rsaquo; Despesas Fixas.</p>
+                <div class="meta-fixas-row">
+                    <button type="button" class="meta-tipo-btn active" id="metaFixasWelcomeManterBtn" data-fixas="manter" aria-pressed="true" data-i18n="meta.fixasManter">Manter</button>
+                    <button type="button" class="meta-tipo-btn" id="metaFixasWelcomePularBtn" data-fixas="pular" aria-pressed="false" data-i18n="meta.fixasZerar">Zerar Despesas</button>
+                </div>
+                <p class="mm-helper-text" data-i18n="meta.podeAlterar">Pode alterar quando quiser.</p>
+            </div>
+
+            <button type="button" class="mm-save-btn" id="metaSemanalWelcomeSalvarBtn" data-i18n="app.save">Salvar</button>
         </div>
     </div>
 

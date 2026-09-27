@@ -884,10 +884,10 @@
           opacity:1;
         }
         .home-list-inner.is-sliding .home-list-page.slide-current{ transform:translateX(0); }
-        .home-list-inner.is-sliding .home-list-page.slide-out-left{ transform:translateX(-100%); }
-        .home-list-inner.is-sliding .home-list-page.slide-out-right{ transform:translateX(100%); }
-        .home-list-inner.is-sliding .home-list-page.slide-in-left{ transform:translateX(-100%); }
-        .home-list-inner.is-sliding .home-list-page.slide-in-right{ transform:translateX(100%); }
+        .home-list-inner.is-sliding .home-list-page.slide-out-left{ transform:translateX(calc(-100% - 1.25rem)); }
+        .home-list-inner.is-sliding .home-list-page.slide-out-right{ transform:translateX(calc(100% + 1.25rem)); }
+        .home-list-inner.is-sliding .home-list-page.slide-in-left{ transform:translateX(calc(-100% - 1.25rem)); }
+        .home-list-inner.is-sliding .home-list-page.slide-in-right{ transform:translateX(calc(100% + 1.25rem)); }
         @media (prefers-reduced-motion:no-preference){
           .home-list-inner.is-sliding .home-list-page{ transition:transform .3s cubic-bezier(.22,.8,.32,1); }
         }
@@ -1018,6 +1018,80 @@
           display:grid;
           grid-template-columns:repeat(2, 1fr);
           gap:0.5rem;
+          margin-top:0.5rem;
+        }
+        /* ---- Ganhos: faixa deslizante das plataformas de ganhos (Uber, Bolt, ...) ----
+           Linha independente da grade de baixo (Despesas/Distância). Rola para
+           os lados quando há mais plataformas do que cabem na tela, com um
+           degradê nas bordas indicando que há mais conteúdo por vir. */
+        .ganhos-tile-scroll-wrap{
+          position:relative;
+          z-index:1;
+        }
+        .ganhos-tile-scroll-wrap::before,
+        .ganhos-tile-scroll-wrap::after{
+          content:"";
+          position:absolute;
+          top:0; bottom:0;
+          width:1.75rem;
+          z-index:2;
+          pointer-events:none;
+          opacity:0;
+        }
+        @media (prefers-reduced-motion:no-preference){
+          .ganhos-tile-scroll-wrap::before,
+          .ganhos-tile-scroll-wrap::after{ transition:opacity .15s ease; }
+        }
+        .ganhos-tile-scroll-wrap::before{
+          left:0;
+          background:linear-gradient(to right, rgba(30,158,90,0.35), transparent);
+        }
+        .ganhos-tile-scroll-wrap::after{
+          right:0;
+          background:linear-gradient(to left, rgba(30,158,90,0.35), transparent);
+        }
+        .ganhos-tile-scroll-wrap.has-scroll-left::before{ opacity:1; }
+        .ganhos-tile-scroll-wrap.has-scroll-right::after{ opacity:1; }
+        .ganhos-tile-scroll{
+          display:flex;
+          align-items:stretch;
+          gap:0.5rem;
+          overflow-x:auto;
+          overscroll-behavior-x:contain;
+          scrollbar-width:none;
+          -ms-overflow-style:none;
+          cursor:grab;
+          touch-action:pan-x;
+          -webkit-user-select:none;
+          user-select:none;
+        }
+        .ganhos-tile-scroll::-webkit-scrollbar{ display:none; }
+        .ganhos-tile-scroll.is-dragging{ cursor:grabbing; }
+        .ganhos-tile-scroll.is-dragging .ganhos-tile-scroll-item{ pointer-events:none; }
+        /* Botão "+" para adicionar uma nova plataforma de ganhos. */
+        .ganhos-tile-add{
+          flex:0 0 auto;
+          width:2.75rem;
+          border-radius:0.9062rem;
+          border:1.5px dashed rgba(30,158,90,0.45);
+          background:rgba(30,158,90,0.08);
+          color:var(--brand-green);
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          cursor:pointer;
+        }
+        .ganhos-tile-add svg{ width:1.0625rem; height:1.0625rem; }
+        @media (prefers-reduced-motion:no-preference){
+          .ganhos-tile-add{ transition:background .15s ease, border-color .15s ease; }
+        }
+        .ganhos-tile-add:active{ background:rgba(30,158,90,0.16); }
+        /* Cada plataforma de ganhos fica mais estreita que antes (cerca de
+           25% menor), permitindo caber o "+" e futuras plataformas na
+           mesma linha, deslizando lateralmente. */
+        .ganhos-tile-scroll-item{
+          flex:0 0 auto;
+          width:7.5rem;
         }
         .list-row.ganhos-tile{
           position:relative;
@@ -2277,11 +2351,7 @@
           overflow:hidden;
           will-change:transform;
         }
-        body.theme-dark .profile-sheet{
-          border-top:1px solid var(--brand-green);
-          border-right:1px solid var(--brand-green);
-          border-bottom:1px solid var(--brand-green);
-        }
+
         @media (prefers-reduced-motion:no-preference){
           .profile-sheet{ transition:transform .2s cubic-bezier(.22,.8,.32,1); }
         }
@@ -2329,17 +2399,18 @@
         }
         .sheet-profile-row{
           display:flex;
+          flex-direction:column;
           align-items:center;
-          gap:0.5938rem;
+          gap:0.5625rem;
           width:100%;
           margin:0.3125rem 0 0;
         }
         .sheet-avatar{
-          width:2.625rem; height:2.625rem;
+          width:4.5rem; height:4.5rem;
           flex:0 0 auto;
           border-radius:50%;
           background:var(--teal);
-          border:1.5px solid #fff;
+          border:1.5px solid var(--brand-green);
           box-shadow:0 0.125rem 0.375rem rgba(28,43,58,0.15);
           display:flex;
           align-items:center;
@@ -2347,13 +2418,15 @@
           color:var(--paper);
           overflow:hidden;
         }
-        .sheet-avatar svg{ width:1.0938rem; height:1.0938rem; }
+        .sheet-avatar svg{ width:1.875rem; height:1.875rem; }
         .sheet-avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
         .sheet-profile-info{
           flex:1 1 auto;
           min-width:0;
+          width:100%;
           display:flex;
           flex-direction:column;
+          align-items:center;
           gap:1.5px;
         }
         .sheet-username{
@@ -2361,7 +2434,18 @@
           font-weight:700;
           color:var(--ink);
           margin:0;
-          text-align:left;
+          text-align:center;
+          white-space:nowrap;
+          overflow:hidden;
+          text-overflow:ellipsis;
+          max-width:100%;
+        }
+        .sheet-email{
+          font-size:0.625rem;
+          font-weight:700;
+          color:rgba(var(--ink-rgb),0.48);
+          margin:0;
+          text-align:center;
           white-space:nowrap;
           overflow:hidden;
           text-overflow:ellipsis;
@@ -2372,7 +2456,7 @@
           font-weight:500;
           color:rgba(var(--ink-rgb),0.48);
           margin:0;
-          text-align:left;
+          text-align:center;
           white-space:nowrap;
           overflow:hidden;
           text-overflow:ellipsis;
@@ -3178,6 +3262,7 @@
           font-weight:700;
         }
         .meta-fixas-section{ margin-top:0.6875rem; padding-top:0.6875rem; border-top:1px solid var(--card-line); }
+        #metaFixasWelcomeSection > .mm-title{ margin-bottom:0.4062rem; }
         .meta-fixas-question{
           font-size:0.6875rem;
           font-weight:700;

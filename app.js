@@ -131,8 +131,9 @@
 "sub.viewTableAria": "Ver em tabela",
 "ganhos.registroDoDia": "Registro do dia",
 "ganhos.hint": "Insira aqui seus ganhos e despesas.",
-"ganhos.uber": "Rendimentos Uber",
-"ganhos.bolt": "Rendimentos Bolt",
+"ganhos.uber": "Ganhos Uber",
+"ganhos.bolt": "Ganhos Bolt",
+"ganhos.addPlataforma": "Adicionar plataforma",
 "ganhos.despesas": "Despesas",
 "ganhos.despesasSub": "Despesas fixas entram na segunda-feira.",
 "ganhos.distancia": "Distância",
@@ -198,6 +199,15 @@
 "sheet.daysZero": "0 dias nos Apps.",
 "sheet.perfil": "Perfil e Dados da Conta",
 "sheet.despesasFixas": "Despesas Fixas",
+"sheet.multiplataforma": "Multiplataforma",
+"mp.atuais": "Atuais:",
+"mp.adicionar": "Adicionar",
+"mp.novaPh": "NOME (máx. 9)",
+"mp.novaAria": "Nome da nova plataforma",
+"mp.deleteAria": "Excluir plataforma",
+"mp.confirmTitle": "Excluir plataforma",
+"mp.confirmText": "Tem certeza que deseja excluir esta plataforma?",
+"mp.confirmNamed": "Tem certeza que deseja excluir \"{n}\"?",
 "sheet.idioma": "Idioma",
 "sheet.tamanho": "Tamanho da fonte",
 "sheet.tamanhoPequeno": "Pequeno",
@@ -494,6 +504,7 @@
 "ganhos.hint": "Enter your earnings and expenses here.",
 "ganhos.uber": "Uber Earnings",
 "ganhos.bolt": "Bolt Earnings",
+"ganhos.addPlataforma": "Add platform",
 "ganhos.despesas": "Expenses",
 "ganhos.despesasSub": "Fixed expenses are posted on Monday.",
 "ganhos.distancia": "Distance",
@@ -559,6 +570,15 @@
 "sheet.daysZero": "0 days on the Apps.",
 "sheet.perfil": "Profile and Account Details",
 "sheet.despesasFixas": "Fixed Expenses",
+"sheet.multiplataforma": "Multi-platform",
+"mp.atuais": "Current:",
+"mp.adicionar": "Add",
+"mp.novaPh": "NAME (max. 9)",
+"mp.novaAria": "New platform name",
+"mp.deleteAria": "Delete platform",
+"mp.confirmTitle": "Delete platform",
+"mp.confirmText": "Are you sure you want to delete this platform?",
+"mp.confirmNamed": "Are you sure you want to delete \"{n}\"?",
 "sheet.idioma": "Language",
 "sheet.tamanho": "Font size",
 "sheet.tamanhoPequeno": "Small",
@@ -891,32 +911,14 @@
 
       function wireUI () {
         var openBtn    = document.getElementById('openTamanhoBtn');
-        var backdrop   = document.getElementById('tamanhoModalBackdrop');
-        var card       = document.getElementById('tamanhoModalCard');
         var optP       = document.getElementById('tamanhoOptionP');
         var optG       = document.getElementById('tamanhoOptionG');
-        var concluirBtn = document.getElementById('tamanhoConcluirBtn');
-        if (!openBtn || !backdrop) return;
+        if (!openBtn) return;
 
-        function openPopup () {
-          if (typeof closeProfileSheet === 'function') closeProfileSheet();
-          refreshPopupState();
-          backdrop.classList.add('visible');
-          if (typeof syncBodyScroll === 'function') syncBodyScroll();
-        }
-        function closePopup () {
-          backdrop.classList.remove('visible');
-          if (typeof syncBodyScroll === 'function') syncBodyScroll();
-        }
-
-        openBtn.addEventListener('click', openPopup);
         optP.addEventListener('click', function () { choose('pequeno'); });
         optG.addEventListener('click', function () { choose('medio'); });
-        if (concluirBtn) concluirBtn.addEventListener('click', closePopup);
-        backdrop.addEventListener('click', function (e) { if (e.target === backdrop) closePopup(); });
-        if (card) card.addEventListener('click', function (e) { e.stopPropagation(); });
 
-        window.TamanhoModal = { open: openPopup, close: closePopup };
+        window.TamanhoScreen = { prepare: refreshPopupState };
 
         refreshRowLabel();
         document.addEventListener('languageChanged', function () {
@@ -1155,25 +1157,20 @@
 
 
     (function () {
-      var despesasBackdrop = document.getElementById('despesasModalBackdrop');
-
       function openDespesasModal () {
-        closeAllOverlays();
-        despesasBackdrop.classList.add('visible');
+        var target = document.getElementById('sheetScreenDespesasFixas');
+        if (typeof window.openProfileSheetPublic === 'function') window.openProfileSheetPublic();
+        if (typeof window.openSheetScreenPublic === 'function' && target && I18N) {
+          window.openSheetScreenPublic(target, I18N.t('sheet.despesasFixas'), { push: false });
+        }
       }
       function closeDespesasModal () {
-        despesasBackdrop.classList.remove('visible');
-        despesasBackdrop.querySelectorAll('.despesa-desc-input, .despesa-valor-input').forEach(function (inp) {
-          inp.value = '';
-        });
+        var descEl = document.getElementById('despesaDescInput');
+        var valEl  = document.getElementById('despesaValorInput');
+        if (descEl) descEl.value = '';
+        if (valEl) valEl.value = '';
+        if (typeof window.goBackSheetScreenPublic === 'function') window.goBackSheetScreenPublic();
       }
-
-      despesasBackdrop.addEventListener('click', function (e) {
-        if (e.target === despesasBackdrop) closeDespesasModal();
-      });
-      document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape' && despesasBackdrop.classList.contains('visible')) closeDespesasModal();
-      });
 
       window.DespesasModal = { open: openDespesasModal, close: closeDespesasModal };
     })();
@@ -2012,6 +2009,66 @@
       distancia: setupMasterModal('listRowDistancia', 'distanciaModalBackdrop')
     };
 
+    // ---- Faixa deslizante das plataformas de ganhos (Uber, Bolt, ...) ----
+    // Linha independente da grade de baixo. Rola/arrasta lateralmente e
+    // mostra um degradê nas bordas quando há mais conteúdo por ver.
+    (function () {
+      var wrap = document.getElementById('ganhosIncomeScrollWrap');
+      var scroller = document.getElementById('ganhosIncomeScroll');
+      if (!wrap || !scroller) return;
+
+      function updateEdges () {
+        var maxScroll = scroller.scrollWidth - scroller.clientWidth;
+        wrap.classList.toggle('has-scroll-left', scroller.scrollLeft > 2);
+        wrap.classList.toggle('has-scroll-right', scroller.scrollLeft < maxScroll - 2);
+      }
+
+      scroller.addEventListener('scroll', updateEdges, { passive: true });
+      window.addEventListener('resize', updateEdges);
+      requestAnimationFrame(updateEdges);
+
+      // Arraste com o rato (desktop). No toque, o scroll nativo já funciona.
+      var isDown = false;
+      var moved = false;
+      var startX = 0;
+      var startScroll = 0;
+
+      function blockNextClick () {
+        var onClickCapture = function (e) {
+          e.stopPropagation();
+          e.preventDefault();
+          scroller.removeEventListener('click', onClickCapture, true);
+        };
+        scroller.addEventListener('click', onClickCapture, true);
+      }
+
+      scroller.addEventListener('pointerdown', function (e) {
+        if (e.pointerType === 'touch') return;
+        isDown = true;
+        moved = false;
+        startX = e.clientX;
+        startScroll = scroller.scrollLeft;
+        scroller.classList.add('is-dragging');
+      });
+
+      window.addEventListener('pointermove', function (e) {
+        if (!isDown) return;
+        var dx = e.clientX - startX;
+        if (Math.abs(dx) > 4) moved = true;
+        scroller.scrollLeft = startScroll - dx;
+      });
+
+      function endDrag () {
+        if (!isDown) return;
+        isDown = false;
+        scroller.classList.remove('is-dragging');
+        if (moved) blockNextClick();
+      }
+
+      window.addEventListener('pointerup', endDrag);
+      window.addEventListener('pointercancel', endDrag);
+    })();
+
     window.MetaSemanalModal = setupMasterModal('btnMetaSemanal', 'metaSemanalModalBackdrop');
 
 
@@ -2360,6 +2417,90 @@
         });
       }
 
+      // ---- Popup exclusivo do aviso automático de início de semana ----
+      // Duplicado do popup principal, mas sem os campos de editar a meta
+      // (valor, Bruto/Líquido, meta atual, link Zerar): a meta já foi
+      // mantida automaticamente da semana anterior (ver
+      // carryOverMetaFromPreviousWeeks). Mostra só o texto de boas-vindas
+      // e a seção de despesas fixas (Manter/Zerar).
+      var welcomeModalBackdrop  = document.getElementById('metaSemanalWelcomeModalBackdrop');
+      var welcomeModalText      = document.getElementById('metaSemanalWelcomeModalText');
+      var welcomeFixasListEl    = document.getElementById('metaFixasWelcomeListEl');
+      var welcomeFixasEmptyEl   = document.getElementById('metaFixasWelcomeEmptyEl');
+      var welcomeFixasManterBtn = document.getElementById('metaFixasWelcomeManterBtn');
+      var welcomeFixasPularBtn  = document.getElementById('metaFixasWelcomePularBtn');
+      var welcomeSalvarBtn      = document.getElementById('metaSemanalWelcomeSalvarBtn');
+
+      function renderWelcomeFixas () {
+        if (!welcomeFixasListEl) return;
+
+        var lista = loadDespesasFixasCadastradas();
+        if (!lista.length) lista = loadDespesasFixasNaoExcluidas();
+        var temFixas = lista.length > 0;
+
+        welcomeFixasListEl.innerHTML = lista.map(function (item) {
+          var linha = (item.tipo === 'euro')
+            ? ('<span class="valor">' + I18N.t('meta.fixasLinhaEuro', { v: Number(item.valor).toFixed(2) }) + '</span> - ' + item.descricao)
+            : ('<span class="valor">' + I18N.t('meta.fixasLinhaPct', { v: Number(item.valor) }) + '</span> - ' + item.descricao);
+          return '<div class="meta-fixas-list-item">' + linha + '</div>';
+        }).join('');
+
+        if (welcomeFixasEmptyEl) welcomeFixasEmptyEl.hidden = temFixas;
+
+        var pulada = temFixas && isFixasSkippedForWeek(currentWeekKey());
+        if (welcomeFixasManterBtn) {
+          welcomeFixasManterBtn.disabled = !temFixas;
+          welcomeFixasManterBtn.classList.toggle('active', temFixas && !pulada);
+          welcomeFixasManterBtn.setAttribute('aria-pressed', (temFixas && !pulada) ? 'true' : 'false');
+        }
+        if (welcomeFixasPularBtn) {
+          welcomeFixasPularBtn.disabled = !temFixas;
+          welcomeFixasPularBtn.classList.toggle('active', pulada);
+          welcomeFixasPularBtn.setAttribute('aria-pressed', pulada ? 'true' : 'false');
+        }
+      }
+
+      if (welcomeFixasManterBtn) {
+        welcomeFixasManterBtn.addEventListener('click', function () {
+          setFixasSkippedForWeek(currentWeekKey(), false);
+          document.dispatchEvent(new CustomEvent('despesasFixasChanged'));
+        });
+      }
+      if (welcomeFixasPularBtn) {
+        welcomeFixasPularBtn.addEventListener('click', function () {
+          setFixasSkippedForWeek(currentWeekKey(), true);
+          document.dispatchEvent(new CustomEvent('despesasFixasChanged'));
+        });
+      }
+      document.addEventListener('despesasFixasChanged', renderWelcomeFixas);
+
+      function openWelcomeModal () {
+        if (!welcomeModalBackdrop) return;
+        if (welcomeModalText) {
+          if (metaMantidaDaSemanaAnterior) {
+            var m = metaMantidaDaSemanaAnterior;
+            welcomeModalText.textContent = I18N.t('meta.welcomeKept', { v: m.valor, t: TIPO_LABEL_OF(m.tipo) });
+          } else {
+            welcomeModalText.textContent = I18N.t('meta.welcome');
+          }
+        }
+        renderWelcomeFixas();
+        closeAllOverlays();
+        welcomeModalBackdrop.classList.add('visible');
+      }
+      function closeWelcomeModal () {
+        if (welcomeModalBackdrop) welcomeModalBackdrop.classList.remove('visible');
+      }
+
+      if (welcomeSalvarBtn) welcomeSalvarBtn.addEventListener('click', closeWelcomeModal);
+      if (welcomeModalBackdrop) {
+        welcomeModalBackdrop.addEventListener('click', function (e) {
+          if (e.target === welcomeModalBackdrop) closeWelcomeModal();
+        });
+      }
+
+      window.MetaSemanalWelcomeModal = { open: openWelcomeModal, close: closeWelcomeModal };
+
       function setTipo (tipo) {
         tipoAtual = tipo;
         var isBruto = tipo === 'bruto';
@@ -2469,8 +2610,7 @@
 
         try { cloudSet(LAST_PROMPT_KEY, weekKey); } catch (e) {  }
 
-        showWelcome();
-        if (window.MetaSemanalModal) window.MetaSemanalModal.open();
+        openWelcomeModal();
       }
 
       // Em telemóvel a app quase nunca é "iniciada do zero": ela volta do
@@ -4413,10 +4553,15 @@
     var sheetScreenDadosPessoais = document.getElementById('sheetScreenDadosPessoais');
     var sheetScreenAjuda         = document.getElementById('sheetScreenAjuda');
     var sheetScreenIdioma        = document.getElementById('sheetScreenIdioma');
+    var sheetScreenDespesasFixas = document.getElementById('sheetScreenDespesasFixas');
+    var sheetScreenMultiplataforma = document.getElementById('sheetScreenMultiplataforma');
+    var sheetScreenTamanho       = document.getElementById('sheetScreenTamanho');
     var openDadosPessoaisBtn = document.getElementById('openDadosPessoaisBtn');
     var openDespesasFixasBtn = document.getElementById('openDespesasFixasBtn');
+    var openMultiplataformaBtn = document.getElementById('openMultiplataformaBtn');
     var openAjudaBtn          = document.getElementById('openAjudaBtn');
     var openIdiomaBtn         = document.getElementById('openIdiomaBtn');
+    var openTamanhoBtn        = document.getElementById('openTamanhoBtn');
     var dpNomeInput      = document.getElementById('dpNomeInput');
     var dpDriverSinceBtn   = document.getElementById('dpDriverSinceBtn');
     var dpDriverSinceLabel = document.getElementById('dpDriverSinceLabel');
@@ -4893,8 +5038,13 @@
       }
       if (openDespesasFixasBtn) {
         openDespesasFixasBtn.addEventListener('click', function () {
-          closeProfileSheet();
-          if (window.DespesasModal) window.DespesasModal.open();
+          openSheetScreen(sheetScreenDespesasFixas, I18N.t('sheet.despesasFixas'));
+        });
+      }
+      if (openTamanhoBtn) {
+        openTamanhoBtn.addEventListener('click', function () {
+          if (window.TamanhoScreen) window.TamanhoScreen.prepare();
+          openSheetScreen(sheetScreenTamanho, I18N.t('sheet.tamanho'));
         });
       }
       if (openAjudaBtn) {
@@ -5227,6 +5377,9 @@
     // o painel de Ajustes a partir de fora deste bloco.
     window.closeProfileSheetPublic = closeProfileSheet;
     window.openProfileSheetPublic = openProfileSheet;
+    window.openSheetScreenPublic = openSheetScreen;
+    window.goBackSheetScreenPublic = goBackSheetScreen;
+    window.openProfileSheetPublic = openProfileSheet;
 
 
 
@@ -5303,13 +5456,6 @@
         var tutorialEndBackdropEl = document.getElementById('tutorialEndBackdrop');
         if (isVisible(tutorialEndBackdropEl, 'visible')) {
           tutorialEndBackdropEl.classList.remove('visible');
-          cancelExitArm();
-          return;
-        }
-
-        var tamanhoBackdropEl = document.getElementById('tamanhoModalBackdrop');
-        if (isVisible(tamanhoBackdropEl, 'visible')) {
-          if (window.TamanhoModal) window.TamanhoModal.close();
           cancelExitArm();
           return;
         }
@@ -5629,6 +5775,92 @@
       document.addEventListener('languageChanged', renderCurrent);
       renderCurrent();
       renderOptions();
+    })();
+
+
+
+    /* ---- Ecrã "Multiplataforma" dentro do menu Ajustes ----
+       Lista as plataformas já presentes ("Atuais") cada uma com um "x"
+       vermelho para excluir (por enquanto sem efeito real, apenas mostra
+       a confirmação) e um formulário simples para adicionar uma nova
+       plataforma ao final da lista. */
+    (function () {
+      var openBtn      = document.getElementById('openMultiplataformaBtn');
+      var screenEl     = document.getElementById('sheetScreenMultiplataforma');
+      var listaEl      = document.getElementById('mpListaAtuais');
+      var novaInput    = document.getElementById('mpNovaInput');
+      var salvarBtn    = document.getElementById('mpSalvarBtn');
+      var confirmBackdrop  = document.getElementById('mpConfirmBackdrop');
+      var confirmText      = document.getElementById('mpConfirmText');
+      var confirmCancelBtn = document.getElementById('mpConfirmCancelBtn');
+      var confirmDeleteBtn = document.getElementById('mpConfirmDeleteBtn');
+      if (!openBtn || !screenEl || !listaEl || !novaInput || !salvarBtn || !window.I18N) return;
+
+      var DEL_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>';
+
+      var plataformas = ['Uber', 'Bolt'];
+
+      function renderLista () {
+        listaEl.innerHTML = '';
+        plataformas.forEach(function (nome) {
+          var card = document.createElement('div');
+          card.className = 'despesa-card';
+
+          var desc = document.createElement('p');
+          desc.className = 'despesa-card-desc';
+          desc.textContent = nome;
+          card.appendChild(desc);
+
+          var delBtn = document.createElement('button');
+          delBtn.type = 'button';
+          delBtn.className = 'despesa-delete-btn';
+          delBtn.setAttribute('aria-label', I18N.t('mp.deleteAria'));
+          delBtn.innerHTML = DEL_SVG;
+          delBtn.addEventListener('click', function () { openDeleteConfirm(nome); });
+          card.appendChild(delBtn);
+
+          listaEl.appendChild(card);
+        });
+      }
+
+      function openDeleteConfirm (nome) {
+        if (!confirmBackdrop) return;
+        if (confirmText) confirmText.textContent = I18N.t('mp.confirmNamed', { n: nome });
+        confirmBackdrop.classList.add('visible');
+      }
+
+      function closeDeleteConfirm () {
+        if (confirmBackdrop) confirmBackdrop.classList.remove('visible');
+      }
+
+      if (confirmCancelBtn) confirmCancelBtn.addEventListener('click', closeDeleteConfirm);
+      if (confirmDeleteBtn) {
+        // Ainda sem efeito real: apenas fecha a confirmação.
+        confirmDeleteBtn.addEventListener('click', closeDeleteConfirm);
+      }
+      if (confirmBackdrop) {
+        confirmBackdrop.addEventListener('click', function (e) {
+          if (e.target === confirmBackdrop) closeDeleteConfirm();
+        });
+      }
+
+      openBtn.addEventListener('click', function () {
+        renderLista();
+        if (typeof window.openSheetScreenPublic === 'function') {
+          window.openSheetScreenPublic(screenEl, I18N.t('sheet.multiplataforma'));
+        }
+      });
+
+      salvarBtn.addEventListener('click', function () {
+        var nome = novaInput.value.trim();
+        if (!nome) return;
+
+        plataformas.push(nome);
+        renderLista();
+        novaInput.value = '';
+      });
+
+      renderLista();
     })();
 
 
