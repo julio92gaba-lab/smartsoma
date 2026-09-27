@@ -2356,6 +2356,13 @@
           .profile-sheet{ transition:transform .2s cubic-bezier(.22,.8,.32,1); }
         }
         .profile-sheet.open{ transform:translateX(0); }
+        /* Tema escuro: sem a borda verde, o painel de Ajustes se perdia
+           contra o fundo escuro do conteúdo atrás. Uma sombra externa
+           clara, só na borda direita (onde o painel termina), cria a
+           separação sem precisar de uma borda colorida. */
+        body.theme-dark .profile-sheet{
+          box-shadow:0.125rem 0 0.75rem rgba(255,255,255,0.14);
+        }
         .sheet-handle-area{
           flex:0 0 auto;
           display:flex;

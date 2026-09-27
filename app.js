@@ -1567,9 +1567,12 @@
 
         var onMonday = isMondayOfWeek();
         // A despesa fixa só existe no dia (segunda-feira) em que ela é
-        // lançada; nos outros dias da semana não aparece.
+        // lançada; nos outros dias da semana não aparece. O "lembrete"
+        // logo acima (renderLembreteFixa) já mostra essas despesas fixas
+        // sempre que existirem — por isso aqui elas só contam para saber
+        // se a lista está vazia, sem repetir os cartões dentro da lista
+        // do dia (evita a duplicação visual na segunda-feira).
         var fixas = onMonday ? loadDespesasFixasAtivas(weekMonday(refDate())) : [];
-        var weekGross = onMonday ? weekGrossSoFar(weekMonday(refDate())) : 0;
 
         if (items.length === 0 && fixas.length === 0) {
           var empty = document.createElement('p');
@@ -1611,39 +1614,6 @@
           card.appendChild(topRow);
           card.appendChild(sub);
           card.appendChild(delBtn);
-          listEl.appendChild(card);
-        });
-
-        fixas.forEach(function (item) {
-          var isEuro = item.tipo === 'euro';
-          var diaValor = isEuro ? Number(item.valor || 0) : (weekGross * (Number(item.valor || 0) / 100));
-          var subText = isEuro
-            ? I18N.t('fixas.weeklyShort', { v: diaValor.toFixed(2) })
-            : I18N.t('fixas.percentOfWeek', { v: diaValor.toFixed(2), p: Number(item.valor) });
-
-          var card = document.createElement('div');
-          card.className = 'despesa-card is-fixa';
-
-          var topRow = document.createElement('div');
-          topRow.className = 'despesa-card-top-row';
-
-          var desc = document.createElement('div');
-          desc.className = 'despesa-card-desc';
-          desc.textContent = item.descricao;
-
-          var tag = document.createElement('span');
-          tag.className = 'despesa-card-tag is-fixa';
-          tag.textContent = I18N.t('fixas.tagFixa');
-
-          topRow.appendChild(desc);
-          topRow.appendChild(tag);
-
-          var sub = document.createElement('div');
-          sub.className = 'despesa-card-sub';
-          sub.textContent = subText;
-
-          card.appendChild(topRow);
-          card.appendChild(sub);
           listEl.appendChild(card);
         });
       }
@@ -2026,6 +1996,13 @@
       scroller.addEventListener('scroll', updateEdges, { passive: true });
       window.addEventListener('resize', updateEdges);
       requestAnimationFrame(updateEdges);
+      // A fonte Inter troca a fonte de sistema depois do primeiro cálculo
+      // (font-display:swap), o que muda a largura dos blocos e deixava o
+      // degradê "errado" até o próximo scroll. Recalcula assim que a
+      // fonte termina de carregar.
+      if (window.document && document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(updateEdges);
+      }
 
       // Arraste com o rato (desktop). No toque, o scroll nativo já funciona.
       var isDown = false;
