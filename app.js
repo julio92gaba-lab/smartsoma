@@ -1380,9 +1380,29 @@
       setTipo('percentual');
       document.addEventListener('languageChanged', renderDespesas);
 
+      // Exclui de vez todas as despesas fixas ainda ativas (mesma marca
+      // .ate usada na exclusão manual, uma por uma, na página de Despesas
+      // Fixas). Usado pelo "Zerar Despesas" do aviso de início de semana:
+      // a pessoa não vai mais pagar essas despesas, então elas somem daqui
+      // pra frente — sem mexer no histórico de semanas já passadas.
+      function excluirTodasAtivas () {
+        var semanaExclusao = semanaAtualKey();
+        var mudou = false;
+        despesas.forEach(function (d) {
+          if (!d.ate) { d.ate = semanaExclusao; mudou = true; }
+        });
+        if (mudou) {
+          saveDespesas();
+          renderDespesas();
+          document.dispatchEvent(new CustomEvent('despesasFixasChanged'));
+        }
+        return mudou;
+      }
+
       window.DespesasCadastro = {
         isConfirmOpen: function () { return !!(confirmBackdrop && confirmBackdrop.classList.contains('visible')); },
-        closeConfirm: closeDeleteConfirm
+        closeConfirm: closeDeleteConfirm,
+        excluirTodasAtivas: excluirTodasAtivas
       };
     })();
 
@@ -2320,17 +2340,16 @@
         document.dispatchEvent(new CustomEvent('metaSemanalConfigChanged', { detail: config }));
       }
 
-      var fixasSection    = document.getElementById('metaFixasSection');
-      var fixasListEl     = document.getElementById('metaFixasListEl');
-      var fixasManterBtn  = document.getElementById('metaFixasManterBtn');
-      var fixasPularBtn   = document.getElementById('metaFixasPularBtn');
-
-      var fixasEmptyEl    = document.getElementById('metaFixasEmptyEl');
+      // O bloco "Manter/Zerar despesas fixas" só faz sentido uma vez por
+      // semana e mora no popup automático de boas-vindas (ver
+      // metaFixasWelcomeSection mais abaixo). O popup manual da meta não
+      // tem mais essa pergunta — só a meta semanal em si.
 
       // Despesas fixas ainda não excluídas, sem olhar para a semana em que
-      // foram criadas. Serve de plano B para a pergunta: se a janela
-      // desde/ate da semana (ex.: data do aparelho alterada para testar)
-      // deixasse a lista vazia, a pergunta sumia sem explicação.
+      // foram criadas. Serve de plano B para a pergunta lá em baixo (no
+      // popup de boas-vindas): se a janela desde/ate da semana (ex.: data
+      // do aparelho alterada para testar) deixasse a lista vazia, a
+      // pergunta sumia sem explicação.
       function loadDespesasFixasNaoExcluidas () {
         try {
           var raw = cloudGet(DESPESAS_FIXAS_KEY);
@@ -2340,58 +2359,6 @@
           }
         } catch (e) {  }
         return [];
-      }
-
-      // A pergunta sobre manter as despesas fixas aparece na primeira vez
-      // que o utilizador abre a app naquela semana (junto com a mensagem
-      // de boas-vindas). Ao abrir o card manualmente depois, só o conteúdo
-      // de definir a meta aparece. Se não houver despesas fixas
-      // cadastradas, a pergunta continua visível mas explica o motivo e
-      // fica desativada (em vez de simplesmente desaparecer).
-      function renderFixasSection () {
-        if (!fixasSection) return;
-        var primeiraVezNaSemana = !!(welcomeText && welcomeText.classList.contains('visible'));
-        fixasSection.hidden = !primeiraVezNaSemana;
-        if (fixasSection.hidden) return;
-
-        var lista = loadDespesasFixasCadastradas();
-        if (!lista.length) lista = loadDespesasFixasNaoExcluidas();
-        var temFixas = lista.length > 0;
-
-        if (fixasListEl) {
-          fixasListEl.innerHTML = lista.map(function (item) {
-            var linha = (item.tipo === 'euro')
-              ? ('<span class="valor">' + I18N.t('meta.fixasLinhaEuro', { v: Number(item.valor).toFixed(2) }) + '</span> - ' + item.descricao)
-              : ('<span class="valor">' + I18N.t('meta.fixasLinhaPct', { v: Number(item.valor) }) + '</span> - ' + item.descricao);
-            return '<div class="meta-fixas-list-item">' + linha + '</div>';
-          }).join('');
-        }
-        if (fixasEmptyEl) fixasEmptyEl.hidden = temFixas;
-
-        var pulada = temFixas && isFixasSkippedForWeek(currentWeekKey());
-        if (fixasManterBtn) {
-          fixasManterBtn.disabled = !temFixas;
-          fixasManterBtn.classList.toggle('active', temFixas && !pulada);
-          fixasManterBtn.setAttribute('aria-pressed', (temFixas && !pulada) ? 'true' : 'false');
-        }
-        if (fixasPularBtn) {
-          fixasPularBtn.disabled = !temFixas;
-          fixasPularBtn.classList.toggle('active', pulada);
-          fixasPularBtn.setAttribute('aria-pressed', pulada ? 'true' : 'false');
-        }
-      }
-
-      if (fixasManterBtn) {
-        fixasManterBtn.addEventListener('click', function () {
-          setFixasSkippedForWeek(currentWeekKey(), false);
-          document.dispatchEvent(new CustomEvent('despesasFixasChanged'));
-        });
-      }
-      if (fixasPularBtn) {
-        fixasPularBtn.addEventListener('click', function () {
-          setFixasSkippedForWeek(currentWeekKey(), true);
-          document.dispatchEvent(new CustomEvent('despesasFixasChanged'));
-        });
       }
 
       // ---- Popup exclusivo do aviso automático de início de semana ----
@@ -2445,8 +2412,13 @@
       }
       if (welcomeFixasPularBtn) {
         welcomeFixasPularBtn.addEventListener('click', function () {
-          setFixasSkippedForWeek(currentWeekKey(), true);
-          document.dispatchEvent(new CustomEvent('despesasFixasChanged'));
+          // "Zerar Despesas" agora exclui de vez as despesas fixas
+          // cadastradas (mesma exclusão da página Despesas Fixas), em vez
+          // de só pular o lançamento desta semana — assim elas não voltam
+          // a ser perguntadas nas semanas seguintes.
+          if (window.DespesasCadastro && typeof window.DespesasCadastro.excluirTodasAtivas === 'function') {
+            window.DespesasCadastro.excluirTodasAtivas();
+          }
         });
       }
       document.addEventListener('despesasFixasChanged', renderWelcomeFixas);
@@ -2548,7 +2520,6 @@
       setTipo(config ? config.tipo : 'bruto');
       renderCurrent();
       renderPeriodLabel();
-      renderFixasSection();
 
       function showWelcome () {
         if (welcomeText) {
@@ -2560,15 +2531,12 @@
           }
           welcomeText.classList.add('visible');
         }
-        renderFixasSection();
       }
       function hideWelcome () {
         if (welcomeText) welcomeText.classList.remove('visible');
-        renderFixasSection();
       }
 
       if (triggerBtn) triggerBtn.addEventListener('click', hideWelcome);
-      document.addEventListener('despesasFixasChanged', renderFixasSection);
 
       // Semana em que a app foi carregada. Usada para detetar que uma nova
       // semana começou enquanto a app ficou em memória (segundo plano).
@@ -2721,7 +2689,6 @@
       document.addEventListener('languageChanged', function () {
         renderCurrent();
         renderPeriodLabel();
-        renderFixasSection();
         renderWeekBox();
       });
     })();
