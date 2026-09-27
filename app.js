@@ -4611,10 +4611,11 @@
       headerAvatarBtn.setAttribute('aria-expanded', 'false');
       syncBodyScroll();
       sheetScreens.forEach(function (s) { s.scrollTop = 0; });
+      sheetNavStack = [];
       if (closeResetTimer) clearTimeout(closeResetTimer);
       closeResetTimer = setTimeout(function () {
         closeResetTimer = null;
-        openSheetScreen(sheetScreenDefault, I18N.t('sheet.title'));
+        openSheetScreen(sheetScreenDefault, I18N.t('sheet.title'), { push: false });
       }, 220);
     }
 
@@ -4634,14 +4635,32 @@
       });
     }
 
-    function openSheetScreen (targetEl, title) {
+    var sheetNavStack = [];
+
+    function openSheetScreen (targetEl, title, opts) {
       if (!targetEl) return;
+      var push = !opts || opts.push !== false;
+      if (push) {
+        var current = document.querySelector('.sheet-screen.is-active');
+        if (current && current !== targetEl) {
+          sheetNavStack.push({ el: current, title: sheetHandleTitle ? sheetHandleTitle.textContent : '' });
+        }
+      }
       goToSheetScreen(targetEl);
       var isDefault = targetEl === sheetScreenDefault;
       if (sheetHandleTitle) sheetHandleTitle.textContent = title;
       if (sheetCloseBtn) {
         sheetCloseBtn.classList.toggle('is-alt', !isDefault);
         sheetCloseBtn.setAttribute('aria-label', I18N.t(isDefault ? 'app.close' : 'app.back'));
+      }
+    }
+
+    function goBackSheetScreen () {
+      if (sheetNavStack.length) {
+        var prev = sheetNavStack.pop();
+        openSheetScreen(prev.el, prev.title, { push: false });
+      } else {
+        openSheetScreen(sheetScreenDefault, I18N.t('sheet.title'), { push: false });
       }
     }
 
@@ -4860,7 +4879,7 @@
       }
       sheetCloseBtn.addEventListener('click', function () {
         if (sheetCloseBtn.classList.contains('is-alt')) {
-          openSheetScreen(sheetScreenDefault, I18N.t('sheet.title'));
+          goBackSheetScreen();
         } else {
           closeProfileSheet();
         }
@@ -5028,7 +5047,6 @@
         saveProfileToStorage();
 
         if (emailMudou) {
-          closeProfileSheet();
           if (window.EmailChangeModal) window.EmailChangeModal.open(novoEmail);
           return;
         }
@@ -5039,7 +5057,6 @@
 
       if (dpChangePasswordBtn) {
         dpChangePasswordBtn.addEventListener('click', function () {
-          closeProfileSheet();
           if (window.PasswordChangeModal) window.PasswordChangeModal.open();
         });
       }
@@ -5047,21 +5064,20 @@
 
     renderAvatar();
 
-    /* ---- Popup "Confirmar novo email" ----
+    /* ---- Ecrã "Confirmar novo email" (dentro de Ajustes) ----
        Só existe para quem entrou com email/senha (ver IS_GOOGLE). Pede a
        password atual, reautentica com ela e só então chama updateUser —
        a troca real só se completa quando a pessoa confirmar o link
        enviado para o novo endereço. */
     (function () {
-      var backdrop   = document.getElementById('emailChangeModalBackdrop');
-      var card       = document.getElementById('emailChangeModalCard');
-      var formView   = document.getElementById('emailChangeFormView');
+      var screenEl    = document.getElementById('sheetScreenEmailChange');
+      var formView    = document.getElementById('emailChangeFormView');
       var successView = document.getElementById('emailChangeSuccessView');
-      var passInput  = document.getElementById('emailChangePasswordInput');
-      var errorEl    = document.getElementById('emailChangeError');
+      var passInput   = document.getElementById('emailChangePasswordInput');
+      var errorEl     = document.getElementById('emailChangeError');
       var continueBtn = document.getElementById('emailChangeContinueBtn');
-      var okBtn      = document.getElementById('emailChangeOkBtn');
-      if (!backdrop || !card || !continueBtn) return;
+      var okBtn       = document.getElementById('emailChangeOkBtn');
+      if (!screenEl || !continueBtn) return;
 
       var pendingEmail = '';
 
@@ -5077,13 +5093,11 @@
       function open (novoEmail) {
         pendingEmail = novoEmail;
         reset();
-        backdrop.classList.add('visible');
-        syncBodyScroll();
+        openSheetScreen(screenEl, I18N.t('emailChange.title'));
       }
 
       function close () {
-        backdrop.classList.remove('visible');
-        syncBodyScroll();
+        goBackSheetScreen();
       }
 
       continueBtn.addEventListener('click', function () {
@@ -5127,25 +5141,22 @@
       });
 
       if (okBtn) okBtn.addEventListener('click', close);
-      backdrop.addEventListener('click', function (e) { if (e.target === backdrop) close(); });
-      card.addEventListener('click', function (e) { e.stopPropagation(); });
 
       window.EmailChangeModal = { open: open, close: close };
     })();
 
-    /* ---- Popup "Alterar password" ----
+    /* ---- Ecrã "Alterar password" (dentro de Ajustes) ----
        Também só para quem entrou com email/senha. Confirma a password
        atual antes de aceitar a nova, para evitar que alguém troque a
        password de uma sessão aberta sem confirmar quem é. */
     (function () {
-      var backdrop  = document.getElementById('passwordChangeModalBackdrop');
-      var card      = document.getElementById('passwordChangeModalCard');
+      var screenEl  = document.getElementById('sheetScreenPasswordChange');
       var oldInput  = document.getElementById('pwdChangeOldInput');
       var newInput  = document.getElementById('pwdChangeNewInput');
       var confirmInput = document.getElementById('pwdChangeConfirmInput');
       var errorEl   = document.getElementById('pwdChangeError');
       var concluirBtn = document.getElementById('pwdChangeConcluirBtn');
-      if (!backdrop || !card || !concluirBtn) return;
+      if (!screenEl || !concluirBtn) return;
 
       function reset () {
         oldInput.value = '';
@@ -5158,13 +5169,11 @@
 
       function open () {
         reset();
-        backdrop.classList.add('visible');
-        syncBodyScroll();
+        openSheetScreen(screenEl, I18N.t('pwdChange.title'));
       }
 
       function close () {
-        backdrop.classList.remove('visible');
-        syncBodyScroll();
+        goBackSheetScreen();
       }
 
       concluirBtn.addEventListener('click', function () {
@@ -5210,9 +5219,6 @@
           errorEl.textContent = I18N.t('pwdChange.erroGenerico');
         });
       });
-
-      backdrop.addEventListener('click', function (e) { if (e.target === backdrop) close(); });
-      card.addEventListener('click', function (e) { e.stopPropagation(); });
 
       window.PasswordChangeModal = { open: open, close: close };
     })();
@@ -5308,25 +5314,11 @@
           return;
         }
 
-        var emailChangeBackdropEl = document.getElementById('emailChangeModalBackdrop');
-        if (isVisible(emailChangeBackdropEl, 'visible')) {
-          if (window.EmailChangeModal) window.EmailChangeModal.close();
-          cancelExitArm();
-          return;
-        }
-
-        var pwdChangeBackdropEl = document.getElementById('passwordChangeModalBackdrop');
-        if (isVisible(pwdChangeBackdropEl, 'visible')) {
-          if (window.PasswordChangeModal) window.PasswordChangeModal.close();
-          cancelExitArm();
-          return;
-        }
-
         if (isVisible(profileSheet, 'open')) {
           var activeSheetScreen = document.querySelector('.sheet-screen.is-active');
           if (typeof sheetScreenDefault !== 'undefined' && sheetScreenDefault &&
               activeSheetScreen && activeSheetScreen !== sheetScreenDefault) {
-            openSheetScreen(sheetScreenDefault, I18N.t('sheet.title'));
+            goBackSheetScreen();
           } else {
             closeProfileSheet();
           }

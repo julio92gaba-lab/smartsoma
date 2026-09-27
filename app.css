@@ -2239,10 +2239,10 @@
         body.theme-dark .semana-live-content .dash-tile-value{ color:#FFFFFF; }
         .sheet-backdrop{
           position:fixed;
-          top:var(--header-h);
+          top:0;
           left:0; right:0; bottom:0;
           background:rgba(0,0,0,0.40);
-          z-index:40;
+          z-index:52;
           opacity:0;
           visibility:hidden;
           pointer-events:none;
@@ -2262,15 +2262,15 @@
         }
         .profile-sheet{
           position:fixed;
-          top:calc(var(--header-h) + 0.8125rem);
-          bottom:0.8125rem;
+          top:0;
+          bottom:0;
           left:0;
-          width:min(84vw, 16rem);
-          max-width:256px;
+          width:min(90vw, 300px);
+          max-width:300px;
           background:var(--paper);
-          border-radius:0 1.1875rem 1.1875rem 0;
+          border-radius:0;
           box-shadow:0.125rem 0px 0.375rem rgba(12,19,26,0.18);
-          z-index:45;
+          z-index:55;
           transform:translateX(-100%);
           display:flex;
           flex-direction:column;
@@ -2292,7 +2292,7 @@
           align-items:center;
           justify-content:space-between;
           gap:0.5rem;
-          padding:0.6562rem 1rem 0.5625rem;
+          padding:calc(0.6562rem + env(safe-area-inset-top,0px)) 1rem 0.5625rem;
           border-bottom:1px solid rgba(var(--ink-rgb),0.08);
         }
         .sheet-handle-title{
@@ -2323,7 +2323,7 @@
         .sheet-content{
           flex:1 1 auto;
           overflow-y:auto;
-          padding:0.3125rem 1.375rem 2rem;
+          padding:0.3125rem 1.375rem calc(2rem + env(safe-area-inset-bottom,0px));
           display:flex;
           flex-direction:column;
         }
@@ -2410,6 +2410,19 @@
         a.sheet-action-btn{ text-decoration:none; }
         /* Popup "Tamanho da fonte": ilustração com as letras P e G nos
            dois tamanhos, para a pessoa ver a diferença antes de escolher. */
+        /* Ícone ilustrativo no topo do ecrã "Falar connosco". */
+        .ajuda-icon{
+          width:4.25rem;
+          height:4.25rem;
+          margin:0.25rem auto 1.125rem;
+          border-radius:50%;
+          background:rgba(30,158,90,0.12);
+          color:var(--brand-green);
+          display:flex;
+          align-items:center;
+          justify-content:center;
+        }
+        .ajuda-icon svg{ width:2rem; height:2rem; }
         .tamanho-illustration{
           display:flex;
           gap:0.75rem;

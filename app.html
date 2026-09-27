@@ -601,7 +601,47 @@
             </div>
             <div class="sheet-screen" id="sheetScreenAjuda" hidden>
                 <div class="sheet-content sheet-page-content">
+                    <div class="ajuda-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+                        </svg>
+                    </div>
                     <p class="ajuda-intro-text" data-i18n-html="ajuda.intro">Para qualquer questão, escreve-nos para <a href="mailto:contacto@smartsoma.pt">contacto@smartsoma.pt</a>, entraremos em contacto o mais breve possível.</p>
+                </div>
+            </div>
+            <div class="sheet-screen" id="sheetScreenEmailChange" hidden>
+                <div class="sheet-content sheet-page-content">
+                    <div id="emailChangeFormView">
+                        <p class="dp-notice-text" data-i18n="emailChange.notice">Para trocar o email é preciso confirmar a sua password atual. Os seus dados continuam guardados e acessíveis; só falta confirmar o novo endereço através do link que vamos enviar para ele.</p>
+                        <label class="dp-field dp-field-full">
+                            <span class="dp-field-label" data-i18n="emailChange.passwordLabel">Password atual</span>
+                            <input type="password" class="dp-input" id="emailChangePasswordInput" autocomplete="current-password" data-i18n-ph="emailChange.passwordPh" placeholder="A sua password">
+                        </label>
+                        <p class="dp-field-error" id="emailChangeError"></p>
+                        <button type="button" class="dp-save-btn" id="emailChangeContinueBtn" data-i18n="emailChange.continuar">Continuar</button>
+                    </div>
+                    <div id="emailChangeSuccessView" hidden>
+                        <p class="dp-notice-text" data-i18n="emailChange.sucessoTexto">Enviámos um link de confirmação para o novo endereço. O email só muda depois de confirmar por lá.</p>
+                        <button type="button" class="dp-save-btn" id="emailChangeOkBtn" data-i18n="emailChange.entendi">Entendi</button>
+                    </div>
+                </div>
+            </div>
+            <div class="sheet-screen" id="sheetScreenPasswordChange" hidden>
+                <div class="sheet-content sheet-page-content">
+                    <label class="dp-field dp-field-full">
+                        <span class="dp-field-label" data-i18n="pwdChange.atual">Password atual</span>
+                        <input type="password" class="dp-input" id="pwdChangeOldInput" autocomplete="current-password" data-i18n-ph="pwdChange.atualPh" placeholder="A sua password atual">
+                    </label>
+                    <label class="dp-field dp-field-full">
+                        <span class="dp-field-label" data-i18n="pwdChange.nova">Nova password</span>
+                        <input type="password" class="dp-input" id="pwdChangeNewInput" autocomplete="new-password" data-i18n-ph="pwdChange.novaPh" placeholder="Mínimo 6 caracteres">
+                    </label>
+                    <label class="dp-field dp-field-full">
+                        <span class="dp-field-label" data-i18n="pwdChange.confirmar">Confirmar nova password</span>
+                        <input type="password" class="dp-input" id="pwdChangeConfirmInput" autocomplete="new-password" data-i18n-ph="pwdChange.confirmarPh" placeholder="Repita a nova password">
+                    </label>
+                    <p class="dp-field-error" id="pwdChangeError"></p>
+                    <button type="button" class="dp-save-btn" id="pwdChangeConcluirBtn" data-i18n="pwdChange.concluir">Concluir</button>
                 </div>
             </div>
         </div>
@@ -637,46 +677,6 @@
                 </button>
             </div>
             <button type="button" class="dp-save-btn" id="tamanhoConcluirBtn" data-i18n="tamanho.concluir">Concluído</button>
-        </div>
-    </div>
-
-    <div class="modal-backdrop" id="emailChangeModalBackdrop">
-        <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="emailChangeModalTitle" id="emailChangeModalCard">
-            <div id="emailChangeFormView">
-                <h3 class="modal-title" id="emailChangeModalTitle" data-i18n="emailChange.title">Confirmar novo email</h3>
-                <p class="dp-notice-text" data-i18n="emailChange.notice">Para trocar o email é preciso confirmar a sua password atual. Os seus dados continuam guardados e acessíveis; só falta confirmar o novo endereço através do link que vamos enviar para ele.</p>
-                <label class="dp-field dp-field-full">
-                    <span class="dp-field-label" data-i18n="emailChange.passwordLabel">Password atual</span>
-                    <input type="password" class="dp-input" id="emailChangePasswordInput" autocomplete="current-password" data-i18n-ph="emailChange.passwordPh" placeholder="A sua password">
-                </label>
-                <p class="dp-field-error" id="emailChangeError"></p>
-                <button type="button" class="dp-save-btn" id="emailChangeContinueBtn" data-i18n="emailChange.continuar">Continuar</button>
-            </div>
-            <div id="emailChangeSuccessView" hidden>
-                <h3 class="modal-title" data-i18n="emailChange.sucessoTitulo">Confirme o novo email</h3>
-                <p class="dp-notice-text" data-i18n="emailChange.sucessoTexto">Enviámos um link de confirmação para o novo endereço. O email só muda depois de confirmar por lá.</p>
-                <button type="button" class="dp-save-btn" id="emailChangeOkBtn" data-i18n="emailChange.entendi">Entendi</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal-backdrop" id="passwordChangeModalBackdrop">
-        <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="passwordChangeModalTitle" id="passwordChangeModalCard">
-            <h3 class="modal-title" id="passwordChangeModalTitle" data-i18n="pwdChange.title">Alterar password</h3>
-            <label class="dp-field dp-field-full">
-                <span class="dp-field-label" data-i18n="pwdChange.atual">Password atual</span>
-                <input type="password" class="dp-input" id="pwdChangeOldInput" autocomplete="current-password" data-i18n-ph="pwdChange.atualPh" placeholder="A sua password atual">
-            </label>
-            <label class="dp-field dp-field-full">
-                <span class="dp-field-label" data-i18n="pwdChange.nova">Nova password</span>
-                <input type="password" class="dp-input" id="pwdChangeNewInput" autocomplete="new-password" data-i18n-ph="pwdChange.novaPh" placeholder="Mínimo 6 caracteres">
-            </label>
-            <label class="dp-field dp-field-full">
-                <span class="dp-field-label" data-i18n="pwdChange.confirmar">Confirmar nova password</span>
-                <input type="password" class="dp-input" id="pwdChangeConfirmInput" autocomplete="new-password" data-i18n-ph="pwdChange.confirmarPh" placeholder="Repita a nova password">
-            </label>
-            <p class="dp-field-error" id="pwdChangeError"></p>
-            <button type="button" class="dp-save-btn" id="pwdChangeConcluirBtn" data-i18n="pwdChange.concluir">Concluir</button>
         </div>
     </div>
 
