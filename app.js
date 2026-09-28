@@ -3871,7 +3871,6 @@
           var tr = document.createElement('tr');
           tr.className = 'semana-table-row';
           if (d.getTime() === today.getTime()) tr.classList.add('is-today');
-          if (d.getMonth() !== refMonth || d.getFullYear() !== refYear) tr.classList.add('is-outside-month');
           if (d.getTime() > today.getTime()) tr.classList.add('is-future');
 
           var tdData = document.createElement('td');
