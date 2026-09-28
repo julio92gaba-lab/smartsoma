@@ -1,10 +1,12 @@
-/* SmartSoma — Service Worker + toast de instalação da PWA
+/* SmartSoma — Service Worker + instalação da PWA
    Partilhado por app.html, login.html e index.html.
-   O toast é identificado por atributos data-pwa-*:
-     data-pwa-toast         contentor (opcional: data-pwa-allow-open, data-pwa-mobile-only)
-     data-pwa-title / -sub  textos
-     data-pwa-btn           botão principal (Instalar / Abrir app)
-     data-pwa-close         botão fechar */
+   Elementos identificados por atributos data-pwa-*:
+     data-pwa-toast         toast flutuante (opcional: data-pwa-allow-open, data-pwa-mobile-only)
+     data-pwa-title / -sub  textos do toast
+     data-pwa-btn           botão principal do toast (Instalar / Abrir app)
+     data-pwa-close         botão fechar do toast
+     data-pwa-inline        botão fixo "Instalar App" (ex.: menu Ajustes); só fica visível
+                            quando a instalação é possível, e some na app instalada */
 (function () {
   'use strict';
 
@@ -26,41 +28,77 @@
     if (document.readyState === 'complete') reg(); else window.addEventListener('load', reg);
   }
 
-  /* ── Já está a correr como app instalada ── */
+  /* ── Já está a correr como app instalada: nada para mostrar ── */
   var isStandalone = window.matchMedia('(display-mode: standalone)').matches
                   || window.navigator.standalone === true;
   if (isStandalone) { lsSet(INSTALLED_KEY); return; }
 
-  var toast = document.querySelector('[data-pwa-toast]');
-  if (!toast) return;
-
   var ua       = navigator.userAgent;
   var isIOS    = /iphone|ipad|ipod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   var isMobile = /android|iphone|ipad|ipod|mobile/i.test(ua) || isIOS;
-  if (toast.hasAttribute('data-pwa-mobile-only') && !isMobile) return;
 
-  var allowOpen = toast.hasAttribute('data-pwa-allow-open');
-  var titleEl   = toast.querySelector('[data-pwa-title]');
-  var subEl     = toast.querySelector('[data-pwa-sub]');
-  var btn       = toast.querySelector('[data-pwa-btn]');
-  var closeBtn  = toast.querySelector('[data-pwa-close]');
+  var deferredPrompt = null;
+  var ready          = false;
 
-  var TXT_INSTALL = {
-    title: titleEl ? titleEl.textContent : '',
-    sub:   subEl   ? subEl.textContent   : '',
-    btn:   btn     ? btn.textContent     : 'Instalar'
-  };
-  var TXT_OPEN = {
-    title: 'O SmartSoma já está instalado',
-    sub:   'Abre a app e entra mais depressa.',
-    btn:   'Abrir app'
-  };
+  var inlineBtns = document.querySelectorAll('[data-pwa-inline]');
 
-  var hiddenTransform = toast.style.transform;
-  var deferredPrompt  = null;
-  var state           = null;   /* 'install' | 'ios' | 'open' */
-  var ready           = false;
+  /* Toast (opcional) */
+  var toast = document.querySelector('[data-pwa-toast]');
+  if (toast && toast.hasAttribute('data-pwa-mobile-only') && !isMobile) toast = null;
 
+  var allowOpen = false, titleEl = null, subEl = null, btn = null, closeBtn = null;
+  var TXT_INSTALL = null, TXT_OPEN = null, hiddenTransform = '', state = null;
+
+  if (toast) {
+    allowOpen = toast.hasAttribute('data-pwa-allow-open');
+    titleEl   = toast.querySelector('[data-pwa-title]');
+    subEl     = toast.querySelector('[data-pwa-sub]');
+    btn       = toast.querySelector('[data-pwa-btn]');
+    closeBtn  = toast.querySelector('[data-pwa-close]');
+    TXT_INSTALL = {
+      title: titleEl ? titleEl.textContent : '',
+      sub:   subEl   ? subEl.textContent   : '',
+      btn:   btn     ? btn.textContent     : 'Instalar'
+    };
+    TXT_OPEN = {
+      title: 'O SmartSoma já está instalado',
+      sub:   'Abre a app e entra mais depressa.',
+      btn:   'Abrir app'
+    };
+    hiddenTransform = toast.style.transform;
+  }
+
+  /* ── Estado partilhado ── */
+
+  /* Só há instalação possível se o browser deu o prompt (Android/desktop) ou no iOS (instruções) */
+  function canInstallNow() {
+    return !!deferredPrompt || (isIOS && lsGet(INSTALLED_KEY) !== '1');
+  }
+
+  function updateInline() {
+    var show = canInstallNow();
+    for (var i = 0; i < inlineBtns.length; i++) {
+      inlineBtns[i].style.display = show ? 'inline-flex' : 'none';
+    }
+  }
+
+  function doInstall(onDone) {
+    if (deferredPrompt) {
+      var p = deferredPrompt;
+      deferredPrompt = null;
+      p.prompt();
+      p.userChoice.then(function (result) {
+        if (result.outcome === 'accepted') lsSet(INSTALLED_KEY);
+        updateInline();
+        if (onDone) onDone();
+      });
+    } else if (isIOS) {
+      alert('No Safari: toca em  ↑  Partilhar  →  "Adicionar ao ecrã de início"');
+      if (onDone) onDone();
+    }
+  }
+
+  /* ── Toast ── */
   function pickState() {
     if (deferredPrompt) return 'install';                  /* o browser confirma: não está instalada */
     if (lsGet(INSTALLED_KEY) === '1') return allowOpen ? 'open' : null;
@@ -73,12 +111,14 @@
   }
 
   function hide() {
+    if (!toast) return;
     toast.style.opacity = '0';
     toast.style.transform = hiddenTransform;
     toast.style.pointerEvents = 'none';
   }
 
   function show() {
+    if (!toast) return;
     var s = pickState();
     if (!s || isDismissed(s)) { hide(); return; }
     state = s;
@@ -96,12 +136,14 @@
     e.preventDefault();
     deferredPrompt = e;
     lsDel(INSTALLED_KEY);          /* limpa flag antigo (ex.: app desinstalada) */
+    updateInline();
     if (ready) show();
   });
 
   window.addEventListener('appinstalled', function () {
     deferredPrompt = null;
     lsSet(INSTALLED_KEY);
+    updateInline();
     hide();
   });
 
@@ -110,27 +152,27 @@
     navigator.getInstalledRelatedApps().then(function (apps) {
       if (apps && apps.length && !deferredPrompt) {
         lsSet(INSTALLED_KEY);
+        updateInline();
         if (ready) show();
       }
     }).catch(function () {});
   }
 
+  /* Botões fixos (ex.: Ajustes) */
+  for (var i = 0; i < inlineBtns.length; i++) {
+    inlineBtns[i].addEventListener('click', function (e) {
+      e.preventDefault();
+      doInstall(hide);
+    });
+  }
+  updateInline();
+
+  /* Botões do toast */
   if (btn) {
     btn.addEventListener('click', function (e) {
       e.preventDefault();
       if (state === 'open') { window.location.href = OPEN_URL; return; }
-      if (deferredPrompt) {
-        var p = deferredPrompt;
-        deferredPrompt = null;
-        p.prompt();
-        p.userChoice.then(function (result) {
-          hide();
-          if (result.outcome === 'accepted') lsSet(INSTALLED_KEY);
-        });
-      } else if (isIOS) {
-        alert('No Safari: toca em  ↑  Partilhar  →  "Adicionar ao ecrã de início"');
-        hide();
-      }
+      doInstall(hide);
     });
   }
 
@@ -141,6 +183,6 @@
     });
   }
 
-  /* Pequeno delay para não aparecer logo ao abrir */
+  /* Pequeno delay para o toast não aparecer logo ao abrir */
   setTimeout(function () { ready = true; show(); }, DELAY);
 })();

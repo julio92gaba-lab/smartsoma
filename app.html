@@ -51,7 +51,7 @@
     <img src="icon-192.png" alt="" style="width:42px;height:42px;border-radius:10px;flex-shrink:0;">
     <div style="flex:1;min-width:0;">
       <div data-pwa-title style="font-size:13px;font-weight:700;color:#fff;line-height:1.3;margin-bottom:2px;">Instala a app no teu telemóvel</div>
-      <div data-pwa-sub style="font-size:11.5px;color:rgba(255,255,255,.55);line-height:1.4;">Acesso rápido, e funciona offline.</div>
+      <div data-pwa-sub style="font-size:11.5px;color:rgba(255,255,255,.55);line-height:1.4;">Acesso rápido, funciona offline e sem anúncios.</div>
     </div>
     <button id="pwaInstallBtn" data-pwa-btn style="
       flex-shrink:0;
@@ -538,7 +538,12 @@
         <div class="sheet-screens" id="sheetScreens">
             <div class="sheet-screen is-active" id="sheetScreenDefault">
                 <div class="sheet-content">
-                    <div class="sheet-profile-row">
+                    <div class="sheet-profile-row" style="position:relative;">
+                        <!-- Botão "Instalar App": só aparece no browser, quando a instalação é possível (ver pwa-install.js) -->
+                        <button type="button" id="pwaSheetInstall" data-pwa-inline style="display:none;position:absolute;top:0;left:0;align-items:center;gap:0.3125rem;padding:0.25rem 0.5rem;border-radius:999px;border:1px solid rgba(30,158,90,0.35);background:rgba(30,158,90,0.10);color:var(--brand-green);font-size:0.6875rem;font-weight:700;line-height:1;cursor:pointer;white-space:nowrap;">
+                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="M7.5 11 12 15.5 16.5 11"/><path d="M5 20h14"/></svg>
+                            <span data-i18n="sheet.installApp">Instalar App</span>
+                        </button>
                         <div class="sheet-avatar" id="sheetAvatar" role="button" tabindex="0" data-i18n-aria="photo.viewAria" aria-label="Ver foto de perfil"></div>
                         <div class="sheet-profile-info">
                             <p class="sheet-username" id="sheetUsername">Utilizador</p>
