@@ -2049,15 +2049,16 @@
       for (var id in plat) s += Number(plat[id]) || 0;
       return s;
     }
-    // Plataformas que aparecem num intervalo (semana): as que estavam
-    // ativas nesse período OU que tenham qualquer valor lançado nele.
-    // dayPlats = lista de { id: valor } de cada dia do intervalo.
+    // Plataformas que aparecem num intervalo (semana): todas as que estão
+    // ativas (como Uber e Bolt, aparecem em todas as semanas), as que só
+    // foram excluídas depois do início dessa semana, e qualquer uma com
+    // valor lançado nela. dayPlats = lista de { id: valor } de cada dia.
     function platVisibleFor (startKey, endKey, dayPlats) {
       var used = {};
       dayPlats.forEach(function (pl) { for (var id in pl) { if (pl[id] > 0) used[id] = true; } });
       return platRegistry().filter(function (p) {
         if (used[p.id]) return true;
-        return (!p.desde || p.desde <= endKey) && (!p.ate || p.ate > startKey);
+        return !p.ate || p.ate > startKey;
       });
     }
 
