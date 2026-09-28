@@ -27,7 +27,7 @@
 </div>
 
 <!-- Toast PWA Install -->
-<div id="pwaToast" role="status" aria-live="polite" style="
+<div id="pwaToast" data-pwa-toast role="status" aria-live="polite" style="
   position:fixed;
   bottom:calc(env(safe-area-inset-bottom, 0px) + 80px);
   left:50%;
@@ -50,10 +50,10 @@
   ">
     <img src="icon-192.png" alt="" style="width:42px;height:42px;border-radius:10px;flex-shrink:0;">
     <div style="flex:1;min-width:0;">
-      <div style="font-size:13px;font-weight:700;color:#fff;line-height:1.3;margin-bottom:2px;">Instala a app no teu telemóvel</div>
-      <div style="font-size:11.5px;color:rgba(255,255,255,.55);line-height:1.4;">Acesso rápido, funciona offline e sem anúncios.</div>
+      <div data-pwa-title style="font-size:13px;font-weight:700;color:#fff;line-height:1.3;margin-bottom:2px;">Instala a app no teu telemóvel</div>
+      <div data-pwa-sub style="font-size:11.5px;color:rgba(255,255,255,.55);line-height:1.4;">Acesso rápido, funciona offline e sem anúncios.</div>
     </div>
-    <button id="pwaInstallBtn" style="
+    <button id="pwaInstallBtn" data-pwa-btn style="
       flex-shrink:0;
       background:#2ECC71;
       color:#0d1117;
@@ -65,7 +65,7 @@
       cursor:pointer;
       white-space:nowrap;
     ">Instalar</button>
-    <button id="pwaToastClose" aria-label="Fechar" style="
+    <button id="pwaToastClose" data-pwa-close aria-label="Fechar" style="
       flex-shrink:0;
       background:none;
       border:none;
@@ -1225,91 +1225,7 @@
 
     <script src="cloud-init.js"></script>
 
-    <!-- PWA: Service Worker + Toast de instalação -->
-    <script>
-    (function () {
-      /* ── Registo do Service Worker ── */
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function () {
-          navigator.serviceWorker.register('/sw.js').catch(function () {});
-        });
-      }
-
-      /* ── Toast de instalação ── */
-      var toast        = document.getElementById('pwaToast');
-      var installBtn   = document.getElementById('pwaInstallBtn');
-      var closeBtn     = document.getElementById('pwaToastClose');
-      var deferredPrompt = null;
-      var TOAST_KEY    = 'ss_pwa_toast_dismissed';
-
-      function showToast () {
-        if (!toast) return;
-        /* Pequeno delay para não aparecer imediatamente ao abrir */
-        setTimeout(function () {
-          toast.style.opacity = '1';
-          toast.style.transform = 'translateX(-50%) translateY(0)';
-          toast.style.pointerEvents = 'auto';
-        }, 2200);
-      }
-
-      function hideToast () {
-        if (!toast) return;
-        toast.style.opacity = '0';
-        toast.style.transform = 'translateX(-50%) translateY(20px)';
-        toast.style.pointerEvents = 'none';
-      }
-
-      /* Só mostra se ainda não dispensou e se não está instalado */
-      var isStandalone = window.matchMedia('(display-mode: standalone)').matches
-                      || window.navigator.standalone === true;
-      var dismissed    = false;
-      try { dismissed = localStorage.getItem(TOAST_KEY) === '1'; } catch (e) {}
-
-      if (!isStandalone && !dismissed) {
-        /* Android / Chrome: captura o evento antes de o browser o mostrar */
-        window.addEventListener('beforeinstallprompt', function (e) {
-          e.preventDefault();
-          deferredPrompt = e;
-          showToast();
-        });
-
-        /* iOS Safari: não dispara beforeinstallprompt, mostra sempre o toast */
-        var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-        if (isIOS) showToast();
-      }
-
-      if (installBtn) {
-        installBtn.addEventListener('click', function () {
-          if (deferredPrompt) {
-            deferredPrompt.prompt();
-            deferredPrompt.userChoice.then(function (result) {
-              deferredPrompt = null;
-              hideToast();
-              if (result.outcome === 'accepted') {
-                try { localStorage.setItem(TOAST_KEY, '1'); } catch (e) {}
-              }
-            });
-          } else {
-            /* iOS: abre instruções (não há API nativa) */
-            alert('No Safari: toca em  ↑  Partilhar  →  "Adicionar ao ecrã de início"');
-            hideToast();
-          }
-        });
-      }
-
-      if (closeBtn) {
-        closeBtn.addEventListener('click', function () {
-          hideToast();
-          try { localStorage.setItem(TOAST_KEY, '1'); } catch (e) {}
-        });
-      }
-
-      /* Esconde o toast se o utilizador instalar a app */
-      window.addEventListener('appinstalled', function () {
-        hideToast();
-        try { localStorage.setItem(TOAST_KEY, '1'); } catch (e) {}
-      });
-    })();
-    </script>
+    <!-- PWA: Service Worker + toast de instalação -->
+    <script src="pwa-install.js"></script>
 </body>
 </html>

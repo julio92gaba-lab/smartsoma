@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SmartSoma — Controlo Financeiro para Motoristas e Estafetas</title>
+<link rel="manifest" href="manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
 <style>
@@ -647,8 +648,8 @@ document.querySelectorAll('.faq-q').forEach(btn=>{
 });
 </script>
 
-<!-- Toast flutuante PWA (aponta para app.html, não instala a landing page) -->
-<div id="landingPwaToast" style="
+<!-- Toast flutuante PWA: "Instalar" ou "Abrir app" consoante a app já esteja instalada -->
+<div id="landingPwaToast" data-pwa-toast data-pwa-allow-open data-pwa-mobile-only style="
   position:fixed;
   bottom:24px;
   left:50%;
@@ -675,10 +676,10 @@ document.querySelectorAll('.faq-q').forEach(btn=>{
       display:flex;align-items:center;justify-content:center;font-size:22px;
     ">📲</div>
     <div style="flex:1;min-width:0;">
-      <div style="font-size:13px;font-weight:700;color:#fff;line-height:1.3;margin-bottom:2px;">App disponível para o teu telemóvel</div>
-      <div style="font-size:11.5px;color:rgba(255,255,255,.5);line-height:1.4;">Instala o SmartSoma e acede em segundos.</div>
+      <div data-pwa-title style="font-size:13px;font-weight:700;color:#fff;line-height:1.3;margin-bottom:2px;">App disponível para o teu telemóvel</div>
+      <div data-pwa-sub style="font-size:11.5px;color:rgba(255,255,255,.5);line-height:1.4;">Instala o SmartSoma e acede em segundos.</div>
     </div>
-    <a href="app.html" style="
+    <a href="app.html" data-pwa-btn style="
       flex-shrink:0;
       background:#2ECC71;
       color:#0d1117;
@@ -689,8 +690,8 @@ document.querySelectorAll('.faq-q').forEach(btn=>{
       white-space:nowrap;
       text-decoration:none;
       display:inline-block;
-    ">Abrir app</a>
-    <button id="landingToastClose" aria-label="Fechar" style="
+    ">Instalar</a>
+    <button id="landingToastClose" data-pwa-close aria-label="Fechar" style="
       flex-shrink:0;background:none;border:none;
       color:rgba(255,255,255,.35);font-size:20px;
       line-height:1;cursor:pointer;padding:2px 4px;
@@ -698,32 +699,6 @@ document.querySelectorAll('.faq-q').forEach(btn=>{
   </div>
 </div>
 
-<script>
-(function(){
-  var toast    = document.getElementById('landingPwaToast');
-  var closeBtn = document.getElementById('landingToastClose');
-  var KEY      = 'ss_landing_pwa_dismissed';
-  var dismissed = false;
-  try { dismissed = sessionStorage.getItem(KEY) === '1'; } catch(e) {}
-  if (!dismissed && toast) {
-    var isMobile = /android|iphone|ipad|ipod|mobile/i.test(navigator.userAgent);
-    if (isMobile) {
-      setTimeout(function () {
-        toast.style.opacity = '1';
-        toast.style.transform = 'translateX(-50%) translateY(0)';
-        toast.style.pointerEvents = 'auto';
-      }, 3000);
-    }
-  }
-  if (closeBtn) {
-    closeBtn.addEventListener('click', function () {
-      toast.style.opacity = '0';
-      toast.style.transform = 'translateX(-50%) translateY(30px)';
-      toast.style.pointerEvents = 'none';
-      try { sessionStorage.setItem(KEY, '1'); } catch(e) {}
-    });
-  }
-})();
-</script>
+<script src="pwa-install.js"></script>
 </body>
 </html>

@@ -1,11 +1,12 @@
 /* SmartSoma — Service Worker */
 
-const CACHE_NAME = 'smartsoma-v1';
+const CACHE_NAME = 'smartsoma-v2';
 
 const ASSETS_TO_CACHE = [
   '/app.html',
   '/app.js',
   '/app.css',
+  '/pwa-install.js',
   '/manifest.json',
   '/logo-home.png',
   '/icon-192.png',

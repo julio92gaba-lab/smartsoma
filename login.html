@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>SmartSoma — Entrar</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2ECC71">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SmartSoma">
+    <link rel="apple-touch-icon" href="icon-192.png">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
@@ -284,6 +291,63 @@
 <body>
 
 <div id="toastContainer"></div>
+
+<!-- Toast PWA: "Instalar" ou "Abrir app" -->
+<div id="pwaToast" data-pwa-toast data-pwa-allow-open data-pwa-mobile-only role="status" aria-live="polite" style="
+  position:fixed;
+  bottom:calc(env(safe-area-inset-bottom, 0px) + 80px);
+  left:50%;
+  transform:translateX(-50%) translateY(20px);
+  opacity:0;
+  pointer-events:none;
+  z-index:99999;
+  transition:opacity .35s ease, transform .35s ease;
+  width:min(calc(100vw - 32px), 300px);
+">
+  <div style="
+    background:#1c2333;
+    border:1px solid rgba(46,204,113,.35);
+    border-radius:20px;
+    padding:18px 16px 16px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+    gap:10px;
+    box-shadow:
+      0 0 0 1px rgba(46,204,113,.12),
+      0 0 24px 4px rgba(46,204,113,.10),
+      0 16px 48px rgba(0,0,0,.7);
+    position:relative;
+  ">
+    <button id="pwaToastClose" data-pwa-close aria-label="Fechar" style="
+      position:absolute;top:10px;right:12px;
+      background:none;border:none;
+      color:rgba(255,255,255,.35);font-size:20px;
+      line-height:1;cursor:pointer;padding:2px 6px;
+    ">×</button>
+
+    <img src="icon-192.png" alt="" style="width:48px;height:48px;border-radius:14px;">
+
+    <div>
+      <div data-pwa-title style="font-size:13.5px;font-weight:700;color:#fff;line-height:1.35;margin-bottom:4px;">Instala a app no teu telemóvel</div>
+      <div data-pwa-sub style="font-size:12px;color:rgba(255,255,255,.5);line-height:1.5;">Acesso rápido, funciona offline e sem anúncios.</div>
+    </div>
+
+    <button id="pwaInstallBtn" data-pwa-btn style="
+      background:#2ECC71;
+      color:#0d1117;
+      border:none;
+      border-radius:50px;
+      padding:9px 22px;
+      font-size:13px;
+      font-weight:700;
+      cursor:pointer;
+      white-space:nowrap;
+      margin-top:2px;
+    ">Instalar</button>
+  </div>
+</div>
 
 <div class="login-top">
     <a href="index.html">
@@ -625,5 +689,6 @@
     // ── Enter ─────────────────────────────────────────────────────────
     document.addEventListener('keydown', e => { if (e.key === 'Enter' && !btnMain.disabled) btnMain.click(); });
 </script>
+<script src="pwa-install.js"></script>
 </body>
 </html>
