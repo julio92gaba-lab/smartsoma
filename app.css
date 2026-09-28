@@ -3505,3 +3505,154 @@ html, body{ overscroll-behavior-y:none; }
   .ganhos-tile .list-row-icon{ width:1.625rem; height:1.625rem; }
   .ganhos-cta-row{ margin-bottom:0; }
 }
+        /* ---- Subtela Multiplataforma (Ajustes) ---- */
+        .mp-lista-plataformas{
+          display:flex;
+          flex-direction:column;
+          gap:0.5rem;
+          margin-bottom:0.5rem;
+        }
+        .mp-lista-plataformas:empty{ display:none; }
+        .mp-card{
+          display:flex;
+          align-items:center;
+          gap:0.75rem;
+          background:var(--card-bg);
+          border:1px solid var(--card-line);
+          border-radius:0.625rem;
+          padding:0.625rem 0.75rem;
+        }
+        .mp-card-thumb{
+          width:2rem; height:2rem;
+          border-radius:50%;
+          background:rgba(var(--ink-rgb),0.07);
+          overflow:hidden;
+          flex:0 0 auto;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          color:rgba(var(--ink-rgb),0.3);
+        }
+        .mp-card-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
+        .mp-card-thumb svg{ width:1rem; height:1rem; }
+        .mp-card-nome{
+          flex:1;
+          font-size:0.875rem;
+          font-weight:600;
+          color:var(--ink);
+          min-width:0;
+          white-space:nowrap;
+          overflow:hidden;
+          text-overflow:ellipsis;
+        }
+        .mp-card-del{
+          background:none;
+          border:none;
+          padding:0.25rem;
+          cursor:pointer;
+          color:var(--danger);
+          display:flex;
+          align-items:center;
+          flex:0 0 auto;
+        }
+        .mp-card-del svg{ width:0.9375rem; height:0.9375rem; }
+        .mp-divider{
+          height:1px;
+          background:var(--card-line);
+          margin:1rem 0;
+        }
+        .mp-nova-foto-row{
+          display:flex;
+          align-items:center;
+          gap:0.75rem;
+          margin-bottom:0.75rem;
+        }
+        .mp-nova-thumb{
+          width:2.5rem; height:2.5rem;
+          border-radius:50%;
+          background:rgba(var(--ink-rgb),0.07);
+          border:1px dashed rgba(var(--ink-rgb),0.2);
+          overflow:hidden;
+          flex:0 0 auto;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          color:rgba(var(--ink-rgb),0.3);
+        }
+        .mp-nova-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
+        .mp-nova-thumb svg{ width:1.125rem; height:1.125rem; }
+
+        /* ---- Subtela Apagar Dados (Ajustes) ---- */
+        .apagar-dados-aviso{
+          display:flex;
+          gap:0.75rem;
+          align-items:flex-start;
+          background:rgba(var(--danger-rgb,220,53,69),0.07);
+          border:1px solid rgba(var(--danger-rgb,220,53,69),0.18);
+          border-radius:0.625rem;
+          padding:0.875rem 0.875rem;
+          margin-bottom:1.25rem;
+        }
+        .apagar-dados-aviso-icon{
+          width:1.25rem;
+          height:1.25rem;
+          flex:0 0 auto;
+          color:var(--danger);
+          margin-top:0.0625rem;
+        }
+        .apagar-dados-aviso-texto{
+          font-size:0.75rem;
+          line-height:1.5;
+          color:var(--ink);
+          margin:0;
+        }
+        .apagar-dados-opcoes{
+          display:flex;
+          flex-direction:column;
+          gap:0.5rem;
+          margin-top:0.5rem;
+        }
+        .apagar-dados-opcao-btn{
+          width:100%;
+          padding:0.75rem 1rem;
+          border-radius:0.625rem;
+          border:1.5px solid var(--card-line);
+          background:var(--card-bg);
+          color:var(--ink);
+          font-size:0.875rem;
+          font-weight:600;
+          text-align:left;
+          cursor:pointer;
+          transition:border-color .15s, background .15s;
+        }
+        .apagar-dados-opcao-btn.is-selected{
+          border-color:var(--brand-green);
+          background:rgba(30,158,90,0.08);
+        }
+        .apagar-dados-confirmar{ margin-top:1rem; }
+        .apagar-dados-confirmar:disabled{ opacity:.45; cursor:default; }
+        .mp-confirm-aviso{
+          margin:0.5rem 0 0.25rem;
+          padding:0.5rem 0.625rem;
+          border-radius:0.5rem;
+          background:rgba(var(--ink-rgb),0.05);
+          text-align:left;
+        }
+        .mp-confirm-aviso p{
+          margin:0 0 0.3125rem;
+          font-size:0.6875rem;
+          line-height:1.45;
+          color:rgba(var(--ink-rgb),0.7);
+        }
+        .mp-confirm-aviso p:last-child{ margin-bottom:0; }
+        .mp-confirm-aviso strong{ color:var(--ink); }
+        .apagar-dados-opcao-btn:active{
+          background:rgba(var(--ink-rgb),0.05);
+        }
+        .apagar-dados-opcao-btn-todos{
+          border-color:rgba(var(--danger-rgb,220,53,69),0.35);
+          color:var(--danger);
+        }
+        .apagar-dados-opcao-btn-todos:active{
+          background:rgba(var(--danger-rgb,220,53,69),0.07);
+        }

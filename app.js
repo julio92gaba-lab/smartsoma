@@ -209,6 +209,12 @@
 "mp.confirmTitle": "Excluir plataforma",
 "mp.confirmText": "Tem certeza que deseja excluir esta plataforma?",
 "mp.confirmNamed": "Tem certeza que deseja excluir \"{n}\"?",
+"mp.avisoAtualLabel": "Esta semana:",
+"mp.avisoAtual": "os valores lançados nesta plataforma serão apagados.",
+"mp.avisoAntLabel": "Semanas anteriores:",
+"mp.avisoAnt": "os valores ficam guardados, junto com os dados das tabelas, para controle e conferência.",
+"plat.title": "Rendimentos {n}",
+"plat.valorAria": "Valor recebido na plataforma",
 "sheet.idioma": "Idioma",
 "sheet.tamanho": "Tamanho da fonte",
 "sheet.tamanhoPequeno": "Pequeno",
@@ -219,6 +225,18 @@
 "sheet.tutorial": "Tutorial",
 "sheet.ajuda": "Falar connosco",
 "sheet.termosPrivacidade": "Termos e Privacidade",
+"sheet.apagarDados": "Apagar dados",
+"apagar.aviso": "A eliminação dos dados é permanente e irreversível. São apagados apenas os valores inseridos e os cálculos das tabelas. A sua conta de utilizador permanece ativa.",
+"apagar.periodo": "Selecionar período",
+"apagar.estaSemana": "Esta semana",
+"apagar.esteMes": "Este mês",
+"apagar.todos": "Todos os dados",
+"apagar.btn": "Apagar",
+"apagar.aguarde": "A apagar...",
+"apagar.confirmTitle": "Apagar dados",
+"apagar.confirm.semana": "Vai apagar todos os valores e despesas (fixas ou não) inseridos nesta semana. Esta ação é permanente e não pode ser desfeita.",
+"apagar.confirm.mes": "Vai apagar todos os valores e despesas (fixas ou não) inseridos neste mês, nas semanas que pertencem a ele. Esta ação é permanente e não pode ser desfeita.",
+"apagar.confirm.todos": "Vai apagar TODOS os valores, despesas (incluindo as despesas fixas cadastradas) e metas semanais. A sua conta, foto, email e senha não são afetados. Esta ação é permanente e não pode ser desfeita.",
 "sheet.sair": "Sair",
 "idioma.title": "Idioma",
 "idioma.intro": "Escolha o idioma da aplicação. Todos os textos serão apresentados no idioma selecionado.",
@@ -581,6 +599,12 @@
 "mp.confirmTitle": "Delete platform",
 "mp.confirmText": "Are you sure you want to delete this platform?",
 "mp.confirmNamed": "Are you sure you want to delete \"{n}\"?",
+"mp.avisoAtualLabel": "This week:",
+"mp.avisoAtual": "the amounts entered for this platform will be deleted.",
+"mp.avisoAntLabel": "Previous weeks:",
+"mp.avisoAnt": "amounts are kept, along with the table data, for control and verification.",
+"plat.title": "{n} earnings",
+"plat.valorAria": "Amount received on the platform",
 "sheet.idioma": "Language",
 "sheet.tamanho": "Font size",
 "sheet.tamanhoPequeno": "Small",
@@ -591,6 +615,18 @@
 "sheet.tutorial": "Tutorial",
 "sheet.ajuda": "Contact us",
 "sheet.termosPrivacidade": "Terms and Privacy",
+"sheet.apagarDados": "Delete data",
+"apagar.aviso": "Data deletion is permanent and irreversible. Only inserted values and table calculations are deleted. Your user account remains active.",
+"apagar.periodo": "Select period",
+"apagar.estaSemana": "This week",
+"apagar.esteMes": "This month",
+"apagar.todos": "All data",
+"apagar.btn": "Delete",
+"apagar.aguarde": "Deleting...",
+"apagar.confirmTitle": "Delete data",
+"apagar.confirm.semana": "This will delete all amounts and expenses (fixed or not) entered this week. This action is permanent and cannot be undone.",
+"apagar.confirm.mes": "This will delete all amounts and expenses (fixed or not) entered this month, in the weeks that belong to it. This action is permanent and cannot be undone.",
+"apagar.confirm.todos": "This will delete ALL amounts, expenses (including registered fixed expenses) and weekly goals. Your account, photo, email and password are not affected. This action is permanent and cannot be undone.",
 "sheet.sair": "Log out",
 "idioma.title": "Language",
 "idioma.intro": "Choose the app language. All texts will be shown in the selected language.",
@@ -1508,7 +1544,7 @@
           var raw = cloudGet('homeBadgeValores:' + dateKeyFor(d));
           if (raw) {
             var parsed = JSON.parse(raw);
-            return (Number(parsed.uber) || 0) + (Number(parsed.bolt) || 0);
+            return (Number(parsed.uber) || 0) + (Number(parsed.bolt) || 0) + platSum(platExtrasFrom(parsed));
           }
         } catch (e) {  }
         return 0;
@@ -1951,6 +1987,80 @@
 
 
 
+    /* ---- Plataformas extra (Multiplataforma): dados partilhados ----
+       O cadastro fica em 'multiplataformas': [{ id, nome, img, desde, ate? }].
+       desde = segunda-feira da semana em que foi criada; ate = segunda-feira
+       da semana em que foi excluída (a partir daí deixa de existir, mas as
+       semanas anteriores continuam guardadas e visíveis). Os valores diários
+       de cada plataforma ficam dentro do próprio registo do dia
+       ('homeBadgeValores:YYYY-MM-DD'), no campo plat: { id: valor }. */
+    function platDateKey (d) {
+      var m = d.getMonth() + 1, dd = d.getDate();
+      return d.getFullYear() + '-' + (m < 10 ? '0' + m : m) + '-' + (dd < 10 ? '0' + dd : dd);
+    }
+    function platMondayKey (d) {
+      var m = new Date(d.getTime());
+      var day = m.getDay();
+      m.setDate(m.getDate() + (day === 0 ? -6 : 1 - day));
+      return platDateKey(m);
+    }
+    function escHtml (s) {
+      return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+    function platRegistry () {
+      var raw = null;
+      try { raw = cloudGet('multiplataformas'); } catch (e) {  }
+      if (!raw) return [];
+      try {
+        var arr = JSON.parse(raw);
+        return Array.isArray(arr) ? arr.filter(function (p) { return p && p.id && p.nome; }) : [];
+      } catch (e) { return []; }
+    }
+    // Plataformas criadas antes de existir controlo por semana não têm id:
+    // dá-lhes um id e a semana atual como início, uma única vez.
+    (function platNormalizeRegistry () {
+      var raw = null;
+      try { raw = cloudGet('multiplataformas'); } catch (e) {  }
+      if (!raw) return;
+      var arr;
+      try { arr = JSON.parse(raw); } catch (e) { return; }
+      if (!Array.isArray(arr)) return;
+      var mudou = false;
+      var semana = platMondayKey(new Date());
+      arr.forEach(function (p, i) {
+        if (p && !p.id) { p.id = 'p' + Date.now().toString(36) + i; mudou = true; }
+        if (p && !p.desde) { p.desde = semana; mudou = true; }
+      });
+      if (mudou) { try { cloudSet('multiplataformas', JSON.stringify(arr)); } catch (e) {  } }
+    })();
+    // { id: valor } só com valores positivos, a partir do registo de um dia.
+    function platExtrasFrom (parsed) {
+      var out = {};
+      if (parsed && parsed.plat && typeof parsed.plat === 'object') {
+        for (var id in parsed.plat) {
+          var n = Number(parsed.plat[id]);
+          if (n > 0) out[id] = n;
+        }
+      }
+      return out;
+    }
+    function platSum (plat) {
+      var s = 0;
+      for (var id in plat) s += Number(plat[id]) || 0;
+      return s;
+    }
+    // Plataformas que aparecem num intervalo (semana): as que estavam
+    // ativas nesse período OU que tenham qualquer valor lançado nele.
+    // dayPlats = lista de { id: valor } de cada dia do intervalo.
+    function platVisibleFor (startKey, endKey, dayPlats) {
+      var used = {};
+      dayPlats.forEach(function (pl) { for (var id in pl) { if (pl[id] > 0) used[id] = true; } });
+      return platRegistry().filter(function (p) {
+        if (used[p.id]) return true;
+        return (!p.desde || p.desde <= endKey) && (!p.ate || p.ate > startKey);
+      });
+    }
+
     function setupMasterModal (triggerId, backdropId, prefillKey) {
       var trigger  = document.getElementById(triggerId);
       var backdrop = document.getElementById(backdropId);
@@ -2017,14 +2127,13 @@
 
       scroller.addEventListener('scroll', updateEdges, { passive: true });
       window.addEventListener('resize', updateEdges);
-      requestAnimationFrame(updateEdges);
-      // A fonte Inter troca a fonte de sistema depois do primeiro cálculo
-      // (font-display:swap), o que muda a largura dos blocos e deixava o
-      // degradê "errado" até o próximo scroll. Recalcula assim que a
-      // fonte termina de carregar.
+      // Duplo rAF garante que os tiles já foram pintados antes de medir
+      requestAnimationFrame(function () { requestAnimationFrame(updateEdges); });
       if (window.document && document.fonts && document.fonts.ready) {
         document.fonts.ready.then(updateEdges);
       }
+      document.addEventListener('cloudCacheReady', updateEdges);
+      document.addEventListener('plataformasChanged', updateEdges);
 
       // Arraste com o rato (desktop). No toque, o scroll nativo já funciona.
       var isDown = false;
@@ -2291,7 +2400,7 @@
         for (var i = 0; i < 7; i++) {
           var d = new Date(monday.getTime());
           d.setDate(monday.getDate() + i);
-          var b = { uber: 0, bolt: 0, despesas: 0 };
+          var b = { uber: 0, bolt: 0, despesas: 0, extras: 0 };
           try {
             var raw = cloudGet('homeBadgeValores:' + dateKeyFor(d));
             if (raw) {
@@ -2299,9 +2408,10 @@
               b.uber     = Number(parsed.uber) || 0;
               b.bolt     = Number(parsed.bolt) || 0;
               b.despesas = Number(parsed.despesas) || 0;
+              b.extras   = platSum(platExtrasFrom(parsed));
             }
           } catch (e) {  }
-          sumBruto     += b.uber + b.bolt;
+          sumBruto     += b.uber + b.bolt + b.extras;
           sumDespesas  += b.despesas;
         }
         return (tipo === 'liquido') ? (sumBruto - sumDespesas) : sumBruto;
@@ -2906,6 +3016,7 @@
 
         function loadDayBadges (d) {
           var badges = { uber: 0, bolt: 0, despesas: 0, distancia: 0 };
+          badges.plat = {}; badges.extras = 0;
           try {
             var raw = cloudGet('homeBadgeValores:' + dateKeyFor(d));
             if (raw) {
@@ -2913,6 +3024,8 @@
               for (var k in badges) {
                 if (parsed && typeof parsed[k] === 'number') badges[k] = parsed[k];
               }
+              badges.plat = platExtrasFrom(parsed);
+              badges.extras = platSum(badges.plat);
             }
           } catch (e) {  }
           return badges;
@@ -2946,7 +3059,7 @@
           var sumBruto = 0, sumDespesas = 0, sumKm = 0;
           days.forEach(function (d) {
             var b = loadDayBadges(d);
-            sumBruto    += b.uber + b.bolt;
+            sumBruto    += b.uber + b.bolt + b.extras;
             sumDespesas += b.despesas;
             sumKm       += b.distancia;
           });
@@ -3132,17 +3245,18 @@
         return ref.getFullYear() + '-' + pad2(ref.getMonth() + 1) + '-' + pad2(ref.getDate());
       }
 
-      var badges = { uber: 0, bolt: 0, despesas: 0, distancia: 0 };
+      var badges = { uber: 0, bolt: 0, despesas: 0, distancia: 0, plat: {} };
 
       function loadBadges () {
-        badges = { uber: 0, bolt: 0, despesas: 0, distancia: 0 };
+        badges = { uber: 0, bolt: 0, despesas: 0, distancia: 0, plat: {} };
         try {
           var raw = cloudGet(BADGES_STORAGE_PREFIX + dateKey());
           if (raw) {
             var parsed = JSON.parse(raw);
             for (var k in badges) {
-              if (parsed && typeof parsed[k] === 'number') badges[k] = parsed[k];
+              if (k !== 'plat' && parsed && typeof parsed[k] === 'number') badges[k] = parsed[k];
             }
+            badges.plat = platExtrasFrom(parsed);
           }
         } catch (e) {  }
       }
@@ -3245,6 +3359,16 @@
             distancia: badges.distancia
           };
         },
+        // Plataformas extra (Multiplataforma): valor do dia selecionado.
+        getPlat: function (id) { return Number(badges.plat[id]) || 0; },
+        setPlat: function (id, valor) {
+          valor = (typeof valor === 'number' && !isNaN(valor) && valor > 0) ? valor : 0;
+          if (valor > 999.99) valor = 999.99;
+          if (valor > 0) badges.plat[id] = valor; else delete badges.plat[id];
+          saveBadges();
+          renderBadges();
+        },
+        reload: function () { loadBadges(); renderBadges(); },
         setDespesas: function (valor) {
           badges.despesas = (typeof valor === 'number' && !isNaN(valor)) ? valor : 0;
           saveBadges();
@@ -3299,6 +3423,7 @@
 
       function loadDayBadges (d) {
         var badges = { uber: 0, bolt: 0, despesas: 0, distancia: 0 };
+        badges.plat = {}; badges.extras = 0;
         try {
           var raw = cloudGet(BADGES_STORAGE_PREFIX + dateKeyFor(d));
           if (raw) {
@@ -3306,6 +3431,8 @@
             for (var k in badges) {
               if (parsed && typeof parsed[k] === 'number') badges[k] = parsed[k];
             }
+            badges.plat = platExtrasFrom(parsed);
+            badges.extras = platSum(badges.plat);
           }
         } catch (e) {  }
         return badges;
@@ -3365,7 +3492,7 @@
           var dd = new Date(monday.getTime());
           dd.setDate(monday.getDate() + i);
           var b = loadDayBadges(dd);
-          sum += b.uber + b.bolt;
+          sum += b.uber + b.bolt + b.extras;
         }
         return sum;
       }
@@ -3485,12 +3612,33 @@
         scrollWrap.classList.toggle('has-scroll-right', tableEl.scrollLeft < maxScroll - 2);
       }
 
+      // Plataformas extra que aparecem numa semana (mesmas colunas na
+      // tabela e nas linhas dos cartões, para tudo bater certo).
+      function weekPlatCols (monday) {
+        var lista = [];
+        for (var i = 0; i < 7; i++) {
+          var dd = new Date(monday.getTime());
+          dd.setDate(monday.getDate() + i);
+          lista.push(loadDayBadges(dd).plat);
+        }
+        var sunday = new Date(monday.getTime());
+        sunday.setDate(monday.getDate() + 6);
+        return platVisibleFor(dateKeyFor(monday), dateKeyFor(sunday), lista);
+      }
+
       // ---- Modo lista: um card por dia da semana, abaixo do filtro de
       // semana. Por enquanto mostra só o dia da semana; os detalhes de
       // cada dia serão adicionados depois.
       function buildDayCard (d, weekdayIndex) {
         var badges = loadDayBadges(d);
-        var ganhosDia = badges.uber + badges.bolt;
+        var ganhosDia = badges.uber + badges.bolt + badges.extras;
+        var extraCols = weekPlatCols(getMonday(d));
+        var extraRows = extraCols.map(function (p) {
+          return '<div class="semana-day-card-row is-plus">' +
+            '<span class="row-label"><span class="row-sign">+</span>' + escHtml(p.nome) + ':</span>' +
+            '<span class="row-value">' + formatEuro(badges.plat[p.id] || 0) + '</span>' +
+          '</div>';
+        }).join('');
         var expenseEntries = loadDayExpenseEntries(d);
         var despesasDia = sumExpenseEntries(expenseEntries);
         var liquidoDia = ganhosDia - despesasDia;
@@ -3521,6 +3669,7 @@
             '<span class="row-label"><span class="row-sign">+</span>' + I18N.t('semana.rowBolt') + '</span>' +
             '<span class="row-value">' + formatEuro(badges.bolt) + '</span>' +
           '</div>' +
+          extraRows +
           '<div class="semana-day-card-row is-minus">' +
             '<span class="row-label"><span class="row-sign">-</span>' + I18N.t('semana.rowDespesas') + '</span>' +
             '<span class="row-value">' + formatEuro(despesasDia) + '</span>' +
@@ -3667,11 +3816,13 @@
         table.className = 'semana-table';
 
         var thead = document.createElement('thead');
+        var extraCols = weekPlatCols(week.monday);
         thead.innerHTML =
           '<tr>' +
             '<th>' + I18N.t('semana.th.data') + '</th>' +
             '<th>' + I18N.t('semana.th.uber') + '</th>' +
             '<th>' + I18N.t('semana.th.bolt') + '</th>' +
+            extraCols.map(function (p) { return '<th>' + escHtml(p.nome) + '</th>'; }).join('') +
             '<th>' + I18N.t('semana.th.despesas') + '</th>' +
             '<th>' + I18N.t('semana.th.km') + '</th>' +
             '<th>' + I18N.t('semana.th.total') + '</th>' +
@@ -3681,7 +3832,7 @@
 
         var tbody = document.createElement('tbody');
 
-        var sumUber = 0, sumBolt = 0, sumDespesas = 0, sumKm = 0;
+        var sumUber = 0, sumBolt = 0, sumExtras = 0, sumDespesas = 0, sumKm = 0;
 
         for (var i = 0; i < 7; i++) {
           var d = new Date(week.monday.getTime());
@@ -3691,10 +3842,11 @@
 
           sumUber     += dayBadges.uber;
           sumBolt     += dayBadges.bolt;
+          sumExtras   += dayBadges.extras;
           sumDespesas += despesasDia;
           sumKm       += dayBadges.distancia;
 
-          var dayTotal = dayBadges.uber + dayBadges.bolt;
+          var dayTotal = dayBadges.uber + dayBadges.bolt + dayBadges.extras;
 
           var tr = document.createElement('tr');
           tr.className = 'semana-table-row';
@@ -3714,6 +3866,12 @@
           var tdBolt = document.createElement('td');
           tdBolt.textContent = formatEuro(dayBadges.bolt);
           tr.appendChild(tdBolt);
+
+          extraCols.forEach(function (p) {
+            var tdX = document.createElement('td');
+            tdX.textContent = formatEuro(dayBadges.plat[p.id] || 0);
+            tr.appendChild(tdX);
+          });
 
           var tdDespesas = document.createElement('td');
           tdDespesas.textContent = formatEuro(despesasDia);
@@ -3750,7 +3908,7 @@
           updateTableScrollFade(scrollWrap, tableWrap);
         });
 
-        var sumBruto   = sumUber + sumBolt;
+        var sumBruto   = sumUber + sumBolt + sumExtras;
         var sumLiquido = sumBruto - sumDespesas;
 
         var summary = document.createElement('div');
@@ -4003,6 +4161,7 @@
       });
 
       document.addEventListener('homeBadgesSaved', renderMonth);
+      document.addEventListener('plataformasChanged', renderMonth);
       document.addEventListener('despesasFixasChanged', renderMonth);
       // Troca de idioma: a tabela, os cards e os rótulos são reconstruídos.
       document.addEventListener('languageChanged', renderMonth);
@@ -4520,9 +4679,11 @@
     var sheetScreenDespesasFixas = document.getElementById('sheetScreenDespesasFixas');
     var sheetScreenMultiplataforma = document.getElementById('sheetScreenMultiplataforma');
     var sheetScreenTamanho       = document.getElementById('sheetScreenTamanho');
+    var sheetScreenApagarDados   = document.getElementById('sheetScreenApagarDados');
     var openDadosPessoaisBtn = document.getElementById('openDadosPessoaisBtn');
     var openDespesasFixasBtn = document.getElementById('openDespesasFixasBtn');
     var openMultiplataformaBtn = document.getElementById('openMultiplataformaBtn');
+    var openApagarDadosBtn   = document.getElementById('openApagarDadosBtn');
     var openAjudaBtn          = document.getElementById('openAjudaBtn');
     var openIdiomaBtn         = document.getElementById('openIdiomaBtn');
     var openTamanhoBtn        = document.getElementById('openTamanhoBtn');
@@ -5003,6 +5164,11 @@
       if (openDespesasFixasBtn) {
         openDespesasFixasBtn.addEventListener('click', function () {
           openSheetScreen(sheetScreenDespesasFixas, I18N.t('sheet.despesasFixas'));
+        });
+      }
+      if (openApagarDadosBtn) {
+        openApagarDadosBtn.addEventListener('click', function () {
+          openSheetScreen(sheetScreenApagarDados, I18N.t('sheet.apagarDados'));
         });
       }
       if (openTamanhoBtn) {
@@ -5745,62 +5911,289 @@
 
     /* ---- Ecrã "Multiplataforma" dentro do menu Ajustes ----
        Lista as plataformas já presentes ("Atuais") cada uma com um "x"
-       vermelho para excluir (por enquanto sem efeito real, apenas mostra
-       a confirmação) e um formulário simples para adicionar uma nova
-       plataforma ao final da lista. */
+       vermelho para excluir e um formulário simples para adicionar uma
+       nova plataforma ao final da lista. Cada plataforma nova funciona
+       como uma entrada de ganhos extra (tile em Ganhos, colunas nas
+       tabelas, soma no bruto). Uber e Bolt são fixas do sistema. */
     (function () {
+      var MP_KEY = 'multiplataformas';
+
       var openBtn      = document.getElementById('openMultiplataformaBtn');
       var screenEl     = document.getElementById('sheetScreenMultiplataforma');
       var listaEl      = document.getElementById('mpListaAtuais');
       var novaInput    = document.getElementById('mpNovaInput');
       var salvarBtn    = document.getElementById('mpSalvarBtn');
+      var novaThumb    = document.getElementById('mpNovaThumb');
+      var uploadBtn    = document.getElementById('mpUploadLogoBtn');
+      var fileInput    = document.getElementById('mpLogoFileInput');
       var confirmBackdrop  = document.getElementById('mpConfirmBackdrop');
       var confirmText      = document.getElementById('mpConfirmText');
       var confirmCancelBtn = document.getElementById('mpConfirmCancelBtn');
       var confirmDeleteBtn = document.getElementById('mpConfirmDeleteBtn');
+      var scroller         = document.getElementById('ganhosIncomeScroll');
+      var addBtn           = document.getElementById('btnAddPlatform');
+
       if (!openBtn || !screenEl || !listaEl || !novaInput || !salvarBtn || !window.I18N) return;
 
-      var DEL_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>';
+      var ARROW_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>';
+      var DEL_SVG   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>';
+      var IMG_SVG   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>';
 
-      var plataformas = ['Uber', 'Bolt'];
+      var BASE = [
+        { nome: 'Uber', img: '01uber.png' },
+        { nome: 'Bolt', img: '02bolt.png' }
+      ];
 
+      var all = [];          // todas as extras: ativas e já excluídas (histórico)
+      var novaImgData = null;
+      var pendingDelId = null;
+
+      function ativas () { return all.filter(function (p) { return !p.ate; }); }
+      function achar (id) {
+        for (var i = 0; i < all.length; i++) { if (all[i].id === id) return all[i]; }
+        return null;
+      }
+
+      /* --- Persistência --- */
+      function carregar () {
+        var raw = window.cloudGet ? window.cloudGet(MP_KEY) : null;
+        all = [];
+        if (!raw) return;
+        try { all = JSON.parse(raw) || []; } catch (e) { all = []; }
+        if (!Array.isArray(all)) all = [];
+        all = all.filter(function (p) { return p && p.id && p.nome; });
+      }
+
+      function guardar () {
+        if (window.cloudSet) window.cloudSet(MP_KEY, JSON.stringify(all));
+      }
+
+      /* --- Valor do dia de cada plataforma extra (no tile) --- */
+      function refreshTileValues () {
+        if (!scroller) return;
+        scroller.querySelectorAll('.ganhos-tile-extra').forEach(function (btn) {
+          var v = btn.querySelector('.list-row-value');
+          var n = (window.HomeBadges && window.HomeBadges.getPlat) ? window.HomeBadges.getPlat(btn.getAttribute('data-pid')) : 0;
+          if (v) v.textContent = '€ ' + Number(n).toFixed(2);
+        });
+      }
+
+      /* --- Tiles na página inicial ---
+         Ordem: [+] → Uber → Bolt → extras → (restantes já no DOM)
+         Os tiles extra são sempre inseridos a seguir ao Bolt. */
+      function renderTiles () {
+        if (!scroller) return;
+        scroller.querySelectorAll('.ganhos-tile-extra').forEach(function (el) { el.remove(); });
+
+        var boltTile = document.getElementById('listRowBolt');
+        var insertAfter = boltTile || addBtn;
+
+        ativas().forEach(function (p) {
+          var btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'list-row ganhos-tile ganhos-tile-income ganhos-tile-scroll-item ganhos-tile-extra';
+          btn.setAttribute('data-pid', p.id);
+          btn.addEventListener('click', function () { openExtraModal(p.id); });
+          btn.setAttribute('aria-haspopup', 'true');
+          btn.setAttribute('aria-expanded', 'false');
+          btn.setAttribute('aria-label', 'Ganhos ' + p.nome);
+
+          // Linha do ícone + seta (idêntico a Uber/Bolt)
+          var iconRow = document.createElement('span');
+          iconRow.className = 'ganhos-tile-icon-row';
+
+          var iconWrap = document.createElement('span');
+          iconWrap.className = 'list-row-icon';
+          if (p.img) {
+            var img = document.createElement('img');
+            img.src = p.img;
+            img.alt = '';
+            img.draggable = false;
+            iconWrap.appendChild(img);
+          } else {
+            iconWrap.style.cssText = 'display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.625rem;letter-spacing:-.02em;';
+            iconWrap.textContent = p.nome.slice(0, 2).toUpperCase();
+          }
+
+          var arrowWrap = document.createElement('span');
+          arrowWrap.className = 'ganhos-tile-arrow';
+          arrowWrap.setAttribute('aria-hidden', 'true');
+          arrowWrap.innerHTML = ARROW_SVG;
+
+          iconRow.appendChild(iconWrap);
+          iconRow.appendChild(arrowWrap);
+
+          var title = document.createElement('span');
+          title.className = 'list-row-title';
+          title.textContent = 'Ganhos ' + p.nome;
+
+          var value = document.createElement('span');
+          value.className = 'list-row-value';
+          value.textContent = '€ 0.00';
+
+          var ticks = document.createElement('span');
+          ticks.className = 'ganhos-tile-ticks';
+          ticks.setAttribute('aria-hidden', 'true');
+
+          btn.appendChild(iconRow);
+          btn.appendChild(title);
+          btn.appendChild(value);
+          btn.appendChild(ticks);
+
+          // Inserir a seguir ao Bolt (ou ao addBtn se Bolt não existir)
+          if (insertAfter && insertAfter.nextSibling) {
+            scroller.insertBefore(btn, insertAfter.nextSibling);
+          } else {
+            scroller.appendChild(btn);
+          }
+          insertAfter = btn;
+        });
+
+        refreshTileValues();
+        document.dispatchEvent(new CustomEvent('plataformasChanged'));
+      }
+
+      /* --- Lista na subtela (Uber/Bolt com imagens reais, extras com x) --- */
       function renderLista () {
         listaEl.innerHTML = '';
-        plataformas.forEach(function (nome) {
-          var card = document.createElement('div');
-          card.className = 'despesa-card';
 
-          var desc = document.createElement('p');
-          desc.className = 'despesa-card-desc';
-          desc.textContent = nome;
-          card.appendChild(desc);
+        BASE.forEach(function (p) {
+          var card = document.createElement('div');
+          card.className = 'mp-card';
+
+          var thumb = document.createElement('div');
+          thumb.className = 'mp-card-thumb';
+          var img = document.createElement('img');
+          img.src = p.img;
+          img.alt = p.nome;
+          thumb.appendChild(img);
+
+          var nomeEl = document.createElement('span');
+          nomeEl.className = 'mp-card-nome';
+          nomeEl.textContent = p.nome;
+
+          card.appendChild(thumb);
+          card.appendChild(nomeEl);
+          listaEl.appendChild(card);
+        });
+
+        ativas().forEach(function (p) {
+          var card = document.createElement('div');
+          card.className = 'mp-card';
+
+          var thumb = document.createElement('div');
+          thumb.className = 'mp-card-thumb';
+          if (p.img) {
+            var img = document.createElement('img');
+            img.src = p.img;
+            img.alt = p.nome;
+            thumb.appendChild(img);
+          } else {
+            thumb.innerHTML = IMG_SVG;
+          }
+
+          var nomeEl = document.createElement('span');
+          nomeEl.className = 'mp-card-nome';
+          nomeEl.textContent = p.nome;
 
           var delBtn = document.createElement('button');
           delBtn.type = 'button';
-          delBtn.className = 'despesa-delete-btn';
+          delBtn.className = 'mp-card-del';
           delBtn.setAttribute('aria-label', I18N.t('mp.deleteAria'));
           delBtn.innerHTML = DEL_SVG;
-          delBtn.addEventListener('click', function () { openDeleteConfirm(nome); });
-          card.appendChild(delBtn);
+          delBtn.addEventListener('click', function () { openDeleteConfirm(p.id); });
 
+          card.appendChild(thumb);
+          card.appendChild(nomeEl);
+          card.appendChild(delBtn);
           listaEl.appendChild(card);
         });
       }
 
-      function openDeleteConfirm (nome) {
-        if (!confirmBackdrop) return;
-        if (confirmText) confirmText.textContent = I18N.t('mp.confirmNamed', { n: nome });
-        confirmBackdrop.classList.add('visible');
+      /* --- Upload de imagem --- */
+      if (uploadBtn && fileInput) {
+        uploadBtn.addEventListener('click', function () { fileInput.click(); });
+        fileInput.addEventListener('change', function () {
+          var file = fileInput.files && fileInput.files[0];
+          if (!file) return;
+          var reader = new FileReader();
+          reader.onload = function (e) {
+            var imgEl = new Image();
+            imgEl.onload = function () {
+              var size = 128;
+              var canvas = document.createElement('canvas');
+              canvas.width = size; canvas.height = size;
+              var ctx = canvas.getContext('2d');
+              var s = Math.min(imgEl.width, imgEl.height);
+              var ox = (imgEl.width - s) / 2;
+              var oy = (imgEl.height - s) / 2;
+              ctx.drawImage(imgEl, ox, oy, s, s, 0, 0, size, size);
+              novaImgData = canvas.toDataURL('image/jpeg', 0.82);
+              if (novaThumb) {
+                novaThumb.innerHTML = '';
+                var prev = document.createElement('img');
+                prev.src = novaImgData;
+                novaThumb.appendChild(prev);
+              }
+            };
+            imgEl.src = e.target.result;
+          };
+          reader.readAsDataURL(file);
+          fileInput.value = '';
+        });
+      }
+
+      /* --- Confirmação de exclusão --- */
+      function openDeleteConfirm (id) {
+        var p = achar(id);
+        if (!p) return;
+        pendingDelId = id;
+        if (confirmText) confirmText.textContent = I18N.t('mp.confirmNamed', { n: p.nome });
+        if (confirmBackdrop) confirmBackdrop.classList.add('visible');
       }
 
       function closeDeleteConfirm () {
         if (confirmBackdrop) confirmBackdrop.classList.remove('visible');
+        pendingDelId = null;
+      }
+
+      // Exclui a plataforma: encerra o cadastro na semana atual e apaga os
+      // valores lançados nela desta semana em diante. As semanas
+      // anteriores ficam intactas (controle/conferência), e a plataforma
+      // continua a aparecer nas tabelas dessas semanas.
+      function apagarPlataforma (id) {
+        var p = achar(id);
+        if (!p || p.ate) return;
+        var semana = platMondayKey(new Date());
+        p.ate = semana;
+        guardar();
+
+        var cache = window._cloudCache || {};
+        Object.keys(cache).forEach(function (k) {
+          if (k.indexOf('homeBadgeValores:') !== 0) return;
+          if (k.slice(17) < semana) return;
+          var raw = window.cloudGet(k);
+          if (!raw) return;
+          var obj;
+          try { obj = JSON.parse(raw); } catch (e) { return; }
+          if (obj && obj.plat && obj.plat[id] !== undefined) {
+            delete obj.plat[id];
+            window.cloudSet(k, JSON.stringify(obj));
+          }
+        });
+
+        if (window.HomeBadges && window.HomeBadges.reload) window.HomeBadges.reload();
+        renderLista();
+        renderTiles();
+        document.dispatchEvent(new CustomEvent('homeBadgesSaved'));
       }
 
       if (confirmCancelBtn) confirmCancelBtn.addEventListener('click', closeDeleteConfirm);
       if (confirmDeleteBtn) {
-        // Ainda sem efeito real: apenas fecha a confirmação.
-        confirmDeleteBtn.addEventListener('click', closeDeleteConfirm);
+        confirmDeleteBtn.addEventListener('click', function () {
+          if (pendingDelId !== null) apagarPlataforma(pendingDelId);
+          closeDeleteConfirm();
+        });
       }
       if (confirmBackdrop) {
         confirmBackdrop.addEventListener('click', function (e) {
@@ -5808,23 +6201,242 @@
         });
       }
 
+      /* --- Popup para lançar o valor do dia numa plataforma extra --- */
+      var xBackdrop = document.getElementById('platExtraModalBackdrop');
+      var xTitle    = document.getElementById('platExtraModalTitle');
+      var xDate     = document.getElementById('platExtraModalDate');
+      var xInput    = document.getElementById('platExtraValorInput');
+      var xSave     = document.getElementById('platExtraSalvarBtn');
+      var xCurrent  = null;
+
+      function openExtraModal (id) {
+        var p = achar(id);
+        if (!p || p.ate || !xBackdrop) return;
+        if (typeof closeAllOverlays === 'function') closeAllOverlays();
+        xCurrent = id;
+        if (xTitle) xTitle.textContent = I18N.t('plat.title', { n: p.nome });
+        if (xDate && window.GanhosDate) xDate.textContent = window.GanhosDate.formatLabel(window.GanhosDate.get());
+        var atual = (window.HomeBadges && window.HomeBadges.getPlat) ? window.HomeBadges.getPlat(id) : 0;
+        if (xInput) xInput.value = atual > 0 ? atual.toFixed(2) : '';
+        xBackdrop.classList.add('visible');
+      }
+      function closeExtraModal () {
+        if (xBackdrop) xBackdrop.classList.remove('visible');
+        if (xInput) xInput.value = '';
+        xCurrent = null;
+      }
+      if (xBackdrop) {
+        xBackdrop.addEventListener('click', function (e) { if (e.target === xBackdrop) closeExtraModal(); });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape' && xBackdrop.classList.contains('visible')) closeExtraModal();
+        });
+      }
+      if (xSave) {
+        xSave.addEventListener('click', function () {
+          if (!xCurrent || !window.HomeBadges || !window.HomeBadges.setPlat) return;
+          var valor = parseFloat(String(xInput.value).replace(',', '.'));
+          if (isNaN(valor) || valor < 0) valor = 0;
+          window.HomeBadges.setPlat(xCurrent, valor);
+          closeExtraModal();
+        });
+      }
+
+      // O valor mostrado em cada tile acompanha o dia escolhido e os lançamentos.
+      document.addEventListener('homeBadgesSaved', refreshTileValues);
+      if (window.GanhosDate && typeof window.GanhosDate.onChange === 'function') {
+        window.GanhosDate.onChange(refreshTileValues);
+      }
+
+      /* --- Botão "+" abre o menu Ajustes na subtela Multiplataforma --- */
+      if (addBtn) {
+        addBtn.addEventListener('click', function () {
+          if (typeof window.openProfileSheetPublic === 'function') {
+            window.openProfileSheetPublic();
+          }
+          setTimeout(function () {
+            carregar();
+            renderLista();
+            novaInput.value = '';
+            novaImgData = null;
+            if (novaThumb) novaThumb.innerHTML = IMG_SVG;
+            if (typeof window.openSheetScreenPublic === 'function') {
+              window.openSheetScreenPublic(screenEl, I18N.t('sheet.multiplataforma'));
+            }
+          }, 60);
+        });
+      }
+
+      /* --- Abrir subtela via botão no menu Ajustes --- */
       openBtn.addEventListener('click', function () {
+        carregar();
         renderLista();
+        novaInput.value = '';
+        novaImgData = null;
+        if (novaThumb) novaThumb.innerHTML = IMG_SVG;
+        if (fileInput) fileInput.value = '';
         if (typeof window.openSheetScreenPublic === 'function') {
           window.openSheetScreenPublic(screenEl, I18N.t('sheet.multiplataforma'));
         }
       });
 
+      /* --- Salvar nova plataforma --- */
       salvarBtn.addEventListener('click', function () {
         var nome = novaInput.value.trim();
         if (!nome) return;
-
-        plataformas.push(nome);
+        all.push({
+          id: 'p' + Date.now().toString(36) + Math.floor(Math.random() * 1296).toString(36),
+          nome: nome,
+          img: novaImgData || null,
+          desde: platMondayKey(new Date())
+        });
+        guardar();
         renderLista();
+        renderTiles();
         novaInput.value = '';
+        novaImgData = null;
+        if (novaThumb) novaThumb.innerHTML = IMG_SVG;
+        if (fileInput) fileInput.value = '';
       });
 
-      renderLista();
+      /* --- Init --- */
+      carregar();
+      renderTiles();
+    })();
+
+
+
+    /* ---- Ajustes › Apagar dados ----
+       Apaga só o que a pessoa inseriu (valores por dia, despesas, metas),
+       conforme o período escolhido. Foto, nome, email, senha e conta não
+       são tocados, nem a lista de plataformas nem o tamanho da fonte.
+       Chaves por dia (YYYY-MM-DD): homeBadgeValores, despesasDiarias,
+       distanciaInicioFim. Chaves por semana (segunda-feira YYYY-MM-DD):
+       metaSemanalConfig, metaSemanalZerada, despesasFixasSkipSemana. */
+    (function () {
+      var screenEl   = document.getElementById('sheetScreenApagarDados');
+      var optBtns    = [
+        { el: document.getElementById('apagarSemanaBtn'), periodo: 'semana' },
+        { el: document.getElementById('apagarMesBtn'),    periodo: 'mes' },
+        { el: document.getElementById('apagarTodosBtn'),  periodo: 'todos' }
+      ];
+      var apagarBtn  = document.getElementById('apagarConfirmarBtn');
+      var backdrop   = document.getElementById('apagarConfirmBackdrop');
+      var textEl     = document.getElementById('apagarConfirmText');
+      var cancelBtn  = document.getElementById('apagarConfirmCancelBtn');
+      var okBtn      = document.getElementById('apagarConfirmOkBtn');
+      if (!screenEl || !apagarBtn || !backdrop || !okBtn) return;
+
+      var DAY_PREFIXES  = ['homeBadgeValores:', 'despesasDiarias:', 'distanciaInicioFim:'];
+      var WEEK_PREFIXES = ['metaSemanalConfig:', 'metaSemanalZerada:', 'despesasFixasSkipSemana:'];
+      var selecionado = null;
+      var apagando = false;
+
+      function pad2 (n) { return n < 10 ? '0' + n : String(n); }
+      function keyOf (d) { return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
+      function mondayOf (d) {
+        var m = new Date(d.getTime());
+        m.setHours(0, 0, 0, 0);
+        var day = m.getDay();
+        m.setDate(m.getDate() + (day === 0 ? -6 : 1 - day));
+        return m;
+      }
+
+      // Semanas do mês pela regra "4 ou mais dias dentro do mês" (a mesma
+      // das tabelas). Devolve as segundas-feiras dessas semanas.
+      function mondaysOfMonth (year, month) {
+        var last = new Date(year, month + 1, 0);
+        var m = mondayOf(new Date(year, month, 1));
+        var out = [];
+        while (m.getTime() <= last.getTime()) {
+          var count = 0;
+          for (var i = 0; i < 7; i++) {
+            var d = new Date(m.getTime());
+            d.setDate(m.getDate() + i);
+            if (d.getFullYear() === year && d.getMonth() === month) count++;
+          }
+          if (count >= 4) out.push(new Date(m.getTime()));
+          m = new Date(m.getTime());
+          m.setDate(m.getDate() + 7);
+        }
+        return out;
+      }
+
+      // Lista de chaves existentes a apagar para o período.
+      function keysFor (periodo) {
+        var keys = [];
+        function add (k) { if (window.cloudGet(k) !== null && keys.indexOf(k) === -1) keys.push(k); }
+
+        if (periodo === 'todos') {
+          Object.keys(window._cloudCache || {}).forEach(function (k) {
+            var pref = DAY_PREFIXES.concat(WEEK_PREFIXES);
+            for (var i = 0; i < pref.length; i++) { if (k.indexOf(pref[i]) === 0) { add(k); return; } }
+          });
+          add('despesasFixas');
+          add('metaSemanalLastPromptWeek');
+          return keys;
+        }
+
+        var mondays;
+        if (periodo === 'semana') {
+          mondays = [mondayOf(new Date())];
+        } else {
+          var hoje = new Date();
+          mondays = mondaysOfMonth(hoje.getFullYear(), hoje.getMonth());
+        }
+        mondays.forEach(function (m) {
+          for (var i = 0; i < 7; i++) {
+            var d = new Date(m.getTime());
+            d.setDate(m.getDate() + i);
+            DAY_PREFIXES.forEach(function (p) { add(p + keyOf(d)); });
+          }
+          WEEK_PREFIXES.forEach(function (p) { add(p + keyOf(m)); });
+        });
+        return keys;
+      }
+
+      function select (periodo) {
+        selecionado = periodo;
+        optBtns.forEach(function (o) { if (o.el) o.el.classList.toggle('is-selected', o.periodo === periodo); });
+        apagarBtn.disabled = !periodo;
+      }
+      optBtns.forEach(function (o) {
+        if (o.el) o.el.addEventListener('click', function () { select(o.periodo); });
+      });
+
+      function closeConfirm () { backdrop.classList.remove('visible'); }
+
+      apagarBtn.addEventListener('click', function () {
+        if (!selecionado || apagando) return;
+        textEl.textContent = I18N.t('apagar.confirm.' + selecionado);
+        backdrop.classList.add('visible');
+      });
+      if (cancelBtn) cancelBtn.addEventListener('click', closeConfirm);
+      backdrop.addEventListener('click', function (e) { if (e.target === backdrop) closeConfirm(); });
+
+      okBtn.addEventListener('click', function () {
+        if (!selecionado || apagando) return;
+        apagando = true;
+        okBtn.disabled = true;
+        okBtn.textContent = I18N.t('apagar.aguarde');
+        var promessas = keysFor(selecionado).map(function (k) { return window.cloudRemove(k); });
+        Promise.all(promessas).then(function () {
+          // Recarrega para todos os módulos (ganhos, tabelas, meta,
+          // despesas, distância) voltarem a ler os dados já limpos.
+          window.location.reload();
+        }).catch(function () {
+          apagando = false;
+          okBtn.disabled = false;
+          okBtn.textContent = I18N.t('apagar.btn');
+          closeConfirm();
+        });
+      });
+
+      // Sempre que o ecrã abre, volta ao estado inicial.
+      if (openApagarDadosBtn) {
+        openApagarDadosBtn.addEventListener('click', function () { select(null); });
+      }
+
+      window.ApagarDados = { keysFor: keysFor };
     })();
 
 
