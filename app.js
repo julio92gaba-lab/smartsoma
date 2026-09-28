@@ -3594,8 +3594,27 @@
                '<span class="semana-week-picker-period">' + formatWeekPickerPeriod(monday, sunday) + '</span>';
       }
 
+      // Devolve o mês (e ano) ao qual a semana de hoje pertence pela
+      // "regra do 4 e 3" — pode ser diferente do mês calendário de hoje
+      // quando hoje é segunda-feira e a semana já pertence ao mês seguinte.
+      function currentWeekMonth () {
+        var monday = getMonday(today);
+        // Verifica se a semana de hoje pertence ao mês seguinte ao calendário
+        var nextMonth = today.getMonth() + 1;
+        var nextYear  = today.getFullYear();
+        if (nextMonth > 11) { nextMonth = 0; nextYear += 1; }
+        var nextMonthWeeks = computeWeeksForMonth(nextYear, nextMonth);
+        for (var i = 0; i < nextMonthWeeks.length; i++) {
+          if (nextMonthWeeks[i].monday.getTime() === monday.getTime()) {
+            return { year: nextYear, month: nextMonth };
+          }
+        }
+        return { year: today.getFullYear(), month: today.getMonth() };
+      }
+
       function isAtCurrentMonth () {
-        return refYear === today.getFullYear() && refMonth === today.getMonth();
+        var cm = currentWeekMonth();
+        return refYear === cm.year && refMonth === cm.month;
       }
 
       function updateMonthLabel () {
@@ -4175,8 +4194,12 @@
       // duplo, pra garantir que já passou por um ciclo de pintura real.
       function resetToCurrentWeek () {
         today = todayAtMidnight();
-        refYear  = today.getFullYear();
-        refMonth = today.getMonth();
+        // Usa o mês ao qual a semana de hoje pertence (regra do 4 e 3),
+        // que pode ser o mês seguinte ao calendário quando hoje é segunda
+        // e a semana já pertence ao mês seguinte.
+        var cm = currentWeekMonth();
+        refYear  = cm.year;
+        refMonth = cm.month;
 
         var weeksForToday = computeWeeksForMonth(refYear, refMonth);
         var idx = 0;
