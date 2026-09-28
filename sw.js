@@ -1,9 +1,10 @@
 /* SmartSoma — Service Worker */
 
-const CACHE_NAME = 'smartsoma-v2';
+const CACHE_NAME = 'smartsoma-v3';
+const NETWORK_TIMEOUT = 4000; /* ms: sem resposta da rede, usa a cache se existir */
 
 const ASSETS_TO_CACHE = [
-  '/app.html',
+  '/app',
   '/app.js',
   '/app.css',
   '/pwa-install.js',
@@ -41,32 +42,51 @@ self.addEventListener('activate', event => {
   self.clients.claim();
 });
 
-/* ── FETCH: cache-first para assets, network-first para API ── */
+/* ── FETCH: rede primeiro (atualizações chegam sozinhas), cache como reserva offline ── */
 self.addEventListener('fetch', event => {
-  const url = new URL(event.request.url);
+  const request = event.request;
 
-  /* Deixa passar pedidos externos (Supabase, CDN, etc.) */
-  if (url.origin !== self.location.origin) {
-    return;
-  }
+  /* Só GET; deixa passar pedidos externos (Supabase, CDN, etc.) */
+  if (request.method !== 'GET') return;
+  if (new URL(request.url).origin !== self.location.origin) return;
 
-  event.respondWith(
-    caches.match(event.request).then(cached => {
-      if (cached) return cached;
-
-      return fetch(event.request).then(response => {
-        /* Guarda em cache só respostas válidas */
-        if (response && response.status === 200 && response.type === 'basic') {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
-        }
-        return response;
-      }).catch(() => {
-        /* Offline fallback: devolve o app.html para rotas de navegação */
-        if (event.request.mode === 'navigate') {
-          return caches.match('/app.html');
-        }
-      });
-    })
-  );
+  event.respondWith(networkFirst(request));
 });
+
+function networkFirst(request) {
+  return new Promise(resolve => {
+    let settled = false;
+
+    /* Rede lenta: se já houver cópia em cache, usa-a e deixa a rede atualizar a cache */
+    const timer = setTimeout(() => {
+      caches.match(request).then(cached => {
+        if (cached && !settled) { settled = true; resolve(cached); }
+      });
+    }, NETWORK_TIMEOUT);
+
+    fetch(request).then(response => {
+      clearTimeout(timer);
+      /* Guarda em cache só respostas válidas (nunca redirecionamentos) */
+      if (response && response.status === 200 && response.type === 'basic' && !response.redirected) {
+        const clone = response.clone();
+        caches.open(CACHE_NAME).then(cache => cache.put(request, clone));
+      }
+      if (!settled) { settled = true; resolve(response); }
+    }).catch(() => {
+      clearTimeout(timer);
+      if (settled) return;
+      /* Offline */
+      caches.match(request, { ignoreSearch: request.mode === 'navigate' }).then(cached => {
+        if (cached) { settled = true; return resolve(cached); }
+        if (request.mode === 'navigate') {
+          return caches.match('/app').then(fallback => {
+            settled = true;
+            resolve(fallback || Response.error());
+          });
+        }
+        settled = true;
+        resolve(Response.error());
+      });
+    });
+  });
+}

@@ -11,7 +11,7 @@
   var INSTALLED_KEY    = 'ss_pwa_installed';        /* localStorage: já instalou */
   var DISMISS_KEY      = 'ss_pwa_toast_dismissed';  /* localStorage: fechou o "Instalar" */
   var DISMISS_OPEN_KEY = 'ss_pwa_open_dismissed';   /* sessionStorage: fechou o "Abrir app" */
-  var OPEN_URL         = '/app.html';
+  var OPEN_URL         = '/app';
   var DELAY            = 2200;
 
   function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
