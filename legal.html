@@ -5,138 +5,54 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Documentos Legais — SmartSoma</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=DM+Sans:wght@400;500;600;700;800&display=swap">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --green:#2ECC71;
-  --green-dark:#1fa854;
-  --navy:#0d1117;
-  --navy2:#161b22;
-  --border:rgba(255,255,255,.08);
-  --text:#e6edf3;
-  --muted:#8b949e;
-  --white:#fff;
-}
+:root{--ink:#0B0F0C;--paper:#F6F3EA;--card:#fff;--green:#1E9E5A;--gb:#2ECC71;--lime:#D4F53C;--muted:#55605A}
 html{scroll-behavior:smooth}
-body{
-  font-family:'Plus Jakarta Sans',sans-serif;
-  background:var(--navy);
-  color:var(--text);
-  line-height:1.7;
-  -webkit-font-smoothing:antialiased;
-}
-
+body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased}
 /* NAV */
-nav{
-  position:sticky;top:0;z-index:100;
-  display:flex;align-items:center;justify-content:space-between;
-  padding:14px 5vw;
-  background:rgba(13,17,23,.92);
-  backdrop-filter:blur(14px);
-  border-bottom:1px solid var(--border);
-  gap:16px;flex-wrap:wrap;
-}
-.nav-logo{font-size:20px;font-weight:800;color:var(--white);text-decoration:none}
-.nav-logo span{color:var(--green)}
-.nav-back-btn{background:transparent;border:1px solid var(--border);color:var(--text);width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;text-decoration:none;transition:border-color .2s,background .2s;flex-shrink:0}
-.nav-back-btn:hover{border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.05)}
+nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:14px 5vw;background:var(--ink);border-bottom:4px solid var(--gb);gap:16px;flex-wrap:wrap}
+.nav-logo{font-family:'Bricolage Grotesque','DM Sans',sans-serif;font-size:22px;font-weight:800;letter-spacing:-.04em;color:#fff;text-decoration:none}
+.nav-logo span{color:var(--gb)}
+.nav-back-btn{background:transparent;border:2px solid #3a443d;color:#fff;width:36px;height:36px;border-radius:6px;display:flex;align-items:center;justify-content:center;text-decoration:none;transition:.2s;flex-shrink:0}
+.nav-back-btn:hover{border-color:#fff}
 .nav-tabs{display:flex;gap:8px}
-.tab-btn{
-  padding:8px 18px;border-radius:50px;font-size:13px;font-weight:600;
-  cursor:pointer;border:1.5px solid var(--border);background:transparent;
-  color:var(--muted);font-family:inherit;transition:all .2s;
-}
-.tab-btn.active{background:var(--green);color:var(--navy);border-color:var(--green)}
-.nav-date{font-size:12px;color:var(--muted)}
-
+.tab-btn{padding:8px 16px;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;border:2px solid #3a443d;background:transparent;color:#cfd8d2;font-family:inherit;transition:.2s}
+.tab-btn.active{background:var(--lime);color:var(--ink);border-color:var(--lime)}
+.nav-date{font-size:12px;color:#9aa89f}
 /* LAYOUT */
-.doc{display:none;max-width:760px;margin:0 auto;padding:56px 5vw 96px}
-.doc.active{display:block}
-
-/* HEADER DO DOCUMENTO */
-.doc-header{margin-bottom:48px;padding-bottom:32px;border-bottom:1px solid var(--border)}
-.doc-tag{
-  display:inline-block;
-  background:rgba(46,204,113,.12);border:1px solid rgba(46,204,113,.25);
-  color:var(--green);font-size:11px;font-weight:700;letter-spacing:.08em;
-  padding:4px 12px;border-radius:50px;margin-bottom:16px;text-transform:uppercase;
-}
-.doc-header h1{
-  font-size:clamp(28px,5vw,40px);font-weight:800;
-  letter-spacing:-.02em;color:var(--white);margin-bottom:12px;
-}
-.doc-meta{font-size:13px;color:var(--muted);line-height:1.8}
-.doc-meta strong{color:var(--text)}
-
+.doc{display:none;max-width:760px;margin:0 auto;padding:56px 5vw 96px}.doc.active{display:block}
+.doc-header{margin-bottom:44px;padding-bottom:28px;border-bottom:3px solid var(--ink)}
+.doc-tag{display:inline-block;background:var(--lime);color:var(--ink);font-size:11px;font-weight:800;letter-spacing:.1em;padding:4px 10px;border-radius:3px;margin-bottom:16px;text-transform:uppercase}
+.doc-header h1{font-family:'Bricolage Grotesque','DM Sans',sans-serif;font-size:clamp(30px,5.4vw,46px);font-weight:800;letter-spacing:-.04em;line-height:1.05;margin-bottom:12px}
+.doc-meta{font-size:13px;color:var(--muted);line-height:1.8}.doc-meta strong{color:var(--ink)}
 /* ÍNDICE */
-.toc{
-  background:var(--navy2);border:1px solid var(--border);
-  border-radius:14px;padding:24px 28px;margin-bottom:48px;
-}
-.toc-title{font-size:13px;font-weight:700;color:var(--muted);margin-bottom:14px;letter-spacing:.05em;text-transform:uppercase}
-.toc ol{padding-left:20px;display:flex;flex-direction:column;gap:6px}
-.toc ol li{font-size:14px}
-.toc a{color:var(--green);text-decoration:none;font-weight:500}
-.toc a:hover{text-decoration:underline}
-
+.toc{background:var(--card);border:2px solid var(--ink);border-radius:8px;padding:22px 26px;margin-bottom:44px;box-shadow:6px 6px 0 var(--gb)}
+.toc-title{font-size:12px;font-weight:800;margin-bottom:12px;letter-spacing:.08em;text-transform:uppercase}
+.toc ol{padding-left:20px;display:flex;flex-direction:column;gap:6px}.toc ol li{font-size:14px}
+.toc a{color:var(--green);text-decoration:none;font-weight:700}.toc a:hover{text-decoration:underline}
 /* SECÇÕES */
-.doc-section{margin-bottom:48px;scroll-margin-top:80px}
-.doc-section h2{
-  font-size:19px;font-weight:800;color:var(--white);
-  margin-bottom:16px;padding-bottom:10px;
-  border-bottom:1px solid var(--border);
-}
-.doc-section h3{
-  font-size:15px;font-weight:700;color:var(--text);
-  margin:22px 0 10px;
-}
+.doc-section{margin-bottom:44px;scroll-margin-top:90px}
+.doc-section h2{font-family:'Bricolage Grotesque','DM Sans',sans-serif;font-size:21px;font-weight:800;letter-spacing:-.02em;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid var(--ink)}
+.doc-section h3{font-size:15px;font-weight:800;margin:22px 0 10px}
 .doc-section p{font-size:15px;color:var(--muted);margin-bottom:12px;line-height:1.75}
-.doc-section ul,.doc-section ol{
-  padding-left:22px;display:flex;flex-direction:column;gap:8px;margin-bottom:14px;
-}
-.doc-section li{font-size:15px;color:var(--muted);line-height:1.7}
-.doc-section li strong{color:var(--text)}
-
-/* CAIXA DE DESTAQUE */
-.highlight-box{
-  background:rgba(46,204,113,.06);border:1px solid rgba(46,204,113,.2);
-  border-radius:12px;padding:20px 22px;margin:20px 0;
-}
-.highlight-box p{margin:0;color:var(--text);font-size:14px}
-
-/* CAIXA DE AVISO */
-.warn-box{
-  background:rgba(255,180,0,.05);border:1px solid rgba(255,180,0,.2);
-  border-radius:12px;padding:20px 22px;margin:20px 0;
-}
-.warn-box p{margin:0;color:#e0b84a;font-size:14px}
-
+.doc-section ul,.doc-section ol{padding-left:22px;display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.doc-section li{font-size:15px;color:var(--muted);line-height:1.7}.doc-section li strong{color:var(--ink)}
+/* CAIXAS */
+.highlight-box{background:#E4F9EC;border:2px solid var(--ink);border-radius:8px;padding:18px 20px;margin:20px 0;box-shadow:4px 4px 0 var(--gb)}
+.highlight-box p{margin:0;color:var(--ink);font-size:14px}
+.warn-box{background:#FFF7D6;border:2px solid var(--ink);border-radius:8px;padding:18px 20px;margin:20px 0;box-shadow:4px 4px 0 #C9A400}
+.warn-box p{margin:0;color:#5c4a00;font-size:14px}
 /* TABELA */
-.legal-table{width:100%;border-collapse:collapse;margin:16px 0 20px;font-size:14px}
-.legal-table th{
-  text-align:left;padding:10px 14px;
-  background:var(--navy2);color:var(--text);font-weight:700;font-size:13px;
-  border:1px solid var(--border);
-}
-.legal-table td{
-  padding:10px 14px;color:var(--muted);
-  border:1px solid var(--border);vertical-align:top;line-height:1.6;
-}
-.legal-table tr:hover td{background:rgba(255,255,255,.02)}
-
+.legal-table{width:100%;border-collapse:collapse;margin:16px 0 20px;font-size:14px;background:var(--card)}
+.legal-table th{text-align:left;padding:10px 14px;background:var(--ink);color:#fff;font-weight:700;font-size:13px;border:2px solid var(--ink)}
+.legal-table td{padding:10px 14px;color:var(--muted);border:2px solid var(--ink);vertical-align:top;line-height:1.6}
+.legal-table tr:hover td{background:var(--paper)}
 /* FOOTER */
-footer{
-  border-top:1px solid var(--border);padding:28px 5vw;
-  text-align:center;font-size:13px;color:var(--muted);
-}
-footer strong{color:var(--white)}
-footer span{color:var(--green)}
-
-@media(max-width:480px){
-  .nav-tabs{gap:6px}
-  .tab-btn{padding:7px 14px;font-size:12px}
-}
+footer{border-top:4px solid var(--gb);background:var(--ink);padding:28px 5vw;text-align:center;font-size:13px;color:#9aa89f}
+footer strong{color:#fff}footer span{color:var(--gb)}
+@media(max-width:480px){.nav-tabs{gap:6px}.tab-btn{padding:7px 12px;font-size:12px}.toc{padding:18px}}
 </style>
 <link rel="icon" type="image/png" sizes="192x192" href="/favicon.png">
 </head>

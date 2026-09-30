@@ -13,283 +13,170 @@
     <link rel="apple-touch-icon" href="icon-192.png">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=DM+Sans:wght@400;500;600;700;800&display=swap">
     <style>
-        *,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--ink:#0B0F0C;--paper:#F6F3EA;--forest:#0D4C25;--green:#1E9E5A;--gb:#2ECC71;--lime:#D4F53C;--muted:#55605A;--red:#C0392B}
+html,body{height:100%;height:100dvh}
 
-        :root {
-            --green: #2ECC71;
-            --green-dark: #1fa854;
-            --navy: #0d1117;
-            --navy2: #161b22;
-            --border: rgba(255,255,255,.07);
-            --text: #e6edf3;
-            --muted: #8b949e;
-            --red: #f07b72;
-            --red-bg: rgba(228,87,76,.1);
-            --red-border: rgba(228,87,76,.25);
-            --yellow: #f0c060;
-            --yellow-bg: rgba(240,192,96,.1);
-            --yellow-border: rgba(240,192,96,.25);
-        }
+/* ── ESTRUTURA PRINCIPAL ── */
+body{
+  font-family:'DM Sans',-apple-system,sans-serif;
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+  overflow:hidden;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+}
 
-        html, body { height: 100%; }
+/* ── TOPO VERDE: FUNDO.png cobre o ecrã todo (sem folgas) ── */
+.login-bg-top{
+  position:fixed;inset:0;z-index:0;
+  background:url('FUNDO.png') center center / cover no-repeat, #0D4C25;
+}
+/* degradê preto → transparente, de cima para baixo */
+.login-bg-top::after{
+  content:'';position:absolute;left:0;right:0;top:0;height:82%;
+  background:linear-gradient(to bottom,rgba(0,0,0,.94) 0%,rgba(0,0,0,.7) 38%,rgba(0,0,0,.34) 68%,transparent 100%);
+}
 
-        body {
-            font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
-            background: var(--navy);
-            color: var(--text);
-            min-height: 100vh;
-            min-height: 100dvh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px 16px;
-            -webkit-font-smoothing: antialiased;
-        }
+/* ── BASE CREME: camada única recortada pela onda (sem emendas) ── */
+.login-bg-wrap{
+  position:fixed;left:0;right:0;bottom:0;top:0;z-index:1;
+  pointer-events:none;
+}
+.login-bg-base{
+  position:absolute;inset:0;
+  background:
+    repeating-linear-gradient(135deg,transparent 0 22px,rgba(14,59,42,.05) 22px 24px),
+    var(--paper);
+  clip-path:url(#waveClip);
+  -webkit-clip-path:url(#waveClip);
+}
 
-        /* ── TOAST ── */
-        #toastContainer {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            width: 100%;
-            max-width: 400px;
-            padding: 0 16px;
-            pointer-events: none;
-        }
+/* ── LAYOUT: logo no topo, card ancorado na base ── */
+.login-shell{
+  position:relative;z-index:2;
+  height:100vh;height:100dvh;
+  display:flex;flex-direction:column;align-items:center;
+  overflow-y:auto;overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+}
+.login-top{
+  width:100%;max-width:420px;text-align:center;flex-shrink:0;
+  padding:max(env(safe-area-inset-top,0px),16px) 20px 0;
+}
+.login-top a{text-decoration:none;display:inline-block}
+.login-top img{
+  height:40px;width:auto;max-width:170px;
+  object-fit:contain;display:block;margin:0 auto;
+  filter:drop-shadow(0 2px 8px rgba(0,0,0,.35));
+}
+.login-spacer{flex:1;min-height:12px}
+.login-bottom{
+  width:100%;max-width:310px;flex-shrink:0;
+  padding:0 0 calc(env(safe-area-inset-bottom,0px) + 18px);
+  margin:0 auto;
+}
+@media(max-width:360px){.login-bottom{max-width:calc(100% - 48px)}}
 
-        .toast {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            padding: 14px 16px;
-            border-radius: 12px;
-            font-size: 14px;
-            line-height: 1.5;
-            font-weight: 500;
-            pointer-events: all;
-            animation: slideDown .3s ease forwards;
-            box-shadow: 0 8px 24px rgba(0,0,0,.7);
-        }
+/* CARD — fundo semitransparente */
+.login-card{
+  background:rgba(255,255,255,.5);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  border:2px solid var(--ink);
+  border-radius:10px;
+  padding:20px 18px;
+  width:100%;
+  box-shadow:6px 6px 0 var(--ink);
+  position:relative;z-index:1;
+}
 
-        .toast.removing { animation: slideUp .3s ease forwards; }
+/* TOAST sistema */
+#toastContainer{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:10px;width:100%;max-width:400px;padding:0 16px;pointer-events:none}
+.toast{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border-radius:8px;font-size:14px;line-height:1.45;font-weight:600;pointer-events:all;animation:slideDown .3s ease forwards;background:#fff;border:2px solid var(--ink);box-shadow:4px 4px 0 var(--ink)}
+.toast.removing{animation:slideUp .3s ease forwards}
+.toast-icon{font-size:16px;flex-shrink:0}.toast-body{flex:1}.toast-title{font-weight:800;margin-bottom:2px}.toast-msg{font-size:13px;color:var(--muted);font-weight:500}
+.toast-close{background:none;border:none;cursor:pointer;color:inherit;opacity:.6;font-size:16px;line-height:1;padding:0;flex-shrink:0}.toast-close:hover{opacity:1}
+.toast.error{background:#FFE9E5;box-shadow:4px 4px 0 var(--red)}.toast.success{background:#E4F9EC;box-shadow:4px 4px 0 var(--green)}.toast.info{background:#FFF7D6;box-shadow:4px 4px 0 #C9A400}
+@keyframes slideDown{from{opacity:0;transform:translateY(-16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideUp{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-16px)}}
 
-        .toast-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
-        .toast-body { flex: 1; }
-        .toast-title { font-weight: 700; margin-bottom: 2px; }
-        .toast-msg { opacity: .85; font-size: 13px; }
-        .toast-close {
-            background: none; border: none; cursor: pointer;
-            color: inherit; opacity: .6; font-size: 16px;
-            line-height: 1; padding: 0; flex-shrink: 0;
-            transition: opacity .2s;
-        }
-        .toast-close:hover { opacity: 1; }
+/* FORM */
+.login-title{font-family:'Bricolage Grotesque','DM Sans',sans-serif;font-size:20px;font-weight:800;text-align:center;margin-bottom:4px;letter-spacing:-.02em}
+.login-sub{color:var(--muted);font-size:13px;text-align:center;margin-bottom:12px;line-height:1.4}
+.login-title:empty,.login-sub:empty{display:none}
+.form-group{margin-bottom:10px;position:relative}
+.form-group label{display:block;font-size:11px;font-weight:800;margin-bottom:4px;letter-spacing:.06em;text-transform:uppercase}
+.form-group input{width:100%;background:var(--paper);border:2px solid var(--ink);border-radius:6px;padding:10px 14px;font-size:15px;font-family:inherit;color:var(--ink);outline:none;transition:box-shadow .15s}
+.form-group input::placeholder{color:rgba(85,96,90,.6)}
+.form-group input:focus{box-shadow:3px 3px 0 var(--gb)}
+.form-group input.error{border-color:var(--red)}.form-group input.success{border-color:var(--green)}
+.field-hint{font-size:12px;margin-top:4px;display:none;line-height:1.35}
+.field-hint.error{color:var(--red);display:block}.field-hint.info{color:var(--muted);display:block}
+.pw-wrap{position:relative}
+.pw-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);padding:0;display:flex;align-items:center}
+.pw-toggle:hover{color:var(--ink)}.pw-toggle svg{width:18px;height:18px}
+.strength-bar{height:4px;border-radius:99px;background:#e2ded0;margin-top:6px;overflow:hidden;display:none}
+.strength-fill{height:100%;border-radius:99px;transition:width .3s,background .3s}
+.strength-label{font-size:11px;color:var(--muted);margin-top:3px;display:none}
 
-        .toast.error {
-            background: #2a1515;
-            border: 1px solid rgba(228,87,76,.5);
-            color: var(--red);
-        }
-        .toast.success {
-            background: #0d2a1a;
-            border: 1px solid rgba(46,204,113,.5);
-            color: var(--green);
-        }
-        .toast.info {
-            background: #2a2210;
-            border: 1px solid rgba(240,192,96,.5);
-            color: var(--yellow);
-        }
+/* BOTÕES */
+.btn-primary{width:100%;background:var(--ink);color:#fff;border:none;border-radius:8px;padding:12px;font-size:15px;font-weight:800;cursor:pointer;margin-top:4px;font-family:inherit;box-shadow:4px 4px 0 var(--gb);transition:transform .15s,box-shadow .15s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-primary:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--gb)}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:4px 4px 0 var(--gb)}
+.spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+.divider{display:flex;align-items:center;gap:12px;margin:12px 0}
+.divider::before,.divider::after{content:'';flex:1;height:2px;background:var(--ink);opacity:.12}
+.divider span{color:var(--muted);font-size:12px;font-weight:700}
+.btn-google{width:100%;background:#fff;color:var(--ink);border:2px solid var(--ink);border-radius:8px;padding:10px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;font-family:inherit;box-shadow:3px 3px 0 var(--ink);transition:transform .15s,box-shadow .15s}
+.btn-google:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)}
+.btn-google svg{width:18px;height:18px;flex-shrink:0}
 
-        @keyframes slideDown {
-            from { opacity:0; transform:translateY(-16px); }
-            to   { opacity:1; transform:translateY(0); }
-        }
-        @keyframes slideUp {
-            from { opacity:1; transform:translateY(0); }
-            to   { opacity:0; transform:translateY(-16px); }
-        }
+/* LINKS */
+.forgot-link{text-align:right;margin-top:-4px;margin-bottom:10px}
+.forgot-link button{background:none;border:none;color:var(--muted);font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;text-decoration:underline}
+.forgot-link button:hover{color:var(--ink)}
+.toggle-mode{text-align:center;margin-top:12px;color:var(--muted);font-size:13px}
+.toggle-mode button{background:none;border:none;color:var(--gb);font-size:13px;font-weight:800;font-family:inherit;cursor:pointer}
 
-        /* ── LOGO ── */
-        .login-top {
-            width: 100%; max-width: 420px;
-            text-align: center; margin-bottom: 24px;
-        }
-        .login-top a {
-            text-decoration: none; display: inline-flex;
-            align-items: center; justify-content: center;
-        }
-        .login-top img {
-            height: 36px; width: auto; max-width: 160px;
-            object-fit: contain; display: block; margin: 0 auto;
-        }
+/* SUCESSO PÓS-REGISTO */
+.success-screen{display:none;text-align:center;padding:4px 0}.success-screen.visible{display:block}
+.success-icon{width:52px;height:52px;border-radius:8px;background:var(--lime);border:2px solid var(--ink);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:24px}
+.success-screen h2{font-family:'Bricolage Grotesque','DM Sans',sans-serif;font-size:19px;font-weight:800;margin-bottom:8px}
+.success-screen p{font-size:14px;color:var(--muted);line-height:1.55;margin-bottom:16px}
+.success-screen .btn-primary{margin-top:0}
 
-        /* ── CARD ── */
-        .login-card {
-            background: var(--navy2);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 36px 28px;
-            width: 100%; max-width: 420px;
-            box-shadow: 0 20px 50px rgba(0,0,0,.5);
-            transition: opacity .2s;
-        }
+/* RODAPÉ */
+.login-footer{width:100%;text-align:center;margin-top:10px;font-size:12px;color:var(--muted)}
+.login-footer a{color:var(--muted);text-decoration:none;font-weight:600}.login-footer a:hover{color:var(--ink)}
 
-        .login-title {
-            color: var(--text); font-size: 22px; font-weight: 800;
-            text-align: center; margin-bottom: 6px; letter-spacing: -.02em;
-        }
-        .login-sub {
-            color: var(--muted); font-size: 14px;
-            text-align: center; margin-bottom: 28px; line-height: 1.5;
-        }
-
-        /* ── FORM ── */
-        .form-group { margin-bottom: 14px; position: relative; }
-        .form-group label {
-            display: block; color: var(--muted); font-size: 12px;
-            font-weight: 600; margin-bottom: 6px;
-            letter-spacing: .03em; text-transform: uppercase;
-        }
-        .form-group input {
-            width: 100%; background: var(--navy);
-            border: 1.5px solid var(--border);
-            border-radius: 10px; padding: 13px 16px;
-            color: var(--text); font-size: 15px; font-family: inherit;
-            outline: none; transition: border-color .2s;
-        }
-        .form-group input::placeholder { color: rgba(139,148,158,.5); }
-        .form-group input:focus { border-color: var(--green); }
-        .form-group input.error { border-color: var(--red); }
-        .form-group input.success { border-color: var(--green); }
-
-        .field-hint {
-            font-size: 12px; margin-top: 5px;
-            display: none; line-height: 1.4;
-        }
-        .field-hint.error { color: var(--red); display: block; }
-        .field-hint.info  { color: var(--muted); display: block; }
-
-        /* password toggle */
-        .pw-wrap { position: relative; }
-        .pw-toggle {
-            position: absolute; right: 14px; top: 50%;
-            transform: translateY(-50%);
-            background: none; border: none; cursor: pointer;
-            color: var(--muted); padding: 0; display: flex;
-            align-items: center; transition: color .2s;
-        }
-        .pw-toggle:hover { color: var(--text); }
-        .pw-toggle svg { width: 18px; height: 18px; }
-
-        /* strength bar */
-        .strength-bar {
-            height: 3px; border-radius: 99px;
-            background: var(--border); margin-top: 8px;
-            overflow: hidden; display: none;
-        }
-        .strength-fill {
-            height: 100%; border-radius: 99px;
-            transition: width .3s, background .3s;
-        }
-        .strength-label {
-            font-size: 11px; color: var(--muted);
-            margin-top: 4px; display: none;
-        }
-
-        /* ── BOTÕES ── */
-        .btn-primary {
-            width: 100%; background: var(--green); color: var(--navy);
-            border: none; border-radius: 50px; padding: 14px;
-            font-size: 15px; font-weight: 700; cursor: pointer;
-            margin-top: 6px; font-family: inherit;
-            transition: background .2s, transform .15s, opacity .2s;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-        }
-        .btn-primary:hover { background: var(--green-dark); transform: translateY(-1px); }
-        .btn-primary:disabled { background: rgba(46,204,113,.3); color: rgba(13,17,23,.5); cursor: not-allowed; transform: none; }
-
-        .spinner {
-            width: 16px; height: 16px;
-            border: 2px solid rgba(13,17,23,.3);
-            border-top-color: var(--navy);
-            border-radius: 50%;
-            animation: spin .7s linear infinite;
-            display: none;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        .divider {
-            display: flex; align-items: center; gap: 12px; margin: 18px 0;
-        }
-        .divider::before, .divider::after {
-            content: ''; flex: 1; height: 1px; background: var(--border);
-        }
-        .divider span { color: var(--muted); font-size: 12px; font-weight: 600; }
-
-        .btn-google {
-            width: 100%; background: transparent; color: var(--text);
-            border: 1.5px solid var(--border); border-radius: 50px; padding: 13px;
-            font-size: 14px; font-weight: 600; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-            font-family: inherit; transition: border-color .2s, background .2s;
-        }
-        .btn-google:hover { background: rgba(255,255,255,.05); border-color: rgba(255,255,255,.2); }
-        .btn-google svg { width: 18px; height: 18px; flex-shrink: 0; }
-
-        /* ── LINKS ── */
-        .forgot-link { text-align: right; margin-top: -6px; margin-bottom: 14px; }
-        .forgot-link button {
-            background: none; border: none; color: var(--muted);
-            font-size: 12px; font-family: inherit; cursor: pointer;
-            text-decoration: underline; transition: color .2s;
-        }
-        .forgot-link button:hover { color: var(--text); }
-
-        .toggle-mode { text-align: center; margin-top: 20px; color: var(--muted); font-size: 13px; }
-        .toggle-mode button {
-            background: none; border: none; color: var(--green);
-            font-size: 13px; font-weight: 700; font-family: inherit; cursor: pointer;
-        }
-
-        /* ── SUCESSO PÓS-REGISTO ── */
-        .success-screen {
-            display: none; text-align: center; padding: 8px 0;
-        }
-        .success-screen.visible { display: block; }
-        .success-icon {
-            width: 64px; height: 64px; border-radius: 50%;
-            background: rgba(46,204,113,.12); border: 2px solid rgba(46,204,113,.3);
-            display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 20px; font-size: 28px;
-        }
-        .success-screen h2 { font-size: 20px; font-weight: 800; margin-bottom: 10px; }
-        .success-screen p { font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 24px; }
-        .success-screen .btn-primary { margin-top: 0; }
-
-        /* ── RODAPÉ ── */
-        .login-footer {
-            width: 100%; max-width: 420px; text-align: center;
-            margin-top: 20px; font-size: 12px; color: var(--muted);
-        }
-        .login-footer a { color: var(--muted); text-decoration: none; transition: color .2s; }
-        .login-footer a:hover { color: var(--text); }
-
-        @media (max-width: 480px) {
-            .login-card { padding: 28px 20px; border-radius: 16px; }
-        }
-    </style>
+/* ── RESPONSIVO: a onda escala com a altura (bbox) ── */
+@media(max-height:640px){
+  .login-top img{height:30px}
+  .login-card{padding:14px}
+  .form-group{margin-bottom:7px}
+  .divider{margin:7px 0}
+}
+</style>
 <link rel="icon" type="image/png" sizes="192x192" href="/favicon.png">
 </head>
 <body>
+
+<!-- Fundos -->
+<div class="login-bg-top" aria-hidden="true"></div>
+<div class="login-bg-wrap" aria-hidden="true"><div class="login-bg-base"></div></div>
+
+<!-- Forma da onda (coordenadas relativas: adapta-se a qualquer ecrã) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <clipPath id="waveClip" clipPathUnits="objectBoundingBox">
+      <path d="M0,0.35 C0.42,0.35 0.58,0.75 1,0.75 L1,1 L0,1 Z"/>
+    </clipPath>
+  </defs>
+</svg>
 
 <div id="toastContainer"></div>
 
@@ -350,17 +237,27 @@
   </div>
 </div>
 
-<div class="login-top">
+<!-- Shell principal: logo topo, espaçador, card base -->
+<div class="login-shell">
+
+  <!-- Logo — topo, sobre a área verde escurecida -->
+  <div class="login-top">
     <a href="index.html">
-        <img src="logo-home.png" alt="SmartSoma">
+      <img src="logo-home.png" alt="SmartSoma">
     </a>
-</div>
+  </div>
+
+  <!-- Espaçador empurra card para o fundo -->
+  <div class="login-spacer"></div>
+
+  <!-- Área da base: card + rodapé -->
+  <div class="login-bottom">
 
 <div class="login-card">
     <!-- FORM PRINCIPAL -->
     <div id="formArea">
-        <h1 class="login-title" id="loginTitle">Bem-vindo de volta</h1>
-        <p class="login-sub" id="loginSub">Entra na tua conta SmartSoma</p>
+        <h1 class="login-title" id="loginTitle"></h1>
+        <p class="login-sub" id="loginSub"></p>
 
         <div class="form-group">
             <label>Email</label>
@@ -428,6 +325,9 @@
 <div class="login-footer">
     <a href="legal.html">Privacidade</a> &nbsp;·&nbsp; <a href="legal.html">Termos</a>
 </div>
+
+  </div><!-- /login-bottom -->
+</div><!-- /login-shell -->
 
 <script>
     const SUPABASE_URL = 'https://ojhnierbhqrwxvabrzkt.supabase.co';
@@ -539,8 +439,8 @@
         inputPassword.type = 'password';
 
         if (modo === 'login') {
-            loginTitle.textContent = 'Bem-vindo de volta';
-            loginSub.textContent = 'Entra na tua conta SmartSoma';
+            loginTitle.textContent = '';
+            loginSub.textContent = '';
             btnMainText.textContent = 'Entrar';
             toggleText.textContent = 'Não tens conta?';
             btnToggle.textContent = 'Registar';
@@ -549,7 +449,7 @@
             hintPassword.className = 'field-hint';
         } else if (modo === 'registro') {
             loginTitle.textContent = 'Criar conta';
-            loginSub.textContent = 'Receberá um e-mail com um link de confirmação.';
+            loginSub.textContent = '';
             btnMainText.textContent = 'Criar conta';
             toggleText.textContent = 'Já tens conta?';
             btnToggle.textContent = 'Entrar';
@@ -559,7 +459,7 @@
             hintPassword.className = 'field-hint info';
         } else if (modo === 'recuperar') {
             loginTitle.textContent = 'Recuperar palavra-passe';
-            loginSub.textContent = 'Indica o teu email e enviamos um link para redefinires a palavra-passe.';
+            loginSub.textContent = 'Enviamos um link para o teu email.';
             btnMainText.textContent = 'Enviar link de recuperação';
             passwordGroup.style.display = 'none';
             forgotLink.style.display = 'none';
@@ -691,5 +591,6 @@
     document.addEventListener('keydown', e => { if (e.key === 'Enter' && !btnMain.disabled) btnMain.click(); });
 </script>
 <script src="pwa-install.js"></script>
+</div>
 </body>
 </html>
