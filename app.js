@@ -5283,6 +5283,9 @@
         canvas.height = outputSize;
         var ctx = canvas.getContext('2d');
 
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(0, 0, outputSize, outputSize);
+
         ctx.beginPath();
         ctx.arc(outputSize / 2, outputSize / 2, outputSize / 2, 0, Math.PI * 2);
         ctx.closePath();
@@ -5296,7 +5299,7 @@
 
         ctx.drawImage(cropImage, drawX, drawY, drawW, drawH);
 
-        state.photo = canvas.toDataURL('image/png');
+        state.photo = canvas.toDataURL('image/jpeg', 0.85);
         renderAvatar();
         saveProfileToStorage();
         closePhotoModal();
