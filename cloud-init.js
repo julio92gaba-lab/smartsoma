@@ -367,8 +367,8 @@
 
     if (!online) {
       showChip(pending
-        ? 'Sem rede · ' + pending + (pending === 1 ? ' alteração guardada' : ' alterações guardadas')
-        : 'Sem rede · a usar dados guardados', true);
+        ? 'Sem rede · guardado, envia quando voltar'
+        : 'Sem rede · atualiza sozinho quando voltar', true);
     } else if (pending) {
       showChip('A sincronizar ' + pending + (pending === 1 ? ' alteração…' : ' alterações…'), false);
     } else if (lastPending > 0) {
