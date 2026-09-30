@@ -2,7 +2,7 @@
 <html lang="pt-PT">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SmartSoma — Entrar</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#000000">
@@ -37,8 +37,8 @@ body{
 }
 /* degradê preto → transparente, de cima para baixo */
 .login-bg-top::after{
-  content:'';position:absolute;left:0;right:0;top:0;height:82%;
-  background:linear-gradient(to bottom,rgba(0,0,0,.94) 0%,rgba(0,0,0,.7) 38%,rgba(0,0,0,.34) 68%,transparent 100%);
+  content:'';position:absolute;left:0;right:0;top:0;height:62%;
+  background:linear-gradient(to bottom,rgba(0,0,0,.94) 0%,rgba(0,0,0,.65) 55%,transparent 100%);
 }
 
 /* ── BASE CREME: camada única recortada pela onda (sem emendas) ── */
@@ -58,14 +58,14 @@ body{
 /* ── LAYOUT: logo no topo, card ancorado na base ── */
 .login-shell{
   position:relative;z-index:2;
-  height:100vh;height:100dvh;
+  height:100vh;height:100dvh;height:var(--app-h,100dvh);
   display:flex;flex-direction:column;align-items:center;
   overflow-y:auto;overflow-x:hidden;
   -webkit-overflow-scrolling:touch;
 }
 .login-top{
   width:100%;max-width:420px;text-align:center;flex-shrink:0;
-  padding:max(env(safe-area-inset-top,0px),16px) 20px 0;
+  padding:max(env(safe-area-inset-top,0px),44px) 20px 0;
 }
 .login-top a{text-decoration:none;display:inline-block}
 .login-top img{
@@ -73,10 +73,24 @@ body{
   object-fit:contain;display:block;margin:0 auto;
   filter:drop-shadow(0 2px 8px rgba(0,0,0,.35));
 }
+.login-tagline{
+  margin:14px auto 0;max-width:270px;
+  font-family:'DM Sans',sans-serif;
+  font-size:14.5px;font-weight:400;line-height:1.35;letter-spacing:0;
+  color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.55);
+}
+.login-tagline::before{
+  content:'';display:block;width:38px;height:4px;border-radius:99px;
+  background:var(--lime);margin:0 auto 10px;box-shadow:2px 2px 0 var(--ink);
+}
+.login-tagline b{
+  font-family:'Bricolage Grotesque','DM Sans',sans-serif;
+  color:var(--lime);font-weight:700;
+}
 .login-spacer{flex:1;min-height:12px}
 .login-bottom{
   width:100%;max-width:310px;flex-shrink:0;
-  padding:0 0 calc(env(safe-area-inset-bottom,0px) + 18px);
+  padding:0 0 calc(env(safe-area-inset-bottom,0px) + 32px);
   margin:0 auto;
 }
 @media(max-width:360px){.login-bottom{max-width:calc(100% - 48px)}}
@@ -155,6 +169,8 @@ body{
 
 /* ── RESPONSIVO: a onda escala com a altura (bbox) ── */
 @media(max-height:640px){
+  .login-top{padding-top:max(env(safe-area-inset-top,0px),24px)}
+  .login-tagline{font-size:13px;margin-top:10px}
   .login-top img{height:30px}
   .login-card{padding:14px}
   .form-group{margin-bottom:7px}
@@ -245,6 +261,7 @@ body{
     <a href="index.html">
       <img src="logo-home.png" alt="SmartSoma">
     </a>
+    <p class="login-tagline">Controlo Financeiro para Motoristas <b>TVDE</b> e Estafetas de <b>APP</b>.</p>
   </div>
 
   <!-- Espaçador empurra card para o fundo -->
@@ -342,6 +359,7 @@ body{
     const inputPassword = document.getElementById('inputPassword');
     const passwordGroup = document.getElementById('passwordGroup');
     const forgotLink    = document.getElementById('forgotLink');
+    const btnForgot     = document.getElementById('btnForgot');
     const btnMain       = document.getElementById('btnMain');
     const btnMainText   = document.getElementById('btnMainText');
     const spinner       = document.getElementById('spinner');
@@ -445,7 +463,6 @@ body{
             toggleText.textContent = 'Não tens conta?';
             btnToggle.textContent = 'Registar';
             passwordGroup.style.display = '';
-            forgotLink.style.display = '';
             hintPassword.className = 'field-hint';
         } else if (modo === 'registro') {
             loginTitle.textContent = 'Criar conta';
@@ -454,16 +471,19 @@ body{
             toggleText.textContent = 'Já tens conta?';
             btnToggle.textContent = 'Entrar';
             passwordGroup.style.display = '';
-            forgotLink.style.display = 'none';
             hintPassword.textContent = 'Mínimo 6 caracteres.';
             hintPassword.className = 'field-hint info';
         } else if (modo === 'recuperar') {
             loginTitle.textContent = 'Recuperar palavra-passe';
             loginSub.textContent = 'Enviamos um link para o teu email.';
             btnMainText.textContent = 'Enviar link de recuperação';
+            toggleText.textContent = 'Não tens conta?';
+            btnToggle.textContent = 'Registar';
             passwordGroup.style.display = 'none';
-            forgotLink.style.display = 'none';
         }
+        // "Esqueci a palavra-passe" vira "Voltar ao login" na recuperação
+        btnForgot.textContent = modo === 'recuperar' ? 'Voltar ao login' : 'Esqueci a palavra-passe';
+        forgotLink.style.display = (modo === 'registro') ? 'none' : '';
     }
 
     // ── Loading ───────────────────────────────────────────────────────
@@ -584,11 +604,19 @@ body{
     });
 
     // ── Alternar modo ─────────────────────────────────────────────────
-    btnToggle.addEventListener('click', () => setModo(modo === 'login' ? 'registro' : 'login'));
-    document.getElementById('btnForgot').addEventListener('click', () => setModo('recuperar'));
+    btnToggle.addEventListener('click', () => setModo(modo === 'registro' ? 'login' : 'registro'));
+    btnForgot.addEventListener('click', () => setModo(modo === 'recuperar' ? 'login' : 'recuperar'));
 
     // ── Enter ─────────────────────────────────────────────────────────
     document.addEventListener('keydown', e => { if (e.key === 'Enter' && !btnMain.disabled) btnMain.click(); });
+</script>
+<script>
+(function(){
+  function setH(){document.documentElement.style.setProperty('--app-h',window.innerHeight+'px')}
+  setH();
+  window.addEventListener('resize',setH);
+  window.addEventListener('orientationchange',function(){setTimeout(setH,200)});
+})();
 </script>
 <script src="pwa-install.js"></script>
 </div>
