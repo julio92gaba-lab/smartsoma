@@ -38,7 +38,7 @@ body{
 /* degradê preto → transparente, de cima para baixo */
 .login-bg-top::after{
   content:'';position:absolute;left:0;right:0;top:0;height:62%;
-  background:linear-gradient(to bottom,rgba(0,0,0,.94) 0%,rgba(0,0,0,.65) 55%,transparent 100%);
+  background:linear-gradient(to bottom,rgba(0,0,0,.55) 0%,rgba(0,0,0,.22) 45%,transparent 100%);
 }
 
 /* ── BASE CREME: camada única recortada pela onda (sem emendas) ── */
@@ -75,18 +75,15 @@ body{
 }
 .login-tagline{
   margin:14px auto 0;max-width:270px;
-  font-family:'DM Sans',sans-serif;
-  font-size:14.5px;font-weight:400;line-height:1.35;letter-spacing:0;
+  font-family:'Bricolage Grotesque','DM Sans',sans-serif;
+  font-size:14.5px;font-weight:800;line-height:1.35;letter-spacing:-.01em;
   color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.55);
 }
 .login-tagline::before{
   content:'';display:block;width:38px;height:4px;border-radius:99px;
   background:var(--lime);margin:0 auto 10px;box-shadow:2px 2px 0 var(--ink);
 }
-.login-tagline b{
-  font-family:'Bricolage Grotesque','DM Sans',sans-serif;
-  color:var(--lime);font-weight:700;
-}
+.login-tagline b{color:var(--lime);font-weight:800}
 .login-spacer{flex:1;min-height:12px}
 .login-bottom{
   width:100%;max-width:310px;flex-shrink:0;
@@ -276,7 +273,7 @@ body{
         <h1 class="login-title" id="loginTitle"></h1>
         <p class="login-sub" id="loginSub"></p>
 
-        <div class="form-group">
+        <div class="form-group" id="emailGroup">
             <label>Email</label>
             <input type="email" id="inputEmail" placeholder="o.teu@email.com" autocomplete="email">
             <div class="field-hint" id="hintEmail"></div>
@@ -349,6 +346,12 @@ body{
 <script>
     const SUPABASE_URL = 'https://ojhnierbhqrwxvabrzkt.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9qaG5pZXJiaHFyd3h2YWJyemt0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk4NTAxODAsImV4cCI6MjEwNTQyNjE4MH0.zXsVvTVKiEh_Y6t9xpnaPC-JXgPwCKCOqA_sPgNbPoE';
+    // Link do email de recuperação: traz #access_token=...&type=recovery.
+    // Lido ANTES do createClient, porque o Supabase apaga o #hash ao processá-lo.
+    const LINK_PARAMS = (window.location.hash || '') + '&' + (window.location.search || '');
+    const IS_RECOVERY_LINK = /[#&?]type=recovery(&|$)/.test(LINK_PARAMS);
+    const LINK_ERROR = /[#&?]error_code=([^&]+)/.exec(LINK_PARAMS);
+
     const { createClient } = supabase;
     const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -378,8 +381,12 @@ body{
     let lastEmail = '';
 
     // ── Sessão activa — redirecionar ──────────────────────────────────
+    // (Não redireciona se a pessoa veio do link de recuperação: tem de definir a nova palavra-passe.)
     sb.auth.getSession().then(({ data }) => {
-        if (data.session) window.location.href = 'app.html';
+        if (data.session && !IS_RECOVERY_LINK && modo !== 'novaSenha') window.location.href = 'app.html';
+    });
+    sb.auth.onAuthStateChange((event) => {
+        if (event === 'PASSWORD_RECOVERY') setModo('novaSenha');
     });
 
     // ── Toast ─────────────────────────────────────────────────────────
@@ -421,7 +428,7 @@ body{
     }
 
     inputPassword.addEventListener('input', () => {
-        if (modo !== 'registro') return;
+        if (modo !== 'registro' && modo !== 'novaSenha') return;
         const pw = inputPassword.value;
         if (!pw) { strengthBar.style.display = 'none'; strengthLabel.style.display = 'none'; return; }
         const s = checkStrength(pw);
@@ -456,6 +463,14 @@ body{
         strengthLabel.style.display = 'none';
         inputPassword.type = 'password';
 
+        // "Nova palavra-passe": só o campo da palavra-passe (sem email, Google ou registo)
+        const soSenha = (modo === 'novaSenha');
+        document.getElementById('emailGroup').style.display = soSenha ? 'none' : '';
+        document.querySelector('.divider').style.display = soSenha ? 'none' : '';
+        document.getElementById('btnGoogle').style.display = soSenha ? 'none' : '';
+        document.querySelector('.toggle-mode').style.display = soSenha ? 'none' : '';
+        inputPassword.autocomplete = (modo === 'registro' || soSenha) ? 'new-password' : 'current-password';
+
         if (modo === 'login') {
             loginTitle.textContent = '';
             loginSub.textContent = '';
@@ -480,10 +495,17 @@ body{
             toggleText.textContent = 'Não tens conta?';
             btnToggle.textContent = 'Registar';
             passwordGroup.style.display = 'none';
+        } else if (modo === 'novaSenha') {
+            loginTitle.textContent = 'Nova palavra-passe';
+            loginSub.textContent = 'Escolhe a palavra-passe que vais usar para entrar.';
+            btnMainText.textContent = 'Guardar palavra-passe';
+            passwordGroup.style.display = '';
+            hintPassword.textContent = 'Mínimo 6 caracteres.';
+            hintPassword.className = 'field-hint info';
         }
         // "Esqueci a palavra-passe" vira "Voltar ao login" na recuperação
         btnForgot.textContent = modo === 'recuperar' ? 'Voltar ao login' : 'Esqueci a palavra-passe';
-        forgotLink.style.display = (modo === 'registro') ? 'none' : '';
+        forgotLink.style.display = (modo === 'registro' || modo === 'novaSenha') ? 'none' : '';
     }
 
     // ── Loading ───────────────────────────────────────────────────────
@@ -503,12 +525,14 @@ body{
 
     function validatePassword(v) {
         if (!v) { inputPassword.classList.add('error'); hintPassword.textContent = 'Introduz a palavra-passe.'; hintPassword.className = 'field-hint error'; return false; }
-        if (modo === 'registro' && v.length < 6) { inputPassword.classList.add('error'); hintPassword.textContent = 'A palavra-passe deve ter pelo menos 6 caracteres.'; hintPassword.className = 'field-hint error'; return false; }
+        if ((modo === 'registro' || modo === 'novaSenha') && v.length < 6) { inputPassword.classList.add('error'); hintPassword.textContent = 'A palavra-passe deve ter pelo menos 6 caracteres.'; hintPassword.className = 'field-hint error'; return false; }
         return true;
     }
 
     // ── Mapa de erros Supabase ────────────────────────────────────────
     const ERROS = {
+        'New password should be different':            { type:'info',   title:'Escolhe outra palavra-passe', msg:'A nova palavra-passe tem de ser diferente da anterior.' },
+        'Auth session missing':                        { type:'error',  title:'Link expirado',            msg:'Abre o link do email outra vez ou pede um novo em "Esqueci a palavra-passe".' },
         'Invalid login credentials':                   { type:'error',  title:'Credenciais inválidas',    msg:'Email ou palavra-passe incorrectos. Verifica e tenta novamente.' },
         'Email not confirmed':                         { type:'info',   title:'Email não confirmado',     msg:'Confirma o teu email antes de entrar. Verifica a caixa de entrada.' },
         'User already registered':                     { type:'info',   title:'Conta já existe',          msg:'Este email já tem conta. Usa a opção "Entrar" ou recupera a palavra-passe.' },
@@ -538,7 +562,7 @@ body{
         const email    = inputEmail.value.trim();
         const password = inputPassword.value;
 
-        if (!validateEmail(email)) return;
+        if (modo !== 'novaSenha' && !validateEmail(email)) return;
         if (modo !== 'recuperar' && !validatePassword(password)) return;
 
         setLoading(true);
@@ -558,6 +582,12 @@ body{
                 formArea.style.display = 'none';
                 confirmedEmail.textContent = email;
                 successScreen.classList.add('visible');
+
+            } else if (modo === 'novaSenha') {
+                const { error } = await sb.auth.updateUser({ password });
+                if (error) throw error;
+                toast('success', 'Palavra-passe alterada!', 'A entrar na tua conta…');
+                setTimeout(() => window.location.href = 'app.html', 1200);
 
             } else if (modo === 'recuperar') {
                 const { error } = await sb.auth.resetPasswordForEmail(email, {
@@ -609,6 +639,14 @@ body{
 
     // ── Enter ─────────────────────────────────────────────────────────
     document.addEventListener('keydown', e => { if (e.key === 'Enter' && !btnMain.disabled) btnMain.click(); });
+
+    // ── Chegada pelo link do email de recuperação ─────────────────────
+    if (IS_RECOVERY_LINK) {
+        setModo('novaSenha');
+    } else if (LINK_ERROR) {
+        setModo('recuperar');
+        toast('error', 'Link inválido ou expirado', 'Pede um novo link de recuperação para o teu email.', 8000);
+    }
 </script>
 <script>
 (function(){
