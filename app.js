@@ -194,6 +194,29 @@
 "relatorio.intro": "O relatório reúne os detalhes diários do mês escolhido, todos juntos em um único PDF. Selecione o mês desejado no filtro abaixo.",
 "relatorio.download": "Baixar PDF",
 "relatorio.preview": "IMG EXEMPLO DE PDF",
+"relatorio.pdf.aGerar": "A gerar...",
+"relatorio.pdf.erro": "Não foi possível gerar o PDF. Tente novamente.",
+"relatorio.pdf.subtitulo": "Relatório mensal de ganhos e despesas",
+"relatorio.pdf.geradoEm": "Gerado em {v}",
+"relatorio.pdf.resumo": "Resumo do mês",
+"relatorio.pdf.bruto": "Bruto",
+"relatorio.pdf.despesas": "Despesas",
+"relatorio.pdf.liquido": "Líquido",
+"relatorio.pdf.distancia": "Distância",
+"relatorio.pdf.porPlataforma": "Por plataforma",
+"relatorio.pdf.detalheDiario": "Detalhe diário",
+"relatorio.pdf.subtotalSemana": "Subtotal da semana",
+"relatorio.pdf.kmAbbr": "Km",
+"relatorio.pdf.detalheDespesas": "Detalhe das despesas",
+"relatorio.pdf.data": "Data",
+"relatorio.pdf.descricao": "Descrição",
+"relatorio.pdf.tipo": "Tipo",
+"relatorio.pdf.valor": "Valor",
+"relatorio.pdf.avulsa": "Avulsa",
+"relatorio.pdf.fixa": "Fixa",
+"relatorio.pdf.fixasCadastradas": "Despesas fixas ativas no período",
+"relatorio.pdf.valorFixo": "Valor fixo",
+"relatorio.pdf.percentBruto": "% do bruto",
 "sheet.title": "Ajustes",
 "sheet.installApp": "Instalar App",
 "sheet.ariaLabel": "Perfil e configurações",
@@ -587,6 +610,29 @@
 "relatorio.intro": "The report gathers the daily details of the chosen month, all together in a single PDF. Select the month you want in the filter below.",
 "relatorio.download": "Download PDF",
 "relatorio.preview": "SAMPLE PDF IMAGE",
+"relatorio.pdf.aGerar": "Generating...",
+"relatorio.pdf.erro": "Could not generate the PDF. Please try again.",
+"relatorio.pdf.subtitulo": "Monthly earnings and expenses report",
+"relatorio.pdf.geradoEm": "Generated on {v}",
+"relatorio.pdf.resumo": "Month summary",
+"relatorio.pdf.bruto": "Gross",
+"relatorio.pdf.despesas": "Expenses",
+"relatorio.pdf.liquido": "Net",
+"relatorio.pdf.distancia": "Distance",
+"relatorio.pdf.porPlataforma": "By platform",
+"relatorio.pdf.detalheDiario": "Daily detail",
+"relatorio.pdf.subtotalSemana": "Week subtotal",
+"relatorio.pdf.kmAbbr": "Km",
+"relatorio.pdf.detalheDespesas": "Expense detail",
+"relatorio.pdf.data": "Date",
+"relatorio.pdf.descricao": "Description",
+"relatorio.pdf.tipo": "Type",
+"relatorio.pdf.valor": "Amount",
+"relatorio.pdf.avulsa": "One-off",
+"relatorio.pdf.fixa": "Fixed",
+"relatorio.pdf.fixasCadastradas": "Fixed expenses active in the period",
+"relatorio.pdf.valorFixo": "Fixed amount",
+"relatorio.pdf.percentBruto": "% of gross",
 "sheet.title": "Settings",
 "sheet.installApp": "Install app",
 "sheet.ariaLabel": "Profile and settings",
@@ -6473,25 +6519,519 @@
 
 
 
-    /* Rótulo do mês na página "Download Relatório": escrito por JavaScript
-       para acompanhar o idioma escolhido (antes era texto fixo no HTML). */
+    /* =========================================================================
+       Download Relatório — escolha de mês + geração do PDF.
+
+       As bibliotecas de PDF (jsPDF + AutoTable) só são carregadas quando a
+       pessoa carrega em "Baixar PDF" pela primeira vez — ficheiros locais
+       (funcionam offline depois do primeiro carregamento), não pesam nada
+       no resto da app. ========================================================== */
     (function () {
-      var el = document.getElementById('relatorioPageMonthLabel');
-      if (!el || !window.I18N) return;
-      function render () {
-        var d = new Date();
-        el.textContent = I18N.t('fmt.monthYear', {
-          m: I18N.capitalize(I18N.list('months.lower')[d.getMonth()]),
-          y: d.getFullYear()
+      var monthLabelEl = document.getElementById('relatorioPageMonthLabel');
+      var prevBtn       = document.getElementById('relatorioPageMonthPrev');
+      var nextBtn       = document.getElementById('relatorioPageMonthNext');
+      var downloadBtn   = document.getElementById('relatorioPageDownloadBtn');
+      var downloadLabel = downloadBtn ? downloadBtn.querySelector('[data-i18n="relatorio.download"]') : null;
+      if (!monthLabelEl || !window.I18N) return;
+
+      var hoje = new Date();
+      var relYear  = hoje.getFullYear();
+      var relMonth = hoje.getMonth(); // 0-based
+
+      function isMesAtual () {
+        var n = new Date();
+        return relYear === n.getFullYear() && relMonth === n.getMonth();
+      }
+
+      function renderLabel () {
+        monthLabelEl.textContent = I18N.t('fmt.monthYear', {
+          m: I18N.capitalize(I18N.list('months.lower')[relMonth]),
+          y: relYear
+        });
+        if (nextBtn) nextBtn.disabled = isMesAtual();
+      }
+      renderLabel();
+      document.addEventListener('languageChanged', renderLabel);
+
+      if (prevBtn) {
+        prevBtn.addEventListener('click', function () {
+          relMonth--;
+          if (relMonth < 0) { relMonth = 11; relYear--; }
+          renderLabel();
         });
       }
-      render();
-      document.addEventListener('languageChanged', render);
+      if (nextBtn) {
+        nextBtn.addEventListener('click', function () {
+          if (isMesAtual()) return;
+          relMonth++;
+          if (relMonth > 11) { relMonth = 0; relYear++; }
+          renderLabel();
+        });
+      }
+
+      /* ---- Carregamento das bibliotecas do PDF, só quando precisa ---- */
+      var pdfLibsPromise = null;
+      function carregarScript (src) {
+        return new Promise(function (resolve, reject) {
+          var s = document.createElement('script');
+          s.src = src;
+          s.async = true;
+          s.onload = function () { resolve(); };
+          s.onerror = function () { reject(new Error('Falha ao carregar ' + src)); };
+          document.head.appendChild(s);
+        });
+      }
+      function carregarLibsPdf () {
+        if (window.jspdf && window.jspdf.jsPDF && window.jspdf.jsPDF.API && window.jspdf.jsPDF.API.autoTable) {
+          return Promise.resolve();
+        }
+        if (pdfLibsPromise) return pdfLibsPromise;
+        pdfLibsPromise = carregarScript('jspdf.umd.min.js')
+          .then(function () { return carregarScript('jspdf.plugin.autotable.min.js'); })
+          .catch(function (err) { pdfLibsPromise = null; throw err; });
+        return pdfLibsPromise;
+      }
+
+      /* ---- Leitura dos dados do mês (mesmas chaves usadas no resto da app) ---- */
+      var BADGES_PREFIX = 'homeBadgeValores:';
+      var DESPESAS_DIARIAS_PREFIX = 'despesasDiarias:';
+
+      function pad2 (n) { return n < 10 ? '0' + n : String(n); }
+      function dateKeyFor (d) { return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
+      function mondayOfDate (d) {
+        var m = new Date(d.getTime());
+        m.setHours(0, 0, 0, 0);
+        var day = m.getDay();
+        m.setDate(m.getDate() + (day === 0 ? -6 : 1 - day));
+        return m;
+      }
+      function loadDayBadgesPdf (d) {
+        var b = { uber: 0, bolt: 0, despesas: 0, distancia: 0, plat: {} };
+        try {
+          var raw = cloudGet(BADGES_PREFIX + dateKeyFor(d));
+          if (raw) {
+            var parsed = JSON.parse(raw);
+            b.uber      = Number(parsed.uber) || 0;
+            b.bolt      = Number(parsed.bolt) || 0;
+            b.despesas  = Number(parsed.despesas) || 0;
+            b.distancia = Number(parsed.distancia) || 0;
+            b.plat      = platExtrasFrom(parsed);
+          }
+        } catch (e) {  }
+        return b;
+      }
+      function loadDayItemsPdf (d) {
+        try {
+          var raw = cloudGet(DESPESAS_DIARIAS_PREFIX + dateKeyFor(d));
+          if (raw) {
+            var parsed = JSON.parse(raw);
+            return (parsed && parsed.items) || [];
+          }
+        } catch (e) {  }
+        return [];
+      }
+      function loadDespesasFixasCadastro () {
+        try {
+          var raw = cloudGet('despesasFixas');
+          if (raw) { var parsed = JSON.parse(raw); return (parsed && parsed.items) || []; }
+        } catch (e) {  }
+        return [];
+      }
+      function fixaAtivaNaSemana (item, weekKey) {
+        if (item && item.desde && item.desde > weekKey) return false;
+        if (item && item.ate && item.ate <= weekKey) return false;
+        return true;
+      }
+      function isFixasSkippedForWeekPdf (weekKey) {
+        try { return cloudGet('despesasFixasSkipSemana:' + weekKey) === '1'; } catch (e) {  }
+        return false;
+      }
+      function fixasAtivasDaSemana (monday) {
+        var weekKey = dateKeyFor(monday);
+        if (isFixasSkippedForWeekPdf(weekKey)) return [];
+        return loadDespesasFixasCadastro().filter(function (item) { return fixaAtivaNaSemana(item, weekKey); });
+      }
+
+      /* Junta tudo o que o relatório do mês precisa, dia a dia. */
+      function coletarDadosDoMes (year, month) {
+        var lastDay = new Date(year, month + 1, 0).getDate();
+        var dias = [];
+        var platIds = {}; // plataformas que aparecem em pelo meno um dia do mês
+
+        for (var dNum = 1; dNum <= lastDay; dNum++) {
+          var d = new Date(year, month, dNum);
+          var badges = loadDayBadgesPdf(d);
+          var itens = loadDayItemsPdf(d);
+          var fixasDoDia = [];
+
+          if (d.getDay() === 1) { // segunda-feira: onde as despesas fixas são lançadas
+            var weekGross = 0;
+            for (var i = 0; i < 7; i++) {
+              var wd = new Date(d.getTime());
+              wd.setDate(d.getDate() + i);
+              var wb = loadDayBadgesPdf(wd);
+              weekGross += wb.uber + wb.bolt + platSum(wb.plat);
+            }
+            fixasDoDia = fixasAtivasDaSemana(d).map(function (item) {
+              var valor = (item.tipo === 'euro') ? Number(item.valor || 0) : (weekGross * (Number(item.valor || 0) / 100));
+              return { descricao: item.descricao, valor: valor, tipo: item.tipo };
+            });
+          }
+
+          for (var pid in badges.plat) platIds[pid] = true;
+
+          var bruto = badges.uber + badges.bolt + platSum(badges.plat);
+          dias.push({
+            data: d,
+            uber: badges.uber,
+            bolt: badges.bolt,
+            plat: badges.plat,
+            distancia: badges.distancia,
+            despesas: badges.despesas,
+            itens: itens,
+            fixasDoDia: fixasDoDia,
+            bruto: bruto,
+            liquido: bruto - badges.despesas
+          });
+        }
+
+        var registry = platRegistry();
+        var plataformasExtras = registry.filter(function (p) { return platIds[p.id]; });
+
+        return { dias: dias, plataformasExtras: plataformasExtras };
+      }
+
+      /* ---- Construção do PDF ---- */
+      var COR_INK    = [28, 43, 58];
+      var COR_GREEN  = [30, 158, 90];
+      var COR_RED    = [228, 87, 76];
+      var COR_PAPER  = [243, 248, 250];
+      var COR_LINE   = [225, 232, 236];
+
+      function euro (v) { return '€ ' + Number(v || 0).toFixed(2); }
+
+      function gerarRelatorioPdf (year, month) {
+        var jsPDF = window.jspdf.jsPDF;
+        var doc = new jsPDF({ unit: 'pt', format: 'a4' });
+        var pageW = doc.internal.pageSize.getWidth();
+        var pageH = doc.internal.pageSize.getHeight();
+        var margin = 34;
+
+        var dados = coletarDadosDoMes(year, month);
+        var dias = dados.dias;
+        var extras = dados.plataformasExtras;
+
+        var mesNome = I18N.capitalize(I18N.list('months.full')[month]);
+        var diasAbbr = I18N.list('weekday.abbr');
+        var geradoEm = new Date();
+        var geradoStr = pad2(geradoEm.getDate()) + '/' + pad2(geradoEm.getMonth() + 1) + '/' + geradoEm.getFullYear() +
+          ' ' + pad2(geradoEm.getHours()) + ':' + pad2(geradoEm.getMinutes());
+
+        // Totais do mês
+        var totBruto = 0, totDespesas = 0, totKm = 0, totUber = 0, totBolt = 0;
+        var totExtras = {};
+        extras.forEach(function (p) { totExtras[p.id] = 0; });
+        dias.forEach(function (dia) {
+          totBruto    += dia.bruto;
+          totDespesas += dia.despesas;
+          totKm       += dia.distancia;
+          totUber     += dia.uber;
+          totBolt     += dia.bolt;
+          extras.forEach(function (p) { totExtras[p.id] += dia.plat[p.id] || 0; });
+        });
+        var totLiquido = totBruto - totDespesas;
+
+        /* ---- Cabeçalho + rodapé, repetidos em cada página ----
+           header() é chamado tanto manualmente (antes da 1ª tabela)
+           quanto pelo didDrawPage do autoTable (em toda página nova,
+           página 1 incluída) — a trava evita desenhar duas vezes na
+           mesma página. */
+        var headeredPages = {};
+        function header () {
+          var pn = doc.internal.getCurrentPageInfo().pageNumber;
+          if (headeredPages[pn]) return;
+          headeredPages[pn] = true;
+          doc.setFillColor(COR_INK[0], COR_INK[1], COR_INK[2]);
+          doc.rect(0, 0, pageW, 56, 'F');
+          doc.setFillColor(COR_GREEN[0], COR_GREEN[1], COR_GREEN[2]);
+          doc.rect(0, 56, pageW, 3, 'F');
+          doc.setTextColor(255, 255, 255);
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(15);
+          doc.text('smartsoma', margin, 28);
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(9);
+          doc.setTextColor(220, 230, 234);
+          doc.text(I18N.t('relatorio.pdf.subtitulo'), margin, 42);
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(12);
+          doc.setTextColor(255, 255, 255);
+          doc.text(mesNome + ' ' + year, pageW - margin, 32, { align: 'right' });
+        }
+        function footer (pageNum, pageCount) {
+          doc.setDrawColor(COR_LINE[0], COR_LINE[1], COR_LINE[2]);
+          doc.setLineWidth(0.5);
+          doc.line(margin, pageH - 34, pageW - margin, pageH - 34);
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(7.5);
+          doc.setTextColor(140, 150, 158);
+          doc.text(I18N.t('relatorio.pdf.geradoEm', { v: geradoStr }), margin, pageH - 20);
+          doc.text(String(pageNum) + ' / ' + String(pageCount), pageW - margin, pageH - 20, { align: 'right' });
+        }
+
+        header();
+        var y = 80;
+
+        /* ---- Resumo do mês: cartões coloridos ---- */
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(11);
+        doc.setTextColor(COR_INK[0], COR_INK[1], COR_INK[2]);
+        doc.text(I18N.t('relatorio.pdf.resumo'), margin, y);
+        y += 10;
+
+        var cardsBase = [
+          { label: I18N.t('relatorio.pdf.bruto'),    valor: totBruto,    cor: COR_GREEN },
+          { label: I18N.t('relatorio.pdf.despesas'), valor: totDespesas, cor: COR_RED },
+          { label: I18N.t('relatorio.pdf.liquido'),  valor: totLiquido,  cor: COR_INK },
+          { label: I18N.t('relatorio.pdf.distancia'), valor: null, texto: totKm.toFixed(0) + ' km', cor: COR_INK }
+        ];
+        var cardW = (pageW - margin * 2 - 3 * 8) / 4;
+        cardsBase.forEach(function (c, i) {
+          var cx = margin + i * (cardW + 8);
+          doc.setFillColor(COR_PAPER[0], COR_PAPER[1], COR_PAPER[2]);
+          doc.roundedRect(cx, y, cardW, 46, 5, 5, 'F');
+          doc.setFillColor(c.cor[0], c.cor[1], c.cor[2]);
+          doc.roundedRect(cx, y, 3.5, 46, 1.75, 1.75, 'F');
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(7.5);
+          doc.setTextColor(110, 122, 130);
+          doc.text(c.label, cx + 10, y + 16);
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(12.5);
+          doc.setTextColor(c.cor[0], c.cor[1], c.cor[2]);
+          doc.text(c.texto || euro(c.valor), cx + 10, y + 34);
+        });
+        y += 46 + 12;
+
+        // Cartões por plataforma (Uber, Bolt, extras) — quantas existirem
+        var plataformasCards = [
+          { label: 'Uber', valor: totUber },
+          { label: 'Bolt', valor: totBolt }
+        ].concat(extras.map(function (p) { return { label: p.nome, valor: totExtras[p.id] }; }));
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9.5);
+        doc.setTextColor(COR_INK[0], COR_INK[1], COR_INK[2]);
+        doc.text(I18N.t('relatorio.pdf.porPlataforma'), margin, y);
+        y += 8;
+
+        var perRow = 4;
+        var pCardW = (pageW - margin * 2 - (perRow - 1) * 8) / perRow;
+        plataformasCards.forEach(function (c, i) {
+          var col = i % perRow;
+          var row = Math.floor(i / perRow);
+          var cx = margin + col * (pCardW + 8);
+          var cy = y + row * 38;
+          doc.setDrawColor(COR_LINE[0], COR_LINE[1], COR_LINE[2]);
+          doc.setLineWidth(0.75);
+          doc.roundedRect(cx, cy, pCardW, 30, 4, 4, 'S');
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(7.5);
+          doc.setTextColor(110, 122, 130);
+          doc.text(c.label, cx + 8, cy + 12, { maxWidth: pCardW - 16 });
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(10);
+          doc.setTextColor(COR_GREEN[0], COR_GREEN[1], COR_GREEN[2]);
+          doc.text(euro(c.valor), cx + 8, cy + 24);
+        });
+        y += Math.ceil(plataformasCards.length / perRow) * 38 + 16;
+
+        /* ---- Tabela dia a dia (com subtotal semanal) ---- */
+        var head = [[
+          I18N.t('semana.th.data'), 'Uber', 'Bolt'
+        ].concat(extras.map(function (p) { return p.nome; })).concat([
+          I18N.t('semana.th.despesas'), I18N.t('relatorio.pdf.kmAbbr'),
+          I18N.t('relatorio.pdf.bruto'), I18N.t('relatorio.pdf.liquido')
+        ])];
+
+        var body = [];
+        var semanaAcc = null;
+        function novaSemanaAcc () { return { uber: 0, bolt: 0, extras: {}, despesas: 0, km: 0, bruto: 0, liquido: 0 }; }
+        semanaAcc = novaSemanaAcc();
+
+        function linhaSemanaSubtotal () {
+          var row = [I18N.t('relatorio.pdf.subtotalSemana'), euro(semanaAcc.uber), euro(semanaAcc.bolt)];
+          extras.forEach(function (p) { row.push(euro(semanaAcc.extras[p.id] || 0)); });
+          row.push(euro(semanaAcc.despesas), semanaAcc.km.toFixed(0), euro(semanaAcc.bruto), euro(semanaAcc.liquido));
+          return row;
+        }
+
+        dias.forEach(function (dia, idx) {
+          var row = [
+            diasAbbr[dia.data.getDay()] + ' ' + pad2(dia.data.getDate()) + '/' + pad2(month + 1),
+            euro(dia.uber), euro(dia.bolt)
+          ];
+          extras.forEach(function (p) { row.push(euro(dia.plat[p.id] || 0)); });
+          row.push(euro(dia.despesas), dia.distancia.toFixed(0), euro(dia.bruto), euro(dia.liquido));
+          body.push(row);
+
+          semanaAcc.uber += dia.uber;
+          semanaAcc.bolt += dia.bolt;
+          extras.forEach(function (p) { semanaAcc.extras[p.id] = (semanaAcc.extras[p.id] || 0) + (dia.plat[p.id] || 0); });
+          semanaAcc.despesas += dia.despesas;
+          semanaAcc.km += dia.distancia;
+          semanaAcc.bruto += dia.bruto;
+          semanaAcc.liquido += dia.liquido;
+
+          var ultimoDoMes = idx === dias.length - 1;
+          if (dia.data.getDay() === 0 || ultimoDoMes) {
+            body.push(linhaSemanaSubtotal());
+            semanaAcc = novaSemanaAcc();
+          }
+        });
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(11);
+        doc.setTextColor(COR_INK[0], COR_INK[1], COR_INK[2]);
+        doc.text(I18N.t('relatorio.pdf.detalheDiario'), margin, y);
+        y += 8;
+
+        var nCols = head[0].length;
+        doc.autoTable({
+          head: head,
+          body: body,
+          startY: y,
+          margin: { left: margin, right: margin, top: 60, bottom: 40 },
+          styles: { font: 'helvetica', fontSize: 7.5, cellPadding: 4, textColor: COR_INK, lineColor: COR_LINE, lineWidth: 0.5 },
+          headStyles: { fillColor: COR_INK, textColor: 255, fontStyle: 'bold', fontSize: 7.5 },
+          alternateRowStyles: { fillColor: [249, 251, 252] },
+          columnStyles: (function () {
+            var cs = { 0: { fontStyle: 'bold', cellWidth: 46 } };
+            cs[nCols - 2] = { fontStyle: 'bold' };
+            cs[nCols - 1] = { fontStyle: 'bold', textColor: COR_GREEN };
+            return cs;
+          })(),
+          didParseCell: function (dataArg) {
+            var raw = dataArg.row.raw;
+            if (raw && raw[0] === I18N.t('relatorio.pdf.subtotalSemana')) {
+              dataArg.cell.styles.fillColor = [226, 244, 234];
+              dataArg.cell.styles.fontStyle = 'bold';
+              dataArg.cell.styles.textColor = COR_INK;
+            }
+          },
+          didDrawPage: function () {
+            header();
+          }
+        });
+        y = doc.lastAutoTable.finalY + 20;
+
+        /* ---- Detalhe das despesas (uma por uma, para achar um lançamento específico) ---- */
+        var despesasBody = [];
+        dias.forEach(function (dia) {
+          dia.itens.forEach(function (it) {
+            despesasBody.push([
+              pad2(dia.data.getDate()) + '/' + pad2(month + 1),
+              it.descricao || '—',
+              I18N.t('relatorio.pdf.avulsa'),
+              euro(it.valor)
+            ]);
+          });
+          dia.fixasDoDia.forEach(function (it) {
+            despesasBody.push([
+              pad2(dia.data.getDate()) + '/' + pad2(month + 1),
+              it.descricao || '—',
+              I18N.t('relatorio.pdf.fixa'),
+              euro(it.valor)
+            ]);
+          });
+        });
+
+        if (despesasBody.length) {
+          if (y > pageH - 140) { doc.addPage(); y = 76; }
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(11);
+          doc.setTextColor(COR_INK[0], COR_INK[1], COR_INK[2]);
+          doc.text(I18N.t('relatorio.pdf.detalheDespesas'), margin, y);
+          y += 8;
+          doc.autoTable({
+            head: [[I18N.t('relatorio.pdf.data'), I18N.t('relatorio.pdf.descricao'), I18N.t('relatorio.pdf.tipo'), I18N.t('relatorio.pdf.valor')]],
+            body: despesasBody,
+            startY: y,
+            margin: { left: margin, right: margin, top: 60, bottom: 40 },
+            styles: { font: 'helvetica', fontSize: 8, cellPadding: 4.5, textColor: COR_INK, lineColor: COR_LINE, lineWidth: 0.5 },
+            headStyles: { fillColor: COR_RED, textColor: 255, fontStyle: 'bold' },
+            alternateRowStyles: { fillColor: [253, 246, 245] },
+            columnStyles: { 0: { cellWidth: 55 }, 3: { fontStyle: 'bold', textColor: COR_RED, halign: 'right' } },
+            didDrawPage: function () { header(); }
+          });
+          y = doc.lastAutoTable.finalY + 20;
+        }
+
+        /* ---- Despesas fixas ativas no período (referência) ---- */
+        var fixasRegistradas = loadDespesasFixasCadastro().filter(function (item) {
+          var fimMes = dateKeyFor(new Date(year, month + 1, 0));
+          var inicioMes = dateKeyFor(new Date(year, month, 1));
+          return (!item.ate || item.ate > inicioMes) && (!item.desde || item.desde <= fimMes);
+        });
+        if (fixasRegistradas.length) {
+          if (y > pageH - 120) { doc.addPage(); y = 76; }
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(11);
+          doc.setTextColor(COR_INK[0], COR_INK[1], COR_INK[2]);
+          doc.text(I18N.t('relatorio.pdf.fixasCadastradas'), margin, y);
+          y += 8;
+          doc.autoTable({
+            head: [[I18N.t('relatorio.pdf.descricao'), I18N.t('relatorio.pdf.tipo'), I18N.t('relatorio.pdf.valor')]],
+            body: fixasRegistradas.map(function (item) {
+              var valorTxt = item.tipo === 'euro' ? euro(item.valor) : Number(item.valor) + ' %';
+              return [item.descricao, item.tipo === 'euro' ? I18N.t('relatorio.pdf.valorFixo') : I18N.t('relatorio.pdf.percentBruto'), valorTxt];
+            }),
+            startY: y,
+            margin: { left: margin, right: margin, top: 60, bottom: 40 },
+            styles: { font: 'helvetica', fontSize: 8, cellPadding: 4.5, textColor: COR_INK, lineColor: COR_LINE, lineWidth: 0.5 },
+            headStyles: { fillColor: COR_INK, textColor: 255, fontStyle: 'bold' },
+            alternateRowStyles: { fillColor: [249, 251, 252] },
+            didDrawPage: function () { header(); }
+          });
+        }
+
+        var pageCount = doc.internal.getNumberOfPages();
+        for (var p = 1; p <= pageCount; p++) {
+          doc.setPage(p);
+          footer(p, pageCount);
+        }
+
+        var nomeFicheiro = 'smartsoma-relatorio-' + pad2(month + 1) + '-' + year + '.pdf';
+        doc.save(nomeFicheiro);
+      }
+
+      if (downloadBtn) {
+        downloadBtn.addEventListener('click', function () {
+          if (downloadBtn.disabled) return;
+          downloadBtn.disabled = true;
+          if (downloadLabel) downloadLabel.textContent = I18N.t('relatorio.pdf.aGerar');
+          carregarLibsPdf()
+            .then(function () {
+              // Um pequeno adiamento dá tempo à interface de mostrar o
+              // estado "A gerar..." antes do trabalho pesado começar.
+              return new Promise(function (resolve) { setTimeout(resolve, 30); });
+            })
+            .then(function () { gerarRelatorioPdf(relYear, relMonth); })
+            .catch(function (err) {
+              console.error('Erro ao gerar PDF:', err);
+              alert(I18N.t('relatorio.pdf.erro'));
+            })
+            .then(function () {
+              downloadBtn.disabled = false;
+              if (downloadLabel) downloadLabel.textContent = I18N.t('relatorio.download');
+            });
+        });
+      }
     })();
 
 
 
-    /* ===================================================================
+/* ===================================================================
        Tutorial guiado.
 
        Abre a partir de Ajustes › Tutorial: primeiro um popup de
