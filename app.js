@@ -217,6 +217,15 @@
 "relatorio.pdf.fixasCadastradas": "Despesas fixas ativas no período",
 "relatorio.pdf.valorFixo": "Valor fixo",
 "relatorio.pdf.percentBruto": "% do bruto",
+"relatorio.pdf.nome": "Nome",
+"relatorio.pdf.email": "Email",
+"relatorio.pdf.plano": "Plano",
+"relatorio.pdf.planoGratuita": "Conta Gratuita",
+"relatorio.pdf.planoPro": "Conta Pro",
+"relatorio.pdf.semDespesas": "Sem despesas lançadas neste mês.",
+"relatorio.pdf.resumoSemanal": "Resumo semanal",
+"relatorio.pdf.periodo": "Período",
+"relatorio.pdf.diferenca": "Diferença",
 "sheet.title": "Ajustes",
 "sheet.installApp": "Instalar App",
 "sheet.ariaLabel": "Perfil e configurações",
@@ -633,6 +642,15 @@
 "relatorio.pdf.fixasCadastradas": "Fixed expenses active in the period",
 "relatorio.pdf.valorFixo": "Fixed amount",
 "relatorio.pdf.percentBruto": "% of gross",
+"relatorio.pdf.nome": "Name",
+"relatorio.pdf.email": "Email",
+"relatorio.pdf.plano": "Plan",
+"relatorio.pdf.planoGratuita": "Free account",
+"relatorio.pdf.planoPro": "Pro account",
+"relatorio.pdf.semDespesas": "No expenses logged this month.",
+"relatorio.pdf.resumoSemanal": "Weekly summary",
+"relatorio.pdf.periodo": "Period",
+"relatorio.pdf.diferenca": "Difference",
 "sheet.title": "Settings",
 "sheet.installApp": "Install app",
 "sheet.ariaLabel": "Profile and settings",
@@ -6715,7 +6733,7 @@
         var doc = new jsPDF({ unit: 'pt', format: 'a4' });
         var pageW = doc.internal.pageSize.getWidth();
         var pageH = doc.internal.pageSize.getHeight();
-        var margin = 34;
+        var margin = 42;
 
         var dados = coletarDadosDoMes(year, month);
         var dias = dados.dias;
@@ -6752,21 +6770,21 @@
           if (headeredPages[pn]) return;
           headeredPages[pn] = true;
           doc.setFillColor(COR_INK[0], COR_INK[1], COR_INK[2]);
-          doc.rect(0, 0, pageW, 56, 'F');
+          doc.rect(0, 0, pageW, 64, 'F');
           doc.setFillColor(COR_GREEN[0], COR_GREEN[1], COR_GREEN[2]);
-          doc.rect(0, 56, pageW, 3, 'F');
+          doc.rect(0, 64, pageW, 3, 'F');
           doc.setTextColor(255, 255, 255);
           doc.setFont('helvetica', 'bold');
-          doc.setFontSize(15);
-          doc.text('smartsoma', margin, 28);
+          doc.setFontSize(16);
+          doc.text('smartsoma', margin, 32);
           doc.setFont('helvetica', 'normal');
           doc.setFontSize(9);
           doc.setTextColor(220, 230, 234);
-          doc.text(I18N.t('relatorio.pdf.subtitulo'), margin, 42);
+          doc.text(I18N.t('relatorio.pdf.subtitulo'), margin, 47);
           doc.setFont('helvetica', 'bold');
-          doc.setFontSize(12);
+          doc.setFontSize(13);
           doc.setTextColor(255, 255, 255);
-          doc.text(mesNome + ' ' + year, pageW - margin, 32, { align: 'right' });
+          doc.text(mesNome + ' ' + year, pageW - margin, 36, { align: 'right' });
         }
         function footer (pageNum, pageCount) {
           doc.setDrawColor(COR_LINE[0], COR_LINE[1], COR_LINE[2]);
@@ -6780,7 +6798,44 @@
         }
 
         header();
-        var y = 80;
+        var y = 100;
+
+        /* ---- Identificação: nome, email e plano da conta ----
+           Lê o perfil já guardado e o email da sessão (cloud-init.js).
+           PLANO (Gratuita/Pro): ainda não existe nenhuma informação de
+           plano/assinatura no projeto — fica "Gratuita" fixo até existir
+           uma fonte real (ex.: um campo na conta Supabase). */
+        var perfilNome = '';
+        try {
+          var perfilRaw = cloudGet('mydocs.profile');
+          if (perfilRaw) {
+            var perfilObj = JSON.parse(perfilRaw);
+            if (perfilObj && perfilObj.name) perfilNome = perfilObj.name;
+          }
+        } catch (e) {  }
+        if (!perfilNome) perfilNome = I18N.t('sheet.defaultUser');
+        var perfilEmail = window.currentUserEmail || '—';
+        var perfilPlano = I18N.t('relatorio.pdf.planoGratuita');
+
+        doc.setFillColor(COR_PAPER[0], COR_PAPER[1], COR_PAPER[2]);
+        doc.roundedRect(margin, y, pageW - margin * 2, 46, 5, 5, 'F');
+        var idColW = (pageW - margin * 2 - 24) / 3;
+        [
+          [I18N.t('relatorio.pdf.nome'), perfilNome],
+          [I18N.t('relatorio.pdf.email'), perfilEmail],
+          [I18N.t('relatorio.pdf.plano'), perfilPlano]
+        ].forEach(function (par, i) {
+          var cx = margin + 12 + i * idColW;
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(7.5);
+          doc.setTextColor(110, 122, 130);
+          doc.text(par[0], cx, y + 18);
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(10.5);
+          doc.setTextColor(COR_INK[0], COR_INK[1], COR_INK[2]);
+          doc.text(par[1], cx, y + 33, { maxWidth: idColW - 14 });
+        });
+        y += 46 + 22;
 
         /* ---- Resumo do mês: cartões coloridos ---- */
         doc.setFont('helvetica', 'bold');
@@ -6811,7 +6866,7 @@
           doc.setTextColor(c.cor[0], c.cor[1], c.cor[2]);
           doc.text(c.texto || euro(c.valor), cx + 10, y + 34);
         });
-        y += 46 + 12;
+        y += 46 + 20;
 
         // Cartões por plataforma (Uber, Bolt, extras) — quantas existirem
         var plataformasCards = [
@@ -6844,7 +6899,7 @@
           doc.setTextColor(COR_GREEN[0], COR_GREEN[1], COR_GREEN[2]);
           doc.text(euro(c.valor), cx + 8, cy + 24);
         });
-        y += Math.ceil(plataformasCards.length / perRow) * 38 + 16;
+        y += Math.ceil(plataformasCards.length / perRow) * 38 + 24;
 
         /* ---- Tabela dia a dia (com subtotal semanal) ---- */
         var head = [[
@@ -6855,7 +6910,9 @@
         ])];
 
         var body = [];
+        var semanasResumo = []; // p/ a seção "Resumo semanal" mais abaixo
         var semanaAcc = null;
+        var semanaInicio = null;
         function novaSemanaAcc () { return { uber: 0, bolt: 0, extras: {}, despesas: 0, km: 0, bruto: 0, liquido: 0 }; }
         semanaAcc = novaSemanaAcc();
 
@@ -6867,8 +6924,11 @@
         }
 
         dias.forEach(function (dia, idx) {
+          if (semanaInicio === null) semanaInicio = dia.data;
           var row = [
-            diasAbbr[dia.data.getDay()] + ' ' + pad2(dia.data.getDate()) + '/' + pad2(month + 1),
+            // weekday.abbr é Seg..Dom (0=Seg); getDay() do JS é Dom..Sáb
+            // (0=Dom) — por isso o +6 % 7 antes de indexar a lista.
+            diasAbbr[(dia.data.getDay() + 6) % 7] + ' ' + pad2(dia.data.getDate()) + '/' + pad2(month + 1),
             euro(dia.uber), euro(dia.bolt)
           ];
           extras.forEach(function (p) { row.push(euro(dia.plat[p.id] || 0)); });
@@ -6886,7 +6946,12 @@
           var ultimoDoMes = idx === dias.length - 1;
           if (dia.data.getDay() === 0 || ultimoDoMes) {
             body.push(linhaSemanaSubtotal());
+            semanasResumo.push({
+              inicio: semanaInicio, fim: dia.data,
+              bruto: semanaAcc.bruto, despesas: semanaAcc.despesas, liquido: semanaAcc.liquido
+            });
             semanaAcc = novaSemanaAcc();
+            semanaInicio = null;
           }
         });
 
@@ -6901,7 +6966,7 @@
           head: head,
           body: body,
           startY: y,
-          margin: { left: margin, right: margin, top: 60, bottom: 40 },
+          margin: { left: margin, right: margin, top: 70, bottom: 44 },
           styles: { font: 'helvetica', fontSize: 7.5, cellPadding: 4, textColor: COR_INK, lineColor: COR_LINE, lineWidth: 0.5 },
           headStyles: { fillColor: COR_INK, textColor: 255, fontStyle: 'bold', fontSize: 7.5 },
           alternateRowStyles: { fillColor: [249, 251, 252] },
@@ -6923,7 +6988,7 @@
             header();
           }
         });
-        y = doc.lastAutoTable.finalY + 20;
+        y = doc.lastAutoTable.finalY + 26;
 
         /* ---- Detalhe das despesas (uma por uma, para achar um lançamento específico) ---- */
         var despesasBody = [];
@@ -6946,26 +7011,81 @@
           });
         });
 
+        // Lista de despesas (fixas e avulsas), uma por dia — aparece
+        // sempre, mesmo sem nenhuma, para o documento ficar completo e
+        // previsível em todo mês (nunca "sumir" uma seção sem explicação).
+        if (y > pageH - 140) { doc.addPage(); y = 96; }
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(11);
+        doc.setTextColor(COR_INK[0], COR_INK[1], COR_INK[2]);
+        doc.text(I18N.t('relatorio.pdf.detalheDespesas'), margin, y);
+        y += 10;
         if (despesasBody.length) {
-          if (y > pageH - 140) { doc.addPage(); y = 76; }
-          doc.setFont('helvetica', 'bold');
-          doc.setFontSize(11);
-          doc.setTextColor(COR_INK[0], COR_INK[1], COR_INK[2]);
-          doc.text(I18N.t('relatorio.pdf.detalheDespesas'), margin, y);
-          y += 8;
           doc.autoTable({
             head: [[I18N.t('relatorio.pdf.data'), I18N.t('relatorio.pdf.descricao'), I18N.t('relatorio.pdf.tipo'), I18N.t('relatorio.pdf.valor')]],
             body: despesasBody,
             startY: y,
-            margin: { left: margin, right: margin, top: 60, bottom: 40 },
-            styles: { font: 'helvetica', fontSize: 8, cellPadding: 4.5, textColor: COR_INK, lineColor: COR_LINE, lineWidth: 0.5 },
+            margin: { left: margin, right: margin, top: 70, bottom: 44 },
+            styles: { font: 'helvetica', fontSize: 8, cellPadding: 5, textColor: COR_INK, lineColor: COR_LINE, lineWidth: 0.5 },
             headStyles: { fillColor: COR_RED, textColor: 255, fontStyle: 'bold' },
             alternateRowStyles: { fillColor: [253, 246, 245] },
             columnStyles: { 0: { cellWidth: 55 }, 3: { fontStyle: 'bold', textColor: COR_RED, halign: 'right' } },
             didDrawPage: function () { header(); }
           });
-          y = doc.lastAutoTable.finalY + 20;
+          y = doc.lastAutoTable.finalY + 26;
+        } else {
+          doc.setFillColor(COR_PAPER[0], COR_PAPER[1], COR_PAPER[2]);
+          doc.roundedRect(margin, y, pageW - margin * 2, 28, 5, 5, 'F');
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(8.5);
+          doc.setTextColor(110, 122, 130);
+          doc.text(I18N.t('relatorio.pdf.semDespesas'), margin + 12, y + 17);
+          y += 28 + 26;
         }
+
+        /* ---- Resumo semanal: bruto, despesas, líquido e diferença em
+           relação à semana anterior (mesmo período Seg–Dom das outras
+           seções). ---- */
+        if (y > pageH - 140) { doc.addPage(); y = 96; }
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(11);
+        doc.setTextColor(COR_INK[0], COR_INK[1], COR_INK[2]);
+        doc.text(I18N.t('relatorio.pdf.resumoSemanal'), margin, y);
+        y += 10;
+        doc.autoTable({
+          head: [[
+            I18N.t('relatorio.pdf.periodo'), I18N.t('relatorio.pdf.bruto'),
+            I18N.t('relatorio.pdf.despesas'), I18N.t('relatorio.pdf.liquido'),
+            I18N.t('relatorio.pdf.diferenca')
+          ]],
+          body: semanasResumo.map(function (sem, i) {
+            var diffTxt = '—';
+            if (i > 0) {
+              var diff = sem.liquido - semanasResumo[i - 1].liquido;
+              diffTxt = (Math.abs(diff) < 0.005) ? euro(0) : (diff > 0 ? '+ ' : '- ') + euro(Math.abs(diff));
+            }
+            return [
+              pad2(sem.inicio.getDate()) + '/' + pad2(sem.inicio.getMonth() + 1) + ' – ' +
+                pad2(sem.fim.getDate()) + '/' + pad2(sem.fim.getMonth() + 1),
+              euro(sem.bruto), euro(sem.despesas), euro(sem.liquido), diffTxt
+            ];
+          }),
+          startY: y,
+          margin: { left: margin, right: margin, top: 70, bottom: 44 },
+          styles: { font: 'helvetica', fontSize: 8.5, cellPadding: 5.5, textColor: COR_INK, lineColor: COR_LINE, lineWidth: 0.5 },
+          headStyles: { fillColor: COR_INK, textColor: 255, fontStyle: 'bold' },
+          alternateRowStyles: { fillColor: [249, 251, 252] },
+          columnStyles: { 3: { fontStyle: 'bold', textColor: COR_GREEN }, 4: { fontStyle: 'bold' } },
+          didParseCell: function (dataArg) {
+            if (dataArg.column.index === 4 && dataArg.section === 'body') {
+              var txt = String(dataArg.cell.raw);
+              if (txt.indexOf('+') === 0) dataArg.cell.styles.textColor = COR_GREEN;
+              else if (txt.indexOf('-') === 0) dataArg.cell.styles.textColor = COR_RED;
+            }
+          },
+          didDrawPage: function () { header(); }
+        });
+        y = doc.lastAutoTable.finalY + 26;
 
         /* ---- Despesas fixas ativas no período (referência) ---- */
         var fixasRegistradas = loadDespesasFixasCadastro().filter(function (item) {
@@ -6974,7 +7094,7 @@
           return (!item.ate || item.ate > inicioMes) && (!item.desde || item.desde <= fimMes);
         });
         if (fixasRegistradas.length) {
-          if (y > pageH - 120) { doc.addPage(); y = 76; }
+          if (y > pageH - 120) { doc.addPage(); y = 96; }
           doc.setFont('helvetica', 'bold');
           doc.setFontSize(11);
           doc.setTextColor(COR_INK[0], COR_INK[1], COR_INK[2]);
@@ -6987,7 +7107,7 @@
               return [item.descricao, item.tipo === 'euro' ? I18N.t('relatorio.pdf.valorFixo') : I18N.t('relatorio.pdf.percentBruto'), valorTxt];
             }),
             startY: y,
-            margin: { left: margin, right: margin, top: 60, bottom: 40 },
+            margin: { left: margin, right: margin, top: 70, bottom: 44 },
             styles: { font: 'helvetica', fontSize: 8, cellPadding: 4.5, textColor: COR_INK, lineColor: COR_LINE, lineWidth: 0.5 },
             headStyles: { fillColor: COR_INK, textColor: 255, fontStyle: 'bold' },
             alternateRowStyles: { fillColor: [249, 251, 252] },
