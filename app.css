@@ -2835,22 +2835,45 @@
           min-height:1em;
         }
         .dp-save-btn.has-icon svg{ width:0.9062rem; height:0.9062rem; flex:0 0 auto; }
-        .relatorio-pdf-preview{
-          margin-top:0.6875rem;
-          width:100%;
-          aspect-ratio:3/4;
-          border-radius:0.6875rem;
-          border:1.5px dashed rgba(var(--ink-rgb),0.22);
-          background:rgba(var(--ink-rgb),0.03);
+        /* Ilustração da página "Download Relatório": um documento com um
+           gráfico de barras e um emblema de download, nas cores do app.
+           Puro SVG vetorial — some automaticamente no tema escuro porque
+           usa as mesmas variáveis de cor do resto da página. */
+        .relatorio-illustration{
           display:flex;
-          align-items:center;
           justify-content:center;
-          text-align:center;
-          padding:0.5938rem;
+          margin:0.75rem 0 0.9375rem;
+        }
+        .relatorio-illustration svg{ width:7.25rem; height:7.25rem; }
+        .relatorio-ill-page{
+          fill:var(--card-bg);
+          stroke:rgba(var(--ink-rgb),0.16);
+          stroke-width:2;
+        }
+        .relatorio-ill-fold{ fill:rgba(30,158,90,0.18); }
+        .relatorio-ill-line{ fill:rgba(var(--ink-rgb),0.13); }
+        .relatorio-ill-bar{ fill:var(--brand-green); opacity:0.85; }
+        .relatorio-ill-badge{
+          fill:var(--brand-green);
+          stroke:var(--card-bg);
+          stroke-width:3.5;
+        }
+        .relatorio-ill-arrow{ stroke:#FFFFFF; fill:none; }
+        .relatorio-highlights{
+          display:flex;
+          flex-wrap:wrap;
+          justify-content:center;
+          gap:0.375rem;
+          margin:0 0 1.125rem;
+        }
+        .relatorio-highlight-pill{
           font-size:0.625rem;
           font-weight:700;
-          letter-spacing:0.24px;
-          color:rgba(var(--ink-rgb),0.35);
+          letter-spacing:0.02em;
+          color:var(--brand-green);
+          background:rgba(30,158,90,0.1);
+          border-radius:999px;
+          padding:0.3125rem 0.625rem;
         }
         .mm-wheel-card{ max-width:240px; }
         .mm-wheel-picker{

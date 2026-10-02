@@ -419,6 +419,29 @@
                             <div class="home-card">
                                 <h2 class="legal-title" data-i18n="relatorio.title">Download Relatório</h2>
                                 <p class="ajuda-intro-text is-centered" data-i18n="relatorio.intro">O relatório reúne os detalhes diários do mês escolhido, todos juntos em um único PDF. Selecione o mês desejado no filtro abaixo.</p>
+
+                                <div class="relatorio-illustration" aria-hidden="true">
+                                    <svg viewBox="0 0 120 120">
+                                        <rect class="relatorio-ill-page" x="22" y="10" width="64" height="88" rx="7"/>
+                                        <path class="relatorio-ill-fold" d="M70 10 L86 26 L70 26 Z"/>
+                                        <rect class="relatorio-ill-line" x="32" y="30" width="34" height="3.5" rx="1.75"/>
+                                        <rect class="relatorio-ill-line" x="32" y="39" width="28" height="3.5" rx="1.75"/>
+                                        <rect class="relatorio-ill-line" x="32" y="48" width="38" height="3.5" rx="1.75"/>
+                                        <rect class="relatorio-ill-bar" x="32" y="76" width="7" height="12" rx="1.5"/>
+                                        <rect class="relatorio-ill-bar" x="43" y="68" width="7" height="20" rx="1.5"/>
+                                        <rect class="relatorio-ill-bar" x="54" y="60" width="7" height="28" rx="1.5"/>
+                                        <circle class="relatorio-ill-badge" cx="82" cy="86" r="23"/>
+                                        <path class="relatorio-ill-arrow" d="M82 76v14" stroke-width="3.4" stroke-linecap="round"/>
+                                        <polyline class="relatorio-ill-arrow" points="75 83 82 90 89 83" fill="none" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <line class="relatorio-ill-arrow" x1="73" y1="96" x2="91" y2="96" stroke-width="3.4" stroke-linecap="round"/>
+                                    </svg>
+                                </div>
+                                <div class="relatorio-highlights">
+                                    <span class="relatorio-highlight-pill" data-i18n="relatorio.highlight.dia">Detalhe por dia</span>
+                                    <span class="relatorio-highlight-pill" data-i18n="relatorio.highlight.semana">Resumo semanal</span>
+                                    <span class="relatorio-highlight-pill" data-i18n="relatorio.highlight.despesas">Despesas detalhadas</span>
+                                </div>
+
                                 <div class="period-nav-row">
                                     <button type="button" class="period-nav-btn" id="relatorioPageMonthPrev" data-i18n-aria="semana.prevMesAria" aria-label="Mês anterior">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -440,7 +463,6 @@
                                     </svg>
                                     <span data-i18n="relatorio.download">Baixar PDF</span>
                                 </button>
-                                <div class="relatorio-pdf-preview" data-i18n="relatorio.preview">IMG EXEMPLO DE PDF</div>
                             </div>
                         </div>
                     </div>
