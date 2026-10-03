@@ -1444,9 +1444,13 @@
                 const { data: { user } } = await window._supabase.auth.getUser();
                 if (!user) { alert('Precisas de estar com sessão iniciada.'); return; }
 
-                const res = await fetch(SUPABASE_URL + '/functions/v1/creem-checkout', {
-                    method : 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                const { data: { session } } = await window._supabase.auth.getSession();
+const res = await fetch(SUPABASE_URL + '/functions/v1/creem-checkout', {
+    method : 'POST',
+    headers: {
+        'Content-Type' : 'application/json',
+        'Authorization': 'Bearer ' + session.access_token
+    },
                     body   : JSON.stringify({ productId: CREEM_PRODUCT_ID, userId: user.id })
                 });
                 const json = await res.json();
