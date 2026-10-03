@@ -6022,6 +6022,65 @@
       renderOptions();
     })();
 
+    /* ---- Popup modal de idioma (versão gratuita) ----
+       Replica o mesmo conteúdo do ecrã de idioma dos Ajustes mas
+       abre como modal standalone ao clicar no botão PT do cabeçalho. */
+    (function () {
+      var modal   = document.getElementById('langPopupModal');
+      var listEl  = document.getElementById('langPopupOptionsList');
+      var saveBtn = document.getElementById('langPopupSaveBtn');
+      if (!modal || !listEl || !saveBtn || !window.I18N) return;
+
+      var CHECK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+      var pendingLang = I18N.getLang();
+
+      function renderOptions () {
+        listEl.innerHTML = '';
+        I18N.getOrder().forEach(function (code) {
+          var btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'lang-option' + (code === pendingLang ? ' is-selected' : '');
+          btn.setAttribute('role', 'radio');
+          btn.setAttribute('aria-checked', code === pendingLang ? 'true' : 'false');
+          btn.innerHTML =
+            '<span class="lang-flag" aria-hidden="true">' + I18N.getFlag(code) + '</span>' +
+            '<span class="lang-option-name">' + I18N.getName(code) + '</span>' +
+            '<span class="lang-option-check" aria-hidden="true">' + CHECK_SVG + '</span>';
+          btn.addEventListener('click', function () {
+            pendingLang = code;
+            renderOptions();
+          });
+          listEl.appendChild(btn);
+        });
+      }
+
+      function openModal () {
+        pendingLang = I18N.getLang();
+        renderOptions();
+        modal.classList.add('is-open');
+      }
+
+      function closeModal () {
+        modal.classList.remove('is-open');
+      }
+
+      saveBtn.addEventListener('click', function () {
+        I18N.setLang(pendingLang);
+        closeModal();
+        if (window.HomeNav) window.HomeNav.goToSection('ganhos');
+        var listViewEl = document.getElementById('homeListView');
+        if (listViewEl) listViewEl.scrollTop = 0;
+        window.scrollTo(0, 0);
+      });
+
+      /* Fechar ao clicar no backdrop */
+      modal.addEventListener('click', function (e) {
+        if (e.target === modal) closeModal();
+      });
+
+      window.LangPopupModal = { open: openModal, close: closeModal };
+    })();
+
 
 
     /* ---- Ecrã "Multiplataforma" dentro do menu Ajustes ----
@@ -6362,9 +6421,16 @@
         window.GanhosDate.onChange(refreshTileValues);
       }
 
-      /* --- Botão "+" abre o menu Ajustes na subtela Multiplataforma --- */
+      /* --- Botão "+" abre o menu Ajustes na subtela Multiplataforma (só Pro) --- */
       if (addBtn) {
         addBtn.addEventListener('click', function () {
+          if (!window.SmartSomaPro || !window.SmartSomaPro.isPro) {
+            /* Versão gratuita — mostra toast de bloqueio */
+            if (typeof window.mostrarProFeatureToast === 'function') {
+              window.mostrarProFeatureToast('Somente na versão Pro para adicionar outras empresas parceiras.');
+            }
+            return;
+          }
           if (typeof window.openProfileSheetPublic === 'function') {
             window.openProfileSheetPublic();
           }

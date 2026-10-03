@@ -3765,8 +3765,69 @@ html, body{ overscroll-behavior-y:none; }
         .header-lang-code{
           font-size:.6875rem;font-weight:800;
           letter-spacing:.04em;
-          color:var(--ink);
+          color:#FFFFFF;
           line-height:1;
+        }
+
+        /* ── Modal popup de idioma (versão gratuita) ── */
+        #langPopupModal{
+          position:fixed;inset:0;
+          z-index:99990;
+          display:flex;align-items:flex-end;justify-content:center;
+          background:rgba(0,0,0,.55);
+          opacity:0;pointer-events:none;
+          transition:opacity .25s ease;
+        }
+        #langPopupModal.is-open{
+          opacity:1;pointer-events:auto;
+        }
+        #langPopupModal .lpm-sheet{
+          width:100%;max-width:480px;
+          background:var(--card-bg);
+          border-radius:1.25rem 1.25rem 0 0;
+          padding:1rem 1rem calc(env(safe-area-inset-bottom,0px) + 1.25rem);
+          transform:translateY(100%);
+          transition:transform .28s cubic-bezier(.32,.72,0,1);
+        }
+        #langPopupModal.is-open .lpm-sheet{
+          transform:translateY(0);
+        }
+        .lpm-handle{
+          width:2.5rem;height:.25rem;
+          border-radius:.125rem;
+          background:rgba(var(--ink-rgb),.2);
+          margin:0 auto .875rem;
+        }
+        .lpm-title{
+          font-size:.9375rem;font-weight:700;
+          color:var(--ink);
+          text-align:center;
+          margin-bottom:1rem;
+        }
+        .lpm-save-btn{
+          width:100%;margin-top:1rem;
+          padding:.75rem;border-radius:.75rem;
+          background:var(--brand-green);
+          color:#fff;font-size:.9375rem;font-weight:700;
+          border:none;cursor:pointer;
+        }
+
+        /* ── Tag PRO no botão "+" de ganhos ── */
+        .ganhos-tile-add-pro-locked{
+          opacity:.45;
+          position:relative;
+          cursor:pointer;
+        }
+        .ganhos-tile-add-pro-tag{
+          position:absolute;
+          top:-.4rem;right:-.4rem;
+          font-size:.45rem;font-weight:800;letter-spacing:.06em;
+          padding:.12rem .28rem;border-radius:.25rem;
+          border:1px solid rgba(212,175,55,.6);
+          color:rgba(212,175,55,.9);
+          background:var(--card-bg);
+          line-height:1;text-transform:uppercase;
+          white-space:nowrap;
         }
 
         /* ── Aviso gratuito em Despesas Fixas ── */
