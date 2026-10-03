@@ -8,6 +8,49 @@
         .ad-label{position:absolute;top:.3125rem;left:50%;transform:translateX(-50%);font-size:.5625rem;font-weight:700;letter-spacing:1.1px;text-transform:uppercase;color:rgba(var(--ink-rgb),.32);white-space:nowrap;pointer-events:none;user-select:none;line-height:1}
         .ad-container .adsbygoogle{display:block;width:100%;max-width:100%}
         body.theme-dark .ad-label{color:rgba(var(--ink-rgb),.28)}
+
+        /* ── Interstitial diário ── */
+        #adInterstitial{
+            position:fixed;inset:0;z-index:13000;
+            background:rgba(0,0,0,.88);
+            display:flex;align-items:center;justify-content:center;
+            padding:1.25rem;box-sizing:border-box;
+        }
+        #adInterstitial[hidden]{display:none}
+        #adInterstitialCard{
+            width:100%;max-width:360px;
+            background:var(--card-bg);
+            border-radius:1rem;overflow:hidden;
+            display:flex;flex-direction:column;
+        }
+        #adInterstitialHeader{
+            display:flex;align-items:center;justify-content:space-between;
+            padding:.5rem .75rem .4rem;
+            border-bottom:1px solid var(--card-line);
+            flex-shrink:0;
+        }
+        #adInterstitialHeader .ad-label{
+            position:static;transform:none;
+            font-size:.5625rem;font-weight:700;
+            letter-spacing:1.1px;text-transform:uppercase;
+            color:rgba(var(--ink-rgb),.32);
+            pointer-events:none;user-select:none;
+        }
+        #adInterstitialClose{
+            background:none;border:none;cursor:pointer;
+            font-size:1.375rem;line-height:1;
+            color:rgba(var(--ink-rgb),.45);
+            padding:.125rem .375rem;border-radius:.5rem;
+            font-family:inherit;
+        }
+        #adInterstitialClose:active{background:rgba(var(--ink-rgb),.08)}
+        #adInterstitialBody{
+            min-height:280px;
+            display:flex;align-items:stretch;
+        }
+        #adInterstitialBody .adsbygoogle{
+            display:block;width:100%;min-height:280px;
+        }
     </style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -1274,5 +1317,27 @@
 
     <!-- PWA: Service Worker + toast de instalação -->
     <script src="pwa-install.js"></script>
+
+    <!-- ── Interstitial diário ─────────────────────────────────────
+         Aparece na primeira ação de save do dia (Uber, Bolt,
+         Distância ou Despesas). Máximo 1 vez por dia via localStorage.
+         O AdSense só é inicializado quando o overlay abre (lazy).
+    ──────────────────────────────────────────────────────────────── -->
+    <div id="adInterstitial" role="dialog" aria-modal="true" aria-label="Publicidade" hidden>
+        <div id="adInterstitialCard">
+            <div id="adInterstitialHeader">
+                <span class="ad-label">Publicidade</span>
+                <button type="button" id="adInterstitialClose" aria-label="Fechar anúncio">&#x2715;</button>
+            </div>
+            <div id="adInterstitialBody">
+                <ins class="adsbygoogle"
+                     style="display:block;width:100%;min-height:280px"
+                     data-ad-client="ca-pub-2388518461995933"
+                     data-ad-slot="3322764888"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

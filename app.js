@@ -7462,3 +7462,77 @@
         start: iniciar
       };
     })();
+
+/* ══════════════════════════════════════════════════════════════════════
+   INTERSTITIAL DIÁRIO — SmartSoma
+   Mostra um anúncio de ecrã cheio na primeira ação de save do dia.
+   Controlo via localStorage: no máximo 1 vez por dia.
+   Slots monitorizados: Uber, Bolt, Distância, Despesas, Plataformas extra.
+   ══════════════════════════════════════════════════════════════════════ */
+(function () {
+    var AD_DAY_KEY = 'ss_ad_day';
+    var adPushed   = false;
+
+    /* IDs dos botões de salvar que disparam o interstitial */
+    var SAVE_BTNS = [
+        'uberSalvarBtn',
+        'boltSalvarBtn',
+        'distanciaSalvarBtn',
+        'despesasSemanaSalvarBtn',
+        'platExtraSalvarBtn'
+    ];
+
+    /* Data de hoje em formato YYYY-M-D */
+    function todayStr() {
+        var d = new Date();
+        return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+    }
+
+    function wasShownToday() {
+        try { return localStorage.getItem(AD_DAY_KEY) === todayStr(); } catch (e) { return false; }
+    }
+
+    function markShownToday() {
+        try { localStorage.setItem(AD_DAY_KEY, todayStr()); } catch (e) {}
+    }
+
+    function showInterstitial() {
+        var el = document.getElementById('adInterstitial');
+        if (!el) return;
+
+        /* Inicializa o AdSense apenas na primeira vez que abre */
+        if (!adPushed) {
+            try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
+            adPushed = true;
+        }
+
+        el.hidden = false;
+        markShownToday();
+    }
+
+    function hideInterstitial() {
+        var el = document.getElementById('adInterstitial');
+        if (el) el.hidden = true;
+    }
+
+    /* Botão fechar */
+    var closeBtn = document.getElementById('adInterstitialClose');
+    if (closeBtn) closeBtn.addEventListener('click', hideInterstitial);
+
+    /* Fechar ao clicar fora do card (no backdrop escuro) */
+    var overlay = document.getElementById('adInterstitial');
+    if (overlay) {
+        overlay.addEventListener('click', function (e) {
+            if (e.target === overlay) hideInterstitial();
+        });
+    }
+
+    /* Escuta cliques em qualquer botão de save na página */
+    document.addEventListener('click', function (e) {
+        var id = e.target && e.target.id;
+        if (!id || SAVE_BTNS.indexOf(id) === -1) return;
+        if (wasShownToday()) return;
+        /* Pequeno delay para o modal de entrada fechar primeiro */
+        setTimeout(showInterstitial, 450);
+    });
+})();
