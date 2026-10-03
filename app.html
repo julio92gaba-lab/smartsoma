@@ -51,76 +51,15 @@
         #adInterstitialBody .adsbygoogle{
             display:block;width:100%;min-height:280px;
         }
-    
-/* ================================================================
-   MODO DESKTOP — ecrãs >= 600px de largura
-   App desenhada para ~390px. No desktop confina tudo numa coluna
-   centrada com fundo preto nos lados.
-   Todos os position:fixed filhos do #appRoot passam a absolute
-   para ficarem confinados ao contentor.
-   ================================================================ */
-@media (min-width: 600px) {
 
+/* ── Corrige a coluna fantasma no desktop causada pelos iframes do Google Ads ── */
+@media (min-width: 601px) {
   html, body {
-    background: #0d1117 !important;
-    overflow: hidden !important;
-  }
-
-  /* Coluna central de 390px */
-  #appRoot {
-    position: fixed !important;
-    top: 0 !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
-    width: 390px !important;
-    height: 100vh !important;
-    height: 100dvh !important;
-    overflow: hidden !important;
-    box-shadow:
-      0 0 0 1px rgba(255,255,255,.08),
-      -32px 0 80px rgba(0,0,0,.6),
-      32px 0 80px rgba(0,0,0,.6) !important;
-  }
-
-  /* Todos os elementos fixed da app passam a absolute,
-     confinados ao #appRoot */
-  #appRoot .tut-overlay,
-  #appRoot .app-wallpaper,
-  #appRoot .app-header,
-  #appRoot .mm-backdrop,
-  #appRoot .sub-header,
-  #appRoot .home-list-view,
-  #appRoot .meta-slot-list,
-  #appRoot .screen-overlay,
-  #appRoot .sheet-backdrop,
-  #appRoot .profile-sheet,
-  #appRoot .modal-backdrop,
-  #appRoot .photo-view-backdrop {
-    position: absolute !important;
-  }
-
-  /* Splash: também confinado */
-  #splash {
-    position: fixed !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
-    width: 390px !important;
-    right: auto !important;
-  }
-
-  /* Toast PWA: confinar à coluna */
-  #pwaToast {
-    left: 50% !important;
-    transform: translateX(-50%) translateY(20px) !important;
-    width: min(calc(390px - 32px), 300px) !important;
-  }
-
-  /* Aviso lateral: aparece nos lados, fora da coluna */
-  #desktopNotice {
-    display: flex;
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
   }
 }
-</style>
+    </style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>SmartSoma</title>
@@ -1408,55 +1347,5 @@
             </div>
         </div>
     </div>
-
-<!-- Aviso desktop: aparece nos lados em ecrãs largos -->
-<div id="desktopNotice" style="
-  display:none;
-  position:fixed;inset:0;
-  z-index:99999;
-  pointer-events:none;
-  align-items:center;
-  justify-content:center;
-  flex-direction:column;
-  gap:12px;
-  color:rgba(255,255,255,.35);
-  font-family:'Inter',system-ui,sans-serif;
-  font-size:12px;
-  text-align:center;
-  line-height:1.6;
-" aria-hidden="true">
-  <div style="
-    position:absolute;
-    left:0;right:calc(50% + 195px + 24px);
-    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
-  ">
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:.5">
-      <rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/>
-    </svg>
-    <span>Abre no telemóvel<br>para a melhor<br>experiência.</span>
-  </div>
-  <div style="
-    position:absolute;
-    left:calc(50% + 195px + 24px);right:0;
-    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
-  ">
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:.5">
-      <rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/>
-    </svg>
-    <span>Abre no telemóvel<br>para a melhor<br>experiência.</span>
-  </div>
-</div>
-
-<script>
-(function () {
-  function checkDesktop () {
-    var notice = document.getElementById('desktopNotice');
-    if (!notice) return;
-    notice.style.display = window.innerWidth >= 600 ? 'flex' : 'none';
-  }
-  checkDesktop();
-  window.addEventListener('resize', checkDesktop);
-})();
-</script>
 </body>
 </html>
