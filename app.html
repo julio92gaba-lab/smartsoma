@@ -69,8 +69,11 @@
     overflow:hidden;
 }
 .sheet-pro-banner-inner{
-    display:flex;align-items:center;gap:.75rem;
-    padding:.75rem 1rem;
+    display:flex;flex-direction:column;gap:.6rem;
+    padding:.75rem 1rem 1rem;
+}
+.sheet-pro-banner-top{
+    display:flex;align-items:center;gap:.55rem;
 }
 .sheet-pro-badge{
     flex-shrink:0;
@@ -88,15 +91,15 @@
     color:#fff;line-height:1.2;
 }
 .sheet-pro-text span{
-    font-size:.7rem;color:rgba(255,255,255,.55);line-height:1.3;
+    font-size:.7rem;color:rgba(255,255,255,.6);line-height:1.4;
 }
 .sheet-pro-btn{
-    flex-shrink:0;
+    display:block;width:100%;
     background:#2ECC71;color:#0d1117;
-    border:none;border-radius:999px;
-    padding:.4rem .9rem;
-    font-size:.75rem;font-weight:700;
-    cursor:pointer;white-space:nowrap;
+    border:none;border-radius:.625rem;
+    padding:.55rem 0;
+    font-size:.8rem;font-weight:700;
+    cursor:pointer;text-align:center;
     transition:opacity .15s;
 }
 .sheet-pro-btn:active{opacity:.8}
@@ -696,10 +699,12 @@
                     <!-- Banner Pro -->
                     <div class="sheet-pro-banner" id="sheetProBanner">
                         <div class="sheet-pro-banner-inner">
-                            <span class="sheet-pro-badge">PRO</span>
-                            <div class="sheet-pro-text">
-                                <strong id="sheetProBannerTitle">Upgrade para Pro</strong>
-                                <span id="sheetProBannerSub">Sem anúncios e funcionalidades extra.</span>
+                            <div class="sheet-pro-banner-top">
+                                <span class="sheet-pro-badge">PRO</span>
+                                <div class="sheet-pro-text">
+                                    <strong id="sheetProBannerTitle">Upgrade para Pro</strong>
+                                    <span id="sheetProBannerSub">Sem anúncios e funcionalidades extra.</span>
+                                </div>
                             </div>
                             <button type="button" class="sheet-pro-btn" id="btnUpgradePro">Ativar</button>
                         </div>
@@ -1395,6 +1400,44 @@
 
 
     <!-- ── SmartSoma Pro: checkout + modal + verificação de plano ── -->
+    <style>
+        /* ── Overlay de loading do checkout ── */
+        #checkoutLoadingOverlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 20000;
+            background: rgba(0,0,0,.72);
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+        #checkoutLoadingOverlay.is-visible {
+            display: flex;
+        }
+        #checkoutLoadingOverlay .clo-spinner {
+            width: 44px; height: 44px;
+            border: 3.5px solid rgba(46,204,113,.25);
+            border-top-color: #2ECC71;
+            border-radius: 50%;
+            animation: clo-spin .75s linear infinite;
+        }
+        #checkoutLoadingOverlay .clo-text {
+            font-size: .875rem;
+            font-weight: 600;
+            color: #fff;
+            letter-spacing: .01em;
+        }
+        @keyframes clo-spin { to { transform: rotate(360deg); } }
+    </style>
+
+    <!-- Overlay de loading (inserido no body, fora de qualquer card) -->
+    <div id="checkoutLoadingOverlay" role="status" aria-live="polite" aria-label="A preparar o pagamento">
+        <div class="clo-spinner"></div>
+        <span class="clo-text">A preparar o pagamento…</span>
+    </div>
+
     <script>
     (function(){
 
@@ -1410,13 +1453,22 @@
         /* ── Alias: o cloud-init.js expõe window.supabaseClient ── */
         function getSB() { return window.supabaseClient || null; }
 
+        /* ── Loading overlay ── */
+        function mostrarLoading() {
+            const el = document.getElementById('checkoutLoadingOverlay');
+            if (el) el.classList.add('is-visible');
+        }
+        function esconderLoading() {
+            const el = document.getElementById('checkoutLoadingOverlay');
+            if (el) el.classList.remove('is-visible');
+        }
+
         /* ── Verifica plano do utilizador autenticado ── */
         async function verificarPlano() {
             try {
                 const sb = getSB();
                 if (!sb) return;
 
-                /* Usa o utilizador já resolvido pelo cloud-init quando possível */
                 const user = window.currentUser || (await sb.auth.getUser()).data.user;
                 if (!user) return;
 
@@ -1447,16 +1499,25 @@
 
         /* ── Inicia checkout no Creem ── */
         async function iniciarCheckout() {
+            mostrarLoading();
             try {
                 const sb = getSB();
-                if (!sb) { alert('A app ainda está a carregar. Tenta novamente.'); return; }
+                if (!sb) { esconderLoading(); alert('A app ainda está a carregar. Tenta novamente.'); return; }
 
                 const user = window.currentUser || (await sb.auth.getUser()).data.user;
-                if (!user) { alert('Precisas de estar com sessão iniciada.'); return; }
+                if (!user) { esconderLoading(); alert('Precisas de estar com sessão iniciada.'); return; }
 
                 const { data: sessionData } = await sb.auth.getSession();
                 const accessToken = sessionData?.session?.access_token;
-                if (!accessToken) { alert('Sessão inválida. Faz logout e entra novamente.'); return; }
+                if (!accessToken) { esconderLoading(); alert('Sessão inválida. Faz logout e entra novamente.'); return; }
+
+                /* Nome e email para pré-preencher o formulário do Creem */
+                const userMeta  = user.user_metadata || {};
+                const userName  = window.currentUserGoogleName
+                                  || userMeta.full_name || userMeta.name
+                                  || document.getElementById('sheetUsername')?.textContent?.trim()
+                                  || '';
+                const userEmail = user.email || window.currentUserEmail || '';
 
                 const res = await fetch(SUPABASE_URL + '/functions/v1/creem-checkout', {
                     method : 'POST',
@@ -1464,16 +1525,25 @@
                         'Content-Type' : 'application/json',
                         'Authorization': 'Bearer ' + accessToken
                     },
-                    body: JSON.stringify({ productId: CREEM_PRODUCT_ID, userId: user.id })
+                    body: JSON.stringify({
+                        productId : CREEM_PRODUCT_ID,
+                        userId    : user.id,
+                        userName  : userName,
+                        userEmail : userEmail
+                    })
                 });
+
                 const json = await res.json();
                 if (json.url) {
+                    /* Mantém o overlay activo — a página está a redirecionar */
                     window.location.href = json.url;
                 } else {
+                    esconderLoading();
                     alert('Não foi possível abrir o checkout. Tenta novamente.');
                     console.error('Creem checkout error:', json);
                 }
             } catch(e) {
+                esconderLoading();
                 alert('Erro de ligação. Tenta novamente.');
                 console.error(e);
             }
@@ -1497,7 +1567,7 @@
             return false;
         };
 
-        /* ── Registar botões (DOM pode já estar pronto ou não) ── */
+        /* ── Registar botões ── */
         function registarBotoes() {
             const btnUpgrade = document.getElementById('btnUpgradePro');
             if (btnUpgrade) btnUpgrade.addEventListener('click', iniciarCheckout);
@@ -1520,10 +1590,7 @@
         /* ── Inicialização: aguarda o cloud-init terminar o boot ── */
         function init() {
             registarBotoes();
-
-            /* cloudCacheReady é disparado pelo cloud-init.js após login+hydrate */
             if (window._cacheReady) {
-                /* cloud-init já terminou antes deste script correr */
                 verificarPlano();
             } else {
                 document.addEventListener('cloudCacheReady', function onReady() {

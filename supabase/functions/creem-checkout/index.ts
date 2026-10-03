@@ -1,6 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 
-/* ── Headers CORS — enviados em TODAS as respostas ── */
 const corsHeaders = {
   "Access-Control-Allow-Origin": "https://www.smartsoma.pt",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
@@ -9,13 +8,12 @@ const corsHeaders = {
 
 serve(async (req) => {
 
-  /* ── Preflight OPTIONS — o browser envia isto antes do POST ── */
   if (req.method === "OPTIONS") {
     return new Response(null, { status: 204, headers: corsHeaders })
   }
 
   try {
-    const { productId, userId } = await req.json()
+    const { productId, userId, userName, userEmail } = await req.json()
 
     if (!productId || !userId) {
       return new Response(
@@ -34,17 +32,27 @@ serve(async (req) => {
       )
     }
 
+    /* Corpo do pedido ao Creem — adiciona customer se tivermos email */
+    const checkoutBody: Record<string, unknown> = {
+      product_id  : productId,
+      success_url : `${siteUrl}/obrigado.html`,
+      metadata    : { user_id: userId }
+    }
+
+    if (userEmail) {
+      checkoutBody.customer = {
+        email: userEmail,
+        ...(userName ? { name: userName } : {})
+      }
+    }
+
     const response = await fetch("https://api.creem.io/v1/checkouts", {
-      method: "POST",
+      method : "POST",
       headers: {
-        "x-api-key": apiKey,
-        "Content-Type": "application/json"
+        "x-api-key"    : apiKey,
+        "Content-Type" : "application/json"
       },
-      body: JSON.stringify({
-        product_id: productId,
-        success_url: `${siteUrl}/obrigado.html`,
-        metadata: { user_id: userId }
-      })
+      body: JSON.stringify(checkoutBody)
     })
 
     const data = await response.json()
