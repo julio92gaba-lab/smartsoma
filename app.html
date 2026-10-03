@@ -316,12 +316,11 @@
                                 </div>
                                 <div class="ganhos-tile-scroll-wrap" id="ganhosIncomeScrollWrap">
                                     <div class="ganhos-tile-scroll" id="ganhosIncomeScroll">
-                                        <button type="button" class="ganhos-tile-add ganhos-tile-add-pro-locked" id="btnAddPlatform" data-i18n-aria="ganhos.addPlataforma" aria-label="Adicionar plataforma">
+                                        <button type="button" class="ganhos-tile-add" id="btnAddPlatform" data-i18n-aria="ganhos.addPlataforma" aria-label="Adicionar plataforma">
                                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                                                 <line x1="12" y1="5" x2="12" y2="19"/>
                                                 <line x1="5" y1="12" x2="19" y2="12"/>
                                             </svg>
-                                            <span class="ganhos-tile-add-pro-tag" id="addPlatformProTag" aria-hidden="true">PRO</span>
                                         </button>
                                         <button type="button" class="list-row ganhos-tile ganhos-tile-income ganhos-tile-scroll-item" id="listRowUber" data-i18n-aria="ganhos.uber" aria-label="Ganhos Uber" aria-haspopup="true" aria-expanded="false">
                                             <span class="ganhos-tile-icon-row">
@@ -1593,14 +1592,6 @@
             /* Despesas Fixas — aviso plano gratuito */
             const fixasNotice = document.getElementById('fixasFreePlanNotice');
             if (fixasNotice) fixasNotice.style.display = isPro ? 'none' : '';
-
-            /* Botão "+" de ganhos — tag PRO e estado bloqueado */
-            const addPlatformBtn = document.getElementById('btnAddPlatform');
-            const addPlatformTag = document.getElementById('addPlatformProTag');
-            if (addPlatformBtn) {
-                addPlatformBtn.classList.toggle('ganhos-tile-add-pro-locked', !isPro);
-            }
-            if (addPlatformTag) addPlatformTag.style.display = isPro ? 'none' : '';
         }
 
         /* ── Inicia checkout no Creem ── */
@@ -1688,6 +1679,11 @@
             }
         }
         window.atualizarBotaoIdiomaHeader = atualizarBotaoIdiomaHeader;
+        document.addEventListener('languageChanged', function() {
+            if (!window.SmartSomaPro || !window.SmartSomaPro.isPro) {
+                atualizarBotaoIdiomaHeader();
+            }
+        });
 
         /* ── Registar botões ── */
         function registarBotoes() {
@@ -1711,25 +1707,18 @@
                 if (e.target === backdrop) fecharModalUpgrade();
             });
 
-            /* ── Botão idioma no cabeçalho ── */
+            /* ── Botão idioma no cabeçalho (versão gratuita) ── */
             const btnHeaderLang = document.getElementById('btnHeaderLang');
             if (btnHeaderLang) {
                 btnHeaderLang.addEventListener('click', function() {
-                    if (window.SmartSomaPro && window.SmartSomaPro.isPro) {
-                        /* Versão Pro → abre sheet de Ajustes no ecrã de idioma */
-                        if (typeof window.openProfileSheetPublic === 'function') {
-                            window.openProfileSheetPublic();
-                        }
-                        setTimeout(function() {
-                            const btnIdioma = document.getElementById('openIdiomaBtn');
-                            if (btnIdioma) btnIdioma.click();
-                        }, 320);
-                    } else {
-                        /* Versão Gratuita → abre popup modal de idioma */
-                        if (typeof window.LangPopupModal !== 'undefined' && window.LangPopupModal.open) {
-                            window.LangPopupModal.open();
-                        }
+                    /* Abre o sheet de Ajustes e navega para o ecrã de idioma */
+                    if (typeof window.openProfileSheetPublic === 'function') {
+                        window.openProfileSheetPublic();
                     }
+                    setTimeout(function() {
+                        const btnIdioma = document.getElementById('openIdiomaBtn');
+                        if (btnIdioma) btnIdioma.click();
+                    }, 320);
                 });
             }
 
@@ -1899,16 +1888,6 @@
         }
     })();
     </script>
-
-    <!-- Modal popup de idioma (versão gratuita — abre via botão PT no cabeçalho) -->
-    <div id="langPopupModal" role="dialog" aria-modal="true" aria-label="Idioma">
-        <div class="lpm-sheet">
-            <div class="lpm-handle" aria-hidden="true"></div>
-            <p class="lpm-title" data-i18n="sheet.idioma">Idioma</p>
-            <div class="lang-options" id="langPopupOptionsList" role="radiogroup" aria-label="Idioma"></div>
-            <button type="button" class="lpm-save-btn" id="langPopupSaveBtn" data-i18n="idioma.save">Salvar</button>
-        </div>
-    </div>
 
     <!-- Toast Pro Feature (reutilizável para bloqueios) -->
     <div id="proFeatureToast" role="status" aria-live="polite">
