@@ -59,6 +59,55 @@
     max-width: 100vw !important;
   }
 }
+
+/* ── Banner Pro no menu Ajustes ── */
+.sheet-pro-banner{
+    margin:.75rem 1rem .25rem;
+    border-radius:.875rem;
+    background:linear-gradient(135deg,#1a3a2a 0%,#0d2218 100%);
+    border:1px solid rgba(46,204,113,.25);
+    overflow:hidden;
+}
+.sheet-pro-banner-inner{
+    display:flex;align-items:center;gap:.75rem;
+    padding:.75rem 1rem;
+}
+.sheet-pro-badge{
+    flex-shrink:0;
+    background:#2ECC71;color:#0d1117;
+    font-size:.6rem;font-weight:800;letter-spacing:1.2px;
+    padding:.25rem .45rem;border-radius:.375rem;
+    line-height:1;
+}
+.sheet-pro-text{
+    flex:1;min-width:0;
+    display:flex;flex-direction:column;gap:.15rem;
+}
+.sheet-pro-text strong{
+    font-size:.8125rem;font-weight:700;
+    color:#fff;line-height:1.2;
+}
+.sheet-pro-text span{
+    font-size:.7rem;color:rgba(255,255,255,.55);line-height:1.3;
+}
+.sheet-pro-btn{
+    flex-shrink:0;
+    background:#2ECC71;color:#0d1117;
+    border:none;border-radius:999px;
+    padding:.4rem .9rem;
+    font-size:.75rem;font-weight:700;
+    cursor:pointer;white-space:nowrap;
+    transition:opacity .15s;
+}
+.sheet-pro-btn:active{opacity:.8}
+/* Quando já é Pro: esconde o banner */
+.sheet-pro-banner.is-pro{ display:none; }
+
+/* ── Modal Upgrade Pro ── */
+.upgrade-pro-icon{
+    font-size:2.5rem;text-align:center;
+    margin-bottom:.5rem;line-height:1;
+}
     </style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -642,6 +691,17 @@
                             <p class="sheet-username" id="sheetUsername">Utilizador</p>
                             <p class="sheet-email" id="sheetVehicleInfo"></p>
                             <p class="sheet-subinfo" id="sheetDriverSince">0 dias nos Apps.</p>
+                        </div>
+                    </div>
+                    <!-- Banner Pro -->
+                    <div class="sheet-pro-banner" id="sheetProBanner">
+                        <div class="sheet-pro-banner-inner">
+                            <span class="sheet-pro-badge">PRO</span>
+                            <div class="sheet-pro-text">
+                                <strong id="sheetProBannerTitle">Upgrade para Pro</strong>
+                                <span id="sheetProBannerSub">Sem anúncios e funcionalidades extra.</span>
+                            </div>
+                            <button type="button" class="sheet-pro-btn" id="btnUpgradePro">Ativar</button>
                         </div>
                     </div>
                     <div class="sheet-divider"></div>
@@ -1242,6 +1302,19 @@
 </div>
 
 
+<!-- ── Modal Upgrade Pro ── -->
+<div class="mm-backdrop" id="upgradeProBackdrop">
+    <div class="mm-card" role="dialog" aria-modal="true" aria-labelledby="upgradeProTitle" id="upgradeProCard">
+        <div class="upgrade-pro-icon" aria-hidden="true">⚡</div>
+        <h3 class="mm-title" id="upgradeProTitle">Funcionalidade Pro</h3>
+        <p class="mm-helper-text" id="upgradeProText">Esta funcionalidade está disponível apenas no plano Pro. Sem anúncios, com acesso completo.</p>
+        <button type="button" class="mm-save-btn" id="upgradeProConfirmBtn">Ver plano Pro</button>
+        <div class="mm-secondary-action">
+            <button type="button" class="mm-text-link" id="upgradeProCancelBtn">Agora não</button>
+        </div>
+    </div>
+</div>
+
 <div class="mm-backdrop" id="tutorialStartBackdrop">
     <div class="mm-card" role="dialog" aria-modal="true" aria-labelledby="tutorialStartTitle" id="tutorialStartCard">
         <h3 class="mm-title" id="tutorialStartTitle" data-i18n="tut.popup.title">Tutorial</h3>
@@ -1320,6 +1393,128 @@
 
 
 
+
+    <!-- ── SmartSoma Pro: checkout + modal + verificação de plano ── -->
+    <script>
+    (function(){
+
+        /* ─────────────────────────────────────────
+           CONFIGURA AQUI OS DOIS VALORES DO CREEM
+           ───────────────────────────────────────── */
+        const SUPABASE_URL     = 'https://ojhnierbhqrwxvabrzkt.supabase.co';   // ex: https://ojhn****.supabase.co
+        const CREEM_PRODUCT_ID = 'prod_6ybt2q5Rwe76WBL7GqpAEC';
+
+        /* ── Estado global do plano ── */
+        window.SmartSomaPro = { isPro: false };
+
+        /* ── Verifica plano do utilizador autenticado ── */
+        async function verificarPlano() {
+            try {
+                const { data: { user } } = await window._supabase.auth.getUser();
+                if (!user) return;
+
+                const { data } = await window._supabase
+                    .from('subscriptions')
+                    .select('plan, status')
+                    .eq('user_id', user.id)
+                    .single();
+
+                const isPro = data?.plan === 'pro' && data?.status === 'active';
+                window.SmartSomaPro.isPro = isPro;
+
+                /* Actualiza banner no menu Ajustes */
+                const banner = document.getElementById('sheetProBanner');
+                if (banner) {
+                    if (isPro) {
+                        banner.classList.add('is-pro');
+                    } else {
+                        banner.classList.remove('is-pro');
+                        document.getElementById('sheetProBannerTitle').textContent = 'Upgrade para Pro';
+                        document.getElementById('sheetProBannerSub').textContent   = 'Sem anúncios e funcionalidades extra.';
+                    }
+                }
+            } catch(e) {
+                console.warn('SmartSomaPro: erro ao verificar plano', e);
+            }
+        }
+
+        /* ── Inicia checkout no Creem ── */
+        async function iniciarCheckout() {
+            try {
+                const { data: { user } } = await window._supabase.auth.getUser();
+                if (!user) { alert('Precisas de estar com sessão iniciada.'); return; }
+
+                const res = await fetch(SUPABASE_URL + '/functions/v1/creem-checkout', {
+                    method : 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body   : JSON.stringify({ productId: CREEM_PRODUCT_ID, userId: user.id })
+                });
+                const json = await res.json();
+                if (json.url) {
+                    window.location.href = json.url;
+                } else {
+                    alert('Não foi possível abrir o checkout. Tenta novamente.');
+                    console.error('Creem checkout error:', json);
+                }
+            } catch(e) {
+                alert('Erro de ligação. Tenta novamente.');
+                console.error(e);
+            }
+        }
+
+        /* ── Abre o modal de upgrade (chamado pelas funções pagas) ── */
+        window.abrirModalUpgrade = function(texto) {
+            if (texto) document.getElementById('upgradeProText').textContent = texto;
+            document.getElementById('upgradeProBackdrop').classList.add('is-visible');
+        };
+
+        /* ── Fecha modal ── */
+        function fecharModalUpgrade() {
+            document.getElementById('upgradeProBackdrop').classList.remove('is-visible');
+        }
+
+        /* ── Verifica se pode usar função paga; se não, abre modal ── */
+        window.exigirPro = function(textoOpcional) {
+            if (window.SmartSomaPro.isPro) return true;
+            window.abrirModalUpgrade(textoOpcional || 'Esta funcionalidade está disponível apenas no plano Pro.');
+            return false;
+        };
+
+        /* ── Listeners ── */
+        document.addEventListener('DOMContentLoaded', function() {
+
+            /* Botão Ativar no banner do menu Ajustes */
+            const btnUpgrade = document.getElementById('btnUpgradePro');
+            if (btnUpgrade) btnUpgrade.addEventListener('click', iniciarCheckout);
+
+            /* Botão "Ver plano Pro" no modal */
+            const btnConfirm = document.getElementById('upgradeProConfirmBtn');
+            if (btnConfirm) btnConfirm.addEventListener('click', function(){
+                fecharModalUpgrade();
+                iniciarCheckout();
+            });
+
+            /* Botão "Agora não" no modal */
+            const btnCancel = document.getElementById('upgradeProCancelBtn');
+            if (btnCancel) btnCancel.addEventListener('click', fecharModalUpgrade);
+
+            /* Fechar modal ao clicar no backdrop */
+            const backdrop = document.getElementById('upgradeProBackdrop');
+            if (backdrop) backdrop.addEventListener('click', function(e){
+                if (e.target === backdrop) fecharModalUpgrade();
+            });
+
+            /* Verificar plano assim que o utilizador estiver autenticado */
+            if (window._supabase) {
+                verificarPlano();
+                window._supabase.auth.onAuthStateChange(function(event, session){
+                    if (session) verificarPlano();
+                });
+            }
+        });
+
+    })();
+    </script>
 
     <script src="cloud-init.js"></script>
 
