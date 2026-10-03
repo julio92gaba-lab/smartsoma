@@ -865,6 +865,15 @@ html, body {
                             </svg>
                             <span data-i18n="sheet.sair">Sair</span>
                         </button>
+                        <button type="button" class="sheet-action-btn sheet-action-btn-danger" id="btnEliminarConta" style="opacity:0.7;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <polyline points="3 6 5 6 21 6"/>
+                                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                                <path d="M10 11v6M14 11v6"/>
+                                <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                            </svg>
+                            <span>Eliminar conta</span>
+                        </button>
                     </div>
                     <div class="sheet-divider"></div>
                     <p class="sheet-credit-text">By <strong>JC</strong></p>
@@ -1650,6 +1659,10 @@ html, body {
             const relatorioTag = navRelatorio ? navRelatorio.querySelector('.menu-item-pro-tag') : null;
             if (semanaTag)    semanaTag.style.display    = isPro ? 'none' : '';
             if (relatorioTag) relatorioTag.style.display = isPro ? 'none' : '';
+            const semanaTag    = navSemana    ? navSemana.querySelector('.menu-item-pro-tag')    : null;
+            const relatorioTag = navRelatorio ? navRelatorio.querySelector('.menu-item-pro-tag') : null;
+            if (semanaTag)    semanaTag.style.display    = isPro ? 'none' : '';
+            if (relatorioTag) relatorioTag.style.display = isPro ? 'none' : '';
 
             /* Distância — botão Início e Fim */
             const btnInicioFim = document.getElementById('distanciaModoInicioFimBtn');
@@ -2077,6 +2090,21 @@ html, body {
         </div>
     </div>
 
+    <!-- Modal de confirmação de eliminação de conta -->
+    <div class="mm-backdrop" id="eliminarContaBackdrop">
+        <div class="mm-card" role="dialog" aria-modal="true" aria-labelledby="eliminarContaTitle" id="eliminarContaCard">
+            <div class="cancelar-sub-modal-icon" aria-hidden="true">⚠️</div>
+            <h3 class="mm-title" id="eliminarContaTitle">Eliminar conta?</h3>
+            <p class="despesa-confirm-text">Tens a certeza? Esta ação é <strong>irreversível</strong>. Todos os teus dados serão apagados permanentemente.</p>
+            <button type="button" class="dp-save-btn dp-save-btn-danger" id="eliminarContaConfirmBtn">
+                Sim, eliminar a minha conta
+            </button>
+            <div class="mm-secondary-action">
+                <button type="button" class="mm-text-link" id="eliminarContaCancelarBtn">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Pro Feature (reutilizável para bloqueios) -->
     <div id="proFeatureToast" role="status" aria-live="polite">
         <div class="pft-inner">
@@ -2084,6 +2112,64 @@ html, body {
             <span class="pft-text" id="proFeatureToastText">Somente na versão Pro.</span>
         </div>
     </div>
+
+    <!-- ── Eliminar Conta ─────────────────────────────────────────── -->
+    <script>
+    (function () {
+        const btnEliminar  = document.getElementById('btnEliminarConta');
+        const backdrop     = document.getElementById('eliminarContaBackdrop');
+        const btnConfirmar = document.getElementById('eliminarContaConfirmBtn');
+        const btnCancelar  = document.getElementById('eliminarContaCancelarBtn');
+
+        if (btnEliminar) {
+            btnEliminar.addEventListener('click', function () {
+                backdrop.classList.add('is-visible');
+            });
+        }
+
+        if (btnCancelar) {
+            btnCancelar.addEventListener('click', function () {
+                backdrop.classList.remove('is-visible');
+            });
+        }
+
+        if (btnConfirmar) {
+            btnConfirmar.addEventListener('click', async function () {
+                btnConfirmar.disabled = true;
+                btnConfirmar.textContent = 'A eliminar...';
+
+                try {
+                    const sb = window.supabaseClient;
+                    if (!sb) throw new Error('Supabase não disponível');
+
+                    const { data: sessionData } = await sb.auth.getSession();
+                    const token = sessionData?.session?.access_token;
+                    if (!token) throw new Error('Sessão inválida');
+
+                    const res = await fetch('/api/delete-account', {
+                        method : 'POST',
+                        headers: {
+                            'Content-Type' : 'application/json',
+                            'Authorization': 'Bearer ' + token
+                        }
+                    });
+
+                    const json = await res.json();
+                    if (!res.ok) throw new Error(json.error || 'Erro ao eliminar conta');
+
+                    await sb.auth.signOut();
+                    window.location.href = '/';
+
+                } catch (err) {
+                    console.error('Erro ao eliminar conta:', err);
+                    alert('Não foi possível eliminar a conta. Tenta novamente.');
+                    btnConfirmar.disabled = false;
+                    btnConfirmar.textContent = 'Sim, eliminar a minha conta';
+                }
+            });
+        }
+    })();
+    </script>
 
     <!-- ── Interstitial diário ─────────────────────────────────────
          Aparece na primeira ação de save do dia (Uber, Bolt,
