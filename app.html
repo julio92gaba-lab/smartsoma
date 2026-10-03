@@ -1583,6 +1583,10 @@
             const navRelatorio = document.getElementById('navItemRelatorio');
             if (navSemana)    navSemana.classList.toggle('menu-item-pro-locked', !isPro);
             if (navRelatorio) navRelatorio.classList.toggle('menu-item-pro-locked', !isPro);
+            const semanaTag    = navSemana    ? navSemana.querySelector('.menu-item-pro-tag')    : null;
+            const relatorioTag = navRelatorio ? navRelatorio.querySelector('.menu-item-pro-tag') : null;
+            if (semanaTag)    semanaTag.style.display    = isPro ? 'none' : '';
+            if (relatorioTag) relatorioTag.style.display = isPro ? 'none' : '';
 
             /* Distância — botão Início e Fim */
             const btnInicioFim = document.getElementById('distanciaModoInicioFimBtn');
