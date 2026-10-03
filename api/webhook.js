@@ -11,30 +11,25 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const event = req.body;
+    const event     = req.body;
+    const eventType = event.eventType;   // ← camelCase, não event_type
+    const obj       = event.object;      // ← event.object, não event.data
 
-    console.log('Webhook recebido:', event.event_type);
-    console.log('Payload completo:', JSON.stringify(event, null, 2));
+    console.log('Webhook recebido:', eventType);
 
-    /* ── Pagamento/checkout concluído ── */
-    if (event.event_type === 'checkout.completed') {
-      /* O Creem envia o userId que passámos no checkout (campo metadata) */
-      const userId         = event.data?.metadata?.userId
-                          || event.data?.metadata?.user_id
-                          || event.data?.customer?.metadata?.userId
-                          || event.data?.customer?.metadata?.user_id;
+    /* ── Checkout concluído ── */
+    if (eventType === 'checkout.completed') {
+      const userId         = obj?.metadata?.user_id
+                          || obj?.customer?.metadata?.user_id
+                          || obj?.subscription?.metadata?.user_id;
 
-      const customerId     = event.data?.customer_id
-                          || event.data?.customer?.id;
+      const customerId     = obj?.customer?.id;
+      const subscriptionId = obj?.subscription?.id;
 
-      const subscriptionId = event.data?.subscription_id
-                          || event.data?.subscription?.id
-                          || event.data?.id;
-
-      console.log('userId extraído:', userId);
+      console.log('userId:', userId);
 
       if (!userId) {
-        console.error('user_id em falta no payload:', JSON.stringify(event.data));
+        console.error('user_id em falta:', JSON.stringify(obj));
         return res.status(400).json({ error: 'user_id em falta' });
       }
 
@@ -50,51 +45,28 @@ module.exports = async function handler(req, res) {
         }, { onConflict: 'user_id' });
 
       if (error) {
-        console.error('Supabase upsert erro:', error);
-        return res.status(500).json({ error: 'Erro ao actualizar Supabase' });
+        console.error('Supabase erro:', error);
+        return res.status(500).json({ error: 'Erro Supabase' });
       }
 
-      console.log('Utilizador actualizado para Pro:', userId);
-    }
-
-    /* ── Subscrição activa (confirmação posterior do Creem) ── */
-    if (event.event_type === 'subscription.active') {
-      const userId         = event.data?.metadata?.userId
-                          || event.data?.metadata?.user_id;
-      const customerId     = event.data?.customer_id;
-      const subscriptionId = event.data?.id;
-
-      if (userId) {
-        const { error } = await supabase
-          .from('subscriptions')
-          .upsert({
-            user_id:               userId,
-            plan:                  'pro',
-            status:                'active',
-            creem_customer_id:     customerId     || null,
-            creem_subscription_id: subscriptionId || null,
-            updated_at:            new Date().toISOString()
-          }, { onConflict: 'user_id' });
-
-        if (error) console.error('Supabase upsert erro (subscription.active):', error);
-        else console.log('Subscrição activa confirmada para:', userId);
-      }
+      console.log('Utilizador activado Pro:', userId);
     }
 
     /* ── Subscrição cancelada ou expirada ── */
     if (
-      event.event_type === 'subscription.cancelled' ||
-      event.event_type === 'subscription.canceled'  ||
-      event.event_type === 'subscription.expired'
+      eventType === 'subscription.cancelled' ||
+      eventType === 'subscription.canceled'  ||
+      eventType === 'subscription.expired'
     ) {
-      const userId = event.data?.metadata?.userId
-                  || event.data?.metadata?.user_id;
+      const userId = obj?.metadata?.user_id
+                  || obj?.customer?.metadata?.user_id;
+
       if (userId) {
         await supabase
           .from('subscriptions')
           .update({ status: 'inactive', updated_at: new Date().toISOString() })
           .eq('user_id', userId);
-        console.log('Subscrição desactivada para:', userId);
+        console.log('Subscrição desactivada:', userId);
       }
     }
 
