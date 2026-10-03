@@ -1401,19 +1401,26 @@
         /* ─────────────────────────────────────────
            CONFIGURA AQUI OS DOIS VALORES DO CREEM
            ───────────────────────────────────────── */
-        const SUPABASE_URL     = 'https://ojhnierbhqrwxvabrzkt.supabase.co';   // ex: https://ojhn****.supabase.co
+        const SUPABASE_URL     = 'https://ojhnierbhqrwxvabrzkt.supabase.co';
         const CREEM_PRODUCT_ID = 'prod_6ybt2q5Rwe76WBL7GqpAEC';
 
         /* ── Estado global do plano ── */
         window.SmartSomaPro = { isPro: false };
 
+        /* ── Alias: o cloud-init.js expõe window.supabaseClient ── */
+        function getSB() { return window.supabaseClient || null; }
+
         /* ── Verifica plano do utilizador autenticado ── */
         async function verificarPlano() {
             try {
-                const { data: { user } } = await window._supabase.auth.getUser();
+                const sb = getSB();
+                if (!sb) return;
+
+                /* Usa o utilizador já resolvido pelo cloud-init quando possível */
+                const user = window.currentUser || (await sb.auth.getUser()).data.user;
                 if (!user) return;
 
-                const { data } = await window._supabase
+                const { data } = await sb
                     .from('subscriptions')
                     .select('plan, status')
                     .eq('user_id', user.id)
@@ -1441,17 +1448,23 @@
         /* ── Inicia checkout no Creem ── */
         async function iniciarCheckout() {
             try {
-                const { data: { user } } = await window._supabase.auth.getUser();
+                const sb = getSB();
+                if (!sb) { alert('A app ainda está a carregar. Tenta novamente.'); return; }
+
+                const user = window.currentUser || (await sb.auth.getUser()).data.user;
                 if (!user) { alert('Precisas de estar com sessão iniciada.'); return; }
 
-                const { data: { session } } = await window._supabase.auth.getSession();
-const res = await fetch(SUPABASE_URL + '/functions/v1/creem-checkout', {
-    method : 'POST',
-    headers: {
-        'Content-Type' : 'application/json',
-        'Authorization': 'Bearer ' + session.access_token
-    },
-                    body   : JSON.stringify({ productId: CREEM_PRODUCT_ID, userId: user.id })
+                const { data: sessionData } = await sb.auth.getSession();
+                const accessToken = sessionData?.session?.access_token;
+                if (!accessToken) { alert('Sessão inválida. Faz logout e entra novamente.'); return; }
+
+                const res = await fetch(SUPABASE_URL + '/functions/v1/creem-checkout', {
+                    method : 'POST',
+                    headers: {
+                        'Content-Type' : 'application/json',
+                        'Authorization': 'Bearer ' + accessToken
+                    },
+                    body: JSON.stringify({ productId: CREEM_PRODUCT_ID, userId: user.id })
                 });
                 const json = await res.json();
                 if (json.url) {
@@ -1484,38 +1497,47 @@ const res = await fetch(SUPABASE_URL + '/functions/v1/creem-checkout', {
             return false;
         };
 
-        /* ── Listeners ── */
-        document.addEventListener('DOMContentLoaded', function() {
-
-            /* Botão Ativar no banner do menu Ajustes */
+        /* ── Registar botões (DOM pode já estar pronto ou não) ── */
+        function registarBotoes() {
             const btnUpgrade = document.getElementById('btnUpgradePro');
             if (btnUpgrade) btnUpgrade.addEventListener('click', iniciarCheckout);
 
-            /* Botão "Ver plano Pro" no modal */
             const btnConfirm = document.getElementById('upgradeProConfirmBtn');
             if (btnConfirm) btnConfirm.addEventListener('click', function(){
                 fecharModalUpgrade();
                 iniciarCheckout();
             });
 
-            /* Botão "Agora não" no modal */
             const btnCancel = document.getElementById('upgradeProCancelBtn');
             if (btnCancel) btnCancel.addEventListener('click', fecharModalUpgrade);
 
-            /* Fechar modal ao clicar no backdrop */
             const backdrop = document.getElementById('upgradeProBackdrop');
             if (backdrop) backdrop.addEventListener('click', function(e){
                 if (e.target === backdrop) fecharModalUpgrade();
             });
+        }
 
-            /* Verificar plano assim que o utilizador estiver autenticado */
-            if (window._supabase) {
+        /* ── Inicialização: aguarda o cloud-init terminar o boot ── */
+        function init() {
+            registarBotoes();
+
+            /* cloudCacheReady é disparado pelo cloud-init.js após login+hydrate */
+            if (window._cacheReady) {
+                /* cloud-init já terminou antes deste script correr */
                 verificarPlano();
-                window._supabase.auth.onAuthStateChange(function(event, session){
-                    if (session) verificarPlano();
+            } else {
+                document.addEventListener('cloudCacheReady', function onReady() {
+                    document.removeEventListener('cloudCacheReady', onReady);
+                    verificarPlano();
                 });
             }
-        });
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
 
     })();
     </script>
