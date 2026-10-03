@@ -865,15 +865,6 @@ html, body {
                             </svg>
                             <span data-i18n="sheet.sair">Sair</span>
                         </button>
-                        <button type="button" class="sheet-action-btn sheet-action-btn-danger" id="btnEliminarConta" style="opacity:0.7;">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <polyline points="3 6 5 6 21 6"/>
-                                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-                                <path d="M10 11v6M14 11v6"/>
-                                <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
-                            </svg>
-                            <span>Eliminar conta</span>
-                        </button>
                     </div>
                     <div class="sheet-divider"></div>
                     <p class="sheet-credit-text">By <strong>JC</strong></p>
@@ -930,6 +921,12 @@ html, body {
                         </button>
                         <p class="cancelar-sub-note">O acesso Pro mantém-se até ao fim do período já pago.</p>
                     </div>
+
+                    <div class="sheet-divider" style="margin-top:1.25rem"></div>
+                    <button type="button" class="dp-save-btn dp-save-btn-danger" id="btnEliminarConta">
+                        Eliminar conta
+                    </button>
+                    <p class="cancelar-sub-note">Apaga permanentemente a conta e os dados guardados no SmartSoma.</p>
                 </div>
             </div>
             <div class="sheet-screen" id="sheetScreenIdioma" hidden>
@@ -2091,7 +2088,7 @@ html, body {
         <div class="mm-card" role="dialog" aria-modal="true" aria-labelledby="eliminarContaTitle" id="eliminarContaCard">
             <div class="cancelar-sub-modal-icon" aria-hidden="true">⚠️</div>
             <h3 class="mm-title" id="eliminarContaTitle">Eliminar conta?</h3>
-            <p class="despesa-confirm-text">Tens a certeza? Esta ação é <strong>irreversível</strong>. Todos os teus dados serão apagados permanentemente.</p>
+            <p class="despesa-confirm-text">Tens a certeza? Esta ação é <strong>irreversível</strong>. A tua conta e todos os dados guardados serão apagados permanentemente.</p>
             <button type="button" class="dp-save-btn dp-save-btn-danger" id="eliminarContaConfirmBtn">
                 Sim, eliminar a minha conta
             </button>
@@ -2119,13 +2116,19 @@ html, body {
 
         if (btnEliminar) {
             btnEliminar.addEventListener('click', function () {
-                backdrop.classList.add('is-visible');
+                if (backdrop) backdrop.classList.add('visible');
             });
         }
 
         if (btnCancelar) {
             btnCancelar.addEventListener('click', function () {
-                backdrop.classList.remove('is-visible');
+                if (backdrop) backdrop.classList.remove('visible');
+            });
+        }
+
+        if (backdrop) {
+            backdrop.addEventListener('click', function (e) {
+                if (e.target === backdrop) backdrop.classList.remove('visible');
             });
         }
 
@@ -2152,6 +2155,19 @@ html, body {
 
                     const json = await res.json();
                     if (!res.ok) throw new Error(json.error || 'Erro ao eliminar conta');
+
+                    try {
+                        const uid = window.currentUser && window.currentUser.id;
+                        if (uid) {
+                            const prefixes = ['ss_kv:' + uid + ':', 'ss_q:' + uid, 'ss_snap:' + uid];
+                            for (let i = localStorage.length - 1; i >= 0; i--) {
+                                const k = localStorage.key(i);
+                                if (k && prefixes.some(prefix => k.indexOf(prefix) === 0)) {
+                                    localStorage.removeItem(k);
+                                }
+                            }
+                        }
+                    } catch (_) {}
 
                     await sb.auth.signOut();
                     window.location.href = '/';
