@@ -111,6 +111,57 @@
     font-size:2.5rem;text-align:center;
     margin-bottom:.5rem;line-height:1;
 }
+
+/* ── Botão perigo nos dados pessoais ── */
+.dp-save-btn-danger{
+    background:transparent !important;
+    color:#e74c3c !important;
+    border:1.5px solid rgba(231,76,60,.35) !important;
+    margin-top:.5rem;
+    transition:background .15s,border-color .15s;
+}
+.dp-save-btn-danger:active{
+    background:rgba(231,76,60,.08) !important;
+    border-color:rgba(231,76,60,.6) !important;
+}
+
+/* ── Info de subscrição activa ── */
+.cancelar-sub-info{
+    display:flex;align-items:center;gap:.5rem;
+    margin-bottom:.75rem;
+}
+.cancelar-sub-badge{
+    background:#2ECC71;color:#0d1117;
+    font-size:.6rem;font-weight:800;letter-spacing:1.2px;
+    padding:.25rem .45rem;border-radius:.375rem;line-height:1;
+}
+.cancelar-sub-label{
+    font-size:.8125rem;font-weight:600;
+    color:var(--ink);opacity:.7;
+}
+.cancelar-sub-note{
+    font-size:.7rem;color:var(--ink);
+    opacity:.45;text-align:center;
+    margin-top:.5rem;line-height:1.5;
+}
+
+/* ── Modal de cancelamento ── */
+.cancelar-sub-modal-icon{
+    font-size:2.2rem;text-align:center;
+    margin-bottom:.5rem;
+}
+.cancelar-sub-perks-lost{
+    display:flex;flex-wrap:wrap;gap:.4rem;
+    justify-content:center;
+    margin:.75rem 0 .25rem;
+}
+.cancelar-sub-perks-lost span{
+    font-size:.7rem;font-weight:600;
+    padding:.3rem .6rem;border-radius:.5rem;
+    background:rgba(231,76,60,.08);
+    border:1px solid rgba(231,76,60,.2);
+    color:#e74c3c;
+}
     </style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -858,6 +909,19 @@
 
                     <button type="button" class="dp-save-btn" id="dpSaveBtn" data-i18n="dp.atualizarDados">Atualizar Dados Pessoais</button>
                     <button type="button" class="dp-save-btn dp-save-btn-secondary" id="dpChangePasswordBtn" data-i18n="dp.atualizarPassword" hidden>Atualizar Password</button>
+
+                    <!-- Cancelar subscrição Pro (só visível se for Pro) -->
+                    <div id="cancelarSubscricaoSection" style="display:none">
+                        <div class="sheet-divider" style="margin-top:1.25rem"></div>
+                        <div class="cancelar-sub-info">
+                            <span class="cancelar-sub-badge">PRO</span>
+                            <span class="cancelar-sub-label">Subscrição activa</span>
+                        </div>
+                        <button type="button" class="dp-save-btn dp-save-btn-danger" id="btnCancelarSubscricao">
+                            Cancelar Subscrição Pro
+                        </button>
+                        <p class="cancelar-sub-note">O acesso Pro mantém-se até ao fim do período já pago.</p>
+                    </div>
                 </div>
             </div>
             <div class="sheet-screen" id="sheetScreenIdioma" hidden>
@@ -1603,6 +1667,10 @@
             const addPlatformTag = document.getElementById('addPlatformProTag');
             if (addPlatformBtn) addPlatformBtn.classList.toggle('ganhos-tile-add-pro-locked', !isPro);
             if (addPlatformTag) addPlatformTag.style.display = isPro ? 'none' : '';
+
+            /* Secção de cancelamento nos Dados Pessoais — só visível se Pro */
+            const cancelarSection = document.getElementById('cancelarSubscricaoSection');
+            if (cancelarSection) cancelarSection.style.display = isPro ? '' : 'none';
         }
 
         /* ── Inicia checkout no Creem ── */
@@ -1675,6 +1743,65 @@
             return false;
         };
 
+        /* ── Cancelamento de subscrição ── */
+        async function cancelarSubscricao() {
+            const btnConfirm = document.getElementById('cancelarSubConfirmBtn');
+            if (btnConfirm) {
+                btnConfirm.disabled = true;
+                btnConfirm.textContent = 'A cancelar…';
+            }
+
+            try {
+                const sb   = getSB();
+                const user = window.currentUser || (await sb.auth.getUser()).data.user;
+                if (!user) throw new Error('Sem sessão');
+
+                /* Chama a Edge Function de cancelamento no Supabase */
+                const { data: sessionData } = await sb.auth.getSession();
+                const accessToken = sessionData?.session?.access_token;
+
+                const res = await fetch(
+                    'https://ojhnierbhqrwxvabrzkt.supabase.co/functions/v1/creem-cancel',
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + accessToken
+                        },
+                        body: JSON.stringify({ userId: user.id })
+                    }
+                );
+
+                const json = await res.json();
+
+                if (!res.ok) throw new Error(json.error || 'Erro ao cancelar');
+
+                /* Sucesso — actualiza UI imediatamente */
+                fecharModalCancelar();
+                aplicarEstadoPlano(false);
+                window.SmartSomaPro.isPro = false;
+                mostrarProFeatureToast('Subscrição cancelada. O acesso Pro mantém-se até ao fim do período.');
+
+            } catch (e) {
+                console.error('Erro ao cancelar subscrição:', e);
+                if (btnConfirm) {
+                    btnConfirm.disabled = false;
+                    btnConfirm.textContent = 'Sim, cancelar subscrição';
+                }
+                mostrarProFeatureToast('Erro ao cancelar. Tenta novamente ou contacta o suporte.');
+            }
+        }
+
+        function abrirModalCancelar() {
+            const backdrop = document.getElementById('cancelarSubBackdrop');
+            if (backdrop) backdrop.classList.add('visible');
+        }
+
+        function fecharModalCancelar() {
+            const backdrop = document.getElementById('cancelarSubBackdrop');
+            if (backdrop) backdrop.classList.remove('visible');
+        }
+
         /* ── Atualiza bandeira e código no botão de idioma do cabeçalho ── */
         function atualizarBotaoIdiomaHeader() {
             const flagEl = document.getElementById('headerLangFlag');
@@ -1717,6 +1844,21 @@
             const backdrop = document.getElementById('upgradeProBackdrop');
             if (backdrop) backdrop.addEventListener('click', function(e){
                 if (e.target === backdrop) fecharModalUpgrade();
+            });
+
+            /* ── Cancelar subscrição ── */
+            const btnCancelarSub = document.getElementById('btnCancelarSubscricao');
+            if (btnCancelarSub) btnCancelarSub.addEventListener('click', abrirModalCancelar);
+
+            const btnCancelarConfirm = document.getElementById('cancelarSubConfirmBtn');
+            if (btnCancelarConfirm) btnCancelarConfirm.addEventListener('click', cancelarSubscricao);
+
+            const btnCancelarVoltar = document.getElementById('cancelarSubVoltarBtn');
+            if (btnCancelarVoltar) btnCancelarVoltar.addEventListener('click', fecharModalCancelar);
+
+            const cancelarBackdrop = document.getElementById('cancelarSubBackdrop');
+            if (cancelarBackdrop) cancelarBackdrop.addEventListener('click', function(e) {
+                if (e.target === cancelarBackdrop) fecharModalCancelar();
             });
 
             /* ── Botão idioma no cabeçalho ── */
@@ -1912,6 +2054,27 @@
             <p class="lpm-title" data-i18n="sheet.idioma">Idioma</p>
             <div class="lang-options" id="langPopupOptionsList" role="radiogroup" aria-label="Idioma"></div>
             <button type="button" class="lpm-save-btn" id="langPopupSaveBtn" data-i18n="idioma.save">Salvar</button>
+        </div>
+    </div>
+
+    <!-- Modal de confirmação de cancelamento de subscrição -->
+    <div class="mm-backdrop" id="cancelarSubBackdrop">
+        <div class="mm-card" role="dialog" aria-modal="true" aria-labelledby="cancelarSubTitle" id="cancelarSubCard">
+            <div class="cancelar-sub-modal-icon" aria-hidden="true">😔</div>
+            <h3 class="mm-title" id="cancelarSubTitle">Cancelar Subscrição Pro?</h3>
+            <p class="despesa-confirm-text">Tens a certeza que queres cancelar? Perderás o acesso a todas as funcionalidades Pro no fim do período actual.</p>
+            <div class="cancelar-sub-perks-lost">
+                <span>🚫 Sem anúncios</span>
+                <span>⚡ Funcionalidades Pro</span>
+                <span>📊 Relatórios</span>
+            </div>
+            <p class="cancelar-sub-note" style="margin:.75rem 0 1rem">O acesso mantém-se activo até ao fim do período já pago.</p>
+            <button type="button" class="dp-save-btn dp-save-btn-danger" id="cancelarSubConfirmBtn">
+                Sim, cancelar subscrição
+            </button>
+            <div class="mm-secondary-action">
+                <button type="button" class="mm-text-link" id="cancelarSubVoltarBtn">Manter o Pro</button>
+            </div>
         </div>
     </div>
 
