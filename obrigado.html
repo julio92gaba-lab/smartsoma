@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0B0F0C">
+<title>Bem-vindo ao Pro — SmartSoma</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=DM+Sans:wght@400;500;600;700;800&display=swap">
+<link rel="icon" type="image/png" sizes="192x192" href="/favicon.png">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#0B0F0C;--paper:#F6F3EA;--card:#fff;--forest:#0E3B2A;--green:#1E9E5A;--gb:#2ECC71;--lime:#D4F53C;--muted:#55605A;--r:8px}
+html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:'Bricolage Grotesque','DM Sans',sans-serif}
+
+/* ── NAV ── */
+nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:14px 5vw;background:var(--ink);border-bottom:4px solid var(--gb)}
+.nav-logo{font-size:24px;font-weight:800;letter-spacing:-.04em;color:#fff;line-height:1;font-family:'Bricolage Grotesque','DM Sans',sans-serif;text-decoration:none}
+.nav-logo span{color:var(--gb)}
+
+/* ── HERO ── */
+.hero{
+    min-height:calc(100vh - 66px);
+    display:flex;flex-direction:column;
+    align-items:center;justify-content:center;
+    text-align:center;
+    padding:72px 5vw 80px;
+    position:relative;overflow:hidden;
+    background:repeating-linear-gradient(135deg,transparent 0 22px,rgba(14,59,42,.05) 22px 24px),var(--paper);
+}
+
+/* Anel animado de sucesso */
+.success-ring{
+    position:relative;
+    width:96px;height:96px;
+    margin:0 auto 2rem;
+}
+.success-ring svg{width:96px;height:96px}
+.ring-bg{stroke:rgba(46,204,113,.18);stroke-width:5;fill:none}
+.ring-fill{
+    stroke:var(--gb);stroke-width:5;fill:none;
+    stroke-linecap:round;
+    stroke-dasharray:263;
+    stroke-dashoffset:263;
+    transform:rotate(-90deg);
+    transform-origin:50% 50%;
+    animation:ring-in .9s cubic-bezier(.4,0,.2,1) .2s forwards;
+}
+.ring-check{
+    stroke:var(--gb);stroke-width:5;fill:none;
+    stroke-linecap:round;stroke-linejoin:round;
+    stroke-dasharray:60;stroke-dashoffset:60;
+    animation:check-in .35s ease .9s forwards;
+}
+@keyframes ring-in{to{stroke-dashoffset:0}}
+@keyframes check-in{to{stroke-dashoffset:0}}
+
+.pro-badge{
+    display:inline-flex;align-items:center;gap:8px;
+    background:var(--ink);color:var(--lime);
+    font-size:12px;font-weight:800;
+    padding:7px 14px;border-radius:4px;
+    margin-bottom:24px;letter-spacing:.08em;text-transform:uppercase;
+    transform:rotate(-2deg);
+}
+.pro-badge .dot{width:8px;height:8px;background:var(--gb);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+h1{
+    font-size:clamp(32px,6vw,60px);
+    font-weight:800;line-height:1.05;
+    letter-spacing:-.04em;
+    max-width:680px;margin:0 auto 16px;
+}
+h1 em{
+    font-style:normal;
+    background:linear-gradient(transparent 58%,var(--lime) 58% 92%,transparent 92%);
+    padding:0 .08em;margin-left:.08em;
+}
+.subtitle{
+    font-size:clamp(15px,2.2vw,18px);
+    color:var(--muted);max-width:520px;
+    margin:0 auto 40px;
+}
+
+/* ── Benefícios ── */
+.perks{
+    display:flex;flex-wrap:wrap;gap:14px;
+    justify-content:center;
+    max-width:640px;margin:0 auto 44px;
+}
+.perk{
+    display:flex;align-items:center;gap:8px;
+    background:var(--card);
+    border:2px solid var(--ink);
+    border-radius:6px;
+    padding:10px 16px;
+    font-size:13.5px;font-weight:700;
+    box-shadow:3px 3px 0 var(--gb);
+}
+.perk-icon{font-size:17px;flex-shrink:0}
+
+/* ── Botão ── */
+.btn-primary{
+    display:inline-flex;align-items:center;gap:10px;
+    background:var(--ink);color:#fff;
+    font-family:'DM Sans',sans-serif;
+    font-weight:800;padding:16px 36px;
+    border-radius:8px;font-size:16px;
+    text-decoration:none;border:none;cursor:pointer;
+    box-shadow:5px 5px 0 var(--gb);
+    transition:transform .15s,box-shadow .15s;
+    animation:btn-pop .4s cubic-bezier(.34,1.56,.64,1) 1.2s both;
+}
+.btn-primary:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--gb)}
+@keyframes btn-pop{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+.btn-arrow{
+    display:inline-block;
+    transition:transform .2s;
+}
+.btn-primary:hover .btn-arrow{transform:translateX(4px)}
+
+.redirect-note{
+    margin-top:14px;
+    font-size:12px;color:var(--muted);
+    animation:btn-pop .4s ease 1.6s both;
+}
+.redirect-note span{font-weight:700;color:var(--ink)}
+
+/* Decoração de fundo */
+.deco{position:absolute;z-index:0;pointer-events:none;color:var(--forest);opacity:.07;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.d-car{width:min(500px,55vw);top:6%;right:-6%;transform:rotate(-5deg)}
+.d-road{width:300px;height:300px;left:-60px;bottom:-60px;opacity:.09}
+
+/* ── Toast PRO ── */
+#proToast{
+    position:fixed;
+    bottom:32px;left:50%;
+    transform:translateX(-50%) translateY(30px);
+    opacity:0;
+    pointer-events:none;
+    z-index:9999;
+    width:min(calc(100vw - 32px),420px);
+    transition:opacity .4s ease, transform .4s ease;
+}
+#proToast.show{
+    opacity:1;
+    transform:translateX(-50%) translateY(0);
+    pointer-events:auto;
+}
+.toast-inner{
+    background:#0d1a12;
+    border:1px solid rgba(46,204,113,.4);
+    border-radius:18px;
+    padding:14px 16px;
+    display:flex;align-items:center;gap:12px;
+    box-shadow:0 12px 48px rgba(0,0,0,.55);
+}
+.toast-icon{
+    flex-shrink:0;width:46px;height:46px;border-radius:12px;
+    background:rgba(46,204,113,.15);
+    display:flex;align-items:center;justify-content:center;font-size:22px;
+}
+.toast-body{flex:1;min-width:0}
+.toast-title{font-size:13px;font-weight:800;color:#fff;margin-bottom:2px;line-height:1.3}
+.toast-sub{font-size:11.5px;color:rgba(255,255,255,.55);line-height:1.4}
+.toast-close{
+    flex-shrink:0;background:none;border:none;
+    color:rgba(255,255,255,.35);font-size:20px;
+    line-height:1;cursor:pointer;padding:2px 4px;
+}
+.toast-close:hover{color:#fff}
+
+/* ── RODAPÉ ── */
+footer{
+    padding:32px 5vw;font-size:13px;
+    background:var(--ink);color:#9aa89f;
+    border-top:4px solid var(--gb);
+    text-align:center;
+}
+footer a{color:#cfd8d2;text-decoration:none;font-weight:600}
+footer a:hover{color:var(--lime)}
+
+@media(max-width:580px){
+    .perks{flex-direction:column;align-items:center}
+    .perk{width:100%;max-width:320px;justify-content:center}
+}
+</style>
+</head>
+<body>
+
+<nav>
+    <a href="/" class="nav-logo">smart<span>soma</span></a>
+</nav>
+
+<main class="hero">
+
+    <!-- Decoração de fundo (igual ao index) -->
+    <svg class="deco d-car" viewBox="0 0 202 82" aria-hidden="true"><use href="#g-car"/></svg>
+    <svg class="deco d-road" viewBox="0 0 200 300" aria-hidden="true"><use href="#g-road"/></svg>
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+        <g id="g-car"><path d="M10 70V58Q10 52 18 50L46 44L62 26Q66 22 72 22H128Q136 22 142 28L158 46L184 52Q192 54 192 62V70H164A14 14 0 0 0 136 70H66A14 14 0 0 0 38 70Z"/><path d="M68 28H124L138 44H56Z M96 28V44"/><circle cx="150" cy="70" r="10"/><circle cx="52" cy="70" r="10"/><circle cx="150" cy="70" r="3"/><circle cx="52" cy="70" r="3"/></g>
+        <g id="g-road"><path d="M120 300C140 220 40 200 90 130S140 40 130 0"/><path d="M200 300C210 230 130 210 160 140S170 40 150 0"/><path d="M160 300C175 225 85 205 125 135S155 40 140 0" stroke-dasharray="12 14"/></g>
+    </defs></svg>
+
+    <!-- Anel de sucesso animado -->
+    <div class="success-ring" aria-hidden="true">
+        <svg viewBox="0 0 96 96">
+            <circle class="ring-bg" cx="48" cy="48" r="42"/>
+            <circle class="ring-fill" cx="48" cy="48" r="42"/>
+            <polyline class="ring-check" points="30,50 43,63 66,36"/>
+        </svg>
+    </div>
+
+    <div class="pro-badge"><span class="dot"></span> SmartSoma Pro Activo</div>
+
+    <h1>Bem-vindo ao <em>Pro</em>,<br>és dos nossos agora!</h1>
+
+    <p class="subtitle">
+        A tua conta já está activa. Desfruta de todos os recursos sem anúncios,
+        com o primeiro mês totalmente grátis — e podes cancelar quando quiseres.
+    </p>
+
+    <!-- Benefícios rápidos -->
+    <div class="perks">
+        <div class="perk"><span class="perk-icon">🚫</span> Sem anúncios</div>
+        <div class="perk"><span class="perk-icon">🎁</span> 1º mês grátis</div>
+        <div class="perk"><span class="perk-icon">⚡</span> Todos os recursos desbloqueados</div>
+        <div class="perk"><span class="perk-icon">↩️</span> Cancela quando quiseres</div>
+    </div>
+
+    <a href="/app.html" class="btn-primary" id="btnVoltar">
+        Ir para a app <span class="btn-arrow">→</span>
+    </a>
+    <p class="redirect-note">Redireccionamento automático em <span id="countdown">5</span>s</p>
+
+</main>
+
+<footer>
+    <a href="https://smartsoma.pt/legal" target="_blank" rel="noopener">Termos e Privacidade</a>
+    &nbsp;·&nbsp; © <script>document.write(new Date().getFullYear())</script> SmartSoma
+</footer>
+
+<!-- Toast PRO -->
+<div id="proToast" role="status" aria-live="polite">
+    <div class="toast-inner">
+        <div class="toast-icon">🏆</div>
+        <div class="toast-body">
+            <div class="toast-title">Bem-vindo ao SmartSoma Pro!</div>
+            <div class="toast-sub">Usufrui de todos os novos recursos. Obrigado por seres Pro! 🚀</div>
+        </div>
+        <button class="toast-close" id="toastCloseBtn" aria-label="Fechar">×</button>
+    </div>
+</div>
+
+<script>
+(function () {
+
+    /* ── Toast ── */
+    var toast    = document.getElementById('proToast');
+    var toastBtn = document.getElementById('toastCloseBtn');
+
+    setTimeout(function () {
+        toast.classList.add('show');
+    }, 1400);
+
+    toastBtn.addEventListener('click', function () {
+        toast.classList.remove('show');
+    });
+
+    setTimeout(function () {
+        toast.classList.remove('show');
+    }, 9000);
+
+    /* ── Countdown + redirect ── */
+    var n   = 5;
+    var el  = document.getElementById('countdown');
+    var btn = document.getElementById('btnVoltar');
+
+    var timer = setInterval(function () {
+        n--;
+        if (el) el.textContent = n;
+        if (n <= 0) {
+            clearInterval(timer);
+            window.location.replace('/app.html');
+        }
+    }, 1000);
+
+    /* Clique manual cancela o timer */
+    btn.addEventListener('click', function () {
+        clearInterval(timer);
+    });
+
+})();
+</script>
+
+</body>
+</html>

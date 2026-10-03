@@ -1429,6 +1429,22 @@
             color: #fff;
             letter-spacing: .01em;
         }
+        #checkoutLoadingOverlay .clo-cancel {
+            margin-top: .25rem;
+            background: none;
+            border: 1px solid rgba(255,255,255,.25);
+            border-radius: 999px;
+            color: rgba(255,255,255,.55);
+            font-size: .75rem;
+            font-weight: 600;
+            padding: .4rem 1.1rem;
+            cursor: pointer;
+            transition: border-color .15s, color .15s;
+        }
+        #checkoutLoadingOverlay .clo-cancel:active {
+            border-color: rgba(255,255,255,.5);
+            color: #fff;
+        }
         @keyframes clo-spin { to { transform: rotate(360deg); } }
     </style>
 
@@ -1436,6 +1452,7 @@
     <div id="checkoutLoadingOverlay" role="status" aria-live="polite" aria-label="A preparar o pagamento">
         <div class="clo-spinner"></div>
         <span class="clo-text">A preparar o pagamento…</span>
+        <button type="button" class="clo-cancel" id="checkoutLoadingCancel">Cancelar</button>
     </div>
 
     <script>
@@ -1571,6 +1588,9 @@
         function registarBotoes() {
             const btnUpgrade = document.getElementById('btnUpgradePro');
             if (btnUpgrade) btnUpgrade.addEventListener('click', iniciarCheckout);
+
+            const btnCancelar = document.getElementById('checkoutLoadingCancel');
+            if (btnCancelar) btnCancelar.addEventListener('click', esconderLoading);
 
             const btnConfirm = document.getElementById('upgradeProConfirmBtn');
             if (btnConfirm) btnConfirm.addEventListener('click', function(){
