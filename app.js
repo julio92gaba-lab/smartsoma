@@ -1426,6 +1426,15 @@
 
         if (!descricao || isNaN(valorNum) || valorNum <= 0) return;
 
+        /* ── Limite de 2 despesas fixas no plano gratuito ── */
+        var ativas = despesas.filter(function (item) { return !item.ate; });
+        if (!window.SmartSomaPro.isPro && ativas.length >= 2) {
+          if (window.abrirModalUpgrade) {
+            window.abrirModalUpgrade('No plano gratuito só podes ter até 2 despesas fixas. Faz upgrade para Pro e gere despesas ilimitadas.');
+          }
+          return;
+        }
+
         if (tipoAtual === 'euro' && valorNum > 999.99) valorNum = 999.99;
 
         despesaSeq++;
@@ -4617,14 +4626,14 @@
       var btnVerMeuResumo = document.getElementById('btnVerMeuResumo');
       if (btnVerMeuResumo) {
         btnVerMeuResumo.addEventListener('click', function () {
-          slideToSection('resumo', 'right');
+          showHomeListPage('resumo');
         });
       }
 
       var btnRegistrarGanhos = document.getElementById('btnRegistrarGanhos');
       if (btnRegistrarGanhos) {
         btnRegistrarGanhos.addEventListener('click', function () {
-          slideToSection('ganhos', 'left');
+          showHomeListPage('ganhos');
         });
       }
 
@@ -7200,21 +7209,26 @@
       // k      : prefixo das chaves de tradução (k + '.title' / '.text')
       // page   : página do corpo da app onde o passo acontece
       // sheet  : true = painel de Ajustes aberto; false = fechado
-      var STEPS = [
-        { sel: '#subHeaderDateBtn',        k: 'tut.s1',  page: 'ganhos', sheet: false },
-        { sel: '#listRowUber',             k: 'tut.s2',  page: 'ganhos', sheet: false },
-        { sel: '#btnAddPlatform',          k: 'tut.s2b', page: 'ganhos', sheet: false },
-        { sel: '#listRowDespesas',         k: 'tut.s3',  page: 'ganhos', sheet: false },
-        { sel: '#listRowDistancia',        k: 'tut.s4',  page: 'ganhos', sheet: false },
-        { sel: '#metaSemanalCard',         k: 'tut.s5',  page: 'ganhos', sheet: false },
-        { sel: '#svgMenuBtn',              k: 'tut.s6',  page: 'ganhos', sheet: false },
-        { sel: '#btnVerMeuResumo',         k: 'tut.s7',  page: 'ganhos', sheet: false },
-        { sel: '.period-filter-row',       k: 'tut.s8',  page: 'resumo', sheet: false },
-        { sel: '.dash-cluster',            k: 'tut.s9',  page: 'resumo', sheet: false },
-        { sel: '#semanaWeekPicker',        k: 'tut.s10', page: 'semana', sheet: false },
-        { sel: '#subHeaderViewToggleGroup',k: 'tut.s11', page: 'semana', sheet: false },
-        { sel: '#openDespesasFixasBtn',    k: 'tut.s12', page: 'ganhos', sheet: true  }
+      var ALL_STEPS = [
+        { sel: '#subHeaderDateBtn',        k: 'tut.s1',  page: 'ganhos', sheet: false, pro: false },
+        { sel: '#listRowUber',             k: 'tut.s2',  page: 'ganhos', sheet: false, pro: false },
+        { sel: '#btnAddPlatform',          k: 'tut.s2b', page: 'ganhos', sheet: false, pro: true  },
+        { sel: '#listRowDespesas',         k: 'tut.s3',  page: 'ganhos', sheet: false, pro: false },
+        { sel: '#listRowDistancia',        k: 'tut.s4',  page: 'ganhos', sheet: false, pro: false },
+        { sel: '#metaSemanalCard',         k: 'tut.s5',  page: 'ganhos', sheet: false, pro: false },
+        { sel: '#svgMenuBtn',              k: 'tut.s6',  page: 'ganhos', sheet: false, pro: false },
+        { sel: '#btnVerMeuResumo',         k: 'tut.s7',  page: 'ganhos', sheet: false, pro: false },
+        { sel: '.period-filter-row',       k: 'tut.s8',  page: 'resumo', sheet: false, pro: false },
+        { sel: '.dash-cluster',            k: 'tut.s9',  page: 'resumo', sheet: false, pro: false },
+        { sel: '#semanaWeekPicker',        k: 'tut.s10', page: 'semana', sheet: false, pro: true  },
+        { sel: '#subHeaderViewToggleGroup',k: 'tut.s11', page: 'semana', sheet: false, pro: true  },
+        { sel: '#openDespesasFixasBtn',    k: 'tut.s12', page: 'ganhos', sheet: true,  pro: false }
       ];
+
+      /* Filtra passos conforme o plano: Pro vê tudo, gratuito só vê os não-Pro */
+      var STEPS = ALL_STEPS.filter(function(s) {
+        return !s.pro || (window.SmartSomaPro && window.SmartSomaPro.isPro);
+      });
 
       // Devolve os elementos de um passo (aceita um selector ou vários).
       function alvosDe (step) {
@@ -7365,6 +7379,10 @@
         if (startBackdrop) startBackdrop.classList.remove('visible');
         if (window.closeAllOverlays) window.closeAllOverlays();
         if (window.QuickNavMenu) window.QuickNavMenu.close();
+        /* Refiltrar passos no momento de iniciar (plano pode ter mudado) */
+        STEPS = ALL_STEPS.filter(function(s) {
+          return !s.pro || (window.SmartSomaPro && window.SmartSomaPro.isPro);
+        });
         running = true;
         index = 0;
         overlay.hidden = false;

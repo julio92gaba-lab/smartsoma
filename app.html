@@ -212,6 +212,7 @@
         </button>
 
         <div class="header-actions">
+            <!-- Botão tema (só visível na versão Pro) -->
             <button type="button" class="header-icon-btn" id="btnToggleTheme" data-i18n-aria="header.themeAria" aria-label="Alternar tema claro ou escuro" aria-pressed="false">
                 <svg class="icon-default" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M21 12.6A9 9 0 1 1 11.4 3a7 7 0 0 0 9.6 9.6Z"/>
@@ -227,6 +228,11 @@
                     <line x1="4.2" y1="19.8" x2="6.1" y2="17.9"/>
                     <line x1="17.9" y1="6.1" x2="19.8" y2="4.2"/>
                 </svg>
+            </button>
+            <!-- Botão idioma no cabeçalho (só visível na versão gratuita) -->
+            <button type="button" class="header-icon-btn header-lang-btn" id="btnHeaderLang" aria-label="Idioma" style="display:none">
+                <span class="header-lang-flag" id="headerLangFlag" aria-hidden="true"></span>
+                <span class="header-lang-code" id="headerLangCode">PT</span>
             </button>
         </div>
     </div>
@@ -610,17 +616,19 @@
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="20" x2="5" y2="12"/><line x1="12" y1="20" x2="12" y2="6"/><line x1="19" y1="20" x2="19" y2="15"/></svg>
                             </span>
                         </button>
-                        <button type="button" class="menu-item" data-nav="semana">
+                        <button type="button" class="menu-item menu-item-pro-locked" id="navItemSemana" data-nav="semana">
                             <span data-i18n="nav.semana">Detalhes da Semana</span>
                             <span class="menu-item-icon">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="16" rx="2.5"/><line x1="3.5" y1="10" x2="20.5" y2="10"/><line x1="8" y1="3" x2="8" y2="6.6"/><line x1="16" y1="3" x2="16" y2="6.6"/></svg>
                             </span>
+                            <span class="menu-item-pro-tag" aria-hidden="true">PRO</span>
                         </button>
-                        <button type="button" class="menu-item" data-nav="relatorio">
+                        <button type="button" class="menu-item menu-item-pro-locked" id="navItemRelatorio" data-nav="relatorio">
                             <span data-i18n="nav.relatorio">Download Relatório</span>
                             <span class="menu-item-icon">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v11.5"/><polyline points="7.5 10.5 12 15 16.5 10.5"/><line x1="5" y1="19.5" x2="19" y2="19.5"/></svg>
                             </span>
+                            <span class="menu-item-pro-tag" aria-hidden="true">PRO</span>
                         </button>
                     </div>
 
@@ -698,7 +706,7 @@
                             <p class="sheet-subinfo" id="sheetDriverSince">0 dias nos Apps.</p>
                         </div>
                     </div>
-                    <!-- Banner Pro -->
+                    <!-- Banner Pro (versão gratuita) -->
                     <div class="sheet-pro-banner" id="sheetProBanner">
                         <div class="sheet-pro-banner-inner">
                             <div class="sheet-pro-banner-top">
@@ -710,6 +718,11 @@
                             </div>
                             <button type="button" class="sheet-pro-btn" id="btnUpgradePro">Ativar</button>
                         </div>
+                    </div>
+                    <!-- Badge Conta PRO (versão Pro, começa escondido) -->
+                    <div class="sheet-pro-active-badge" id="sheetProActiveBadge" style="display:none">
+                        <span class="sheet-pro-active-dot"></span>
+                        <span class="sheet-pro-active-label">Conta PRO activa</span>
                     </div>
                     <div class="sheet-divider"></div>
                     <div class="sheet-actions">
@@ -727,12 +740,13 @@
                             </svg>
                             <span data-i18n="sheet.despesasFixas">Despesas Fixas</span>
                         </button>
-                        <button type="button" class="sheet-action-btn" id="openMultiplataformaBtn">
+                        <button type="button" class="sheet-action-btn sheet-action-btn-pro-locked" id="openMultiplataformaBtn">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                                 <circle cx="8" cy="8" r="4.2"/>
                                 <circle cx="16" cy="16" r="4.2"/>
                             </svg>
                             <span data-i18n="sheet.multiplataforma">Multiplataforma</span>
+                            <span class="sheet-action-pro-tag" id="multiplataformaProTag" aria-hidden="true">PRO</span>
                         </button>
                         <button type="button" class="sheet-action-btn sheet-action-btn-split" id="openIdiomaBtn">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -855,6 +869,18 @@
             </div>
             <div class="sheet-screen" id="sheetScreenDespesasFixas" hidden>
                 <div class="sheet-content sheet-page-content">
+                    <!-- Aviso plano gratuito (escondido na versão Pro) -->
+                    <div class="fixas-free-notice" id="fixasFreePlanNotice">
+                        <svg class="fixas-free-notice-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="12" cy="12" r="9"/>
+                            <line x1="12" y1="8" x2="12" y2="12"/>
+                            <circle cx="12" cy="16" r="0.8" fill="currentColor" stroke="none"/>
+                        </svg>
+                        <div class="fixas-free-notice-body">
+                            <span class="fixas-free-notice-title">Plano Gratuito — limite de 2 despesas</span>
+                            <span class="fixas-free-notice-sub">No plano gratuito só podes registar até 2 despesas fixas semanais. Faz upgrade para Pro e gere despesas ilimitadas.</span>
+                        </div>
+                    </div>
                     <p class="mm-helper-text" data-i18n="fixas.helper">Despesas que se repetem toda SEMANA (ex: Aluguel do carro, Taxa plataforma). Escolha % do valor bruto (atualizado automaticamente conforme os ganhos são inseridos), ou valor fixo em €. Este valor é lançado na segunda feira de cada semana.</p>
 
                     <div class="despesa-form">
@@ -1200,7 +1226,10 @@
 
             <div class="distancia-mode-row">
                 <button type="button" class="distancia-mode-btn active" id="distanciaModoTotalBtn" data-modo="total" aria-pressed="true" data-i18n="dist.modoTotal">Km Total</button>
-                <button type="button" class="distancia-mode-btn" id="distanciaModoInicioFimBtn" data-modo="inicio-fim" aria-pressed="false" data-i18n="dist.modoInicioFim">Início e Fim</button>
+                <button type="button" class="distancia-mode-btn distancia-mode-btn-pro-locked" id="distanciaModoInicioFimBtn" data-modo="inicio-fim" aria-pressed="false" data-i18n="dist.modoInicioFim">
+                    Início e Fim
+                    <span class="distancia-pro-tag" aria-hidden="true">PRO</span>
+                </button>
             </div>
             <p class="mm-helper-text" id="distanciaModoHelperText">Insira os quilômetros percorridos durante o dia, apenas o valor total.</p>
 
@@ -1500,20 +1529,69 @@
                 const isPro = data?.plan === 'pro' && data?.status === 'active';
                 window.SmartSomaPro.isPro = isPro;
 
-                /* Actualiza banner no menu Ajustes */
-                const banner = document.getElementById('sheetProBanner');
-                if (banner) {
-                    if (isPro) {
-                        banner.classList.add('is-pro');
-                    } else {
-                        banner.classList.remove('is-pro');
-                        document.getElementById('sheetProBannerTitle').textContent = 'Upgrade para Pro';
-                        document.getElementById('sheetProBannerSub').textContent   = 'Sem anúncios e funcionalidades extra.';
-                    }
-                }
+                /* ── Aplica estados visuais Pro / Gratuito ── */
+                aplicarEstadoPlano(isPro);
+
             } catch(e) {
                 console.warn('SmartSomaPro: erro ao verificar plano', e);
             }
+        }
+
+        /* ── Toast genérico para funcionalidades bloqueadas ── */
+        let proToastTimer = null;
+        function mostrarProFeatureToast(msg) {
+            const toast = document.getElementById('proFeatureToast');
+            const textEl = document.getElementById('proFeatureToastText');
+            if (!toast) return;
+            if (textEl) textEl.textContent = msg || 'Somente na versão Pro.';
+            clearTimeout(proToastTimer);
+            toast.classList.add('show');
+            proToastTimer = setTimeout(() => toast.classList.remove('show'), 3500);
+        }
+        window.mostrarProFeatureToast = mostrarProFeatureToast;
+
+        /* ── Aplica todos os estados visuais conforme plano ── */
+        function aplicarEstadoPlano(isPro) {
+            /* Banner nos Ajustes */
+            const banner      = document.getElementById('sheetProBanner');
+            const activeBadge = document.getElementById('sheetProActiveBadge');
+            if (banner)      banner.style.display      = isPro ? 'none'  : '';
+            if (activeBadge) activeBadge.style.display = isPro ? 'flex'  : 'none';
+
+            /* Botão tema (cabeçalho) — Pro: visível; Gratuito: escondido */
+            const btnTema = document.getElementById('btnToggleTheme');
+            const btnLang = document.getElementById('btnHeaderLang');
+            if (btnTema) btnTema.style.display = isPro ? '' : 'none';
+            if (btnLang) btnLang.style.display = isPro ? 'none' : '';
+
+            /* Atualiza bandeira/código no botão de idioma do cabeçalho */
+            if (!isPro) atualizarBotaoIdiomaHeader();
+
+            /* Idioma nos Ajustes — só na versão Pro */
+            const btnIdioma = document.getElementById('openIdiomaBtn');
+            if (btnIdioma) btnIdioma.style.display = isPro ? '' : 'none';
+
+            /* Multiplataforma — inativo na versão gratuita */
+            const btnMulti   = document.getElementById('openMultiplataformaBtn');
+            const multiTag   = document.getElementById('multiplataformaProTag');
+            if (btnMulti) btnMulti.classList.toggle('sheet-action-btn-pro-locked', !isPro);
+            if (multiTag) multiTag.style.display = isPro ? 'none' : '';
+
+            /* Menu flutuante — Semana e Relatório */
+            const navSemana    = document.getElementById('navItemSemana');
+            const navRelatorio = document.getElementById('navItemRelatorio');
+            if (navSemana)    navSemana.classList.toggle('menu-item-pro-locked', !isPro);
+            if (navRelatorio) navRelatorio.classList.toggle('menu-item-pro-locked', !isPro);
+
+            /* Distância — botão Início e Fim */
+            const btnInicioFim = document.getElementById('distanciaModoInicioFimBtn');
+            const distTag      = btnInicioFim ? btnInicioFim.querySelector('.distancia-pro-tag') : null;
+            if (btnInicioFim) btnInicioFim.classList.toggle('distancia-mode-btn-pro-locked', !isPro);
+            if (distTag)      distTag.style.display = isPro ? 'none' : '';
+
+            /* Despesas Fixas — aviso plano gratuito */
+            const fixasNotice = document.getElementById('fixasFreePlanNotice');
+            if (fixasNotice) fixasNotice.style.display = isPro ? 'none' : '';
         }
 
         /* ── Inicia checkout no Creem ── */
@@ -1586,6 +1664,22 @@
             return false;
         };
 
+        /* ── Atualiza bandeira e código no botão de idioma do cabeçalho ── */
+        function atualizarBotaoIdiomaHeader() {
+            const flagEl = document.getElementById('headerLangFlag');
+            const codeEl = document.getElementById('headerLangCode');
+            if (!flagEl || !codeEl) return;
+            /* Reutiliza os mesmos elementos do menu Ajustes */
+            const srcFlag = document.getElementById('idiomaCurrentFlag');
+            const srcName = document.getElementById('idiomaCurrentName');
+            if (srcFlag) flagEl.innerHTML = srcFlag.innerHTML;
+            if (srcName) {
+                const lang = (typeof I18N !== 'undefined' && I18N.getLang) ? I18N.getLang() : 'pt';
+                codeEl.textContent = lang.toUpperCase().slice(0,2);
+            }
+        }
+        window.atualizarBotaoIdiomaHeader = atualizarBotaoIdiomaHeader;
+
         /* ── Registar botões ── */
         function registarBotoes() {
             const btnUpgrade = document.getElementById('btnUpgradePro');
@@ -1607,6 +1701,71 @@
             if (backdrop) backdrop.addEventListener('click', function(e){
                 if (e.target === backdrop) fecharModalUpgrade();
             });
+
+            /* ── Botão idioma no cabeçalho (versão gratuita) ── */
+            const btnHeaderLang = document.getElementById('btnHeaderLang');
+            if (btnHeaderLang) {
+                btnHeaderLang.addEventListener('click', function() {
+                    /* Abre o sheet de Ajustes e navega para o ecrã de idioma */
+                    if (typeof window.openProfileSheetPublic === 'function') {
+                        window.openProfileSheetPublic();
+                    }
+                    setTimeout(function() {
+                        const btnIdioma = document.getElementById('openIdiomaBtn');
+                        if (btnIdioma) btnIdioma.click();
+                    }, 320);
+                });
+            }
+
+            /* ── Multiplataforma — bloqueio Pro ── */
+            const btnMulti = document.getElementById('openMultiplataformaBtn');
+            if (btnMulti) {
+                btnMulti.addEventListener('click', function(e) {
+                    if (!window.SmartSomaPro.isPro) {
+                        e.stopImmediatePropagation();
+                        window.abrirModalUpgrade('A funcionalidade Multiplataforma está disponível apenas no plano Pro.');
+                        return false;
+                    }
+                }, true);
+            }
+
+            /* ── Menu flutuante — Semana bloqueio Pro ── */
+            const navSemana = document.getElementById('navItemSemana');
+            if (navSemana) {
+                navSemana.addEventListener('click', function(e) {
+                    if (!window.SmartSomaPro.isPro) {
+                        e.stopImmediatePropagation();
+                        if (window.QuickNavMenu) window.QuickNavMenu.close();
+                        window.abrirModalUpgrade('Os Detalhes da Semana estão disponíveis apenas no plano Pro.');
+                        return false;
+                    }
+                }, true);
+            }
+
+            /* ── Menu flutuante — Relatório bloqueio Pro ── */
+            const navRelatorio = document.getElementById('navItemRelatorio');
+            if (navRelatorio) {
+                navRelatorio.addEventListener('click', function(e) {
+                    if (!window.SmartSomaPro.isPro) {
+                        e.stopImmediatePropagation();
+                        if (window.QuickNavMenu) window.QuickNavMenu.close();
+                        window.abrirModalUpgrade('O Download Relatório está disponível apenas no plano Pro.');
+                        return false;
+                    }
+                }, true);
+            }
+
+            /* ── Distância — Início e Fim bloqueio Pro ── */
+            const btnInicioFim = document.getElementById('distanciaModoInicioFimBtn');
+            if (btnInicioFim) {
+                btnInicioFim.addEventListener('click', function(e) {
+                    if (!window.SmartSomaPro.isPro) {
+                        e.stopImmediatePropagation();
+                        mostrarProFeatureToast('Somente na versão Pro para calcularmos os km percorridos.');
+                        return false;
+                    }
+                }, true);
+            }
         }
 
         /* ── Inicialização: aguarda o cloud-init terminar o boot ── */
@@ -1724,6 +1883,14 @@
         }
     })();
     </script>
+
+    <!-- Toast Pro Feature (reutilizável para bloqueios) -->
+    <div id="proFeatureToast" role="status" aria-live="polite">
+        <div class="pft-inner">
+            <span class="pft-icon">🔒</span>
+            <span class="pft-text" id="proFeatureToastText">Somente na versão Pro.</span>
+        </div>
+    </div>
 
     <!-- ── Interstitial diário ─────────────────────────────────────
          Aparece na primeira ação de save do dia (Uber, Bolt,
