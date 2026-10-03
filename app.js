@@ -2227,6 +2227,10 @@
 
       scroller.addEventListener('pointerdown', function (e) {
         if (e.pointerType === 'touch') return;
+        /* Só activa o arraste se existir conteúdo horizontal a rolar.
+           Sem este guarda, um simples clique num tile com o rato
+           activava o modo drag e bloqueava o evento click seguinte. */
+        if (scroller.scrollWidth <= scroller.clientWidth + 2) return;
         isDown = true;
         moved = false;
         startX = e.clientX;
@@ -2237,7 +2241,9 @@
       window.addEventListener('pointermove', function (e) {
         if (!isDown) return;
         var dx = e.clientX - startX;
-        if (Math.abs(dx) > 4) moved = true;
+        /* Threshold aumentado de 4 → 8 px para evitar falsos positivos
+           em ratos de alta sensibilidade ou ecrãs de alta densidade. */
+        if (Math.abs(dx) > 8) moved = true;
         scroller.scrollLeft = startScroll - dx;
       });
 
