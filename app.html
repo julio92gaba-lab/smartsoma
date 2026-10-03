@@ -1633,6 +1633,96 @@
     <!-- PWA: Service Worker + toast de instalação -->
     <script src="pwa-install.js"></script>
 
+    <!-- ── Toast Bem-vindo Pro ──
+         Condições para aparecer:
+           1. sessionStorage contém 'smartsoma_pro_welcome' = '1'
+              (gravado pelo obrigado.html antes do redirect)
+           2. A conta do utilizador é efectivamente Pro e active
+              (verificado via Supabase, igual ao verificarPlano() acima)
+         Ambas têm de ser verdadeiras; o flag é consumido logo na leitura.
+    ── -->
+    <div id="proWelcomeToast" role="status" aria-live="polite">
+        <div class="pwt-inner">
+            <div class="pwt-icon">🏆</div>
+            <div class="pwt-body">
+                <div class="pwt-title">Bem-vindo ao SmartSoma Pro!</div>
+                <div class="pwt-sub">Usufrui de todos os novos recursos. Obrigado por seres Pro! 🚀</div>
+            </div>
+            <button class="pwt-close" id="proWelcomeToastClose" aria-label="Fechar">×</button>
+        </div>
+    </div>
+
+    <script>
+    (function () {
+        /* Sai imediatamente se o flag de compra não existir */
+        if (sessionStorage.getItem('smartsoma_pro_welcome') !== '1') return;
+
+        /* Consome o flag — uma única exibição por sessão de compra */
+        sessionStorage.removeItem('smartsoma_pro_welcome');
+
+        var toast    = document.getElementById('proWelcomeToast');
+        var closeBtn = document.getElementById('proWelcomeToastClose');
+        if (!toast || !closeBtn) return;
+
+        var hideTimer = null;
+
+        function mostrarToast() {
+            toast.classList.add('show');
+            hideTimer = setTimeout(function () {
+                toast.classList.remove('show');
+            }, 9000);
+        }
+
+        closeBtn.addEventListener('click', function () {
+            clearTimeout(hideTimer);
+            toast.classList.remove('show');
+        });
+
+        /* Verifica junto ao Supabase se a conta é realmente Pro
+           antes de mostrar o toast.                              */
+        async function verificarEMostrar() {
+            try {
+                var sb = window.supabaseClient || null;
+                if (!sb) { mostrarToast(); return; } /* fallback: mostra se Supabase ainda não carregou */
+
+                var user = window.currentUser || (await sb.auth.getUser()).data.user;
+                if (!user) return; /* sem sessão, não mostra */
+
+                var res = await sb
+                    .from('subscriptions')
+                    .select('plan, status')
+                    .eq('user_id', user.id)
+                    .single();
+
+                var isPro = res.data?.plan === 'pro' && res.data?.status === 'active';
+                if (isPro) mostrarToast();
+
+            } catch (e) {
+                /* Em caso de erro de rede não mostra o toast */
+                console.warn('proWelcomeToast: erro ao verificar plano', e);
+            }
+        }
+
+        /* Aguarda a app e o Supabase estarem prontos */
+        function tentarVerificar() {
+            if (window._cacheReady) {
+                verificarEMostrar();
+            } else {
+                document.addEventListener('cloudCacheReady', function onReady() {
+                    document.removeEventListener('cloudCacheReady', onReady);
+                    verificarEMostrar();
+                });
+            }
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', tentarVerificar);
+        } else {
+            tentarVerificar();
+        }
+    })();
+    </script>
+
     <!-- ── Interstitial diário ─────────────────────────────────────
          Aparece na primeira ação de save do dia (Uber, Bolt,
          Distância ou Despesas). Máximo 1 vez por dia via localStorage.
