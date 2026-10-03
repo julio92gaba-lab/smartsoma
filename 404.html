@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0B0F0C">
+<title>Página não encontrada — SmartSoma</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=DM+Sans:wght@400;500;600;700;800&display=swap">
+<link rel="icon" type="image/png" sizes="192x192" href="/favicon.png">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#0B0F0C;--paper:#F6F3EA;--green:#1E9E5A;--gb:#2ECC71;--lime:#D4F53C;--muted:#55605A}
+html,body{min-height:100%}
+body{font-family:'DM Sans',sans-serif;background:repeating-linear-gradient(135deg,transparent 0 22px,rgba(14,59,42,.05) 22px 24px),var(--paper);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
+nav{display:flex;align-items:center;justify-content:space-between;padding:14px 5vw;background:var(--ink);border-bottom:4px solid var(--gb)}
+.nav-logo{font-family:'Bricolage Grotesque','DM Sans',sans-serif;font-size:24px;font-weight:800;letter-spacing:-.04em;color:#fff;text-decoration:none}
+.nav-logo span{color:var(--gb)}
+main{min-height:calc(100vh - 66px);display:flex;align-items:center;justify-content:center;text-align:center;padding:72px 5vw}
+.error-box{max-width:620px}
+.badge{display:inline-flex;align-items:center;gap:8px;background:var(--ink);color:var(--lime);font-size:12px;font-weight:800;padding:7px 14px;border-radius:4px;margin-bottom:24px;letter-spacing:.08em;text-transform:uppercase;transform:rotate(-2deg)}
+.badge::before{content:'';width:8px;height:8px;background:var(--gb);border-radius:50%}
+h1{font-family:'Bricolage Grotesque','DM Sans',sans-serif;font-size:clamp(36px,7vw,68px);font-weight:800;line-height:1.04;letter-spacing:-.04em;margin-bottom:16px}
+p{font-size:17px;color:var(--muted);max-width:480px;margin:0 auto 34px}
+.actions{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:50px;padding:0 24px;border-radius:8px;font-size:15px;font-weight:800;text-decoration:none;border:2px solid var(--ink);transition:transform .15s,box-shadow .15s}
+.btn-primary{background:var(--ink);color:#fff;box-shadow:5px 5px 0 var(--gb)}
+.btn-secondary{background:#fff;color:var(--ink);box-shadow:5px 5px 0 var(--ink)}
+.btn:hover{transform:translate(-2px,-2px)}
+</style>
+</head>
+<body>
+<nav>
+  <a href="/" class="nav-logo">smart<span>soma</span></a>
+</nav>
+<main>
+  <section class="error-box" aria-labelledby="page-title">
+    <div class="badge">Erro 404</div>
+    <h1 id="page-title">Página não encontrada</h1>
+    <p>O endereço pode ter mudado ou já não existir. Volta ao início ou entra na app para continuar.</p>
+    <div class="actions">
+      <a class="btn btn-primary" href="/">Voltar ao início</a>
+      <a class="btn btn-secondary" href="/app">Abrir app</a>
+    </div>
+  </section>
+</main>
+</body>
+</html>
