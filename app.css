@@ -1329,8 +1329,17 @@
           z-index:45;
           display:flex;
           justify-content:center;
+          /* No browser: mantém o offset + safe-area (barra de endereço existe) */
           padding:0 1.0938rem calc(0.9062rem + env(safe-area-inset-bottom, 0px));
           pointer-events:none;
+        }
+        /* Em modo PWA standalone não existe barra de navegação do browser,
+           por isso o card desce até ao fundo e usa apenas a safe-area da
+           barra de gesto do sistema (sem o offset extra de 0.9062rem). */
+        @media (display-mode: standalone) {
+          .meta-slot-list{
+            padding:0 1.0938rem env(safe-area-inset-bottom, 0px);
+          }
         }
         .meta-slot-list:empty{ display:none; }
         .meta-slot-list[hidden]{ display:none; }
