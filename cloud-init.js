@@ -281,6 +281,8 @@
   async function flushOnce() {
     if (!queue.length || !window.currentUser) { updateStatus(); return; }
     if (navigator.onLine === false) { updateStatus(); return; }
+    /* Dados da app só podem sair do aparelho depois de o plano ser validado. */
+    if (window.SmartSomaPro && !window.SmartSomaPro.isPro) { updateStatus(); return; }
 
     var session = await getValidSession();
     if (!session) { updateStatus(); return; }
@@ -360,6 +362,13 @@
   }
 
   function updateStatus() {
+    /* Enquanto o modal de subscrição bloqueia a app, não mostramos uma fila
+       que não tem autorização para ser sincronizada. */
+    if (window.SmartSomaPro && !window.SmartSomaPro.isPro) {
+      hideChip();
+      return;
+    }
+
     var online = navigator.onLine !== false;
     var pending = queue.length;
 
@@ -552,6 +561,9 @@
   // Sem rede a gravacao fica na fila e segue quando a ligacao voltar.
   window.cloudSet = function cloudSet(key, value) {
     if (!window.currentUser) return Promise.resolve();
+    if (window.SmartSomaPro && !window.SmartSomaPro.isPro) {
+      return Promise.resolve({ error: null, pending: queue.length });
+    }
 
     var persistValue = valueForDb(value);
     cache[key] = normaliseValueFromDb(persistValue);
@@ -565,6 +577,9 @@
 
   window.cloudRemove = function cloudRemove(key) {
     if (!window.currentUser) return Promise.resolve();
+    if (window.SmartSomaPro && !window.SmartSomaPro.isPro) {
+      return Promise.resolve({ error: null, pending: queue.length });
+    }
 
     delete cache[key];
     localRemoveKey(key);
@@ -573,6 +588,18 @@
     return flushQueue().then(function () {
       return { error: null, pending: queue.length };
     });
+  };
+
+  /* Usado pelo bloqueio de subscrição para apagar escritas feitas antes de
+     existir uma subscrição válida. Esses dados nunca foram aceites no servidor. */
+  window.cloudDiscardPendingWrites = function cloudDiscardPendingWrites() {
+    queue = [];
+    saveQueue();
+    updateStatus();
+  };
+
+  window.cloudFlushPendingWrites = function cloudFlushPendingWrites() {
+    return flushQueue();
   };
 
   (async function boot() {

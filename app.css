@@ -449,6 +449,14 @@
           .mm-backdrop{ transition:opacity .18s ease; }
         }
         .mm-backdrop.visible{ opacity:1; pointer-events:auto; }
+        /* O bloqueio de subscrição não deixa sequer o cabeçalho ou os painéis
+           laterais receberem foco/cliques antes do cartão ser registado. */
+        #subExpiradaBackdrop{
+          top:0;
+          z-index:100000;
+          align-items:center;
+          padding:1rem;
+        }
         .mm-card{
           width:100%;
           max-width:400px;

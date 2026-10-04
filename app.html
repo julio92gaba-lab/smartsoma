@@ -1321,6 +1321,9 @@
             </button>
         </div>
         <p class="cancelar-sub-note">15 dias de trial · A primeira cobrança é feita no fim do trial · Cancela antes para não pagar</p>
+        <div class="mm-secondary-action">
+            <button type="button" class="mm-text-link" id="subExpiradaSairBtn">Sair da conta</button>
+        </div>
     </div>
 </div>
 
@@ -1468,7 +1471,7 @@
         const SUPABASE_URL = 'https://ojhnierbhqrwxvabrzkt.supabase.co';
 
         /* ── Estado global do plano ── */
-        window.SmartSomaPro = { isPro: false };
+        window.SmartSomaPro = { isPro: false, entitlementChecked: false };
         let planoRetryTimer = null;
 
         function agendarNovaVerificacaoPlano() {
@@ -1535,17 +1538,24 @@
                     isActive = new Date(data.current_period_end).getTime() >= Date.now();
                 }
                 window.SmartSomaPro.isPro = isActive;
+                window.SmartSomaPro.entitlementChecked = true;
 
                 aplicarEstadoPlano(isActive ? data : null);
 
                 /* Sem subscrição válida: modal de escolha de plano (não dispensável) */
                 if (!isActive) {
+                    if (typeof window.cloudDiscardPendingWrites === 'function') {
+                        window.cloudDiscardPendingWrites();
+                    }
                     abrirModalSubExpirada();
                     /* O webhook pode chegar segundos depois do regresso do checkout. */
                     agendarNovaVerificacaoPlano();
                 } else {
                     fecharModalSubExpirada();
                     pararNovaVerificacaoPlano();
+                    if (typeof window.cloudFlushPendingWrites === 'function') {
+                        window.cloudFlushPendingWrites();
+                    }
                 }
 
             } catch(e) {
@@ -1671,10 +1681,20 @@
         function abrirModalSubExpirada() {
             const backdrop = document.getElementById('subExpiradaBackdrop');
             if (backdrop) backdrop.classList.add('visible');
+            const appRoot = document.getElementById('appRoot');
+            if (appRoot) {
+                appRoot.inert = true;
+                appRoot.setAttribute('aria-hidden', 'true');
+            }
         }
         function fecharModalSubExpirada() {
             const backdrop = document.getElementById('subExpiradaBackdrop');
             if (backdrop) backdrop.classList.remove('visible');
+            const appRoot = document.getElementById('appRoot');
+            if (appRoot) {
+                appRoot.inert = false;
+                appRoot.removeAttribute('aria-hidden');
+            }
         }
         window.abrirModalSubExpirada = abrirModalSubExpirada;
 
@@ -1716,6 +1736,13 @@
 
             const btnMensal = document.getElementById('subExpiradaBtnMensal');
             if (btnMensal) btnMensal.addEventListener('click', function(){ iniciarCheckout('mensal'); });
+
+            const btnSairSubscricao = document.getElementById('subExpiradaSairBtn');
+            if (btnSairSubscricao) btnSairSubscricao.addEventListener('click', async function() {
+                const sb = getSB();
+                if (sb) await sb.auth.signOut();
+                window.location.href = 'login.html';
+            });
 
             /* ── Botão idioma no cabeçalho ── */
             const btnHeaderLang = document.getElementById('btnHeaderLang');
