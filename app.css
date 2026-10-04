@@ -32,12 +32,21 @@
           --card-line:   rgba(var(--ink-rgb),0.09);
           --card-bg:     #FFFFFF;
           --input-bg:    #FFFFFF;
+          --safe-top:    0px;
+          --safe-bottom: 0px;
           --header-top-h: 3.625rem;
           --header-h:    var(--header-top-h);
           --header-bg:   #000000;
           --subheader-h: 2.1875rem;
           --hero-h:      50vh;
           --max-w:       480px;
+        }
+        @supports (padding:env(safe-area-inset-top)){
+          :root{
+            --safe-top:    env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+            --header-h:    calc(var(--header-top-h) + var(--safe-top));
+          }
         }
         /* Tema escuro: alterna as variáveis de cor globais. A maioria dos
            componentes já usa estas variáveis (ou rgba(var(--ink-rgb),X) para
@@ -266,12 +275,16 @@
         html,body{
           margin:0;
           padding:0;
+          min-height:100%;
           background:var(--paper);
           color:var(--ink);
           font-family:'Inter', sans-serif;
           -webkit-font-smoothing:antialiased;
           overflow-x:hidden;
           -webkit-tap-highlight-color:transparent;
+        }
+        @supports (height:100dvh){
+          html,body{ min-height:100dvh; }
         }
         html{
           /* Reserva sempre o espaço da barra de rolagem, mesmo quando ela
@@ -335,8 +348,8 @@
           width:100%;
           max-width:var(--max-w);
           margin:0 auto;
-          padding:0 1.0938rem;
-          height:var(--header-top-h);
+          padding:var(--safe-top) 1.0938rem 0;
+          height:var(--header-h);
           flex:0 0 auto;
           display:flex;
           align-items:center;
@@ -347,7 +360,7 @@
         .header-logo{
           position:absolute;
           left:50%;
-          top:50%;
+          top:calc(var(--safe-top) + (var(--header-top-h) / 2));
           transform:translate(-50%,-50%);
           flex:0 0 auto;
           display:flex;
@@ -866,8 +879,11 @@
           left:0; right:0; bottom:0;
           z-index:10;
           overflow-y:auto;
+          -webkit-overflow-scrolling:touch;
           padding:0.8125rem 1.0938rem calc(6.5rem + env(safe-area-inset-bottom, 0px));
           box-sizing:border-box;
+          transform:translateZ(0);
+          -webkit-transform:translateZ(0);
         }
         .home-list-view[hidden]{ display:none; }
         .home-list-page{ opacity:1; }
@@ -3494,11 +3510,11 @@
           100%{ opacity:1; transform:scale(1.32); }
         }
         #appRoot{
-          opacity:0;
-          transition:opacity .35s ease;
-        }
-        #appRoot.visible{
+          min-height:100vh;
           opacity:1;
+        }
+        @supports (height:100dvh){
+          #appRoot{ min-height:100dvh; }
         }
 
 /* =====================================================================
