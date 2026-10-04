@@ -1571,7 +1571,7 @@
 
                 const { data, error } = await sb
                     .from('subscriptions')
-                    .select('*')
+                    .select('plan,status,trial_ends_at,current_period_end')
                     .eq('user_id', user.id)
                     .maybeSingle();
 
@@ -1691,13 +1691,6 @@
                 const accessToken = sessionData?.session?.access_token;
                 if (!accessToken) { esconderLoading(); alert('Sessão inválida. Faz logout e entra novamente.'); return; }
 
-                const userMeta  = user.user_metadata || {};
-                const userName  = window.currentUserGoogleName
-                                  || userMeta.full_name || userMeta.name
-                                  || document.getElementById('sheetUsername')?.textContent?.trim()
-                                  || '';
-                const userEmail = user.email || window.currentUserEmail || '';
-
                 const res = await fetch(SUPABASE_URL + '/functions/v1/creem-checkout', {
                     method : 'POST',
                     headers: {
@@ -1705,13 +1698,7 @@
                         'Authorization': 'Bearer ' + accessToken
                     },
                     body: JSON.stringify({
-                        plan      : plan || 'mensal',
-                        productId : plan === 'semanal'
-                                    ? 'prod_2ZbohJlonCxMO4f45xufqZ'
-                                    : 'prod_6ybt2q5Rwe76WBL7GqpAEC',
-                        userId    : user.id,
-                        userName  : userName,
-                        userEmail : userEmail
+                        plan: plan || 'mensal'
                     })
                 });
 
