@@ -1670,11 +1670,11 @@
         /* ── Modal subscrição expirada ── */
         function abrirModalSubExpirada() {
             const backdrop = document.getElementById('subExpiradaBackdrop');
-            if (backdrop) backdrop.classList.add('is-visible');
+            if (backdrop) backdrop.classList.add('visible');
         }
         function fecharModalSubExpirada() {
             const backdrop = document.getElementById('subExpiradaBackdrop');
-            if (backdrop) backdrop.classList.remove('is-visible');
+            if (backdrop) backdrop.classList.remove('visible');
         }
         window.abrirModalSubExpirada = abrirModalSubExpirada;
 
@@ -1705,7 +1705,7 @@
                 }, true);
             }
             document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && subBackdrop && subBackdrop.classList.contains('is-visible')) {
+                if (e.key === 'Escape' && subBackdrop && subBackdrop.classList.contains('visible')) {
                     e.preventDefault(); e.stopPropagation();
                 }
             }, true);

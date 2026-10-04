@@ -287,12 +287,6 @@
           html,body{ min-height:100dvh; }
         }
         html{
-          /* Reserva sempre o espaço da barra de rolagem, mesmo quando ela
-             está escondida (ex.: popups que travam o scroll do body). Sem
-             isso, a largura efetiva da viewport muda por uma fração de
-             segundo ao abrir/fechar overlays, fazendo elementos fixos de
-             largura total (como o cabeçalho preto) "piscarem"/saltarem. */
-          scrollbar-gutter:stable;
           /* Tamanho do texto/app: Pequeno (padrão) e Médio. Como quase todo
              o CSS está em rem, mudar só este valor redimensiona a app
              inteira de uma vez, sem duplicar nenhuma regra. */
