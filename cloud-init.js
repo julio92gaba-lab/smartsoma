@@ -59,7 +59,9 @@
 
   function valueForDb(value) {
     if (value === undefined || value === null) return null;
-    return (typeof value === 'string') ? value : JSON.stringify(value);
+    var serialized = (typeof value === 'string') ? value : JSON.stringify(value);
+    if (serialized.length > 400000) throw new Error('Dados demasiado grandes para sincronizar.');
+    return serialized;
   }
 
   function markCacheReady() {
@@ -585,6 +587,9 @@
   // Sem rede a gravacao fica na fila e segue quando a ligacao voltar.
   window.cloudSet = function cloudSet(key, value) {
     if (!window.currentUser) return Promise.resolve();
+    if (typeof key !== 'string' || !/^[A-Za-z0-9:_-]{1,120}$/.test(key)) {
+      return Promise.reject(new Error('Identificador de dados inválido.'));
+    }
     if (window.SmartSomaPro && !window.SmartSomaPro.isPro) {
       return Promise.resolve({ error: null, pending: queue.length });
     }

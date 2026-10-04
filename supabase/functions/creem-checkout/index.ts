@@ -31,6 +31,23 @@ const products: Record<string, string> = {
   mensal: "prod_6ybt2q5Rwe76WBL7GqpAEC",
 }
 
+async function consumeRateLimit(
+  supabase: ReturnType<typeof createClient>,
+  scope: string,
+  identifier: string,
+  limit: number,
+  windowSeconds: number,
+) {
+  const { data, error } = await supabase.rpc("consume_rate_limit", {
+    p_scope: scope,
+    p_identifier: identifier,
+    p_limit: limit,
+    p_window_seconds: windowSeconds,
+  })
+  if (error) throw error
+  return data === true
+}
+
 serve(async (req) => {
 
   if (req.method === "OPTIONS") {
@@ -55,10 +72,17 @@ serve(async (req) => {
     const user = authData.user
     if (authError || !user) return json({ error: "Sessão inválida" }, 401)
 
+    if (Number(req.headers.get("content-length") || 0) > 1024) return json({ error: "Pedido demasiado grande" }, 413)
     const body = await req.json().catch(() => null)
-    const plan = body && typeof body.plan === "string" ? body.plan : ""
+    if (!body || typeof body !== "object" || Array.isArray(body) || Object.keys(body).length !== 1 || typeof body.plan !== "string") {
+      return json({ error: "Payload inválido" }, 400)
+    }
+    const plan = body.plan
     const productId = products[plan]
     if (!productId) return json({ error: "Plano inválido" }, 400)
+
+    const withinLimit = await consumeRateLimit(supabase, "creem-checkout-user", user.id, 5, 600)
+    if (!withinLimit) return json({ error: "Demasiadas tentativas. Aguarda alguns minutos." }, 429)
 
     const { data: subscription, error: subscriptionError } = await supabase
       .from("subscriptions")

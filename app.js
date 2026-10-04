@@ -9,6 +9,36 @@
        antes de qualquer outro script correr, para que nada apareça
        primeiro em português e só depois mude.
        =================================================================== */
+    /* Limites e codificação aplicados a toda entrada que a app persiste ou
+       volta a mostrar. A validação no banco é a barreira autoritativa; estas
+       funções evitam enviar conteúdo inválido e impedem XSS no cliente. */
+    window.SmartSomaSecurity = (function () {
+      var MAX_TEXT_LENGTH = 60;
+      var MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+      var ALLOWED_IMAGE_TYPES = { 'image/jpeg': true, 'image/png': true, 'image/webp': true };
+
+      function cleanText(value, maxLength) {
+        return String(value || '').replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, maxLength || MAX_TEXT_LENGTH);
+      }
+      function escapeHtml(value) {
+        return String(value == null ? '' : value).replace(/[&<>"']/g, function (ch) {
+          return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch];
+        });
+      }
+      function isSafeImageUrl(value) {
+        return typeof value === 'string' && (value.indexOf('data:image/jpeg;base64,') === 0 || /^https:\/\//i.test(value)) && value.length <= 400000;
+      }
+      async function validateImageFile(file) {
+        if (!file || !ALLOWED_IMAGE_TYPES[file.type] || file.size < 1 || file.size > MAX_IMAGE_BYTES) return false;
+        var bytes = new Uint8Array(await file.slice(0, 12).arrayBuffer());
+        var jpeg = bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff;
+        var png = bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4e && bytes[3] === 0x47;
+        var webp = bytes[0] === 0x52 && bytes[1] === 0x49 && bytes[2] === 0x46 && bytes[3] === 0x46 && bytes[8] === 0x57 && bytes[9] === 0x45 && bytes[10] === 0x42 && bytes[11] === 0x50;
+        return jpeg || png || webp;
+      }
+      return { cleanText: cleanText, escapeHtml: escapeHtml, isSafeImageUrl: isSafeImageUrl, validateImageFile: validateImageFile };
+    })();
+
     (function () {
       var LANG_KEY = 'appLang';
       var DEFAULT_LANG = 'pt';
@@ -1417,10 +1447,10 @@
       }
 
       salvarBtn.addEventListener('click', function () {
-        var descricao = descInput.value.trim();
+        var descricao = window.SmartSomaSecurity.cleanText(descInput.value);
         var valorNum  = parseFloat(valorInput.value.replace(',', '.'));
 
-        if (!descricao || isNaN(valorNum) || valorNum <= 0) return;
+        if (!descricao || isNaN(valorNum) || valorNum <= 0 || (tipoAtual === 'percentual' && valorNum > 100)) return;
 
 
 
@@ -1682,7 +1712,7 @@
           return (
             '<div class="despesa-card is-fixa despesa-fixa-lembrete">' +
               '<div class="despesa-card-top-row">' +
-                '<div class="despesa-card-desc">' + item.descricao + '</div>' +
+                '<div class="despesa-card-desc">' + window.SmartSomaSecurity.escapeHtml(item.descricao) + '</div>' +
                 '<span class="despesa-card-tag is-fixa">' + I18N.t('fixas.tagFixa') + '</span>' +
               '</div>' +
               '<div class="despesa-card-sub">' + sub + '</div>' +
@@ -1749,7 +1779,7 @@
       }
 
       salvarBtn.addEventListener('click', function () {
-        var descricao = descInput.value.trim();
+        var descricao = window.SmartSomaSecurity.cleanText(descInput.value);
         var valorNum  = parseFloat(valorInput.value.replace(',', '.'));
 
         if (!descricao || isNaN(valorNum) || valorNum <= 0) return;
@@ -3798,7 +3828,7 @@
         expenseEntries.forEach(function (entry) {
           var line = document.createElement('div');
           line.className = 'semana-day-despesa-line';
-          line.innerHTML = '<span class="valor">' + formatEuro(entry.valor) + '</span> - ' + entry.descricao;
+          line.innerHTML = '<span class="valor">' + formatEuro(entry.valor) + '</span> - ' + window.SmartSomaSecurity.escapeHtml(entry.descricao);
           despesasScroll.appendChild(line);
         });
         despesasView.appendChild(despesasScroll);
@@ -4725,8 +4755,8 @@
         if (raw) {
           var saved = JSON.parse(raw);
           if (saved && typeof saved === 'object') {
-            if (typeof saved.name === 'string' && saved.name.trim()) { state.name = saved.name; hasSavedName = true; }
-            if (typeof saved.photo === 'string') { state.photo = saved.photo; hasSavedPhoto = true; }
+            if (typeof saved.name === 'string' && saved.name.trim()) { state.name = window.SmartSomaSecurity.cleanText(saved.name); hasSavedName = true; }
+            if (window.SmartSomaSecurity.isSafeImageUrl(saved.photo)) { state.photo = saved.photo; hasSavedPhoto = true; }
             if (typeof saved.vehicle === 'string') state.vehicle = saved.vehicle;
             if (typeof saved.vehicleYear === 'string') state.vehicleYear = saved.vehicleYear;
             if (typeof saved.driverSince === 'string') state.driverSince = saved.driverSince;
@@ -4844,10 +4874,25 @@
 
     function renderAvatar () {
       if (!PROFILE_UI_READY) return;
-      var html = state.photo ? '<img src="' + state.photo + '" alt="' + I18N.t('photo.avatarAlt') + '">' : AVATAR_PLACEHOLDER;
-      sheetAvatar.innerHTML = html;
+      var safePhoto = window.SmartSomaSecurity.isSafeImageUrl(state.photo) ? state.photo : null;
+      state.photo = safePhoto;
+      sheetAvatar.innerHTML = safePhoto ? '' : AVATAR_PLACEHOLDER;
+      if (safePhoto) {
+        var avatar = document.createElement('img');
+        avatar.src = safePhoto;
+        avatar.alt = I18N.t('photo.avatarAlt');
+        sheetAvatar.appendChild(avatar);
+      }
       sheetAvatar.classList.toggle('has-photo', !!state.photo);
-      if (dpPhotoThumb) dpPhotoThumb.innerHTML = html;
+      if (dpPhotoThumb) {
+        dpPhotoThumb.innerHTML = safePhoto ? '' : AVATAR_PLACEHOLDER;
+        if (safePhoto) {
+          var thumb = document.createElement('img');
+          thumb.src = safePhoto;
+          thumb.alt = I18N.t('photo.avatarAlt');
+          dpPhotoThumb.appendChild(thumb);
+        }
+      }
       renderPhotoView();
     }
 
@@ -5295,9 +5340,14 @@
       });
       photoModalCard.addEventListener('click', function (e) { e.stopPropagation(); });
 
-      fileInput.addEventListener('change', function (e) {
+      fileInput.addEventListener('change', async function (e) {
         var file = e.target.files && e.target.files[0];
         if (!file) return;
+        if (!(await window.SmartSomaSecurity.validateImageFile(file))) {
+          fileInput.value = '';
+          alert('Selecione uma imagem JPEG, PNG ou WebP válida, com até 5 MB.');
+          return;
+        }
         var reader = new FileReader();
         reader.onload = function (ev) {
           cropImage.onload = initCrop;
@@ -5419,7 +5469,7 @@
       }
 
       dpSaveBtn.addEventListener('click', function () {
-        var nome = dpNomeInput.value.trim();
+        var nome = window.SmartSomaSecurity.cleanText(dpNomeInput.value);
         if (nome) state.name = nome;
 
         // Só quem entrou com email/senha pode trocar o email, e só entra
@@ -6276,9 +6326,14 @@
       /* --- Upload de imagem --- */
       if (uploadBtn && fileInput) {
         uploadBtn.addEventListener('click', function () { fileInput.click(); });
-        fileInput.addEventListener('change', function () {
+        fileInput.addEventListener('change', async function () {
           var file = fileInput.files && fileInput.files[0];
           if (!file) return;
+          if (!(await window.SmartSomaSecurity.validateImageFile(file))) {
+            fileInput.value = '';
+            alert('Selecione uma imagem JPEG, PNG ou WebP válida, com até 5 MB.');
+            return;
+          }
           var reader = new FileReader();
           reader.onload = function (e) {
             var imgEl = new Image();
@@ -6444,7 +6499,7 @@
 
       /* --- Salvar nova plataforma --- */
       salvarBtn.addEventListener('click', function () {
-        var nome = novaInput.value.trim();
+        var nome = window.SmartSomaSecurity.cleanText(novaInput.value, 9);
         if (!nome) return;
         all.push({
           id: 'p' + Date.now().toString(36) + Math.floor(Math.random() * 1296).toString(36),

@@ -278,14 +278,14 @@ body{
 
         <div class="form-group" id="emailGroup">
             <label>Email</label>
-            <input type="email" id="inputEmail" placeholder="o.teu@email.com" autocomplete="email">
+            <input type="email" id="inputEmail" placeholder="o.teu@email.com" autocomplete="email" maxlength="254">
             <div class="field-hint" id="hintEmail"></div>
         </div>
 
         <div class="form-group" id="passwordGroup">
             <label>Palavra-passe</label>
             <div class="pw-wrap">
-                <input type="password" id="inputPassword" placeholder="••••••••" autocomplete="current-password">
+                <input type="password" id="inputPassword" placeholder="••••••••" autocomplete="current-password" maxlength="128">
                 <button type="button" class="pw-toggle" id="btnShowPw" tabindex="-1" aria-label="Mostrar palavra-passe">
                     <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
@@ -383,6 +383,8 @@ body{
 
     let modo = 'login';
     let lastEmail = '';
+    let submittingUntil = 0;
+    const LOGIN_ATTEMPTS_KEY = 'ss_login_attempts_v1';
 
     // ── Sessão activa — redirecionar ──────────────────────────────────
     // (Não redireciona se a pessoa veio do link de recuperação: tem de definir a nova palavra-passe.)
@@ -405,13 +407,27 @@ body{
         const c = document.getElementById('toastContainer');
         const el = document.createElement('div');
         el.className = `toast ${type}`;
-        el.innerHTML = `
-            <span class="toast-icon">${icons[type]}</span>
-            <div class="toast-body">
-                <div class="toast-title">${title}</div>
-                ${msg ? `<div class="toast-msg">${msg}</div>` : ''}
-            </div>
-            <button class="toast-close" onclick="removeToast(this.parentElement)">✕</button>`;
+        const icon = document.createElement('span');
+        icon.className = 'toast-icon';
+        icon.textContent = icons[type] || icons.info;
+        const body = document.createElement('div');
+        body.className = 'toast-body';
+        const titleEl = document.createElement('div');
+        titleEl.className = 'toast-title';
+        titleEl.textContent = String(title || '');
+        body.appendChild(titleEl);
+        if (msg) {
+            const messageEl = document.createElement('div');
+            messageEl.className = 'toast-msg';
+            messageEl.textContent = String(msg);
+            body.appendChild(messageEl);
+        }
+        const close = document.createElement('button');
+        close.className = 'toast-close';
+        close.type = 'button';
+        close.textContent = '✕';
+        close.addEventListener('click', () => removeToast(el));
+        el.append(icon, body, close);
         c.appendChild(el);
         if (duration) setTimeout(() => removeToast(el), duration);
     }
@@ -535,8 +551,27 @@ body{
 
     function validatePassword(v) {
         if (!v) { inputPassword.classList.add('error'); hintPassword.textContent = 'Introduz a palavra-passe.'; hintPassword.className = 'field-hint error'; return false; }
-        if ((modo === 'registro' || modo === 'novaSenha') && v.length < 6) { inputPassword.classList.add('error'); hintPassword.textContent = 'A palavra-passe deve ter pelo menos 6 caracteres.'; hintPassword.className = 'field-hint error'; return false; }
+        if ((modo === 'registro' || modo === 'novaSenha') && (v.length < 10 || !/[a-z]/.test(v) || !/[A-Z]/.test(v) || !/[0-9]/.test(v))) { inputPassword.classList.add('error'); hintPassword.textContent = 'Usa pelo menos 10 caracteres, com maiúscula, minúscula e número.'; hintPassword.className = 'field-hint error'; return false; }
         return true;
+    }
+
+    function registerFailedLogin() {
+        try {
+            const now = Date.now();
+            const previous = JSON.parse(localStorage.getItem(LOGIN_ATTEMPTS_KEY) || '[]');
+            const attempts = previous.filter(ts => Number.isFinite(ts) && now - ts < 15 * 60 * 1000);
+            attempts.push(now);
+            localStorage.setItem(LOGIN_ATTEMPTS_KEY, JSON.stringify(attempts));
+            return attempts.length;
+        } catch { return 0; }
+    }
+
+    function loginCooldownActive() {
+        try {
+            const now = Date.now();
+            const attempts = JSON.parse(localStorage.getItem(LOGIN_ATTEMPTS_KEY) || '[]').filter(ts => Number.isFinite(ts) && now - ts < 15 * 60 * 1000);
+            return attempts.length >= 5;
+        } catch { return false; }
     }
 
     // ── Mapa de erros Supabase ────────────────────────────────────────
@@ -568,6 +603,12 @@ body{
 
     // ── Botão principal ───────────────────────────────────────────────
     btnMain.addEventListener('click', async () => {
+        const now = Date.now();
+        if (now < submittingUntil) return;
+        if (modo === 'login' && loginCooldownActive()) {
+            toast('info', 'Aguarda um pouco', 'Por segurança, tenta novamente dentro de alguns minutos.');
+            return;
+        }
         clearHints();
         const email    = inputEmail.value.trim();
         const password = inputPassword.value;
@@ -576,6 +617,7 @@ body{
         if (modo !== 'recuperar' && !validatePassword(password)) return;
 
         setLoading(true);
+        submittingUntil = now + 1500;
 
         try {
             if (modo === 'login') {
@@ -608,6 +650,7 @@ body{
                 setTimeout(() => setModo('login'), 1500);
             }
         } catch (err) {
+            if (modo === 'login' && err && /Invalid login credentials/i.test(err.message || '')) registerFailedLogin();
             handleError(err);
         } finally {
             setLoading(false);

@@ -13,6 +13,22 @@ const supabase = createClient(
   }
 );
 
+async function consumeRateLimit(scope, identifier, limit, windowSeconds) {
+  const { data, error } = await supabase.rpc('consume_rate_limit', {
+    p_scope: scope,
+    p_identifier: identifier,
+    p_limit: limit,
+    p_window_seconds: windowSeconds
+  });
+  if (error) throw error;
+  return data === true;
+}
+
+function getClientIp(req) {
+  const raw = String(req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || '').split(',')[0].trim();
+  return /^[0-9a-fA-F:.]{3,45}$/.test(raw) ? raw : 'unknown';
+}
+
 /* ── Cancela a subscrição no Creem ──────────────────────────────────────
    Chama a API do Creem para cancelar imediatamente.
    Se o utilizador não tiver subscrição no Creem (novo registo, trial
@@ -74,6 +90,11 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  if (Number(req.headers['content-length'] || 0) > 1024) {
+    return res.status(413).json({ error: 'Pedido demasiado grande' });
+  }
+  res.setHeader('Cache-Control', 'no-store');
+
   try {
     /* ── Variáveis de ambiente ── */
     if (!supabaseUrl || !supabaseServiceKey) {
@@ -93,6 +114,12 @@ module.exports = async function handler(req, res) {
 
     if (authError || !user) {
       return res.status(401).json({ error: 'Sessão inválida' });
+    }
+
+    const withinUserLimit = await consumeRateLimit('delete-account-user', user.id, 3, 3600);
+    const withinIpLimit = await consumeRateLimit('delete-account-ip', getClientIp(req), 10, 3600);
+    if (!withinUserLimit || !withinIpLimit) {
+      return res.status(429).json({ error: 'Demasiadas tentativas. Tenta novamente mais tarde.' });
     }
 
     /* ── 2. Ler o creem_subscription_id antes de apagar qualquer coisa ── */
