@@ -1498,10 +1498,10 @@
                     .from('subscriptions')
                     .select('*')
                     .eq('user_id', user.id)
-                    .single();
+                    .maybeSingle();
 
-                /* Erro de rede/servidor (≠ "sem registo"): não bloqueia, o RLS já protege os dados */
-                if (error && error.code !== 'PGRST116') {
+                /* Erro de rede/servidor: não bloqueia, o RLS já protege os dados */
+                if (error) {
                     console.warn('SmartSomaPro: erro ao ler subscrição', error);
                     return;
                 }
