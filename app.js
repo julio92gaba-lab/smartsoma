@@ -222,8 +222,6 @@
 "relatorio.pdf.nome": "Nome",
 "relatorio.pdf.email": "Email",
 "relatorio.pdf.plano": "Plano",
-"relatorio.pdf.planoGratuita": "Conta Gratuita",
-"relatorio.pdf.planoPro": "Conta Pro",
 "relatorio.pdf.semDespesas": "Sem despesas lançadas neste mês.",
 "relatorio.pdf.resumoSemanal": "Resumo semanal",
 "relatorio.pdf.periodo": "Período",
@@ -649,8 +647,6 @@
 "relatorio.pdf.nome": "Name",
 "relatorio.pdf.email": "Email",
 "relatorio.pdf.plano": "Plan",
-"relatorio.pdf.planoGratuita": "Free account",
-"relatorio.pdf.planoPro": "Pro account",
 "relatorio.pdf.semDespesas": "No expenses logged this month.",
 "relatorio.pdf.resumoSemanal": "Weekly summary",
 "relatorio.pdf.periodo": "Period",
@@ -1426,14 +1422,7 @@
 
         if (!descricao || isNaN(valorNum) || valorNum <= 0) return;
 
-        /* ── Limite de 2 despesas fixas no plano gratuito ── */
-        var ativas = despesas.filter(function (item) { return !item.ate; });
-        if (!window.SmartSomaPro.isPro && ativas.length >= 2) {
-          if (window.abrirModalUpgrade) {
-            window.abrirModalUpgrade('No plano gratuito só podes ter até 2 despesas fixas. Faz upgrade para Pro e gere despesas ilimitadas.');
-          }
-          return;
-        }
+
 
         if (tipoAtual === 'euro' && valorNum > 999.99) valorNum = 999.99;
 
@@ -6421,16 +6410,9 @@
         window.GanhosDate.onChange(refreshTileValues);
       }
 
-      /* --- Botão "+" abre o menu Ajustes na subtela Multiplataforma (só Pro) --- */
+      /* --- Botão "+" abre o menu Ajustes na subtela Multiplataforma --- */
       if (addBtn) {
         addBtn.addEventListener('click', function () {
-          if (!window.SmartSomaPro || !window.SmartSomaPro.isPro) {
-            /* Versão gratuita — mostra toast de bloqueio */
-            if (typeof window.mostrarProFeatureToast === 'function') {
-              window.mostrarProFeatureToast('Somente na versão Pro para adicionar outras empresas parceiras.');
-            }
-            return;
-          }
           if (typeof window.openProfileSheetPublic === 'function') {
             window.openProfileSheetPublic();
           }
@@ -6886,10 +6868,7 @@
         var y = 100;
 
         /* ---- Identificação: nome, email e plano da conta ----
-           Lê o perfil já guardado e o email da sessão (cloud-init.js).
-           PLANO (Gratuita/Pro): ainda não existe nenhuma informação de
-           plano/assinatura no projeto — fica "Gratuita" fixo até existir
-           uma fonte real (ex.: um campo na conta Supabase). */
+           Lê o perfil já guardado e o email da sessão (cloud-init.js). */
         var perfilNome = '';
         try {
           var perfilRaw = cloudGet('mydocs.profile');
@@ -6900,7 +6879,7 @@
         } catch (e) {  }
         if (!perfilNome) perfilNome = I18N.t('sheet.defaultUser');
         var perfilEmail = window.currentUserEmail || '—';
-        var perfilPlano = I18N.t('relatorio.pdf.planoGratuita');
+        var perfilPlano = I18N.t('relatorio.pdf.plano');
 
         doc.setFillColor(COR_PAPER[0], COR_PAPER[1], COR_PAPER[2]);
         doc.roundedRect(margin, y, pageW - margin * 2, 46, 5, 5, 'F');
@@ -7276,25 +7255,22 @@
       // page   : página do corpo da app onde o passo acontece
       // sheet  : true = painel de Ajustes aberto; false = fechado
       var ALL_STEPS = [
-        { sel: '#subHeaderDateBtn',        k: 'tut.s1',  page: 'ganhos', sheet: false, pro: false },
-        { sel: '#listRowUber',             k: 'tut.s2',  page: 'ganhos', sheet: false, pro: false },
-        { sel: '#btnAddPlatform',          k: 'tut.s2b', page: 'ganhos', sheet: false, pro: true  },
-        { sel: '#listRowDespesas',         k: 'tut.s3',  page: 'ganhos', sheet: false, pro: false },
-        { sel: '#listRowDistancia',        k: 'tut.s4',  page: 'ganhos', sheet: false, pro: false },
-        { sel: '#metaSemanalCard',         k: 'tut.s5',  page: 'ganhos', sheet: false, pro: false },
-        { sel: '#svgMenuBtn',              k: 'tut.s6',  page: 'ganhos', sheet: false, pro: false },
-        { sel: '#btnVerMeuResumo',         k: 'tut.s7',  page: 'ganhos', sheet: false, pro: false },
-        { sel: '.period-filter-row',       k: 'tut.s8',  page: 'resumo', sheet: false, pro: false },
-        { sel: '.dash-cluster',            k: 'tut.s9',  page: 'resumo', sheet: false, pro: false },
-        { sel: '#semanaWeekPicker',        k: 'tut.s10', page: 'semana', sheet: false, pro: true  },
-        { sel: '#subHeaderViewToggleGroup',k: 'tut.s11', page: 'semana', sheet: false, pro: true  },
+        { sel: '#subHeaderDateBtn',        k: 'tut.s1',  page: 'ganhos', sheet: false },
+        { sel: '#listRowUber',             k: 'tut.s2',  page: 'ganhos', sheet: false },
+        { sel: '#btnAddPlatform',          k: 'tut.s2b', page: 'ganhos', sheet: false },
+        { sel: '#listRowDespesas',         k: 'tut.s3',  page: 'ganhos', sheet: false },
+        { sel: '#listRowDistancia',        k: 'tut.s4',  page: 'ganhos', sheet: false },
+        { sel: '#metaSemanalCard',         k: 'tut.s5',  page: 'ganhos', sheet: false },
+        { sel: '#svgMenuBtn',              k: 'tut.s6',  page: 'ganhos', sheet: false },
+        { sel: '#btnVerMeuResumo',         k: 'tut.s7',  page: 'ganhos', sheet: false },
+        { sel: '.period-filter-row',       k: 'tut.s8',  page: 'resumo', sheet: false },
+        { sel: '.dash-cluster',            k: 'tut.s9',  page: 'resumo', sheet: false },
+        { sel: '#semanaWeekPicker',        k: 'tut.s10', page: 'semana', sheet: false },
+        { sel: '#subHeaderViewToggleGroup',k: 'tut.s11', page: 'semana', sheet: false },
         { sel: '#openDespesasFixasBtn',    k: 'tut.s12', page: 'ganhos', sheet: true,  pro: false }
       ];
 
-      /* Filtra passos conforme o plano: Pro vê tudo, gratuito só vê os não-Pro */
-      var STEPS = ALL_STEPS.filter(function(s) {
-        return !s.pro || (window.SmartSomaPro && window.SmartSomaPro.isPro);
-      });
+      var STEPS = ALL_STEPS.slice();
 
       // Devolve os elementos de um passo (aceita um selector ou vários).
       function alvosDe (step) {
@@ -7445,10 +7421,7 @@
         if (startBackdrop) startBackdrop.classList.remove('visible');
         if (window.closeAllOverlays) window.closeAllOverlays();
         if (window.QuickNavMenu) window.QuickNavMenu.close();
-        /* Refiltrar passos no momento de iniciar (plano pode ter mudado) */
-        STEPS = ALL_STEPS.filter(function(s) {
-          return !s.pro || (window.SmartSomaPro && window.SmartSomaPro.isPro);
-        });
+        STEPS = ALL_STEPS.slice();
         running = true;
         index = 0;
         overlay.hidden = false;
@@ -7552,77 +7525,3 @@
         start: iniciar
       };
     })();
-
-/* ══════════════════════════════════════════════════════════════════════
-   INTERSTITIAL DIÁRIO — SmartSoma
-   Mostra um anúncio de ecrã cheio na primeira ação de save do dia.
-   Controlo via localStorage: no máximo 1 vez por dia.
-   Slots monitorizados: Uber, Bolt, Distância, Despesas, Plataformas extra.
-   ══════════════════════════════════════════════════════════════════════ */
-(function () {
-    var AD_DAY_KEY = 'ss_ad_day';
-    var adPushed   = false;
-
-    /* IDs dos botões de salvar que disparam o interstitial */
-    var SAVE_BTNS = [
-        'uberSalvarBtn',
-        'boltSalvarBtn',
-        'distanciaSalvarBtn',
-        'despesasSemanaSalvarBtn',
-        'platExtraSalvarBtn'
-    ];
-
-    /* Data de hoje em formato YYYY-M-D */
-    function todayStr() {
-        var d = new Date();
-        return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
-    }
-
-    function wasShownToday() {
-        try { return localStorage.getItem(AD_DAY_KEY) === todayStr(); } catch (e) { return false; }
-    }
-
-    function markShownToday() {
-        try { localStorage.setItem(AD_DAY_KEY, todayStr()); } catch (e) {}
-    }
-
-    function showInterstitial() {
-        var el = document.getElementById('adInterstitial');
-        if (!el) return;
-
-        /* Inicializa o AdSense apenas na primeira vez que abre */
-        if (!adPushed) {
-            try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
-            adPushed = true;
-        }
-
-        el.hidden = false;
-        markShownToday();
-    }
-
-    function hideInterstitial() {
-        var el = document.getElementById('adInterstitial');
-        if (el) el.hidden = true;
-    }
-
-    /* Botão fechar */
-    var closeBtn = document.getElementById('adInterstitialClose');
-    if (closeBtn) closeBtn.addEventListener('click', hideInterstitial);
-
-    /* Fechar ao clicar fora do card (no backdrop escuro) */
-    var overlay = document.getElementById('adInterstitial');
-    if (overlay) {
-        overlay.addEventListener('click', function (e) {
-            if (e.target === overlay) hideInterstitial();
-        });
-    }
-
-    /* Escuta cliques em qualquer botão de save na página */
-    document.addEventListener('click', function (e) {
-        var id = e.target && e.target.id;
-        if (!id || SAVE_BTNS.indexOf(id) === -1) return;
-        if (wasShownToday()) return;
-        /* Pequeno delay para o modal de entrada fechar primeiro */
-        setTimeout(showInterstitial, 450);
-    });
-})();

@@ -1,115 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-PT">
 <head>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2388518461995933"
-     crossorigin="anonymous"></script>
     <style>
-        .ad-container{position:relative;width:100%;box-sizing:border-box;min-height:100px;background:var(--card-bg);border-radius:1rem;border-bottom:.125rem solid #4a4a4a;box-shadow:0 .125rem .375rem rgba(28,43,58,.09);margin-bottom:.8125rem;overflow:hidden;padding-top:1.375rem;max-width:100%}
-        .ad-label{position:absolute;top:.3125rem;left:50%;transform:translateX(-50%);font-size:.5625rem;font-weight:700;letter-spacing:1.1px;text-transform:uppercase;color:rgba(var(--ink-rgb),.32);white-space:nowrap;pointer-events:none;user-select:none;line-height:1}
-        .ad-container .adsbygoogle{display:block;width:100%;max-width:100%}
-        body.theme-dark .ad-label{color:rgba(var(--ink-rgb),.28)}
-
-        /* ── Interstitial diário ── */
-        #adInterstitial{
-            position:fixed;inset:0;z-index:13000;
-            background:rgba(0,0,0,.88);
-            display:flex;align-items:center;justify-content:center;
-            padding:1.25rem;box-sizing:border-box;
-        }
-        #adInterstitial[hidden]{display:none}
-        #adInterstitialCard{
-            width:100%;max-width:360px;
-            background:var(--card-bg);
-            border-radius:1rem;overflow:hidden;
-            display:flex;flex-direction:column;
-        }
-        #adInterstitialHeader{
-            display:flex;align-items:center;justify-content:space-between;
-            padding:.5rem .75rem .4rem;
-            border-bottom:1px solid var(--card-line);
-            flex-shrink:0;
-        }
-        #adInterstitialHeader .ad-label{
-            position:static;transform:none;
-            font-size:.5625rem;font-weight:700;
-            letter-spacing:1.1px;text-transform:uppercase;
-            color:rgba(var(--ink-rgb),.32);
-            pointer-events:none;user-select:none;
-        }
-        #adInterstitialClose{
-            background:none;border:none;cursor:pointer;
-            font-size:1.375rem;line-height:1;
-            color:rgba(var(--ink-rgb),.45);
-            padding:.125rem .375rem;border-radius:.5rem;
-            font-family:inherit;
-        }
-        #adInterstitialClose:active{background:rgba(var(--ink-rgb),.08)}
-        #adInterstitialBody{
-            min-height:280px;
-            display:flex;align-items:stretch;
-        }
-        #adInterstitialBody .adsbygoogle{
-            display:block;width:100%;min-height:280px;
-        }
-
-/* ── Corrige a coluna fantasma causada pelos iframes do Google Ads ── */
-html, body {
-    overflow-x: hidden !important;
-    max-width: 100vw !important;
-    box-sizing: border-box;
-}
-
-/* ── Banner Pro no menu Ajustes ── */
-.sheet-pro-banner{
-    margin:.75rem 1rem .25rem;
-    border-radius:.875rem;
-    background:linear-gradient(135deg,#1a3a2a 0%,#0d2218 100%);
-    border:1px solid rgba(46,204,113,.25);
-    overflow:hidden;
-}
-.sheet-pro-banner-inner{
-    display:flex;flex-direction:column;gap:.6rem;
-    padding:.75rem 1rem 1rem;
-}
-.sheet-pro-banner-top{
-    display:flex;align-items:center;gap:.55rem;
-}
-.sheet-pro-badge{
-    flex-shrink:0;
-    background:#2ECC71;color:#0d1117;
-    font-size:.6rem;font-weight:800;letter-spacing:1.2px;
-    padding:.25rem .45rem;border-radius:.375rem;
-    line-height:1;
-}
-.sheet-pro-text{
-    flex:1;min-width:0;
-    display:flex;flex-direction:column;gap:.15rem;
-}
-.sheet-pro-text strong{
-    font-size:.8125rem;font-weight:700;
-    color:#fff;line-height:1.2;
-}
-.sheet-pro-text span{
-    font-size:.7rem;color:rgba(255,255,255,.6);line-height:1.4;
-}
-.sheet-pro-btn{
-    display:block;width:100%;
-    background:#2ECC71;color:#0d1117;
-    border:none;border-radius:.625rem;
-    padding:.55rem 0;
-    font-size:.8rem;font-weight:700;
-    cursor:pointer;text-align:center;
-    transition:opacity .15s;
-}
-.sheet-pro-btn:active{opacity:.8}
-/* Quando já é Pro: esconde o banner */
-.sheet-pro-banner.is-pro{ display:none; }
-
-/* ── Modal Upgrade Pro ── */
-.upgrade-pro-icon{
-    font-size:2.5rem;text-align:center;
-    margin-bottom:.5rem;line-height:1;
-}
 
 /* ── Botão perigo nos dados pessoais ── */
 .dp-save-btn-danger{
@@ -149,17 +41,32 @@ html, body {
     font-size:2.2rem;text-align:center;
     margin-bottom:.5rem;
 }
-.cancelar-sub-perks-lost{
-    display:flex;flex-wrap:wrap;gap:.4rem;
-    justify-content:center;
-    margin:.75rem 0 .25rem;
+
+/* ── Modal subscrição expirada — escolha de plano ── */
+.sub-expired-plans{
+    display:flex;flex-direction:column;gap:.6rem;
+    margin:1rem 0;
 }
-.cancelar-sub-perks-lost span{
-    font-size:.7rem;font-weight:600;
-    padding:.3rem .6rem;border-radius:.5rem;
-    background:rgba(231,76,60,.08);
-    border:1px solid rgba(231,76,60,.2);
-    color:#e74c3c;
+.sub-expired-plan-btn{
+    display:flex;align-items:center;justify-content:space-between;
+    width:100%;padding:.75rem 1rem;
+    border-radius:.75rem;
+    border:2px solid rgba(46,204,113,.35);
+    background:rgba(46,204,113,.06);
+    cursor:pointer;
+    transition:border-color .15s,background .15s;
+}
+.sub-expired-plan-btn:active{
+    border-color:#2ECC71;
+    background:rgba(46,204,113,.12);
+}
+.sub-expired-plan-name{
+    font-size:.9rem;font-weight:700;
+    color:var(--ink);
+}
+.sub-expired-plan-price{
+    font-size:.8rem;font-weight:600;
+    color:#2ECC71;
 }
     </style>
     <meta charset="UTF-8">
@@ -262,7 +169,6 @@ html, body {
         </button>
 
         <div class="header-actions">
-            <!-- Botão tema (só visível na versão Pro) -->
             <button type="button" class="header-icon-btn" id="btnToggleTheme" data-i18n-aria="header.themeAria" aria-label="Alternar tema claro ou escuro" aria-pressed="false">
                 <svg class="icon-default" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M21 12.6A9 9 0 1 1 11.4 3a7 7 0 0 0 9.6 9.6Z"/>
@@ -279,7 +185,6 @@ html, body {
                     <line x1="17.9" y1="6.1" x2="19.8" y2="4.2"/>
                 </svg>
             </button>
-            <!-- Botão idioma no cabeçalho (só visível na versão gratuita) -->
             <button type="button" class="header-icon-btn header-lang-btn" id="btnHeaderLang" aria-label="Idioma" style="display:none">
                 <span class="header-lang-flag" id="headerLangFlag" aria-hidden="true"></span>
                 <span class="header-lang-code" id="headerLangCode">PT</span>
@@ -552,16 +457,7 @@ html, body {
                                 </button>
                             </div>
 
-                            <div class="ad-container" id="adSlotResumo" role="complementary" aria-label="Publicidade">
-                                <span class="ad-label" aria-hidden="true">Publicidade</span>
-                                <ins class="adsbygoogle"
-                                     style="display:block"
-                                     data-ad-client="ca-pub-2388518461995933"
-                                     data-ad-slot="9425313813"
-                                     data-ad-format="auto"
-                                     data-full-width-responsive="true"></ins>
-                                <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-                            </div>
+
 
                             
                         </div>
@@ -667,19 +563,17 @@ html, body {
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="20" x2="5" y2="12"/><line x1="12" y1="20" x2="12" y2="6"/><line x1="19" y1="20" x2="19" y2="15"/></svg>
                             </span>
                         </button>
-                        <button type="button" class="menu-item menu-item-pro-locked" id="navItemSemana" data-nav="semana">
+                        <button type="button" class="menu-item" id="navItemSemana" data-nav="semana">
                             <span data-i18n="nav.semana">Detalhes da Semana</span>
                             <span class="menu-item-icon">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="16" rx="2.5"/><line x1="3.5" y1="10" x2="20.5" y2="10"/><line x1="8" y1="3" x2="8" y2="6.6"/><line x1="16" y1="3" x2="16" y2="6.6"/></svg>
                             </span>
-                            <span class="menu-item-pro-tag" aria-hidden="true">PRO</span>
                         </button>
-                        <button type="button" class="menu-item menu-item-pro-locked" id="navItemRelatorio" data-nav="relatorio">
+                        <button type="button" class="menu-item" id="navItemRelatorio" data-nav="relatorio">
                             <span data-i18n="nav.relatorio">Download Relatório</span>
                             <span class="menu-item-icon">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v11.5"/><polyline points="7.5 10.5 12 15 16.5 10.5"/><line x1="5" y1="19.5" x2="19" y2="19.5"/></svg>
                             </span>
-                            <span class="menu-item-pro-tag" aria-hidden="true">PRO</span>
                         </button>
                     </div>
 
@@ -757,23 +651,10 @@ html, body {
                             <p class="sheet-subinfo" id="sheetDriverSince">0 dias nos Apps.</p>
                         </div>
                     </div>
-                    <!-- Banner Pro (versão gratuita) -->
-                    <div class="sheet-pro-banner" id="sheetProBanner">
-                        <div class="sheet-pro-banner-inner">
-                            <div class="sheet-pro-banner-top">
-                                <span class="sheet-pro-badge">PRO</span>
-                                <div class="sheet-pro-text">
-                                    <strong id="sheetProBannerTitle">Upgrade para Pro</strong>
-                                    <span id="sheetProBannerSub">Sem anúncios e funcionalidades extra.</span>
-                                </div>
-                            </div>
-                            <button type="button" class="sheet-pro-btn" id="btnUpgradePro">Ativar</button>
-                        </div>
-                    </div>
-                    <!-- Badge Conta PRO (versão Pro, começa escondido) -->
-                    <div class="sheet-pro-active-badge" id="sheetProActiveBadge" style="display:none">
+                    <!-- Badge subscrição activa -->
+                    <div class="sheet-pro-active-badge" id="sheetProActiveBadge">
                         <span class="sheet-pro-active-dot"></span>
-                        <span class="sheet-pro-active-label">Conta PRO activa</span>
+                        <span class="sheet-pro-active-label">Subscrição activa</span>
                     </div>
                     <div class="sheet-divider"></div>
                     <div class="sheet-actions">
@@ -791,13 +672,12 @@ html, body {
                             </svg>
                             <span data-i18n="sheet.despesasFixas">Despesas Fixas</span>
                         </button>
-                        <button type="button" class="sheet-action-btn sheet-action-btn-pro-locked" id="openMultiplataformaBtn">
+                        <button type="button" class="sheet-action-btn" id="openMultiplataformaBtn">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                                 <circle cx="8" cy="8" r="4.2"/>
                                 <circle cx="16" cy="16" r="4.2"/>
                             </svg>
                             <span data-i18n="sheet.multiplataforma">Multiplataforma</span>
-                            <span class="sheet-action-pro-tag" id="multiplataformaProTag" aria-hidden="true">PRO</span>
                         </button>
                         <button type="button" class="sheet-action-btn sheet-action-btn-split" id="openIdiomaBtn">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -909,17 +789,17 @@ html, body {
                     <button type="button" class="dp-save-btn" id="dpSaveBtn" data-i18n="dp.atualizarDados">Atualizar Dados Pessoais</button>
                     <button type="button" class="dp-save-btn dp-save-btn-secondary" id="dpChangePasswordBtn" data-i18n="dp.atualizarPassword" hidden>Atualizar Password</button>
 
-                    <!-- Cancelar subscrição Pro (só visível se for Pro) -->
+                    <!-- Cancelar subscrição (só visível se subscrição activa) -->
                     <div id="cancelarSubscricaoSection" style="display:none">
                         <div class="sheet-divider" style="margin-top:1.25rem"></div>
                         <div class="cancelar-sub-info">
-                            <span class="cancelar-sub-badge">PRO</span>
+                            <span class="cancelar-sub-badge">ACTIVO</span>
                             <span class="cancelar-sub-label">Subscrição activa</span>
                         </div>
                         <button type="button" class="dp-save-btn dp-save-btn-danger" id="btnCancelarSubscricao">
-                            Cancelar Subscrição Pro
+                            Cancelar Subscrição
                         </button>
-                        <p class="cancelar-sub-note">O acesso Pro mantém-se até ao fim do período já pago.</p>
+                        <p class="cancelar-sub-note">O acesso mantém-se até ao fim do período já pago.</p>
                     </div>
 
                     <div class="sheet-divider" style="margin-top:1.25rem"></div>
@@ -939,18 +819,7 @@ html, body {
             </div>
             <div class="sheet-screen" id="sheetScreenDespesasFixas" hidden>
                 <div class="sheet-content sheet-page-content">
-                    <!-- Aviso plano gratuito (escondido na versão Pro) -->
-                    <div class="fixas-free-notice" id="fixasFreePlanNotice">
-                        <svg class="fixas-free-notice-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <circle cx="12" cy="12" r="9"/>
-                            <line x1="12" y1="8" x2="12" y2="12"/>
-                            <circle cx="12" cy="16" r="0.8" fill="currentColor" stroke="none"/>
-                        </svg>
-                        <div class="fixas-free-notice-body">
-                            <span class="fixas-free-notice-title">Plano Gratuito — limite de 2 despesas</span>
-                            <span class="fixas-free-notice-sub">No plano gratuito só podes registar até 2 despesas fixas semanais. Faz upgrade para Pro e gere despesas ilimitadas.</span>
-                        </div>
-                    </div>
+
                     <p class="mm-helper-text" data-i18n="fixas.helper">Despesas que se repetem toda SEMANA (ex: Aluguel do carro, Taxa plataforma). Escolha % do valor bruto (atualizado automaticamente conforme os ganhos são inseridos), ou valor fixo em €. Este valor é lançado na segunda feira de cada semana.</p>
 
                     <div class="despesa-form">
@@ -1296,9 +1165,8 @@ html, body {
 
             <div class="distancia-mode-row">
                 <button type="button" class="distancia-mode-btn active" id="distanciaModoTotalBtn" data-modo="total" aria-pressed="true" data-i18n="dist.modoTotal">Km Total</button>
-                <button type="button" class="distancia-mode-btn distancia-mode-btn-pro-locked" id="distanciaModoInicioFimBtn" data-modo="inicio-fim" aria-pressed="false" data-i18n="dist.modoInicioFim">
+                <button type="button" class="distancia-mode-btn" id="distanciaModoInicioFimBtn" data-modo="inicio-fim" aria-pressed="false" data-i18n="dist.modoInicioFim">
                     Início e Fim
-                    <span class="distancia-pro-tag" aria-hidden="true">PRO</span>
                 </button>
             </div>
             <p class="mm-helper-text" id="distanciaModoHelperText">Insira os quilômetros percorridos durante o dia, apenas o valor total.</p>
@@ -1408,16 +1276,23 @@ html, body {
 </div>
 
 
-<!-- ── Modal Upgrade Pro ── -->
-<div class="mm-backdrop" id="upgradeProBackdrop">
-    <div class="mm-card" role="dialog" aria-modal="true" aria-labelledby="upgradeProTitle" id="upgradeProCard">
-        <div class="upgrade-pro-icon" aria-hidden="true">⚡</div>
-        <h3 class="mm-title" id="upgradeProTitle">Funcionalidade Pro</h3>
-        <p class="mm-helper-text" id="upgradeProText">Esta funcionalidade está disponível apenas no plano Pro. Sem anúncios, com acesso completo.</p>
-        <button type="button" class="mm-save-btn" id="upgradeProConfirmBtn">Ver plano Pro</button>
-        <div class="mm-secondary-action">
-            <button type="button" class="mm-text-link" id="upgradeProCancelBtn">Agora não</button>
+<!-- ── Modal Subscrição Expirada ── -->
+<div class="mm-backdrop" id="subExpiradaBackdrop">
+    <div class="mm-card" role="dialog" aria-modal="true" aria-labelledby="subExpiradaTitle" id="subExpiradaCard">
+        <div class="cancelar-sub-modal-icon" aria-hidden="true">⏳</div>
+        <h3 class="mm-title" id="subExpiradaTitle">Subscrição expirada</h3>
+        <p class="mm-helper-text">O teu período de acesso terminou. Escolhe um plano para continuar a usar o SmartSoma.</p>
+        <div class="sub-expired-plans">
+            <button type="button" class="sub-expired-plan-btn" id="subExpiradaBtnSemanal" data-plan="semanal">
+                <span class="sub-expired-plan-name">Plano Semanal</span>
+                <span class="sub-expired-plan-price">€2 / semana</span>
+            </button>
+            <button type="button" class="sub-expired-plan-btn" id="subExpiradaBtnMensal" data-plan="mensal">
+                <span class="sub-expired-plan-name">Plano Mensal</span>
+                <span class="sub-expired-plan-price">€5 / mês</span>
+            </button>
         </div>
+        <p class="cancelar-sub-note">Trial de 15 dias grátis · Cancela quando quiseres</p>
     </div>
 </div>
 
@@ -1562,8 +1437,7 @@ html, body {
         /* ─────────────────────────────────────────
            CONFIGURA AQUI OS DOIS VALORES DO CREEM
            ───────────────────────────────────────── */
-        const SUPABASE_URL     = 'https://ojhnierbhqrwxvabrzkt.supabase.co';
-        const CREEM_PRODUCT_ID = 'prod_6ybt2q5Rwe76WBL7GqpAEC';
+        const SUPABASE_URL = 'https://ojhnierbhqrwxvabrzkt.supabase.co';
 
         /* ── Estado global do plano ── */
         window.SmartSomaPro = { isPro: false };
@@ -1592,95 +1466,53 @@ html, body {
 
                 const { data } = await sb
                     .from('subscriptions')
-                    .select('plan, status')
+                    .select('status')
                     .eq('user_id', user.id)
                     .single();
 
-                const isPro = data?.plan === 'pro' && data?.status === 'active';
-                window.SmartSomaPro.isPro = isPro;
+                const isActive = data?.status === 'active';
+                window.SmartSomaPro.isPro = isActive;
 
-                /* ── Aplica estados visuais Pro / Gratuito ── */
-                aplicarEstadoPlano(isPro);
+                aplicarEstadoPlano(isActive);
+
+                /* Se subscrição expirada: mostra modal de escolha de plano */
+                if (!isActive) {
+                    abrirModalSubExpirada();
+                }
 
             } catch(e) {
                 console.warn('SmartSomaPro: erro ao verificar plano', e);
             }
         }
 
-        /* ── Toast genérico para funcionalidades bloqueadas ── */
+        /* ── Toast genérico de notificação ── */
         let proToastTimer = null;
         function mostrarProFeatureToast(msg) {
-            const toast = document.getElementById('proFeatureToast');
+            const toast  = document.getElementById('proFeatureToast');
             const textEl = document.getElementById('proFeatureToastText');
             if (!toast) return;
-            if (textEl) textEl.textContent = msg || 'Somente na versão Pro.';
+            if (textEl) textEl.textContent = msg || '';
             clearTimeout(proToastTimer);
             toast.classList.add('show');
             proToastTimer = setTimeout(() => toast.classList.remove('show'), 3500);
         }
         window.mostrarProFeatureToast = mostrarProFeatureToast;
 
-        /* ── Aplica todos os estados visuais conforme plano ── */
-        function aplicarEstadoPlano(isPro) {
-            /* Banner nos Ajustes */
-            const banner      = document.getElementById('sheetProBanner');
+        /* ── Aplica estados visuais conforme subscrição ── */
+        function aplicarEstadoPlano(isActive) {
+            /* Badge de subscrição nos Ajustes */
             const activeBadge = document.getElementById('sheetProActiveBadge');
-            if (banner)      banner.style.display      = isPro ? 'none'  : '';
-            if (activeBadge) activeBadge.style.display = isPro ? 'flex'  : 'none';
+            if (activeBadge) activeBadge.style.display = isActive ? 'flex' : 'none';
 
-            /* Botão tema (cabeçalho) — Pro: visível; Gratuito: escondido */
-            const btnTema = document.getElementById('btnToggleTheme');
-            const btnLang = document.getElementById('btnHeaderLang');
-            if (btnTema) btnTema.style.display = isPro ? '' : 'none';
-            if (btnLang) btnLang.style.display = isPro ? 'none' : '';
-
-            /* Atualiza bandeira/código no botão de idioma do cabeçalho */
-            if (!isPro) atualizarBotaoIdiomaHeader();
-
-            /* Idioma nos Ajustes — só na versão Pro */
-            const btnIdioma = document.getElementById('openIdiomaBtn');
-            if (btnIdioma) btnIdioma.style.display = isPro ? '' : 'none';
-
-            /* Multiplataforma — inativo na versão gratuita */
-            const btnMulti   = document.getElementById('openMultiplataformaBtn');
-            const multiTag   = document.getElementById('multiplataformaProTag');
-            if (btnMulti) btnMulti.classList.toggle('sheet-action-btn-pro-locked', !isPro);
-            if (multiTag) multiTag.style.display = isPro ? 'none' : '';
-
-            /* Menu flutuante — Semana e Relatório */
-            const navSemana    = document.getElementById('navItemSemana');
-            const navRelatorio = document.getElementById('navItemRelatorio');
-            if (navSemana)    navSemana.classList.toggle('menu-item-pro-locked', !isPro);
-            if (navRelatorio) navRelatorio.classList.toggle('menu-item-pro-locked', !isPro);
-            const semanaTag    = navSemana    ? navSemana.querySelector('.menu-item-pro-tag')    : null;
-            const relatorioTag = navRelatorio ? navRelatorio.querySelector('.menu-item-pro-tag') : null;
-            if (semanaTag)    semanaTag.style.display    = isPro ? 'none' : '';
-            if (relatorioTag) relatorioTag.style.display = isPro ? 'none' : '';
-
-            /* Distância — botão Início e Fim */
-            const btnInicioFim = document.getElementById('distanciaModoInicioFimBtn');
-            const distTag      = btnInicioFim ? btnInicioFim.querySelector('.distancia-pro-tag') : null;
-            if (btnInicioFim) btnInicioFim.classList.toggle('distancia-mode-btn-pro-locked', !isPro);
-            if (distTag)      distTag.style.display = isPro ? 'none' : '';
-
-            /* Despesas Fixas — aviso plano gratuito */
-            const fixasNotice = document.getElementById('fixasFreePlanNotice');
-            if (fixasNotice) fixasNotice.style.display = isPro ? 'none' : '';
-
-            /* Botão "+" de ganhos — tag PRO e estado bloqueado */
-            const addPlatformBtn = document.getElementById('btnAddPlatform');
-            const addPlatformTag = document.getElementById('addPlatformProTag');
-            if (addPlatformBtn) addPlatformBtn.classList.toggle('ganhos-tile-add-pro-locked', !isPro);
-            if (addPlatformTag) addPlatformTag.style.display = isPro ? 'none' : '';
-
-            /* Secção de cancelamento nos Dados Pessoais — só visível se Pro */
+            /* Secção de cancelamento nos Dados Pessoais */
             const cancelarSection = document.getElementById('cancelarSubscricaoSection');
-            if (cancelarSection) cancelarSection.style.display = isPro ? '' : 'none';
+            if (cancelarSection) cancelarSection.style.display = isActive ? '' : 'none';
         }
 
         /* ── Inicia checkout no Creem ── */
-        async function iniciarCheckout() {
+        async function iniciarCheckout(plan) {
             mostrarLoading();
+            fecharModalSubExpirada();
             try {
                 const sb = getSB();
                 if (!sb) { esconderLoading(); alert('A app ainda está a carregar. Tenta novamente.'); return; }
@@ -1692,7 +1524,6 @@ html, body {
                 const accessToken = sessionData?.session?.access_token;
                 if (!accessToken) { esconderLoading(); alert('Sessão inválida. Faz logout e entra novamente.'); return; }
 
-                /* Nome e email para pré-preencher o formulário do Creem */
                 const userMeta  = user.user_metadata || {};
                 const userName  = window.currentUserGoogleName
                                   || userMeta.full_name || userMeta.name
@@ -1707,7 +1538,7 @@ html, body {
                         'Authorization': 'Bearer ' + accessToken
                     },
                     body: JSON.stringify({
-                        productId : CREEM_PRODUCT_ID,
+                        plan      : plan || 'mensal',
                         userId    : user.id,
                         userName  : userName,
                         userEmail : userEmail
@@ -1716,7 +1547,6 @@ html, body {
 
                 const json = await res.json();
                 if (json.url) {
-                    /* Mantém o overlay activo — a página está a redirecionar */
                     window.location.href = json.url;
                 } else {
                     esconderLoading();
@@ -1730,23 +1560,16 @@ html, body {
             }
         }
 
-        /* ── Abre o modal de upgrade (chamado pelas funções pagas) ── */
-        window.abrirModalUpgrade = function(texto) {
-            if (texto) document.getElementById('upgradeProText').textContent = texto;
-            document.getElementById('upgradeProBackdrop').classList.add('is-visible');
-        };
-
-        /* ── Fecha modal ── */
-        function fecharModalUpgrade() {
-            document.getElementById('upgradeProBackdrop').classList.remove('is-visible');
+        /* ── Modal subscrição expirada ── */
+        function abrirModalSubExpirada() {
+            const backdrop = document.getElementById('subExpiradaBackdrop');
+            if (backdrop) backdrop.classList.add('is-visible');
         }
-
-        /* ── Verifica se pode usar função paga; se não, abre modal ── */
-        window.exigirPro = function(textoOpcional) {
-            if (window.SmartSomaPro.isPro) return true;
-            window.abrirModalUpgrade(textoOpcional || 'Esta funcionalidade está disponível apenas no plano Pro.');
-            return false;
-        };
+        function fecharModalSubExpirada() {
+            const backdrop = document.getElementById('subExpiradaBackdrop');
+            if (backdrop) backdrop.classList.remove('is-visible');
+        }
+        window.abrirModalSubExpirada = abrirModalSubExpirada;
 
         /* ── Cancelamento de subscrição ── */
         async function cancelarSubscricao() {
@@ -1785,7 +1608,7 @@ html, body {
                 fecharModalCancelar();
                 aplicarEstadoPlano(false);
                 window.SmartSomaPro.isPro = false;
-                mostrarProFeatureToast('Subscrição cancelada. O acesso Pro mantém-se até ao fim do período.');
+                mostrarProFeatureToast('Subscrição cancelada. O acesso mantém-se até ao fim do período.');
 
             } catch (e) {
                 console.error('Erro ao cancelar subscrição:', e);
@@ -1818,38 +1641,20 @@ html, body {
             codeEl.textContent = lang.toUpperCase().slice(0, 2);
         }
         window.atualizarBotaoIdiomaHeader = atualizarBotaoIdiomaHeader;
-        document.addEventListener('languageChanged', function() {
-            if (!window.SmartSomaPro || !window.SmartSomaPro.isPro) {
-                atualizarBotaoIdiomaHeader();
-            }
-        });
-        document.addEventListener('languageChanged', function() {
-            if (!window.SmartSomaPro || !window.SmartSomaPro.isPro) {
-                atualizarBotaoIdiomaHeader();
-            }
-        });
+        document.addEventListener('languageChanged', atualizarBotaoIdiomaHeader);
 
         /* ── Registar botões ── */
         function registarBotoes() {
-            const btnUpgrade = document.getElementById('btnUpgradePro');
-            if (btnUpgrade) btnUpgrade.addEventListener('click', iniciarCheckout);
+            /* ── Loading overlay ── */
+            const btnCancelarLoading = document.getElementById('checkoutLoadingCancel');
+            if (btnCancelarLoading) btnCancelarLoading.addEventListener('click', esconderLoading);
 
-            const btnCancelar = document.getElementById('checkoutLoadingCancel');
-            if (btnCancelar) btnCancelar.addEventListener('click', esconderLoading);
+            /* ── Modal subscrição expirada ── */
+            const btnSemanal = document.getElementById('subExpiradaBtnSemanal');
+            if (btnSemanal) btnSemanal.addEventListener('click', function(){ iniciarCheckout('semanal'); });
 
-            const btnConfirm = document.getElementById('upgradeProConfirmBtn');
-            if (btnConfirm) btnConfirm.addEventListener('click', function(){
-                fecharModalUpgrade();
-                iniciarCheckout();
-            });
-
-            const btnCancel = document.getElementById('upgradeProCancelBtn');
-            if (btnCancel) btnCancel.addEventListener('click', fecharModalUpgrade);
-
-            const backdrop = document.getElementById('upgradeProBackdrop');
-            if (backdrop) backdrop.addEventListener('click', function(e){
-                if (e.target === backdrop) fecharModalUpgrade();
-            });
+            const btnMensal = document.getElementById('subExpiradaBtnMensal');
+            if (btnMensal) btnMensal.addEventListener('click', function(){ iniciarCheckout('mensal'); });
 
             /* ── Cancelar subscrição ── */
             const btnCancelarSub = document.getElementById('btnCancelarSubscricao');
@@ -1870,70 +1675,14 @@ html, body {
             const btnHeaderLang = document.getElementById('btnHeaderLang');
             if (btnHeaderLang) {
                 btnHeaderLang.addEventListener('click', function() {
-                    if (window.SmartSomaPro && window.SmartSomaPro.isPro) {
-                        /* Pro → abre sheet de Ajustes no ecrã de idioma */
-                        if (typeof window.openProfileSheetPublic === 'function') {
-                            window.openProfileSheetPublic();
-                        }
-                        setTimeout(function() {
-                            const btnIdioma = document.getElementById('openIdiomaBtn');
-                            if (btnIdioma) btnIdioma.click();
-                        }, 320);
-                    } else {
-                        /* Gratuito → abre modal centralizado */
-                        if (window.LangPopupModal) window.LangPopupModal.open();
+                    if (typeof window.openProfileSheetPublic === 'function') {
+                        window.openProfileSheetPublic();
                     }
+                    setTimeout(function() {
+                        const btnIdioma = document.getElementById('openIdiomaBtn');
+                        if (btnIdioma) btnIdioma.click();
+                    }, 320);
                 });
-            }
-
-            /* ── Multiplataforma — bloqueio Pro ── */
-            const btnMulti = document.getElementById('openMultiplataformaBtn');
-            if (btnMulti) {
-                btnMulti.addEventListener('click', function(e) {
-                    if (!window.SmartSomaPro.isPro) {
-                        e.stopImmediatePropagation();
-                        window.abrirModalUpgrade('A funcionalidade Multiplataforma está disponível apenas no plano Pro.');
-                        return false;
-                    }
-                }, true);
-            }
-
-            /* ── Menu flutuante — Semana bloqueio Pro ── */
-            const navSemana = document.getElementById('navItemSemana');
-            if (navSemana) {
-                navSemana.addEventListener('click', function(e) {
-                    if (!window.SmartSomaPro.isPro) {
-                        e.stopImmediatePropagation();
-                        if (window.QuickNavMenu) window.QuickNavMenu.close();
-                        window.abrirModalUpgrade('Os Detalhes da Semana estão disponíveis apenas no plano Pro.');
-                        return false;
-                    }
-                }, true);
-            }
-
-            /* ── Menu flutuante — Relatório bloqueio Pro ── */
-            const navRelatorio = document.getElementById('navItemRelatorio');
-            if (navRelatorio) {
-                navRelatorio.addEventListener('click', function(e) {
-                    if (!window.SmartSomaPro.isPro) {
-                        e.stopImmediatePropagation();
-                        if (window.QuickNavMenu) window.QuickNavMenu.close();
-                        window.abrirModalUpgrade('O Download Relatório está disponível apenas no plano Pro.');
-                        return false;
-                    }
-                }, true);
-            }
-
-            /* ── Distância — Início e Fim bloqueio Pro ── */
-            const btnInicioFim = document.getElementById('distanciaModoInicioFimBtn');
-            if (btnInicioFim) {
-                btnInicioFim.addEventListener('click', function(e) {
-                    if (!window.SmartSomaPro.isPro) {
-                        e.stopImmediatePropagation();
-                        mostrarProFeatureToast('Somente na versão Pro para calcularmos os km percorridos.');
-                        return false;
-                    }
-                }, true);
             }
         }
 
@@ -1963,20 +1712,13 @@ html, body {
     <!-- PWA: Service Worker + toast de instalação -->
     <script src="pwa-install.js"></script>
 
-    <!-- ── Toast Bem-vindo Pro ──
-         Condições para aparecer:
-           1. sessionStorage contém 'smartsoma_pro_welcome' = '1'
-              (gravado pelo obrigado.html antes do redirect)
-           2. A conta do utilizador é efectivamente Pro e active
-              (verificado via Supabase, igual ao verificarPlano() acima)
-         Ambas têm de ser verdadeiras; o flag é consumido logo na leitura.
-    ── -->
+    <!-- Toast de boas-vindas após activação de subscrição -->
     <div id="proWelcomeToast" role="status" aria-live="polite">
         <div class="pwt-inner">
             <div class="pwt-icon">🏆</div>
             <div class="pwt-body">
-                <div class="pwt-title">Bem-vindo ao SmartSoma Pro!</div>
-                <div class="pwt-sub">Usufrui de todos os novos recursos. Obrigado por seres Pro! 🚀</div>
+                <div class="pwt-title">Bem-vindo ao SmartSoma!</div>
+                <div class="pwt-sub">A tua subscrição está activa. Bons ganhos! 🚀</div>
             </div>
             <button class="pwt-close" id="proWelcomeToastClose" aria-label="Fechar">×</button>
         </div>
@@ -1984,10 +1726,7 @@ html, body {
 
     <script>
     (function () {
-        /* Sai imediatamente se o flag de compra não existir */
         if (sessionStorage.getItem('smartsoma_pro_welcome') !== '1') return;
-
-        /* Consome o flag — uma única exibição por sessão de compra */
         sessionStorage.removeItem('smartsoma_pro_welcome');
 
         var toast    = document.getElementById('proWelcomeToast');
@@ -1998,9 +1737,7 @@ html, body {
 
         function mostrarToast() {
             toast.classList.add('show');
-            hideTimer = setTimeout(function () {
-                toast.classList.remove('show');
-            }, 9000);
+            hideTimer = setTimeout(function () { toast.classList.remove('show'); }, 9000);
         }
 
         closeBtn.addEventListener('click', function () {
@@ -2008,47 +1745,20 @@ html, body {
             toast.classList.remove('show');
         });
 
-        /* Verifica junto ao Supabase se a conta é realmente Pro
-           antes de mostrar o toast.                              */
-        async function verificarEMostrar() {
-            try {
-                var sb = window.supabaseClient || null;
-                if (!sb) { mostrarToast(); return; } /* fallback: mostra se Supabase ainda não carregou */
-
-                var user = window.currentUser || (await sb.auth.getUser()).data.user;
-                if (!user) return; /* sem sessão, não mostra */
-
-                var res = await sb
-                    .from('subscriptions')
-                    .select('plan, status')
-                    .eq('user_id', user.id)
-                    .single();
-
-                var isPro = res.data?.plan === 'pro' && res.data?.status === 'active';
-                if (isPro) mostrarToast();
-
-            } catch (e) {
-                /* Em caso de erro de rede não mostra o toast */
-                console.warn('proWelcomeToast: erro ao verificar plano', e);
-            }
-        }
-
-        /* Aguarda a app e o Supabase estarem prontos */
-        function tentarVerificar() {
-            if (window._cacheReady) {
-                verificarEMostrar();
-            } else {
+        function tentarMostrar() {
+            if (window._cacheReady) { mostrarToast(); }
+            else {
                 document.addEventListener('cloudCacheReady', function onReady() {
                     document.removeEventListener('cloudCacheReady', onReady);
-                    verificarEMostrar();
+                    mostrarToast();
                 });
             }
         }
 
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', tentarVerificar);
+            document.addEventListener('DOMContentLoaded', tentarMostrar);
         } else {
-            tentarVerificar();
+            tentarMostrar();
         }
     })();
     </script>
@@ -2066,19 +1776,14 @@ html, body {
     <div class="mm-backdrop" id="cancelarSubBackdrop">
         <div class="mm-card" role="dialog" aria-modal="true" aria-labelledby="cancelarSubTitle" id="cancelarSubCard">
             <div class="cancelar-sub-modal-icon" aria-hidden="true">😔</div>
-            <h3 class="mm-title" id="cancelarSubTitle">Cancelar Subscrição Pro?</h3>
-            <p class="despesa-confirm-text">Tens a certeza que queres cancelar? Perderás o acesso a todas as funcionalidades Pro no fim do período actual.</p>
-            <div class="cancelar-sub-perks-lost">
-                <span>🚫 Sem anúncios</span>
-                <span>⚡ Funcionalidades Pro</span>
-                <span>📊 Relatórios</span>
-            </div>
-            <p class="cancelar-sub-note" style="margin:.75rem 0 1rem">O acesso mantém-se activo até ao fim do período já pago.</p>
+            <h3 class="mm-title" id="cancelarSubTitle">Cancelar Subscrição?</h3>
+            <p class="despesa-confirm-text">Tens a certeza que queres cancelar? O acesso mantém-se activo até ao fim do período já pago.</p>
+            <p class="cancelar-sub-note" style="margin:.75rem 0 1rem">Podes voltar a subscrever quando quiseres.</p>
             <button type="button" class="dp-save-btn dp-save-btn-danger" id="cancelarSubConfirmBtn">
                 Sim, cancelar subscrição
             </button>
             <div class="mm-secondary-action">
-                <button type="button" class="mm-text-link" id="cancelarSubVoltarBtn">Manter o Pro</button>
+                <button type="button" class="mm-text-link" id="cancelarSubVoltarBtn">Manter subscrição</button>
             </div>
         </div>
     </div>
@@ -2098,11 +1803,10 @@ html, body {
         </div>
     </div>
 
-    <!-- Toast Pro Feature (reutilizável para bloqueios) -->
+    <!-- Toast genérico de notificação -->
     <div id="proFeatureToast" role="status" aria-live="polite">
         <div class="pft-inner">
-            <span class="pft-icon">🔒</span>
-            <span class="pft-text" id="proFeatureToastText">Somente na versão Pro.</span>
+            <span class="pft-text" id="proFeatureToastText"></span>
         </div>
     </div>
 
@@ -2183,26 +1887,6 @@ html, body {
     })();
     </script>
 
-    <!-- ── Interstitial diário ─────────────────────────────────────
-         Aparece na primeira ação de save do dia (Uber, Bolt,
-         Distância ou Despesas). Máximo 1 vez por dia via localStorage.
-         O AdSense só é inicializado quando o overlay abre (lazy).
-    ──────────────────────────────────────────────────────────────── -->
-    <div id="adInterstitial" role="dialog" aria-modal="true" aria-label="Publicidade" hidden>
-        <div id="adInterstitialCard">
-            <div id="adInterstitialHeader">
-                <span class="ad-label">Publicidade</span>
-                <button type="button" id="adInterstitialClose" aria-label="Fechar anúncio">&#x2715;</button>
-            </div>
-            <div id="adInterstitialBody">
-                <ins class="adsbygoogle"
-                     style="display:block;width:100%;min-height:280px"
-                     data-ad-client="ca-pub-2388518461995933"
-                     data-ad-slot="3322764888"
-                     data-ad-format="auto"
-                     data-full-width-responsive="true"></ins>
-            </div>
-        </div>
-    </div>
+
 </body>
 </html>

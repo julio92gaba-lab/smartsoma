@@ -100,12 +100,16 @@ module.exports = async function handler(req, res) {
     }
 
     /* ══════════════════════════════════════════
-       CHECKOUT CONCLUÍDO → activar Pro
+       CHECKOUT CONCLUÍDO → activar subscrição
     ══════════════════════════════════════════ */
     if (eventType === 'checkout.completed') {
       const userId         = extrairUserId(obj);
       const customerId     = obj?.customer?.id     || null;
       const subscriptionId = obj?.subscription?.id || null;
+      const plan           = obj?.metadata?.plan
+                          || obj?.subscription?.metadata?.plan
+                          || obj?.order?.metadata?.plan
+                          || null;
 
       if (!userId) {
         console.error('user_id em falta no payload checkout.completed:', JSON.stringify(obj));
@@ -122,7 +126,7 @@ module.exports = async function handler(req, res) {
 
       const erro = await upsertComRetry({
         user_id:               userId,
-        plan:                  'pro',
+        plan:                  plan,
         status:                'active',
         creem_customer_id:     customerId,
         creem_subscription_id: subscriptionId,
@@ -131,31 +135,34 @@ module.exports = async function handler(req, res) {
 
       if (erro) {
         console.error('Supabase erro final (checkout.completed):', erro);
-        return res.status(500).json({ error: 'Erro ao activar Pro' });
+        return res.status(500).json({ error: 'Erro ao activar subscrição' });
       }
 
-      console.log('✅ Utilizador activado Pro:', userId);
+      console.log('✅ Utilizador activado (' + plan + '):', userId);
     }
 
     /* ══════════════════════════════════════════
-       SUBSCRIÇÃO ACTIVA (confirmação do Creem)
+       SUBSCRIÇÃO ACTIVA — confirmar plano (semanal/mensal)
     ══════════════════════════════════════════ */
     if (eventType === 'subscription.active') {
       const userId         = extrairUserId(obj);
       const customerId     = obj?.customer_id || obj?.customer?.id || null;
       const subscriptionId = obj?.id          || null;
 
+      const planActive = obj?.metadata?.plan
+                      || obj?.subscription?.metadata?.plan
+                      || null;
       if (userId) {
         const erro = await upsertComRetry({
           user_id:               userId,
-          plan:                  'pro',
+          plan:                  planActive,
           status:                'active',
           creem_customer_id:     customerId,
           creem_subscription_id: subscriptionId,
           updated_at:            new Date().toISOString()
         });
         if (erro) console.error('Supabase erro (subscription.active):', erro);
-        else console.log('✅ Subscrição activa confirmada:', userId);
+        else console.log('✅ Subscrição activa confirmada (' + planActive + '):', userId);
       }
     }
 
@@ -170,7 +177,7 @@ module.exports = async function handler(req, res) {
       const userId = extrairUserId(obj);
 
       if (userId) {
-        const erro = await updateComRetry(userId, { status: 'inactive', plan: 'free' });
+        const erro = await updateComRetry(userId, { status: 'inactive', plan: null });
         if (erro) console.error('Supabase erro (cancelamento):', erro);
         else console.log('⛔ Subscrição desactivada:', userId);
       } else {
