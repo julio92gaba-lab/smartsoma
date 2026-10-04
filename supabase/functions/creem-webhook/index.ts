@@ -1,6 +1,18 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
 
+function getDefaultSecretKey(): string | null {
+  const rawKeys = Deno.env.get("SUPABASE_SECRET_KEYS")
+  if (!rawKeys) return null
+
+  try {
+    const keys = JSON.parse(rawKeys)
+    return typeof keys.default === "string" ? keys.default : null
+  } catch {
+    return null
+  }
+}
+
 serve(async (req) => {
   const signature = req.headers.get("creem-signature")
   const webhookSecret = Deno.env.get("CREEM_WEBHOOK_SECRET")
@@ -34,10 +46,10 @@ serve(async (req) => {
   let userId = object.metadata?.user_id
     || event.object?.subscription?.metadata?.user_id
 
-  const supabase = createClient(
-    Deno.env.get("SUPABASE_URL")!,
-    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
-  )
+  const secretKey = getDefaultSecretKey()
+  if (!secretKey) return new Response("Server misconfigured", { status: 500 })
+
+  const supabase = createClient(Deno.env.get("SUPABASE_URL")!, secretKey)
 
   /* Alguns eventos de subscrição não repetem os metadados do checkout. */
   if (!userId && subscriptionId) {

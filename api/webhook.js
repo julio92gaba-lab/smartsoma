@@ -4,7 +4,7 @@ const crypto = require('crypto');
 
 
 /* ── Validação das variáveis de ambiente no arranque ── */
-const REQUIRED_VARS = ['SUPABASE_URL', 'SUPABASE_SERVICE_KEY', 'CREEM_WEBHOOK_SECRET'];
+const REQUIRED_VARS = ['SUPABASE_URL', 'CREEM_WEBHOOK_SECRET'];
 for (const v of REQUIRED_VARS) {
   if (!process.env[v]) {
     console.error(`FATAL: variável de ambiente "${v}" em falta.`);
@@ -13,7 +13,7 @@ for (const v of REQUIRED_VARS) {
 
 const supabase = createClient(
   process.env.SUPABASE_URL  || '',
-  process.env.SUPABASE_SERVICE_KEY || '',
+  process.env.SUPABASE_SECRET_KEY || '',
   {
     auth: { persistSession: false },
     db:   { schema: 'public' }
@@ -192,7 +192,7 @@ async function handler(req, res) {
     if (eventId) eventosProcessados.add(eventId);
 
     /* ── Variáveis de ambiente ── */
-    if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_KEY) {
+    if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SECRET_KEY) {
       console.error('Variáveis de ambiente Supabase em falta');
       return res.status(500).json({ error: 'Configuração incompleta no servidor' });
     }

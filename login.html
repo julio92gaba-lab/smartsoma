@@ -348,7 +348,8 @@ body{
 
 <script>
     const SUPABASE_URL = 'https://ojhnierbhqrwxvabrzkt.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9qaG5pZXJiaHFyd3h2YWJyemt0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk4NTAxODAsImV4cCI6MjEwNTQyNjE4MH0.zXsVvTVKiEh_Y6t9xpnaPC-JXgPwCKCOqA_sPgNbPoE';
+    // Chaves publicáveis podem ser incluídas no browser; chaves de serviço nunca.
+    const SUPABASE_KEY = 'sb_publishable_HSGdJagxRBGFWr7Hh7mRzw_8co7CN3H';
     // Link do email de recuperação: traz #access_token=...&type=recovery.
     // Lido ANTES do createClient, porque o Supabase apaga o #hash ao processá-lo.
     const LINK_PARAMS = (window.location.hash || '') + '&' + (window.location.search || '');
@@ -385,8 +386,14 @@ body{
 
     // ── Sessão activa — redirecionar ──────────────────────────────────
     // (Não redireciona se a pessoa veio do link de recuperação: tem de definir a nova palavra-passe.)
-    sb.auth.getSession().then(({ data }) => {
-        if (data.session && !IS_RECOVERY_LINK && modo !== 'novaSenha') window.location.href = 'app.html';
+    // getSession() lê o browser; getUser() confirma que o token ainda é aceite
+    // pelo Supabase antes de enviar alguém para a área protegida.
+    sb.auth.getSession().then(async ({ data }) => {
+        if (!data.session || IS_RECOVERY_LINK || modo === 'novaSenha') return;
+        const { data: userData, error } = await sb.auth.getUser();
+        if (userData.user && !error) window.location.href = 'app.html';
+    }).catch(() => {
+        // Sem sessão válida, mantém o formulário de entrada disponível.
     });
     sb.auth.onAuthStateChange((event) => {
         if (event === 'PASSWORD_RECOVERY') setModo('novaSenha');

@@ -15,7 +15,8 @@
   'use strict';
 
   var SUPABASE_URL = 'https://ojhnierbhqrwxvabrzkt.supabase.co';
-  var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9qaG5pZXJiaHFyd3h2YWJyemt0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk4NTAxODAsImV4cCI6MjEwNTQyNjE4MH0.zXsVvTVKiEh_Y6t9xpnaPC-JXgPwCKCOqA_sPgNbPoE';
+  // Chaves publicáveis podem ser incluídas no browser; chaves de serviço nunca.
+  var SUPABASE_KEY = 'sb_publishable_HSGdJagxRBGFWr7Hh7mRzw_8co7CN3H';
 
   if (!window.supabase || !window.supabase.createClient) {
     console.error('Supabase client nao foi carregado antes de cloud-init.js.');
@@ -219,6 +220,9 @@
 
   // Sem rede, o getSession() do Supabase tenta renovar o token expirado durante
   // ~30s antes de desistir. Por isso, offline usamos a sessao guardada logo.
+  // Quando existe rede, getSession() apenas le o armazenamento local. Antes de
+  // abrir a area protegida confirmamos o JWT com getUser(), que o valida no
+  // servidor de Auth.
   async function resolveSession() {
     var stored = readStoredSession();
 
@@ -230,7 +234,27 @@
     var value = result.value;
 
     if (value && value.data && value.data.session) {
-      return { session: value.data.session, offline: false };
+      var session = value.data.session;
+      var userResult = await withTimeout(sb.auth.getUser(), 8000);
+      var userValue = userResult.value;
+
+      if (userValue && userValue.data && userValue.data.user) {
+        // Usa o utilizador devolvido pelo servidor, nunca apenas o que estava
+        // serializado no localStorage.
+        session.user = userValue.data.user;
+        return { session: session, offline: false };
+      }
+
+      var validationNetworkProblem = userResult.timeout ||
+        isNetworkError(userResult.error) ||
+        (userValue && isNetworkError(userValue.error)) ||
+        navigator.onLine === false;
+
+      // O modo offline continua a permitir consultar a copia local, mas nunca
+      // aceita uma sessao nao validada quando o servidor respondeu.
+      if (stored && validationNetworkProblem) return { session: stored, offline: true };
+      if (!validationNetworkProblem) await sb.auth.signOut({ scope: 'local' });
+      return { session: null, offline: false };
     }
 
     var networkProblem = result.timeout ||
