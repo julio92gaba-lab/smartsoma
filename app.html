@@ -1615,6 +1615,9 @@
                     },
                     body: JSON.stringify({
                         plan      : plan || 'mensal',
+                        productId : plan === 'semanal'
+                                    ? 'prod_2ZbohJlonCxMO4f45xufqZ'
+                                    : 'prod_6ybt2q5Rwe76WBL7GqpAEC',
                         userId    : user.id,
                         userName  : userName,
                         userEmail : userEmail
