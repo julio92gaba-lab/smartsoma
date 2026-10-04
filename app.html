@@ -30,6 +30,25 @@
     font-size:.8125rem;font-weight:600;
     color:var(--ink);opacity:.7;
 }
+
+/* ── Card estado subscrição nos Ajustes ── */
+.sub-status-card{
+    display:flex;align-items:center;justify-content:center;gap:.45rem;
+    margin:.2rem 1rem .5rem;
+    padding:.5rem 1rem;
+    border-radius:.75rem;
+    background:rgba(26,107,55,.15);
+    border:1px solid rgba(46,204,113,.28);
+}
+.sub-status-dot{
+    width:.4rem;height:.4rem;border-radius:50%;flex-shrink:0;
+}
+.sub-status-dot.active{ background:#D4AF37; }
+.sub-status-dot.inactive{ background:#e74c3c; }
+.sub-status-text{
+    font-size:.7rem;font-weight:700;letter-spacing:.05em;
+    color:#D4AF37;line-height:1;
+}
 .cancelar-sub-note{
     font-size:.7rem;color:var(--ink);
     opacity:.45;text-align:center;
@@ -271,12 +290,11 @@
                                 </div>
                                 <div class="ganhos-tile-scroll-wrap" id="ganhosIncomeScrollWrap">
                                     <div class="ganhos-tile-scroll" id="ganhosIncomeScroll">
-                                        <button type="button" class="ganhos-tile-add ganhos-tile-add-pro-locked" id="btnAddPlatform" data-i18n-aria="ganhos.addPlataforma" aria-label="Adicionar plataforma">
+                                        <button type="button" class="ganhos-tile-add" id="btnAddPlatform" data-i18n-aria="ganhos.addPlataforma" aria-label="Adicionar plataforma">
                                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                                                 <line x1="12" y1="5" x2="12" y2="19"/>
                                                 <line x1="5" y1="12" x2="19" y2="12"/>
                                             </svg>
-                                            <span class="ganhos-tile-add-pro-tag" id="addPlatformProTag" aria-hidden="true">PRO</span>
                                         </button>
                                         <button type="button" class="list-row ganhos-tile ganhos-tile-income ganhos-tile-scroll-item" id="listRowUber" data-i18n-aria="ganhos.uber" aria-label="Ganhos Uber" aria-haspopup="true" aria-expanded="false">
                                             <span class="ganhos-tile-icon-row">
@@ -651,10 +669,10 @@
                             <p class="sheet-subinfo" id="sheetDriverSince">0 dias nos Apps.</p>
                         </div>
                     </div>
-                    <!-- Badge subscrição activa -->
-                    <div class="sheet-pro-active-badge" id="sheetProActiveBadge">
-                        <span class="sheet-pro-active-dot"></span>
-                        <span class="sheet-pro-active-label">Subscrição activa</span>
+                    <!-- Card estado de subscrição -->
+                    <div class="sub-status-card" id="sheetProActiveBadge">
+                        <span class="sub-status-dot active" id="subStatusDot"></span>
+                        <span class="sub-status-text" id="subStatusText">Subscrição activa</span>
                     </div>
                     <div class="sheet-divider"></div>
                     <div class="sheet-actions">
@@ -752,11 +770,14 @@
             </div>
             <div class="sheet-screen" id="sheetScreenDadosPessoais" hidden>
                 <div class="sheet-content sheet-page-content">
+
+                    <!-- Foto de perfil -->
                     <div class="dp-photo-row">
                         <div class="dp-photo-thumb" id="dpPhotoThumb"></div>
                         <button type="button" class="dp-upload-btn" id="dpUploadPhotoBtn" data-i18n="dp.upload">Carregar imagem..</button>
                     </div>
 
+                    <!-- Nome -->
                     <div class="dp-field-row dp-field-row-single">
                         <label class="dp-field">
                             <span class="dp-field-label" data-i18n="dp.nome">Nome</span>
@@ -764,6 +785,7 @@
                         </label>
                     </div>
 
+                    <!-- Email -->
                     <div class="dp-field-row dp-field-row-single">
                         <div class="dp-field">
                             <span class="dp-field-label" id="dpEmailLabel" data-i18n="dp.email">Email</span>
@@ -771,6 +793,7 @@
                         </div>
                     </div>
 
+                    <!-- Data de início -->
                     <label class="dp-field dp-field-full">
                         <span class="dp-field-label" data-i18n="dp.desdeQuando">Desde quando trabalha com apps?</span>
                         <button type="button" class="dp-date-btn" id="dpDriverSinceBtn">
@@ -786,12 +809,14 @@
 
                     <div class="sheet-divider"></div>
 
+                    <!-- Guardar -->
                     <button type="button" class="dp-save-btn" id="dpSaveBtn" data-i18n="dp.atualizarDados">Atualizar Dados Pessoais</button>
                     <button type="button" class="dp-save-btn dp-save-btn-secondary" id="dpChangePasswordBtn" data-i18n="dp.atualizarPassword" hidden>Atualizar Password</button>
 
-                    <!-- Cancelar subscrição (só visível se subscrição activa) -->
+                    <!-- Subscrição (só visível se activa) -->
                     <div id="cancelarSubscricaoSection" style="display:none">
-                        <div class="sheet-divider" style="margin-top:1.25rem"></div>
+                        <div class="sheet-divider" style="margin-top:1.5rem"></div>
+                        <p style="font-size:.68rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;text-align:center;opacity:.5;color:var(--ink);margin:0 0 .75rem;">Subscrição</p>
                         <div class="cancelar-sub-info">
                             <span class="cancelar-sub-badge">ACTIVO</span>
                             <span class="cancelar-sub-label">Subscrição activa</span>
@@ -802,11 +827,14 @@
                         <p class="cancelar-sub-note">O acesso mantém-se até ao fim do período já pago.</p>
                     </div>
 
-                    <div class="sheet-divider" style="margin-top:1.25rem"></div>
+                    <!-- Zona de perigo -->
+                    <div class="sheet-divider" style="margin-top:1.5rem"></div>
+                    <p style="font-size:.68rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;text-align:center;opacity:.5;color:var(--ink);margin:0 0 .75rem;">Zona de perigo</p>
                     <button type="button" class="dp-save-btn dp-save-btn-danger" id="btnEliminarConta">
                         Eliminar conta
                     </button>
-                    <p class="cancelar-sub-note">Apaga permanentemente a conta e os dados guardados no SmartSoma.</p>
+                    <p class="cancelar-sub-note">Apaga permanentemente a conta e todos os dados guardados no SmartSoma.</p>
+
                 </div>
             </div>
             <div class="sheet-screen" id="sheetScreenIdioma" hidden>
