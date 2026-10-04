@@ -46,7 +46,7 @@ serve(async (req) => {
       }
     }
 
-    const response = await fetch("https://test-api.creem.io/v1/checkouts", {
+    const response = await fetch("https://api.creem.io/v1/checkouts", {
       method : "POST",
       headers: {
         "x-api-key"    : apiKey,

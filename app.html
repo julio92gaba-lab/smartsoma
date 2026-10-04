@@ -1308,8 +1308,8 @@
 <div class="mm-backdrop" id="subExpiradaBackdrop">
     <div class="mm-card" role="dialog" aria-modal="true" aria-labelledby="subExpiradaTitle" id="subExpiradaCard">
         <div class="cancelar-sub-modal-icon" aria-hidden="true">⏳</div>
-        <h3 class="mm-title" id="subExpiradaTitle">Escolhe o teu plano</h3>
-        <p class="mm-helper-text">Para usar o SmartSoma precisas de uma subscrição. Começas com 15 dias de trial e o cartão de pagamento é obrigatório.</p>
+        <h3 class="mm-title" id="subExpiradaTitle">Bem-vindo ao SmartSoma</h3>
+        <p class="mm-helper-text">Tens 15 dias grátis para experimentar todos os recursos. Para iniciar o teste, escolhe um plano e cadastra o teu cartão. Não será cobrado nada antes do fim dos 15 dias e podes cancelar quando quiseres.</p>
         <div class="sub-expired-plans">
             <button type="button" class="sub-expired-plan-btn" id="subExpiradaBtnSemanal" data-plan="semanal">
                 <span class="sub-expired-plan-name">Plano Semanal</span>
@@ -1469,6 +1469,21 @@
 
         /* ── Estado global do plano ── */
         window.SmartSomaPro = { isPro: false };
+        let planoRetryTimer = null;
+
+        function agendarNovaVerificacaoPlano() {
+            if (planoRetryTimer) return;
+            planoRetryTimer = window.setTimeout(function () {
+                planoRetryTimer = null;
+                verificarPlano();
+            }, 4000);
+        }
+
+        function pararNovaVerificacaoPlano() {
+            if (!planoRetryTimer) return;
+            window.clearTimeout(planoRetryTimer);
+            planoRetryTimer = null;
+        }
 
         /* ── Alias: o cloud-init.js expõe window.supabaseClient ── */
         function getSB() { return window.supabaseClient || null; }
@@ -1489,7 +1504,11 @@
         async function verificarPlano() {
             try {
                 const sb = getSB();
-                if (!sb) return;
+                if (!sb) {
+                    abrirModalSubExpirada();
+                    agendarNovaVerificacaoPlano();
+                    return;
+                }
 
                 const user = window.currentUser || (await sb.auth.getUser()).data.user;
                 if (!user) return;
@@ -1500,18 +1519,20 @@
                     .eq('user_id', user.id)
                     .maybeSingle();
 
-                /* Erro de rede/servidor: não bloqueia, o RLS já protege os dados */
+                /* Falha ao validar = sem acesso até ser possível confirmar o plano. */
                 if (error) {
                     console.warn('SmartSomaPro: erro ao ler subscrição', error);
+                    window.SmartSomaPro.isPro = false;
+                    aplicarEstadoPlano(null);
+                    abrirModalSubExpirada();
+                    agendarNovaVerificacaoPlano();
                     return;
                 }
 
-                const VALID_STATUS = ['active', 'trialing', 'canceled'];
-                let isActive = !!data && VALID_STATUS.indexOf(data.status) !== -1;
-                /* Cancelada: o acesso só dura até ao fim do período já pago */
-                if (isActive && data.status === 'canceled' && data.current_period_end
-                    && new Date(data.current_period_end).getTime() < Date.now()) {
-                    isActive = false;
+                let isActive = !!data && ['active', 'trialing'].indexOf(data.status) !== -1;
+                /* Cancelada: mantém acesso apenas até ao fim do trial/período já pago. */
+                if (data && data.status === 'canceled' && data.current_period_end) {
+                    isActive = new Date(data.current_period_end).getTime() >= Date.now();
                 }
                 window.SmartSomaPro.isPro = isActive;
 
@@ -1520,12 +1541,19 @@
                 /* Sem subscrição válida: modal de escolha de plano (não dispensável) */
                 if (!isActive) {
                     abrirModalSubExpirada();
+                    /* O webhook pode chegar segundos depois do regresso do checkout. */
+                    agendarNovaVerificacaoPlano();
                 } else {
                     fecharModalSubExpirada();
+                    pararNovaVerificacaoPlano();
                 }
 
             } catch(e) {
                 console.warn('SmartSomaPro: erro ao verificar plano', e);
+                window.SmartSomaPro.isPro = false;
+                aplicarEstadoPlano(null);
+                abrirModalSubExpirada();
+                agendarNovaVerificacaoPlano();
             }
         }
 
@@ -1713,6 +1741,14 @@
                 document.addEventListener('cloudCacheReady', function onReady() {
                     document.removeEventListener('cloudCacheReady', onReady);
                     verificarPlano();
+                });
+            }
+
+            /* Cobre logins e regressos OAuth sem depender apenas do boot do cache. */
+            const sb = getSB();
+            if (sb) {
+                sb.auth.onAuthStateChange(function(event) {
+                    if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') verificarPlano();
                 });
             }
         }
