@@ -112,7 +112,60 @@
 
 <div id="splash">
     <img class="splash-logo" src="logo-home.png" alt="Logo">
+    <div class="splash-spinner-wrap">
+        <svg class="splash-spinner" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="18" cy="18" r="15" stroke="rgba(255,255,255,0.12)" stroke-width="2.5"/>
+            <path d="M18 3 A15 15 0 0 1 33 18" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+    </div>
 </div>
+<script>
+/* ── Splash: tempo mínimo de 3 s + atraso de 0.6 s no modal de subscrição ── */
+(function(){
+    var SPLASH_MIN_MS = 3000;
+    var MODAL_DELAY_MS = 600;
+    var splashEl = document.getElementById('splash');
+    var splashStart = Date.now();
+    var splashGone = false;
+
+    /* Interceta a adição de 'fade-out' ao splash para garantir tempo mínimo */
+    if (splashEl) {
+        var _origAdd = splashEl.classList.add.bind(splashEl.classList);
+        splashEl.classList.add = function(cls) {
+            if (cls === 'fade-out') {
+                var elapsed = Date.now() - splashStart;
+                var remaining = SPLASH_MIN_MS - elapsed;
+                if (remaining > 0) {
+                    var args = arguments;
+                    setTimeout(function(){ _origAdd.apply(null, args); splashGone = true; }, remaining);
+                } else {
+                    _origAdd(cls);
+                    splashGone = true;
+                }
+            } else {
+                _origAdd(cls);
+            }
+        };
+    }
+
+    /* Interceta a abertura do modal de subscrição para adicionar atraso após o splash */
+    var _origAbrir = null;
+    Object.defineProperty(window, 'abrirModalSubExpirada', {
+        get: function(){ return _origAbrir; },
+        set: function(fn){
+            _origAbrir = function(){
+                var waitForSplash = function(cb){
+                    var elapsed = Date.now() - splashStart;
+                    var wait = Math.max(0, SPLASH_MIN_MS - elapsed) + MODAL_DELAY_MS;
+                    setTimeout(cb, wait);
+                };
+                waitForSplash(fn);
+            };
+        },
+        configurable: true
+    });
+})();
+</script>
 
 <!-- Toast PWA Install -->
 <div id="pwaToast" data-pwa-toast role="status" aria-live="polite" style="
