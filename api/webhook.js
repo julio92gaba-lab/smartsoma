@@ -1,6 +1,8 @@
 const { createClient } = require('@supabase/supabase-js');
 const crypto = require('crypto');
 
+
+
 /* ── Validação das variáveis de ambiente no arranque ── */
 const REQUIRED_VARS = ['SUPABASE_URL', 'SUPABASE_SERVICE_KEY', 'CREEM_WEBHOOK_SECRET'];
 for (const v of REQUIRED_VARS) {
@@ -140,7 +142,7 @@ const eventosProcessados = new Set();
      "functions": { "api/webhook.js": { "bodyParser": false } }
    O handler lê o corpo cru do stream e depois faz JSON.parse.
 ════════════════════════════════════════════════════════════════════ */
-module.exports = async function handler(req, res) {
+async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -372,4 +374,10 @@ module.exports = async function handler(req, res) {
     console.error('Webhook erro geral não esperado:', err);
     return res.status(200).json({ ok: false, error: 'Erro interno' });
   }
-};
+}
+
+/* ── Desactiva o body parser automático da Vercel para esta rota ──
+   Sem isto a Vercel consome o stream antes do handler e não é possível
+   ler o corpo cru para validar a assinatura do Creem.              ── */
+module.exports = handler;
+module.exports.config = { api: { bodyParser: false } };
