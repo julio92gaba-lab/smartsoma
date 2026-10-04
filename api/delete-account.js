@@ -31,15 +31,15 @@ async function cancelarSubscricaoNoCreem(subscriptionId) {
 
   try {
     /* Endpoint de cancelamento do Creem:
-       DELETE https://api.creem.io/v1/subscriptions/{id}
-       Ajusta o URL se a documentação do Creem indicar outro caminho. */
+       POST https://api.creem.io/v1/subscriptions/{id}/cancel
+       Autenticação: cabeçalho x-api-key (o Creem não usa Bearer). */
     const res = await fetch(
       `https://api.creem.io/v1/subscriptions/${subscriptionId}/cancel`,
       {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${creemApiKey}`,
-          'Content-Type':  'application/json'
+          'x-api-key':    creemApiKey,
+          'Content-Type': 'application/json'
         }
       }
     );
@@ -113,7 +113,7 @@ module.exports = async function handler(req, res) {
     /* ── 3. Cancelar no Creem (só se houver subscrição activa ou em trial) ──
        Se já estiver "inactive" ou "canceled", não vale a pena chamar o Creem.
        Se não houver linha de subscrição, também não há nada a cancelar. */
-    const deveContactarCreem = subscriptionId && subStatus !== 'inactive';
+    const deveContactarCreem = subscriptionId && subStatus !== 'inactive' && subStatus !== 'canceled';
 
     if (deveContactarCreem) {
       const resultado = await cancelarSubscricaoNoCreem(subscriptionId);

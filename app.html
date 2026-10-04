@@ -1507,7 +1507,12 @@
                 }
 
                 const VALID_STATUS = ['active', 'trialing', 'canceled'];
-                const isActive = !!data && VALID_STATUS.indexOf(data.status) !== -1;
+                let isActive = !!data && VALID_STATUS.indexOf(data.status) !== -1;
+                /* Cancelada: o acesso só dura até ao fim do período já pago */
+                if (isActive && data.status === 'canceled' && data.current_period_end
+                    && new Date(data.current_period_end).getTime() < Date.now()) {
+                    isActive = false;
+                }
                 window.SmartSomaPro.isPro = isActive;
 
                 aplicarEstadoPlano(isActive ? data : null);
@@ -1524,28 +1529,11 @@
             }
         }
 
-        /* ── Toast genérico de notificação ── */
-        let proToastTimer = null;
-        function mostrarProFeatureToast(msg) {
-            const toast  = document.getElementById('proFeatureToast');
-            const textEl = document.getElementById('proFeatureToastText');
-            if (!toast) return;
-            if (textEl) textEl.textContent = msg || '';
-            clearTimeout(proToastTimer);
-            toast.classList.add('show');
-            proToastTimer = setTimeout(() => toast.classList.remove('show'), 3500);
-        }
-        window.mostrarProFeatureToast = mostrarProFeatureToast;
-
         /* ── Aplica estados visuais conforme subscrição ── */
-        function pickDate(sub, keys) {
-            for (const k of keys) {
-                if (sub && sub[k]) {
-                    const d = new Date(sub[k]);
-                    if (!isNaN(d.getTime())) return d;
-                }
-            }
-            return null;
+        function toDate(v) {
+            if (!v) return null;
+            const d = new Date(v);
+            return isNaN(d.getTime()) ? null : d;
         }
         function fmtData(d) {
             return d.toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit', year: 'numeric' });
@@ -1566,8 +1554,8 @@
                 return;
             }
 
-            const periodEnd = pickDate(sub, ['current_period_end', 'current_period_end_date', 'period_end', 'renews_at', 'ends_at']);
-            const trialEnd  = pickDate(sub, ['trial_end', 'trial_ends_at', 'trial_end_date']) || periodEnd;
+            const periodEnd = toDate(sub.current_period_end);
+            const trialEnd  = toDate(sub.trial_ends_at) || periodEnd;
 
             let status = 'ACTIVO', label = 'Subscrição activa', note = '', color = '#2ECC71', good = true;
 
@@ -1659,65 +1647,6 @@
         }
         window.abrirModalSubExpirada = abrirModalSubExpirada;
 
-        /* ── Cancelamento de subscrição ── */
-        async function cancelarSubscricao() {
-            const btnConfirm = document.getElementById('cancelarSubConfirmBtn');
-            if (btnConfirm) {
-                btnConfirm.disabled = true;
-                btnConfirm.textContent = 'A cancelar…';
-            }
-
-            try {
-                const sb   = getSB();
-                const user = window.currentUser || (await sb.auth.getUser()).data.user;
-                if (!user) throw new Error('Sem sessão');
-
-                /* Chama a Edge Function de cancelamento no Supabase */
-                const { data: sessionData } = await sb.auth.getSession();
-                const accessToken = sessionData?.session?.access_token;
-
-                const res = await fetch(
-                    'https://ojhnierbhqrwxvabrzkt.supabase.co/functions/v1/creem-cancel',
-                    {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': 'Bearer ' + accessToken
-                        },
-                        body: JSON.stringify({ userId: user.id })
-                    }
-                );
-
-                const json = await res.json();
-
-                if (!res.ok) throw new Error(json.error || 'Erro ao cancelar');
-
-                /* Sucesso — actualiza UI imediatamente */
-                fecharModalCancelar();
-                aplicarEstadoPlano(false);
-                window.SmartSomaPro.isPro = false;
-                mostrarProFeatureToast('Subscrição cancelada. O acesso mantém-se até ao fim do período.');
-
-            } catch (e) {
-                console.error('Erro ao cancelar subscrição:', e);
-                if (btnConfirm) {
-                    btnConfirm.disabled = false;
-                    btnConfirm.textContent = 'Sim, cancelar subscrição';
-                }
-                mostrarProFeatureToast('Erro ao cancelar. Tenta novamente ou contacta o suporte.');
-            }
-        }
-
-        function abrirModalCancelar() {
-            const backdrop = document.getElementById('cancelarSubBackdrop');
-            if (backdrop) backdrop.classList.add('visible');
-        }
-
-        function fecharModalCancelar() {
-            const backdrop = document.getElementById('cancelarSubBackdrop');
-            if (backdrop) backdrop.classList.remove('visible');
-        }
-
         /* ── Atualiza bandeira e código no botão de idioma do cabeçalho ── */
         function atualizarBotaoIdiomaHeader() {
             const flagEl = document.getElementById('headerLangFlag');
@@ -1756,21 +1685,6 @@
 
             const btnMensal = document.getElementById('subExpiradaBtnMensal');
             if (btnMensal) btnMensal.addEventListener('click', function(){ iniciarCheckout('mensal'); });
-
-            /* ── Cancelar subscrição ── */
-            const btnCancelarSub = document.getElementById('btnCancelarSubscricao');
-            if (btnCancelarSub) btnCancelarSub.addEventListener('click', abrirModalCancelar);
-
-            const btnCancelarConfirm = document.getElementById('cancelarSubConfirmBtn');
-            if (btnCancelarConfirm) btnCancelarConfirm.addEventListener('click', cancelarSubscricao);
-
-            const btnCancelarVoltar = document.getElementById('cancelarSubVoltarBtn');
-            if (btnCancelarVoltar) btnCancelarVoltar.addEventListener('click', fecharModalCancelar);
-
-            const cancelarBackdrop = document.getElementById('cancelarSubBackdrop');
-            if (cancelarBackdrop) cancelarBackdrop.addEventListener('click', function(e) {
-                if (e.target === cancelarBackdrop) fecharModalCancelar();
-            });
 
             /* ── Botão idioma no cabeçalho ── */
             const btnHeaderLang = document.getElementById('btnHeaderLang');
@@ -1873,22 +1787,6 @@
         </div>
     </div>
 
-    <!-- Modal de confirmação de cancelamento de subscrição -->
-    <div class="mm-backdrop" id="cancelarSubBackdrop">
-        <div class="mm-card" role="dialog" aria-modal="true" aria-labelledby="cancelarSubTitle" id="cancelarSubCard">
-            <div class="cancelar-sub-modal-icon" aria-hidden="true">😔</div>
-            <h3 class="mm-title" id="cancelarSubTitle">Cancelar Subscrição?</h3>
-            <p class="despesa-confirm-text">Tens a certeza que queres cancelar? O acesso mantém-se activo até ao fim do período já pago.</p>
-            <p class="cancelar-sub-note" style="margin:.75rem 0 1rem">Podes voltar a subscrever quando quiseres.</p>
-            <button type="button" class="dp-save-btn dp-save-btn-danger" id="cancelarSubConfirmBtn">
-                Sim, cancelar subscrição
-            </button>
-            <div class="mm-secondary-action">
-                <button type="button" class="mm-text-link" id="cancelarSubVoltarBtn">Manter subscrição</button>
-            </div>
-        </div>
-    </div>
-
     <!-- Modal de confirmação de eliminação de conta -->
     <div class="mm-backdrop" id="eliminarContaBackdrop">
         <div class="mm-card" role="dialog" aria-modal="true" aria-labelledby="eliminarContaTitle" id="eliminarContaCard">
@@ -1904,12 +1802,6 @@
         </div>
     </div>
 
-    <!-- Toast genérico de notificação -->
-    <div id="proFeatureToast" role="status" aria-live="polite">
-        <div class="pft-inner">
-            <span class="pft-text" id="proFeatureToastText"></span>
-        </div>
-    </div>
 
     <!-- ── Eliminar Conta ─────────────────────────────────────────── -->
     <script>
