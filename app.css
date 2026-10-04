@@ -1325,29 +1325,22 @@
           text-align:center;
         }
         .meta-slot-list{
-          /* Folga entre o card e a zona do sistema: valor único, igual em
-             Android e iOS (é só mexer aqui para afinar). */
-          --meta-slot-gap:0.9062rem;
           position:fixed;
           left:0; right:0;
           bottom:0;
           z-index:45;
           display:flex;
           justify-content:center;
-          /* Browser e Android (PWA): safe-area + folga. No Android a barra
-             de navegação (botões ou gestos) fica logo abaixo da app, por isso
-             sem a folga o card ficava colado aos botões do sistema. */
-          padding:0 1.0938rem calc(var(--meta-slot-gap) + env(safe-area-inset-bottom, 0px));
+          /* No browser: mantém o offset + safe-area (barra de endereço existe) */
+          padding:0 1.0938rem calc(0.9062rem + env(safe-area-inset-bottom, 0px));
           pointer-events:none;
         }
-        /* iOS (PWA): a safe-area da barra home (~2.1rem) já cria esse espaço,
-           por isso a folga NÃO se soma (evita espaçamento a mais). Em iPhones
-           sem barra home (safe-area 0) fica pelo menos a folga. */
-        @supports (-webkit-touch-callout: none) {
-          @media (display-mode: standalone) {
-            .meta-slot-list{
-              padding-bottom:max(env(safe-area-inset-bottom, 0px), var(--meta-slot-gap));
-            }
+        /* Em modo PWA standalone não existe barra de navegação do browser,
+           por isso o card desce até ao fundo e usa apenas a safe-area da
+           barra de gesto do sistema (sem o offset extra de 0.9062rem). */
+        @media (display-mode: standalone) {
+          .meta-slot-list{
+            padding:0 1.0938rem env(safe-area-inset-bottom, 0px);
           }
         }
         .meta-slot-list:empty{ display:none; }
@@ -3526,92 +3519,6 @@
           0%{   opacity:0; transform:scale(.82); }
           18%{  opacity:1; }
           100%{ opacity:1; transform:scale(1.32); }
-        }
-
-        /* ---- Splash: estrada de carregamento (só visual) ----
-           Faixa clara de ponta a ponta do ecrã: o carro percorre-a da
-           esquerda para a direita, a linha acende-se atrás dele (o trajeto
-           já feito) e a percentagem sobe por baixo. Tudo partilha a mesma
-           duração/curva e termina com o logo (1.4s). O movimento usa só
-           transform/opacity, por isso fica fluido mesmo com o JS a arrancar. */
-        @property --splash-pct{
-          syntax:'<integer>';
-          initial-value:0;
-          inherits:false;
-        }
-        .splash-road{
-          --splash-delay:.12s;
-          --splash-dur:1.28s;
-          --splash-ease:cubic-bezier(.3,.7,.2,1);
-          position:absolute;
-          left:0; right:0;
-          top:min(calc(50% + 9.5rem), calc(100% - 4.5rem));
-          overflow:hidden;
-          pointer-events:none;
-          opacity:0;
-          animation:splashRoadIn .4s ease-out forwards;
-        }
-        @keyframes splashRoadIn{ to{ opacity:1; } }
-        .splash-car{
-          width:100%;
-          transform:translateX(-100%);
-          will-change:transform;
-          animation:splashDrive var(--splash-dur) var(--splash-ease) var(--splash-delay) forwards;
-        }
-        @keyframes splashDrive{
-          from{ transform:translateX(-100%); }
-          to{   transform:translateX(0); }
-        }
-        .splash-car svg{
-          display:block;
-          width:5.25rem;
-          height:auto;
-          margin-left:auto;
-          overflow:visible;
-        }
-        .splash-wheel{
-          transform-box:fill-box;
-          transform-origin:50% 50%;
-          animation:splashWheel .4s linear infinite;
-        }
-        @keyframes splashWheel{ to{ transform:rotate(360deg); } }
-        .splash-line{
-          position:relative;
-          height:0.1875rem;
-          background:rgba(255,255,255,0.28);
-        }
-        .splash-fill{
-          position:absolute;
-          inset:0;
-          background:linear-gradient(90deg, transparent, var(--mint));
-          transform:scaleX(0);
-          transform-origin:0 50%;
-          will-change:transform;
-          animation:splashFill var(--splash-dur) var(--splash-ease) var(--splash-delay) forwards;
-        }
-        @keyframes splashFill{
-          from{ transform:scaleX(0); }
-          to{   transform:scaleX(1); }
-        }
-        .splash-pct{
-          margin-top:0.625rem;
-          text-align:center;
-          font-size:0.8125rem;
-          line-height:1;
-          font-weight:600;
-          letter-spacing:0.06em;
-          font-variant-numeric:tabular-nums;
-          color:rgba(255,255,255,0.7);
-          counter-reset:splashn var(--splash-pct);
-          animation:splashPct var(--splash-dur) var(--splash-ease) var(--splash-delay) both;
-        }
-        .splash-pct::after{ content:counter(splashn) "%"; }
-        @keyframes splashPct{
-          from{ --splash-pct:0; }
-          to{   --splash-pct:100; }
-        }
-        @media (prefers-reduced-motion:reduce){
-          .splash-wheel{ animation:none; }
         }
         #appRoot{
           min-height:100vh;
