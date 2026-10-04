@@ -818,13 +818,13 @@
                         <div class="sheet-divider" style="margin-top:1.5rem"></div>
                         <p style="font-size:.68rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;text-align:center;opacity:.5;color:var(--ink);margin:0 0 .75rem;">Subscrição</p>
                         <div class="cancelar-sub-info">
-                            <span class="cancelar-sub-badge">ACTIVO</span>
-                            <span class="cancelar-sub-label">Subscrição activa</span>
+                            <span class="cancelar-sub-badge" id="subSectionBadge">ACTIVO</span>
+                            <span class="cancelar-sub-label" id="subSectionLabel">Subscrição activa</span>
                         </div>
-                        <button type="button" class="dp-save-btn dp-save-btn-danger" id="btnCancelarSubscricao">
-                            Cancelar Subscrição
-                        </button>
-                        <p class="cancelar-sub-note">O acesso mantém-se até ao fim do período já pago.</p>
+                        <a class="dp-save-btn" id="linkGerirSubscricao" href="https://www.creem.io/portal" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;text-decoration:none;box-sizing:border-box;">
+                            Gerir subscrição
+                        </a>
+                        <p class="cancelar-sub-note" id="subSectionNote">Altera o plano, o cartão ou cancela no portal do Creem.</p>
                     </div>
 
                     <!-- Zona de perigo -->
@@ -1308,8 +1308,8 @@
 <div class="mm-backdrop" id="subExpiradaBackdrop">
     <div class="mm-card" role="dialog" aria-modal="true" aria-labelledby="subExpiradaTitle" id="subExpiradaCard">
         <div class="cancelar-sub-modal-icon" aria-hidden="true">⏳</div>
-        <h3 class="mm-title" id="subExpiradaTitle">Subscrição expirada</h3>
-        <p class="mm-helper-text">O teu período de acesso terminou. Escolhe um plano para continuar a usar o SmartSoma.</p>
+        <h3 class="mm-title" id="subExpiradaTitle">Escolhe o teu plano</h3>
+        <p class="mm-helper-text">Para usar o SmartSoma precisas de uma subscrição. Começas com 15 dias de trial e o cartão de pagamento é obrigatório.</p>
         <div class="sub-expired-plans">
             <button type="button" class="sub-expired-plan-btn" id="subExpiradaBtnSemanal" data-plan="semanal">
                 <span class="sub-expired-plan-name">Plano Semanal</span>
@@ -1320,7 +1320,7 @@
                 <span class="sub-expired-plan-price">€5 / mês</span>
             </button>
         </div>
-        <p class="cancelar-sub-note">Trial de 15 dias grátis · Cancela quando quiseres</p>
+        <p class="cancelar-sub-note">15 dias de trial · A primeira cobrança é feita no fim do trial · Cancela antes para não pagar</p>
     </div>
 </div>
 
@@ -1481,6 +1481,8 @@
         function esconderLoading() {
             const el = document.getElementById('checkoutLoadingOverlay');
             if (el) el.classList.remove('is-visible');
+            /* Checkout cancelado ou falhado sem subscrição: o modal volta */
+            if (window.SmartSomaPro && !window.SmartSomaPro.isPro) abrirModalSubExpirada();
         }
 
         /* ── Verifica plano do utilizador autenticado ── */
@@ -1492,20 +1494,29 @@
                 const user = window.currentUser || (await sb.auth.getUser()).data.user;
                 if (!user) return;
 
-                const { data } = await sb
+                const { data, error } = await sb
                     .from('subscriptions')
-                    .select('status')
+                    .select('*')
                     .eq('user_id', user.id)
                     .single();
 
-                const isActive = data?.status === 'active';
+                /* Erro de rede/servidor (≠ "sem registo"): não bloqueia, o RLS já protege os dados */
+                if (error && error.code !== 'PGRST116') {
+                    console.warn('SmartSomaPro: erro ao ler subscrição', error);
+                    return;
+                }
+
+                const VALID_STATUS = ['active', 'trialing', 'canceled'];
+                const isActive = !!data && VALID_STATUS.indexOf(data.status) !== -1;
                 window.SmartSomaPro.isPro = isActive;
 
-                aplicarEstadoPlano(isActive);
+                aplicarEstadoPlano(isActive ? data : null);
 
-                /* Se subscrição expirada: mostra modal de escolha de plano */
+                /* Sem subscrição válida: modal de escolha de plano (não dispensável) */
                 if (!isActive) {
                     abrirModalSubExpirada();
+                } else {
+                    fecharModalSubExpirada();
                 }
 
             } catch(e) {
@@ -1527,14 +1538,63 @@
         window.mostrarProFeatureToast = mostrarProFeatureToast;
 
         /* ── Aplica estados visuais conforme subscrição ── */
-        function aplicarEstadoPlano(isActive) {
-            /* Badge de subscrição nos Ajustes */
-            const activeBadge = document.getElementById('sheetProActiveBadge');
-            if (activeBadge) activeBadge.style.display = isActive ? 'flex' : 'none';
+        function pickDate(sub, keys) {
+            for (const k of keys) {
+                if (sub && sub[k]) {
+                    const d = new Date(sub[k]);
+                    if (!isNaN(d.getTime())) return d;
+                }
+            }
+            return null;
+        }
+        function fmtData(d) {
+            return d.toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        }
 
-            /* Secção de cancelamento nos Dados Pessoais */
+        function aplicarEstadoPlano(sub) {
+            const activeBadge     = document.getElementById('sheetProActiveBadge');
             const cancelarSection = document.getElementById('cancelarSubscricaoSection');
-            if (cancelarSection) cancelarSection.style.display = isActive ? '' : 'none';
+            const dot       = document.getElementById('subStatusDot');
+            const txt       = document.getElementById('subStatusText');
+            const secBadge  = document.getElementById('subSectionBadge');
+            const secLabel  = document.getElementById('subSectionLabel');
+            const secNote   = document.getElementById('subSectionNote');
+
+            if (!sub || typeof sub !== 'object') {
+                if (activeBadge) activeBadge.style.display = 'none';
+                if (cancelarSection) cancelarSection.style.display = 'none';
+                return;
+            }
+
+            const periodEnd = pickDate(sub, ['current_period_end', 'current_period_end_date', 'period_end', 'renews_at', 'ends_at']);
+            const trialEnd  = pickDate(sub, ['trial_end', 'trial_ends_at', 'trial_end_date']) || periodEnd;
+
+            let status = 'ACTIVO', label = 'Subscrição activa', note = '', color = '#2ECC71', good = true;
+
+            if (sub.status === 'trialing') {
+                const dias = trialEnd ? Math.max(0, Math.ceil((trialEnd.getTime() - Date.now()) / 86400000)) : null;
+                status = 'TRIAL';
+                label  = dias === null ? 'Em período de trial'
+                       : 'Em trial · ' + dias + (dias === 1 ? ' dia restante' : ' dias restantes');
+                note   = trialEnd ? 'O trial termina a ' + fmtData(trialEnd) + '. Depois é cobrado o plano escolhido, a menos que cancele antes.' : '';
+                color  = '#D4AF37';
+            } else if (sub.status === 'canceled') {
+                status = 'CANCELADA';
+                label  = periodEnd ? 'Cancelada · acesso até ' + fmtData(periodEnd) : 'Subscrição cancelada';
+                note   = periodEnd ? 'Não será renovada. Pode voltar a subscrever no portal do Creem.' : '';
+                color  = '#e74c3c';
+                good   = false;
+            } else {
+                label = periodEnd ? 'Activa · renova a ' + fmtData(periodEnd) : 'Subscrição activa';
+            }
+
+            if (activeBadge) activeBadge.style.display = 'flex';
+            if (cancelarSection) cancelarSection.style.display = '';
+            if (txt) txt.textContent = label;
+            if (dot) dot.className = 'sub-status-dot ' + (good ? 'active' : 'inactive');
+            if (secBadge) { secBadge.textContent = status; secBadge.style.background = color; }
+            if (secLabel) secLabel.textContent = label;
+            if (secNote && note) secNote.textContent = note;
         }
 
         /* ── Inicia checkout no Creem ── */
@@ -1676,6 +1736,19 @@
             /* ── Loading overlay ── */
             const btnCancelarLoading = document.getElementById('checkoutLoadingCancel');
             if (btnCancelarLoading) btnCancelarLoading.addEventListener('click', esconderLoading);
+
+            /* ── Modal de plano: não dispensável ── */
+            const subBackdrop = document.getElementById('subExpiradaBackdrop');
+            if (subBackdrop) {
+                subBackdrop.addEventListener('click', function(e) {
+                    if (e.target === subBackdrop) { e.stopPropagation(); e.stopImmediatePropagation(); }
+                }, true);
+            }
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && subBackdrop && subBackdrop.classList.contains('is-visible')) {
+                    e.preventDefault(); e.stopPropagation();
+                }
+            }, true);
 
             /* ── Modal subscrição expirada ── */
             const btnSemanal = document.getElementById('subExpiradaBtnSemanal');
@@ -1821,7 +1894,7 @@
         <div class="mm-card" role="dialog" aria-modal="true" aria-labelledby="eliminarContaTitle" id="eliminarContaCard">
             <div class="cancelar-sub-modal-icon" aria-hidden="true">⚠️</div>
             <h3 class="mm-title" id="eliminarContaTitle">Eliminar conta?</h3>
-            <p class="despesa-confirm-text">Tens a certeza? Esta ação é <strong>irreversível</strong>. A tua conta e todos os dados guardados serão apagados permanentemente.</p>
+            <p class="despesa-confirm-text">Tens a certeza? Esta ação é <strong>irreversível</strong>. A tua conta e todos os dados guardados serão apagados permanentemente. Se tiveres uma subscrição, ela é cancelada em simultâneo.</p>
             <button type="button" class="dp-save-btn dp-save-btn-danger" id="eliminarContaConfirmBtn">
                 Sim, eliminar a minha conta
             </button>
