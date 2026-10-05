@@ -2614,8 +2614,8 @@
 
         welcomeFixasListEl.innerHTML = lista.map(function (item) {
           var linha = (item.tipo === 'euro')
-            ? ('<span class="valor">' + I18N.t('meta.fixasLinhaEuro', { v: Number(item.valor).toFixed(2) }) + '</span> - ' + item.descricao)
-            : ('<span class="valor">' + I18N.t('meta.fixasLinhaPct', { v: Number(item.valor) }) + '</span> - ' + item.descricao);
+            ? ('<span class="valor">' + I18N.t('meta.fixasLinhaEuro', { v: Number(item.valor).toFixed(2) }) + '</span> - ' + window.SmartSomaSecurity.escapeHtml(item.descricao))
+            : ('<span class="valor">' + I18N.t('meta.fixasLinhaPct', { v: Number(item.valor) }) + '</span> - ' + window.SmartSomaSecurity.escapeHtml(item.descricao));
           return '<div class="meta-fixas-list-item">' + linha + '</div>';
         }).join('');
 
