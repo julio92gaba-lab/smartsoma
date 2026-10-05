@@ -7599,7 +7599,6 @@
       var title = document.getElementById('releaseNoticeTitle');
       var text = document.getElementById('releaseNoticeText');
       var confirmBtn = document.getElementById('releaseNoticeConfirmBtn');
-      var previousFocus = null;
       var shown = false;
 
       if (!backdrop || !title || !text || !confirmBtn) return;
@@ -7621,27 +7620,32 @@
         backdrop.hidden = true;
         shown = false;
         try { window.cloudSet(seenKey, '1'); } catch (e) { /* a fila offline trata do reenvio */ }
-        if (previousFocus && typeof previousFocus.focus === 'function') previousFocus.focus();
       }
 
       function open() {
         if (shown || !isEligible() || !window.cloudGet) return;
         if (window.cloudGet(seenKey) === '1') return;
         shown = true;
-        previousFocus = document.activeElement;
         backdrop.hidden = false;
         requestAnimationFrame(function () {
           backdrop.classList.add('visible');
-          confirmBtn.focus();
         });
       }
 
       // app.js só é carregado após o cache; a subscrição, por sua vez, pode
-      // terminar a validação alguns instantes depois. Tentamos durante 20 s;
-      // se estiver sem rede, a novidade será apresentada numa próxima abertura.
+      // terminar a validação alguns instantes depois. Depois de pronta,
+      // aguardamos 5 s para não competir com o carregamento inicial da app.
+      // Se estiver sem rede, a novidade será apresentada numa próxima abertura.
       var attempts = 0;
+      var openingScheduled = false;
       function waitForEntitlement() {
-        if (isEligible()) { open(); return; }
+        if (isEligible()) {
+          if (!openingScheduled) {
+            openingScheduled = true;
+            window.setTimeout(open, 5000);
+          }
+          return;
+        }
         attempts += 1;
         if (attempts < 40) window.setTimeout(waitForEntitlement, 500);
       }
