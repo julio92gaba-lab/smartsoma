@@ -7590,9 +7590,9 @@
        =================================================================== */
     (function () {
       var NOTICE = {
-        id: 'spoiler-transito-2026-10',
+        id: 'news1',
         title: '⚡ Spoiler: Seu novo assistente no trânsito!',
-        text: 'Em breve, o Smartsoma terá um app integrado para calcular a rentabilidade de cada corrida em tempo real, antes de você aceitar o chamado. Aguarde!'
+        text: 'EM BREVE:: Um app integrado para calcular cada corrida em tempo real. Aguarde!'
       };
       var seenKey = 'releaseNotice:' + NOTICE.id;
       var backdrop = document.getElementById('releaseNoticeBackdrop');
