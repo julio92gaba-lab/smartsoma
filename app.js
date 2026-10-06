@@ -280,7 +280,7 @@
 "plat.valorAria": "Valor recebido na plataforma",
 "sheet.idioma": "Idioma",
 "sheet.tamanho": "Tamanho da fonte",
-"sheet.tamanhoPequeno": "Pequeno",
+"sheet.tamanhoPequeno": "Normal",
 "sheet.tamanhoGrande": "Grande",
 "tamanho.popupTitle": "Tamanho da fonte",
 "tamanho.popupTexto": "Escolha para aumentar ou diminuir a fonte e os elementos em todo o app.",
@@ -705,7 +705,7 @@
 "plat.valorAria": "Amount received on the platform",
 "sheet.idioma": "Language",
 "sheet.tamanho": "Font size",
-"sheet.tamanhoPequeno": "Small",
+"sheet.tamanhoPequeno": "Normal",
 "sheet.tamanhoGrande": "Large",
 "tamanho.popupTitle": "Font size",
 "tamanho.popupTexto": "Choose to make the font and elements bigger or smaller across the whole app.",
@@ -1027,7 +1027,7 @@
 
       function refreshRowLabel () {
         var labelEl = document.getElementById('tamanhoCurrentLabel');
-        if (labelEl) labelEl.textContent = isGrande() ? 'G' : 'P';
+        if (labelEl) labelEl.textContent = I18N.t(isGrande() ? 'sheet.tamanhoGrande' : 'sheet.tamanhoPequeno');
       }
 
       function refreshPopupState () {
@@ -3643,6 +3643,22 @@
         return sumExpenseEntries(loadDayExpenseEntries(d));
       }
 
+      // Read-only presentation access: the new UI uses the very same day
+      // calculation as the existing weekly table (including Monday expenses).
+      window.SmartSomaReadModel = {
+        day: function (date) {
+          var d = new Date(date.getTime()); d.setHours(0, 0, 0, 0);
+          var b = loadDayBadges(d);
+          var entries = loadDayExpenseEntries(d);
+          var expenses = sumExpenseEntries(entries);
+          var gross = b.uber + b.bolt + b.extras;
+          return { date: d, key: dateKeyFor(d), uber: b.uber, bolt: b.bolt,
+            platforms: b.plat, gross: gross, expenses: expenses,
+            net: gross - expenses, km: b.distancia, entries: entries };
+        },
+        platforms: function () { return platRegistry().filter(function (p) { return !p.ate; }); }
+      };
+
       function getMonday (date) {
         var day = date.getDay();
         var diffToMonday = (day === 0) ? -6 : 1 - day;
@@ -4503,7 +4519,9 @@
       // atributo "hidden" — a troca instantânea deixava a tela "piscar"
       // ao navegar pelo menu.
       var HOME_PAGE_FADE_MS = 140;
+      var homePageTimer = null;
       function showHomeListPage (section) {
+        clearTimeout(homePageTimer);
         var normalized = (section === 'default') ? 'ganhos' : section;
         var pages = PAGES_LIST;
         var nextEl = null;
@@ -4536,7 +4554,7 @@
 
         if (currentEl && currentEl !== nextEl) {
           currentEl.classList.add('is-fading');
-          setTimeout(reveal, HOME_PAGE_FADE_MS);
+          homePageTimer = setTimeout(reveal, HOME_PAGE_FADE_MS);
         } else {
           reveal();
         }
@@ -4608,6 +4626,7 @@
       // só aparece com um fade-in suave depois que o menu termina de
       // fechar.
       function hideAllInstant () {
+        clearTimeout(homePageTimer);
         PAGES_LIST.forEach(function (p) {
           if (!p.el) return;
           p.el.classList.remove('is-fading', 'slide-current', 'slide-out-left', 'slide-out-right', 'slide-in-left', 'slide-in-right');
@@ -7310,13 +7329,13 @@
       // page   : página do corpo da app onde o passo acontece
       // sheet  : true = painel de Ajustes aberto; false = fechado
       var ALL_STEPS = [
-        { sel: '#subHeaderDateBtn',        k: 'tut.s1',  page: 'ganhos', sheet: false },
+        { sel: '#uiCalendar',             k: 'tut.s1',  page: 'ganhos', sheet: false },
         { sel: '#listRowUber',             k: 'tut.s2',  page: 'ganhos', sheet: false },
-        { sel: '#btnAddPlatform',          k: 'tut.s2b', page: 'ganhos', sheet: false },
+        { sel: '#uiManagePlatforms',       k: 'tut.s2b', page: 'ganhos', sheet: false },
         { sel: '#listRowDespesas',         k: 'tut.s3',  page: 'ganhos', sheet: false },
         { sel: '#listRowDistancia',        k: 'tut.s4',  page: 'ganhos', sheet: false },
-        { sel: '#metaSemanalCard',         k: 'tut.s5',  page: 'ganhos', sheet: false },
-        { sel: '#svgMenuBtn',              k: 'tut.s6',  page: 'ganhos', sheet: false },
+        { sel: '#metaSemanalCard',         k: 'tut.s5',  page: 'resumo', sheet: false },
+        { sel: '.ui-navigation',           k: 'tut.s6',  page: 'ganhos', sheet: false },
         { sel: '#btnVerMeuResumo',         k: 'tut.s7',  page: 'ganhos', sheet: false },
         { sel: '.period-filter-row',       k: 'tut.s8',  page: 'resumo', sheet: false },
         { sel: '.dash-cluster',            k: 'tut.s9',  page: 'resumo', sheet: false },
@@ -7656,3 +7675,7 @@
       });
       waitForEntitlement();
     })();
+
+    // A apresentação só inicia depois dos controlos reais e do cache estarem prontos.
+    window.SmartSomaAppReady = true;
+    document.dispatchEvent(new CustomEvent('smartSomaAppReady'));

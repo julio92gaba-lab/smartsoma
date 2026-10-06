@@ -21,6 +21,8 @@ function createApp(seed = {}, { ui = false } = {}) {
   w.scrollTo = () => {};
   w.HTMLElement.prototype.scrollTo = () => {};
   w.HTMLElement.prototype.scrollBy = () => {};
+  w.HTMLDialogElement.prototype.showModal = function () { this.open = true; };
+  w.HTMLDialogElement.prototype.close = function () { this.open = false; this.dispatchEvent(new w.Event('close')); };
   w.matchMedia = () => ({ matches: false, addEventListener() {}, removeEventListener() {} });
   w.HTMLCanvasElement.prototype.getContext = () => new Proxy({}, {
     get: (_, key) => key === 'measureText' ? () => ({ width: 20 }) : () => {}
@@ -29,6 +31,7 @@ function createApp(seed = {}, { ui = false } = {}) {
   if (ui && fs.existsSync('ui-v2.js')) w.eval(fs.readFileSync('ui-v2.js', 'utf8'));
   w.eval(fs.readFileSync('app.js', 'utf8'));
   w.document.dispatchEvent(new w.Event('DOMContentLoaded'));
+  if (ui) w.SmartSomaUI.start();
   const el = id => w.document.getElementById(id);
   const click = id => { const node = el(id); if (!node) throw new Error(`Missing ${id}`); node.click(); };
   const input = (id, value) => { el(id).value = String(value); el(id).dispatchEvent(new w.Event('input', { bubbles: true })); };
