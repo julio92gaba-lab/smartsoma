@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0B0F0C">
+  <title>SmartSoma — Conceito de interface</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=DM+Sans:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="mockup.css">
+</head>
+<body>
+  <canvas id="confetti" aria-hidden="true"></canvas>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a href="#inicio" class="brand" aria-label="SmartSoma, início"><img src="assets/logo-horizontal.png" alt="SmartSoma" class="brand-image"></a>
+      <p class="brand-subtitle">Controlo simples. Decisões melhores.</p>
+
+      <nav class="navigation" aria-label="Navegação principal">
+        <button class="nav-item active" data-view="inicio" data-mobile="Início"><span class="icon">⌂</span>Visão geral</button>
+        <button class="nav-item" data-view="ganhos" data-mobile="Ganhos"><span class="icon">▰</span>Ganhos diários</button>
+        <button class="nav-item" data-view="despesas" data-mobile="Despesas"><span class="icon">▣</span>Despesas</button>
+        <button class="nav-item" data-view="semana" data-mobile="Semana"><span class="icon">▤</span>Detalhe semanal</button>
+        <button class="nav-item" data-view="relatorios" data-mobile="Relatórios"><span class="icon">▰</span>Relatórios</button>
+        <button class="nav-item" data-view="ajustes" data-mobile="Ajustes"><span class="icon">⚙</span>Ajustes</button>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <div class="trial-card"><span class="pulse-dot"></span><strong>11 dias grátis</strong><small>Experimenta tudo sem limites</small></div>
+        <button class="profile"><span class="avatar">JM</span><span><strong>João Martins</strong><small>Conta pessoal</small></span><b>⌄</b></button>
+      </div>
+    </aside>
+
+    <main>
+      <header class="topbar">
+        <button class="mobile-menu" aria-label="Abrir menu">☰</button>
+        <div><p class="eyebrow">TERÇA-FEIRA, 6 DE OUTUBRO</p><h1 id="page-title">Bom dia, João <span>✦</span></h1></div><img src="assets/logo-horizontal.png" alt="SmartSoma" class="subpage-logo">
+        <div class="topbar-actions"><button class="round-btn" aria-label="Notificações">♧<i></i></button><button class="add-button" id="open-entry">+ Registar dia</button></div>
+      </header>
+
+      <section class="dashboard-view active" data-content="inicio">
+        <div class="intro-row"><p>Vê como está a correr a tua semana.</p><button class="range-button">Esta semana <span>⌄</span></button></div>
+
+        <section class="goal-card" id="goal-card" aria-labelledby="goal-title">
+          <div class="goal-topline"><div class="tag"><span>🎯</span> FOCO DA SEMANA</div><button class="more" aria-label="Opções da meta">•••</button></div>
+          <div class="goal-grid">
+            <div class="goal-copy"><h2 id="goal-title">A tua meta está mesmo ao alcance.</h2><p>Mais <strong id="remaining">€84,00</strong> e fechas a semana em grande.</p><div class="goal-actions"><button class="goal-type active" data-type="bruto">Bruto</button><button class="goal-type" data-type="liquido">Líquido</button><button class="edit-goal">Editar meta ↗</button></div></div>
+            <div class="goal-number"><span>Progresso</span><strong id="goal-percent">84%</strong><small><b id="earned">€516,00</b> de <span id="target">€600,00</span></small></div>
+          </div>
+          <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div><div class="day-dots" aria-label="Progresso por dia"><span class="done"><b>S</b>€68</span><span class="done"><b>T</b>€92</span><span class="done"><b>Q</b>€104</span><span class="done"><b>Q</b>€86</span><span class="today"><b>S</b>€166</span><span><b>S</b>—</span><span><b>D</b>—</span></div></div>
+          <button class="demo-finish" id="finish-goal">Ver celebração de meta atingida ✦</button>
+        </section>
+
+        <section class="metrics-grid" aria-label="Resumo financeiro">
+          <article class="metric-card profit"><div class="metric-icon">↗</div><p>Lucro líquido</p><h3>€382,40</h3><small><b>+12,4%</b> vs. semana anterior</small></article>
+          <article class="metric-card"><div class="metric-icon purple">◎</div><p>Ganhos brutos</p><h3>€516,00</h3><small>4 plataformas registadas</small></article>
+          <article class="metric-card"><div class="metric-icon coral">↙</div><p>Despesas</p><h3>€133,60</h3><small>26% dos ganhos</small></article>
+          <article class="metric-card"><div class="metric-icon amber">⌁</div><p>Distância</p><h3>318 <em>km</em></h3><small>€1,20 / km em média</small></article>
+        </section>
+
+        <section class="lower-grid">
+          <article class="panel earnings-panel"><div class="panel-heading"><div><p class="eyebrow">ESTA SEMANA</p><h2>Ritmo dos teus ganhos</h2></div><button class="text-link">Ver detalhe →</button></div><div class="chart"><div class="y-axis"><span>€180</span><span>€120</span><span>€60</span><span>€0</span></div><div class="bars"><div class="bar-wrap"><i style="height:38%"></i><b>S</b></div><div class="bar-wrap"><i style="height:51%"></i><b>T</b></div><div class="bar-wrap"><i style="height:58%"></i><b>Q</b></div><div class="bar-wrap"><i style="height:48%"></i><b>Q</b></div><div class="bar-wrap current" style="--h:92%"><i></i><strong>€166</strong><b>S</b></div><div class="bar-wrap future"><i></i><b>S</b></div><div class="bar-wrap future"><i></i><b>D</b></div></div></div><div class="chart-note"><span class="legend"></span> Ganho bruto diário <strong>Melhor dia: sexta-feira</strong></div></article>
+          <article class="panel activity-panel"><div class="panel-heading"><div><p class="eyebrow">HOJE</p><h2>Últimos registos</h2></div><button class="text-link">Ver todos →</button></div><ul class="activity-list"><li><span class="activity-icon uber">U</span><div><strong>Uber</strong><small>16:42 · Ganho</small></div><b>+ €74,20</b></li><li><span class="activity-icon bolt">B</span><div><strong>Bolt</strong><small>13:10 · Ganho</small></div><b>+ €48,50</b></li><li><span class="activity-icon fuel">⌁</span><div><strong>Combustível</strong><small>09:25 · Despesa</small></div><b class="negative">− €52,30</b></li></ul><button class="add-record">+ Adicionar registo</button></article>
+        </section>
+      </section>
+
+      <section class="page-view" data-content="ganhos">
+        <div class="view-heading"><div><p class="eyebrow">REGISTO DO DIA · 6 OUT</p><h2>Ganhos diários</h2><p>Lança tudo o que aconteceu hoje, numa só vista.</p></div></div>
+        <div class="daily-layout"><article class="panel register-panel"><div class="panel-heading"><div><p class="eyebrow">PLATAFORMAS</p><h2>Rendimentos de hoje</h2></div><button class="text-link">Gerir plataformas →</button></div><div class="platform-grid"><button class="platform-tile" data-entry-platform="Uber"><span class="platform-logo uber">U</span><span>Uber<small>Sem ganhos lançados</small></span><b>€0,00</b><i>+</i></button><button class="platform-tile" data-entry-platform="Bolt"><span class="platform-logo bolt">B</span><span>Bolt<small>Sem ganhos lançados</small></span><b>€0,00</b><i>+</i></button><button class="platform-tile add-platform"><span>+</span>Adicionar rendimento</button></div><div class="daily-total"><span>Ganhos brutos do dia</span><strong>€0,00</strong></div></article><article class="panel distance-panel"><p class="eyebrow">DISTÂNCIA PERCORRIDA</p><div class="distance-value"><span>⌁</span><strong>0 <em>km</em></strong></div><p>Ainda não existe distância registada para hoje.</p><button class="outline-button">Adicionar quilometragem</button></article></div>
+        <article class="panel table-panel"><div class="panel-heading"><div><p class="eyebrow">HISTÓRICO DO DIA</p><h2>Registos de terça-feira</h2></div><div class="segment"><button class="active">Todos</button><button>Ganhos</button><button>Despesas</button></div></div><div class="data-table"><div class="table-head"><span>Hora</span><span>Tipo</span><span>Descrição</span><span>Valor</span><span></span></div><div class="table-row"><span>16:42</span><span class="pill gain">Ganho</span><strong>Uber</strong><b class="positive">+ €74,20</b><button>•••</button></div><div class="table-row"><span>13:10</span><span class="pill gain">Ganho</span><strong>Bolt</strong><b class="positive">+ €48,50</b><button>•••</button></div><div class="table-row"><span>09:25</span><span class="pill expense">Despesa</span><strong>Combustível</strong><b class="negative">− €52,30</b><button>•••</button></div></div></article>
+      </section>
+
+      <section class="page-view" data-content="despesas">
+        <div class="view-heading"><div><p class="eyebrow">ORGANIZAÇÃO</p><h2>Despesas</h2><p>Controla o que sai para saberes o que fica.</p></div></div>
+        <div class="expense-summary"><article><span>Este mês</span><strong>€482,90</strong><small>−8% vs. mês anterior</small></article><article><span>Fixas semanais</span><strong>€116,00</strong><small>Aplicadas à segunda-feira</small></article><article><span>Maior categoria</span><strong>Combustível</strong><small>€261,50 este mês</small></article></div>
+        <div class="two-panels"><article class="panel"><div class="panel-heading"><div><p class="eyebrow">RECORRENTES</p><h2>Despesas fixas</h2></div><button class="text-link">+ Adicionar</button></div><ul class="fixed-list"><li><span class="expense-symbol">⌂</span><div><strong>Aluguer do carro</strong><small>Todas as segundas-feiras</small></div><b>€80,00<small>/ semana</small></b></li><li><span class="expense-symbol">%</span><div><strong>Taxa de plataforma</strong><small>Percentagem sobre o bruto</small></div><b>8%<small>automático</small></b></li><li><span class="expense-symbol">▣</span><div><strong>Dados móveis</strong><small>Mensal</small></div><b>€12,00<small>/ semana</small></b></li></ul></article><article class="panel"><div class="panel-heading"><div><p class="eyebrow">DISTRIBUIÇÃO</p><h2>Por categoria</h2></div><button class="text-link">Ver mês →</button></div><div class="category-bars"><div><span>Combustível</span><i><b style="width:72%"></b></i><strong>€261,50</strong></div><div><span>Manutenção</span><i><b style="width:34%"></b></i><strong>€104,20</strong></div><div><span>Aluguer</span><i><b style="width:29%"></b></i><strong>€80,00</strong></div><div><span>Outras</span><i><b style="width:14%"></b></i><strong>€37,20</strong></div></div></article></div>
+      </section>
+
+      <section class="page-view" data-content="semana">
+        <div class="view-heading"><div><p class="eyebrow">30 SET — 6 OUT · SEMANA 40</p><h2>Detalhe semanal</h2><p>Todos os dias, numa leitura clara.</p></div><div class="date-controls"><button>←</button><strong>Outubro 2026</strong><button>→</button></div></div>
+        <div class="week-summary"><div><span>Bruto</span><strong>€516,00</strong></div><div><span>Despesas</span><strong>€133,60</strong></div><div><span>Líquido</span><strong class="green-text">€382,40</strong></div><div><span>Distância</span><strong>318 km</strong></div></div>
+        <article class="panel table-panel weekly-table"><div class="panel-heading"><div><p class="eyebrow">SEMANA 40</p><h2>Dia a dia</h2></div><div class="segment" id="week-view-toggle"><button class="active">Tabela</button><button>Lista</button></div></div><div class="data-table" id="week-table"><div class="table-head"><span>Data</span><span>Uber</span><span>Bolt</span><span>Despesas</span><span>Km</span><span>Bruto</span><span>Líquido</span></div><div class="table-row"><strong>Seg <small>30 set</small></strong><span>€68,00</span><span>—</span><span class="negative">€19,40</span><span>54</span><b>€68,00</b><b class="positive">€48,60</b></div><div class="table-row"><strong>Ter <small>1 out</small></strong><span>€64,00</span><span>€28,00</span><span class="negative">—</span><span>61</span><b>€92,00</b><b class="positive">€92,00</b></div><div class="table-row"><strong>Qua <small>2 out</small></strong><span>€76,00</span><span>€28,00</span><span class="negative">€14,20</span><span>57</span><b>€104,00</b><b class="positive">€89,80</b></div><div class="table-row"><strong>Qui <small>3 out</small></strong><span>€58,00</span><span>€28,00</span><span class="negative">—</span><span>60</span><b>€86,00</b><b class="positive">€86,00</b></div><div class="table-row highlight-row"><strong>Sex <small>4 out · Hoje</small></strong><span>€74,20</span><span>€48,50</span><span class="negative">€100,00</span><span>86</span><b>€166,70</b><b class="positive">€66,70</b></div></div><div class="week-list" id="week-list" hidden><button><strong>Seg, 30 set</strong><span>€68,00 bruto · €48,60 líquido</span><i>›</i></button><button><strong>Ter, 1 out</strong><span>€92,00 bruto · €92,00 líquido</span><i>›</i></button><button><strong>Qua, 2 out</strong><span>€104,00 bruto · €89,80 líquido</span><i>›</i></button><button><strong>Qui, 3 out</strong><span>€86,00 bruto · €86,00 líquido</span><i>›</i></button><button><strong>Sex, 4 out · Hoje</strong><span>€166,70 bruto · €66,70 líquido</span><i>›</i></button></div></article>
+        <article class="panel weekly-total-panel"><span>Total líquido da semana</span><strong>€382,40</strong><small>5 dias com registos · sábado e domingo previstos</small></article>
+        <article class="panel weekly-expenses"><div class="panel-heading"><div><p class="eyebrow">CUSTOS DA SEMANA</p><h2>Despesas da semana</h2></div></div><div class="expense-table"><div><span>Dia</span><span>Valor</span><span>Descrição</span></div><div><strong>Seg, 30 set</strong><b>€80,00</b><span>Aluguer do carro · despesa fixa</span></div><div><strong>Seg, 30 set</strong><b>€19,40</b><span>Combustível</span></div><div><strong>Qua, 2 out</strong><b>€14,20</b><span>Lavagem do veículo</span></div><div><strong>Sex, 4 out</strong><b>€100,00</b><span>Combustível</span></div></div></article>
+      </section>
+
+      <section class="page-view" data-content="ajuda">
+        <div class="view-heading"><div><p class="eyebrow">APOIO SMARTSOMA</p><h2>Ajuda e tutorial</h2><p>Estamos aqui para simplificar o teu dia.</p></div></div>
+        <article class="panel help-hero"><div><span class="tag">PRECISAS DE AJUDA?</span><h2>Fala connosco quando precisares.</h2><p>Escreve para <strong>apoio@smartsoma.pt</strong> · Lisboa, Portugal</p></div><button class="add-button" id="tutorial-open">▶ Ver tutorial</button></article>
+        <section class="faq-panel"><p class="eyebrow">PERGUNTAS FREQUENTES</p><h2>Respostas rápidas</h2><details open><summary>Como registo um ganho?</summary><p>Usa o botão +, escolhe Ganho, seleciona a plataforma e introduz o valor total desse dia.</p></details><details><summary>Posso lançar mais do que um ganho na mesma plataforma?</summary><p>Não. Cada plataforma tem um único total por dia; se for necessário, edita o valor desse registo.</p></details><details><summary>Como adiciono despesas fixas?</summary><p>Em Ajustes › Despesas Fixas, escolhe valor fixo ou percentagem do bruto. A despesa é lançada à segunda-feira.</p></details><details><summary>Como registo quilometragem?</summary><p>Na página de Ganhos, usa Adicionar quilometragem e escolhe Km total ou Início e fim.</p></details><details><summary>O que significa meta bruta ou líquida?</summary><p>A meta bruta considera ganhos; a líquida considera ganhos menos despesas registadas na semana.</p></details><details><summary>Como obtenho o relatório?</summary><p>Em Relatórios, escolhe o mês e descarrega o PDF com resumo, detalhe diário e despesas.</p></details></section>
+      </section>
+
+      <section class="page-view" data-content="relatorios">
+        <div class="view-heading"><div><p class="eyebrow">EXPORTAÇÃO</p><h2>Relatórios</h2><p>Leva os teus números contigo, sem confusão.</p></div></div><div class="report-layout"><article class="report-hero"><span class="report-icon">▤</span><p class="eyebrow">RELATÓRIO MENSAL</p><h2>Outubro 2026</h2><p>Inclui detalhe diário, resumo semanal, plataformas, despesas e distância.</p><button class="add-button report-download">↓ Descarregar PDF</button></article><article class="panel report-preview"><p class="eyebrow">PRÉ-VISUALIZAÇÃO</p><h2>Resumo do mês</h2><div class="report-values"><span>Bruto <b>€2 184,00</b></span><span>Despesas <b>€482,90</b></span><span>Líquido <b class="green-text">€1 701,10</b></span><span>Distância <b>1 206 km</b></span></div><div class="fake-lines"><i></i><i></i><i></i><i></i></div></article></div><article class="panel report-history"><div class="panel-heading"><div><p class="eyebrow">ARQUIVO</p><h2>Relatórios anteriores</h2></div><button class="text-link">Ver todos →</button></div><div class="report-row"><span class="file-icon">PDF</span><strong>Setembro 2026<small>Gerado em 1 out 2026</small></strong><b>€1 624,80 líquido</b><button>↓</button></div><div class="report-row"><span class="file-icon">PDF</span><strong>Agosto 2026<small>Gerado em 1 set 2026</small></strong><b>€1 488,20 líquido</b><button>↓</button></div></article>
+      </section>
+
+      <section class="page-view" data-content="ajustes">
+        <div class="view-heading"><div><p class="eyebrow">CONTA E PREFERÊNCIAS</p><h2>Ajustes</h2><p>Personaliza a tua experiência SmartSoma.</p></div></div><div class="settings-layout"><article class="panel account-card"><span class="avatar large">JM</span><div><h2>João Martins</h2><p>joao@exemplo.pt</p><span class="pro-badge">✦ SmartSoma Pro · 11 dias grátis</span></div><button class="outline-button">Editar perfil</button></article><div class="settings-columns"><article class="panel settings-group"><p class="eyebrow">GESTÃO</p><button><span>◌</span><div><strong>Perfil e dados da conta</strong><small>Nome, email e palavra-passe</small></div><i>›</i></button><button><span>⌂</span><div><strong>Despesas fixas</strong><small>3 despesas recorrentes ativas</small></div><i>›</i></button><button><span>⊞</span><div><strong>Multiplataforma</strong><small>Uber, Bolt e mais</small></div><i>›</i></button></article><article class="panel settings-group"><p class="eyebrow">PREFERÊNCIAS</p><button><span>◉</span><div><strong>Idioma</strong><small>Português (Portugal)</small></div><i>›</i></button><button><span>Aa</span><div><strong>Tamanho do texto</strong><small>Normal</small></div><i>›</i></button><button><span>?</span><div><strong>Ajuda e tutorial</strong><small>Voltar a ver como funciona</small></div><i>›</i></button></article></div><article class="panel danger-zone"><p class="eyebrow">ZONA DE DADOS</p><button>Limpar dados de demonstração <span>›</span></button><button>Terminar sessão <span>›</span></button></article></div>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" id="toast" role="status"><span>✦</span><div><strong>Meta atingida!</strong><small>Que semana incrível, João.</small></div></div>
+  <div class="entry-modal" id="entry-modal" aria-hidden="true"><div class="modal-card"><button class="close-modal" aria-label="Fechar">×</button><span class="tag">NOVO REGISTO</span><h2>Adicionar registo</h2><div class="choice-row entry-type"><button class="choice active" data-entry-type="ganho">Ganho</button><button class="choice" data-entry-type="despesa">Despesa</button></div><div class="entry-platform-wrap"><label>Plataforma<select id="entry-platform"><option>Uber</option><option>Bolt</option><option>Outra plataforma</option></select></label></div><label id="entry-description-wrap">Descrição <input id="entry-description" placeholder="Ex.: ganhos do turno"></label><label id="entry-value-wrap">Valor <input placeholder="0,00" inputmode="decimal"></label><p class="entry-helper" id="entry-helper">Seleciona a plataforma onde recebeste este rendimento.</p><button class="save-entry">Guardar</button></div></div>
+  <div class="entry-modal" id="demo-modal" aria-hidden="true"><div class="modal-card demo-modal-card"><button class="close-modal" aria-label="Fechar">×</button><span class="tag" id="demo-tag">PREVISUALIZAÇÃO</span><h2 id="demo-title">Detalhe</h2><p class="demo-copy" id="demo-copy"></p><div id="demo-body"></div><button class="save-entry" id="demo-confirm">Guardar visualmente</button></div></div>
+  <script src="mockup.js"></script>
+</body>
+</html>
