@@ -13,7 +13,9 @@
     relatorio: '<path d="M5 3h10l4 4v14H5ZM14 3v5h5M8 12h8M8 16h8"/>',
     ajustes: '<path d="m12 3 2 3 4-.2.2 4 3 2-3 2 .2 4-4 .2-2 3-2-3-4 .2-.2-4-3-2 3-2-.2-4 4-.2Z"/><circle cx="12" cy="12" r="3"/>',
     plus: '<path d="M12 5v14M5 12h14"/>',
-    arrow: '<path d="M5 12h14m-6-6 6 6-6 6"/>'
+    arrow: '<path d="M5 12h14m-6-6 6 6-6 6"/>',
+    profit: '<path d="M5 18 19 4M5 4h14v14"/>',
+    distance: '<path d="M7 3 3 21M17 3l4 18M12 3v3M12 10v4M12 18v3"/>'
   };
   var text = {
     pt: { resumo:'Visão geral', ganhos:'Ganhos diários', despesas:'Despesas', semana:'Detalhes da semana', relatorio:'Relatórios', ajustes:'Ajustes', hello:'Bom dia', afternoon:'Boa tarde', evening:'Boa noite', record:'Adicionar registo', calendar:'Escolher data', tag:'O teu trabalho, em perspetiva.', ganhosNote:'Cada percurso conta. Regista os teus rendimentos e acompanha o dia.', resumoNote:'Tudo o que precisas para continuar a avançar.', despesasNote:'As tuas despesas, sem perder nenhum detalhe.', semanaNote:'Sete dias. Uma visão clara dos teus resultados.', relatorioNote:'Os teus resultados, organizados e prontos a guardar.', ajustesNote:'O SmartSoma, à tua medida.', theme:'Modo escuro', profile:'Editar perfil', help:'Ajuda e tutorial', normal:'Normal', newPlatform:'Nova plataforma', manage:'Gerir plataformas', addIncome:'Adicionar rendimento' },
@@ -136,10 +138,30 @@
     $('resumoTechCard').after(dashboard);
     $('uiChartDetails').addEventListener('click',function(){go('semana');});
     $('uiRecentAdd').addEventListener('click',function(){openEntry();});
-    var goal=create('div','ui-goal-progress','<p id="uiGoalCopy"></p><div class="ui-progress-track"><div id="uiGoalFill"></div></div><div id="uiGoalDays" class="ui-goal-days"></div>');
+    var goal=create('div','ui-goal-progress','<div class="ui-goal-topline"><span class="ui-goal-tag" id="uiGoalTag"></span><span id="uiGoalPeriod"></span></div><div class="ui-goal-grid"><div class="ui-goal-copy"><h2 id="uiGoalTitle"></h2><p id="uiGoalCopy"></p><div class="ui-goal-actions"><button type="button" id="uiGoalGross"></button><button type="button" id="uiGoalNet"></button><button type="button" id="uiGoalEdit"></button></div></div><div class="ui-goal-number"><span id="uiGoalProgressLabel"></span><strong id="uiGoalPercent"></strong><small id="uiGoalAmounts"></small></div></div><div class="ui-progress-wrap"><div class="ui-progress-track" id="uiGoalTrack" role="progressbar" aria-valuemin="0" aria-valuemax="100"><div id="uiGoalFill"></div></div><div id="uiGoalDays" class="ui-goal-days"></div></div>');
     $('metaSemanalCard').append(goal);
-    var history=button('',function(){MetaSemanalRead.openHistory(ResumoPeriod.getRefDate());},'ui-goal-history');
-    history.id='uiGoalHistory';$('metaSemanalCard').prepend(history);
+    $('uiGoalEdit').addEventListener('click',function(){
+      var week=MetaSemanalRead.forDate(ResumoPeriod.getRefDate());
+      if(!week.current){MetaSemanalRead.openHistory(ResumoPeriod.getRefDate());return;}
+      $('btnMetaSemanal').click();
+      if(week.config){$('metaSemanalValorInput').value=week.config.valor;$(week.config.tipo==='liquido'?'metaTipoLiquidoBtn':'metaTipoBrutoBtn').click();}
+    });
+    function changeGoalType(type){
+      var week=MetaSemanalRead.forDate(ResumoPeriod.getRefDate());
+      if(!week.current)return;
+      if(window.SmartSomaPro&&!SmartSomaPro.isPro){if(window.abrirModalSubExpirada)abrirModalSubExpirada();return;}
+      $(type==='liquido'?'metaTipoLiquidoBtn':'metaTipoBrutoBtn').click();
+      if(!week.config){$('btnMetaSemanal').click();return;}
+      // Delegate to the original save path: same weekly key, validation and cloud persistence.
+      $('metaSemanalValorInput').value=week.config.valor;$('metaSemanalSalvarBtn').click();
+    }
+    $('uiGoalGross').addEventListener('click',function(){changeGoalType('bruto');});
+    $('uiGoalNet').addEventListener('click',function(){changeGoalType('liquido');});
+    var metrics=create('section','ui-metrics');metrics.setAttribute('aria-label',say('Resumo financeiro','Financial summary'));
+    [['Net','profit','profit'],['Gross','purple','ganhos'],['Expenses','coral','despesas'],['Distance','amber','distance']].forEach(function(item){
+      var card=create('article','ui-metric '+item[1],'<div class="ui-metric-icon">'+svg(item[2])+'</div><p id="uiMetric'+item[0]+'Label"></p><h3 id="uiMetric'+item[0]+'Value"></h3><small id="uiMetric'+item[0]+'Note"></small>');metrics.append(card);
+    });
+    summary.append(metrics);
     var dayTotal=create('div','ui-daily-total','<span id="uiDailyTitle"></span><strong id="uiDailyTotal"></strong>');
     $('ganhosIncomeScrollWrap').after(dayTotal);
     var add=button('',function(){openEntry();}); add.id='uiIncomeAdd'; dayTotal.append(add);
@@ -194,17 +216,63 @@
     var totals=days.reduce(function(s,d){s.gross+=d.gross;s.net+=d.net;s.expenses+=d.expenses;s.km+=d.km;return s;},{gross:0,net:0,expenses:0,km:0});
     [['summaryBrutoValue','gross'],['summaryLiquidoValue','net'],['summaryDespesasValue','expenses']].forEach(function(pair){$(pair[0]).textContent='€'+totals[pair[1]].toFixed(2);});
     $('summaryDistanciaValue').textContent=(Math.round(totals.km*10)/10)+' km';
+    renderMetrics(days,totals);
     var goalWeek=MetaSemanalRead.forDate(ResumoPeriod.getRefDate());
     var cfg=goalWeek.config, pct=goalWeek.percent;
     $('metaSemanalCard').classList.toggle('ui-historical-goal',!goalWeek.current);
-    $('uiGoalHistory').hidden=goalWeek.current;
-    $('uiGoalHistory').textContent=say('Meta da semana','Weekly goal')+' · '+shortDate(goalWeek.monday)+' · '+(cfg?pct+'%':say('Não definida','Not set'))+' →';
-    $('uiGoalCopy').textContent=cfg?say('Um dia de cada vez. Objetivo: ','One day at a time. Goal: ')+money(cfg.valor)+' '+I18N.t(cfg.tipo==='liquido'?'meta.liquidos':'meta.brutos'):say('Define a tua meta e dá direção à tua semana.','Set a goal and give your week direction.');
+    $('uiGoalTag').textContent=say('◎ FOCO DA SEMANA','◎ WEEKLY FOCUS');
+    var sunday=new Date(goalWeek.monday);sunday.setDate(sunday.getDate()+6);
+    $('uiGoalPeriod').textContent=shortDate(goalWeek.monday)+' — '+shortDate(sunday);
+    $('uiGoalTitle').textContent=!cfg?say('Dá uma direção à tua semana.','Give your week direction.'):pct>=100?say('A tua meta foi atingida!','You reached your goal!'):say('A tua meta está mesmo ao alcance.','Your goal is within reach.');
+    $('uiGoalCopy').replaceChildren();
+    if(cfg&&pct<100){var remaining=create('strong');remaining.textContent=money(Math.max(0,cfg.valor-goalWeek.achieved));$('uiGoalCopy').append(say('Mais ','Another '),remaining,goalWeek.current?say(' e fechas a semana em grande.',' to finish the week strong.'):say(' para atingir a meta desta semana.',' to reach this week’s goal.'));}
+    else $('uiGoalCopy').textContent=cfg?say('Objetivo cumprido. Cada percurso contou.','Goal achieved. Every journey counted.'):say('Define uma meta em bruto ou líquido e acompanha o teu progresso.','Set a gross or net goal and follow your progress.');
+    $('uiGoalGross').textContent=say('Bruto','Gross');$('uiGoalNet').textContent=say('Líquido','Net');
+    $('uiGoalGross').setAttribute('aria-pressed',String(!cfg||cfg.tipo==='bruto'));
+    $('uiGoalNet').setAttribute('aria-pressed',String(!!cfg&&cfg.tipo==='liquido'));
+    $('uiGoalGross').disabled=$('uiGoalNet').disabled=!goalWeek.current;
+    $('uiGoalEdit').textContent=goalWeek.current?(cfg?say('Editar meta ↗','Edit goal ↗'):say('Definir meta ↗','Set goal ↗')):say('Consultar meta ↗','View goal ↗');
+    $('uiGoalProgressLabel').textContent=say('Progresso','Progress');
+    $('uiGoalPercent').textContent=cfg?pct+'%':'—';
+    $('uiGoalAmounts').textContent=cfg?money(goalWeek.achieved)+say(' de ',' of ')+money(cfg.valor):say('Meta por definir','No goal set');
+    $('uiGoalTrack').setAttribute('aria-label',say('Progresso da meta semanal','Weekly goal progress'));
+    $('uiGoalTrack').setAttribute('aria-valuenow',String(Math.min(100,Math.max(0,pct))));
+    $('uiGoalTrack').setAttribute('aria-valuetext',cfg?pct+'%':say('Meta por definir','No goal set'));
     $('uiGoalFill').style.width=Math.min(100,Math.max(0,pct))+'%';
     var monday=goalWeek.monday;
     $('uiGoalDays').replaceChildren();
-    for(var i=0;i<7;i++){var d=new Date(monday);d.setDate(d.getDate()+i);var info=SmartSomaReadModel.day(d);var dot=create('span',info.gross>0?'has-entry':'');dot.textContent=I18N.list('weekday.abbr')[i];dot.title=shortDate(d)+' · '+money(info.gross);$('uiGoalDays').append(dot);}
+    var today=new Date();today.setHours(0,0,0,0);
+    for(var i=0;i<7;i++){
+      var d=new Date(monday);d.setDate(d.getDate()+i);var info=SmartSomaReadModel.day(d);
+      var amount=cfg&&cfg.tipo==='liquido'?info.net:info.gross;
+      var dot=create('span',d>today?'is-future':info.gross>0?'has-entry':'');
+      dot.classList.toggle('is-today',d.getTime()===today.getTime());
+      var label=create('b');label.textContent=I18N.list('weekday.abbr')[i];var value=create('span');value.textContent=d>today?'—':money(amount);
+      dot.title=shortDate(d)+' · '+(cfg&&cfg.tipo==='liquido'?say('Líquido','Net'):say('Bruto','Gross'))+' · '+money(amount);dot.append(label,value);$('uiGoalDays').append(dot);
+    }
     syncHeader();
+  }
+  function renderMetrics(days,totals){
+    var period=document.querySelector('.period-chip.selected').dataset.period;
+    var today=new Date();today.setHours(0,0,0,0);
+    // Compare only elapsed days. Calendar arithmetic also works across DST/month boundaries.
+    var elapsed=days.filter(function(d){return d.date<=today;}),prior=0,current=0;
+    elapsed.forEach(function(d){
+      var prev=new Date(d.date);
+      if(period==='mes'){
+        prev=new Date(d.date.getFullYear(),d.date.getMonth()-1,d.date.getDate());
+        if(prev.getDate()!==d.date.getDate())return;
+      }else prev.setDate(prev.getDate()-(period==='semana'?7:1));
+      current+=d.net;prior+=SmartSomaReadModel.day(prev).net;
+    });
+    var comparison=period==='semana'?say('vs. mesmos dias da semana anterior','vs. same days last week'):period==='mes'?say('vs. mesmos dias do mês anterior','vs. same days last month'):say('vs. dia anterior','vs. previous day');
+    var netNote=$('uiMetricNetNote');netNote.replaceChildren();
+    if(prior!==0){var delta=(current-prior)/Math.abs(prior)*100;var change=create('b',delta<0?'ui-negative':'ui-positive');change.textContent=(delta>0?'+':'')+delta.toLocaleString(I18N.t('lang.code'),{maximumFractionDigits:1})+'%';netNote.append(change,' '+comparison);}
+    else netNote.textContent=say('Sem base de comparação anterior','No previous comparison available');
+    [['Net',say('Lucro líquido','Net profit'),money(totals.net)],['Gross',say('Ganhos brutos','Gross earnings'),money(totals.gross)],['Expenses',say('Despesas','Expenses'),money(totals.expenses)],['Distance',say('Distância','Distance'),totals.km.toLocaleString(I18N.t('lang.code'),{maximumFractionDigits:1})+' km']].forEach(function(item){$('uiMetric'+item[0]+'Label').textContent=item[1];$('uiMetric'+item[0]+'Value').textContent=item[2];});
+    $('uiMetricGrossNote').textContent=platforms().length+say(' plataformas registadas',' registered platforms');
+    $('uiMetricExpensesNote').textContent=totals.gross>0?(totals.expenses/totals.gross*100).toLocaleString(I18N.t('lang.code'),{maximumFractionDigits:1})+say('% dos ganhos','% of earnings'):say('Sem ganhos neste período','No earnings in this period');
+    $('uiMetricDistanceNote').textContent=totals.km>0?money(totals.net/totals.km)+say(' líquidos / km em média',' net / km on average'):say('Sem quilometragem registada','No mileage recorded');
   }
   function renderChart(days){
     var values=days.flatMap(function(d){return[d.gross,d.net];}),min=Math.min(0,...values),max=Math.max(10,...values),range=max-min;

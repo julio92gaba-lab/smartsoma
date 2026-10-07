@@ -71,10 +71,10 @@ test('previous-week goal uses original historical calculation without writes', a
     ['homeBadgeValores:'+dateKey(monday)]:JSON.stringify({uber:100,bolt:50})
   });
   a.w.document.querySelector('[data-period="semana"]').click(); a.click('periodNavPrev'); await settle();
-  assert.equal(a.el('uiGoalHistory').hidden,false);
-  assert.match(a.el('uiGoalHistory').textContent,/75%/);
+  assert.equal(a.el('uiGoalGross').disabled,true);
+  assert.match(a.el('uiGoalPercent').textContent,/75%/);
   assert.equal(a.el('uiGoalFill').style.width,'75%');
-  const before=JSON.stringify(a.cache); a.click('uiGoalHistory');
+  const before=JSON.stringify(a.cache); a.click('uiGoalEdit');
   assert.match(a.el('metaSemanalHistBody').textContent,/150.00/);
   assert.equal(JSON.stringify(a.cache),before);
 });

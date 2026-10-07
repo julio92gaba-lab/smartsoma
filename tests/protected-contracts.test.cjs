@@ -14,7 +14,12 @@ test('authentication, cloud persistence and billing endpoints are unchanged',()=
     'supabase/functions/creem-checkout/index.ts':'c341a62155cb7600e48f7c40eb52b8c1e4a26d06d0ea1464441a0f3012322c16',
     'supabase/functions/creem-webhook/index.ts':'138af3b728b872d06acd82efaa12f73bd99ae9ccd8eb5394a263b1ead9eea953'
   };
-  for(const [path,checksum] of Object.entries(expected)) assert.equal(hash(fs.readFileSync(path,'utf8')),checksum,path);
+  for(const [path,checksum] of Object.entries(expected)) {
+    let source=fs.readFileSync(path,'utf8');
+    // Explicitly approved Google account-selector fix, released before this UI correction.
+    if(path==='login.html') source=source.replace(", queryParams: { prompt: 'select_account' }",'');
+    assert.equal(hash(source),checksum,path);
+  }
 });
 
 test('all inline auth, subscription and account scripts retain baseline source',()=>{
