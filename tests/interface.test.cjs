@@ -22,7 +22,7 @@ test('quick entry requires platform and supports selecting, deselecting and repl
   a.input('uiEntryValue','50');submit(a);assert.match(a.el('uiEntryError').textContent,/plataforma/);
   a.w.document.querySelector('[data-platform="uber"]').click();
   assert.equal(a.el('uiPlatformName').textContent,'Uber');
-  a.w.document.querySelector('[data-platform="uber"]').click();assert.equal(a.el('uiPlatformName').textContent,'');
+  a.w.document.querySelector('[data-platform="uber"]').click();assert.equal(a.el('uiPlatformName').textContent,'Selecione');
   a.w.document.querySelector('[data-platform="bolt"]').click();a.input('uiEntryValue','123,45');submit(a);
   assert.equal(a.w.HomeBadges.get().bolt,123.45);assert.equal(a.el('uiEntryDialog').open,false);
   a.click('uiIncomeAdd');a.w.document.querySelector('[data-platform="bolt"]').click();
@@ -70,7 +70,8 @@ test('goal emits achievement once on crossing 100 percent and retains its origin
 test('settings keeps account flows, two font sizes, legal link and complete FAQ',async t=>{
   const a=setup(t);a.w.SmartSomaUI.go('ajustes');a.click('openDadosPessoaisBtn');await settle();
   assert.ok(a.el('dpNomeInput'));assert.ok(a.el('dpEmailInput'));assert.ok(a.el('dpChangePasswordBtn'));assert.ok(a.el('dpUploadPhotoBtn'));
-  assert.ok(a.w.document.body.classList.contains('ui-sheet-page'));
+  assert.equal(a.el('uiSettingsPage').hidden,false);
+  assert.ok(a.el('profileSheet').classList.contains('open'));
   assert.equal(a.el('openTermosMenuBtn').href,'https://smartsoma.pt/legal');
   assert.equal(a.w.document.querySelectorAll('.tamanho-option').length,2);
   assert.match(a.el('tamanhoOptionP').textContent,/Normal/);
