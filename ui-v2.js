@@ -387,7 +387,7 @@
   function setupSettings(){
     var profileLabel=$('openDadosPessoaisBtn').querySelector('span');profileLabel.removeAttribute('data-i18n');profileLabel.dataset.uiText='profile';
     var helpLabel=$('openAjudaBtn').querySelector('span');helpLabel.removeAttribute('data-i18n');helpLabel.dataset.uiText='help';
-    var settings=$('sheetScreenDefault').querySelector('.sheet-content');
+    var settings=$('uiSettingsPage').querySelector('.sheet-content');
     var columns=create('div','ui-settings-columns');
     var management=create('div','sheet-actions ui-settings-group');
     var preferences=create('div','sheet-actions ui-settings-group');
