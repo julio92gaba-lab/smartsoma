@@ -48,16 +48,26 @@
     });
     var now = new Date(), date = window.GanhosDate ? GanhosDate.get() : now;
     var locale = I18N.t('lang.code');
-    $('uiHeaderDate').textContent = date.toLocaleDateString(locale,{weekday:'long',day:'numeric',month:'long'});
+    var today=new Date();today.setHours(0,0,0,0);
+    var selectedDay=new Date(date);selectedDay.setHours(0,0,0,0);
+    var showingOtherDate=selectedDay.getTime()!==today.getTime();
+    document.body.classList.toggle('ui-showing-other-date',showingOtherDate);
+    $('uiHeaderDate').textContent = showingOtherDate && window.matchMedia('(max-width:760px)').matches ? say('A mostrar dados de…','Showing data from…') : date.toLocaleDateString(locale,{weekday:'long',day:'numeric',month:'long'});
     var name = $('sheetUsername').textContent.trim().split(' ')[0];
     var greeting = t(now.getHours()<12?'hello':now.getHours()<19?'afternoon':'evening');
-    $('uiHeaderTitle').textContent = inSettings ? (sheet && sheet.id !== 'sheetScreenDefault' ? $('sheetHandleTitle').textContent : t('ajustes')) : route === 'resumo' ? greeting + ', ' + name + '.' : t(route);
+    $('uiHeaderTitle').textContent = showingOtherDate && window.matchMedia('(max-width:760px)').matches ? shortHeaderDate(date) : inSettings ? (sheet && sheet.id !== 'sheetScreenDefault' ? $('sheetHandleTitle').textContent : t('ajustes')) : route === 'resumo' ? greeting + ', ' + name + '.' : t(route);
     document.body.dataset.uiRoute = route;
     document.body.classList.toggle('ui-home', route === 'resumo' && !inSettings);
     document.querySelectorAll('.ui-selected-date').forEach(function(n){ n.textContent = date.toLocaleDateString(locale,{day:'numeric',month:'long',year:'numeric'}); });
     $('uiCalendar').setAttribute('aria-label',t('calendar'));
     $('uiAdd').setAttribute('aria-label',t('record'));
     $('uiThemeRow').setAttribute('aria-pressed',String(document.body.classList.contains('theme-dark')));
+  }
+  function shortHeaderDate(date){
+    if(I18N.getLang()==='en')return date.toLocaleDateString(I18N.t('lang.code'),{weekday:'short',day:'numeric',month:'short'});
+    var days=['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+    var months=['Jan.','Fev.','Mar.','Abr.','Mai.','Jun.','Jul.','Ago.','Set.','Out.','Nov.','Dez.'];
+    return days[date.getDay()]+', '+date.getDate()+' de '+months[date.getMonth()];
   }
   function go(key) {
     window.closeAllOverlays();
@@ -310,7 +320,7 @@
   }
   var entryMode='income',chosen=null,entryReturnFocus=null;
   function setupEntry(){
-    var dialog=create('dialog','ui-entry-dialog','<form id="uiEntryForm"><div class="ui-panel-head"><h2 id="uiEntryTitle"></h2><button type="button" id="uiEntryClose" class="ui-icon-button" aria-label="Fechar">×</button></div><p id="uiEntryDate" class="ui-eyebrow"></p><div class="ui-entry-tabs"><button type="button" id="uiEntryIncome"></button><button type="button" id="uiEntryExpense"></button></div><div id="uiPlatformChoices" class="ui-platform-choices"></div><p id="uiPlatformName" class="ui-platform-name"></p><label id="uiEntryDescriptionLabel"><span id="uiDescriptionLabel"></span><input id="uiEntryDescription" maxlength="60"></label><label><span id="uiValueLabel"></span><div class="ui-entry-amount"><span>€</span><input id="uiEntryValue" inputmode="decimal" autocomplete="off" required aria-label="Valor" placeholder="0,00"></div></label><p id="uiEntryHint" class="ui-muted" aria-live="polite"></p><p id="uiEntryError" class="ui-error" role="alert"></p><button type="submit" id="uiEntrySave" class="ui-button"></button></form>');
+    var dialog=create('dialog','ui-entry-dialog','<form id="uiEntryForm"><div class="ui-panel-head"><h2 id="uiEntryTitle"></h2><button type="button" id="uiEntryClose" class="ui-icon-button" aria-label="Fechar">×</button></div><p id="uiEntryDate" class="ui-eyebrow"></p><div class="ui-entry-tabs"><button type="button" id="uiEntryIncome"></button><button type="button" id="uiEntryExpense"></button></div><div class="ui-platform-selector" id="uiPlatformSelector"><div id="uiPlatformChoices" class="ui-platform-choices"></div><p id="uiPlatformName" class="ui-platform-name"></p></div><label id="uiEntryDescriptionLabel"><span id="uiDescriptionLabel"></span><input id="uiEntryDescription" maxlength="60"></label><label><span id="uiValueLabel"></span><div class="ui-entry-amount"><span>€</span><input id="uiEntryValue" inputmode="decimal" autocomplete="off" required aria-label="Valor" placeholder="0,00"></div></label><p id="uiEntryHint" class="ui-muted" aria-live="polite"></p><p id="uiEntryError" class="ui-error" role="alert"></p><button type="submit" id="uiEntrySave" class="ui-button"></button></form>');
     dialog.id='uiEntryDialog';dialog.setAttribute('aria-labelledby','uiEntryTitle');document.body.append(dialog);
     $('uiEntryClose').addEventListener('click',function(){dialog.close();});
     dialog.addEventListener('click',function(e){if(e.target===dialog)dialog.close();});
@@ -348,9 +358,9 @@
     $('uiEntryDescriptionLabel').hidden=income;$('uiEntryDescription').required=!income;
     $('uiDescriptionLabel').textContent=say('Descrição','Description');$('uiValueLabel').textContent=say('Valor','Amount');
     $('uiEntrySave').textContent=say('Guardar','Save');$('uiEntryError').textContent='';
-    $('uiPlatformChoices').hidden=!income;$('uiPlatformChoices').replaceChildren();
-    $('uiPlatformName').textContent=chosen?chosen.nome:'';
-    $('uiEntryHint').textContent=income?say('Seleciona uma plataforma. Um total por plataforma e por dia.','Select a platform. One total per platform per day.'):say('A despesa será guardada na data selecionada.','The expense will be saved for the selected date.');
+    $('uiPlatformSelector').hidden=!income;$('uiPlatformChoices').hidden=!income;$('uiPlatformChoices').replaceChildren();
+    $('uiPlatformName').textContent=chosen?chosen.nome:say('Selecione','Select');
+    $('uiEntryHint').textContent=income?say('Total do dia','Daily total'):say('A despesa será guardada na data selecionada.','The expense will be saved for the selected date.');
     if(income)platforms().forEach(function(p){var n=button('',function(){chosen=chosen&&chosen.id===p.id?null:p;$('uiEntryValue').value=chosen?String(p.id==='uber'||p.id==='bolt'?HomeBadges.get()[p.id]||'':HomeBadges.getPlat(p.id)||''):'';renderEntry();},'ui-platform-choice');n.setAttribute('aria-label',p.nome);n.setAttribute('aria-pressed',String(!!chosen&&chosen.id===p.id));n.dataset.platform=p.id;
       if(p.img && (p.id==='uber'||p.id==='bolt'||SmartSomaSecurity.isSafeImageUrl(p.img))){var image=create('img');image.src=p.img;image.alt=p.nome;n.append(image);}else n.textContent=p.nome.slice(0,2).toUpperCase();$('uiPlatformChoices').append(n);});
     if(income&&chosen&&Number($('uiEntryValue').value)>0)$('uiEntryHint').textContent=say('Já existe um registo. Guardar substitui o total deste dia.','An entry exists. Saving replaces this day’s total.');
