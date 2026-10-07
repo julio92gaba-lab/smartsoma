@@ -18,8 +18,8 @@
     distance: '<path d="M7 3 3 21M17 3l4 18M12 3v3M12 10v4M12 18v3"/>'
   };
   var text = {
-    pt: { resumo:'Visão geral', ganhos:'Ganhos diários', despesas:'Despesas', semana:'Detalhes da semana', relatorio:'Relatórios', ajustes:'Ajustes', hello:'Bom dia', afternoon:'Boa tarde', evening:'Boa noite', record:'Adicionar registo', calendar:'Escolher data', tag:'O teu trabalho, em perspetiva.', ganhosNote:'Cada percurso conta. Regista os teus rendimentos e acompanha o dia.', resumoNote:'Tudo o que precisas para continuar a avançar.', despesasNote:'As tuas despesas, sem perder nenhum detalhe.', semanaNote:'Sete dias. Uma visão clara dos teus resultados.', relatorioNote:'Os teus resultados, organizados e prontos a guardar.', ajustesNote:'O SmartSoma, à tua medida.', theme:'Modo escuro', profile:'Editar perfil', help:'Ajuda e tutorial', normal:'Normal', newPlatform:'Nova plataforma', manage:'Gerir plataformas', addIncome:'Adicionar rendimento' },
-    en: { resumo:'Overview', ganhos:'Daily earnings', despesas:'Expenses', semana:'Weekly details', relatorio:'Reports', ajustes:'Settings', hello:'Good morning', afternoon:'Good afternoon', evening:'Good evening', record:'Add entry', calendar:'Choose date', tag:'Your work, in perspective.', ganhosNote:'Every journey counts. Record your earnings and track your day.', resumoNote:'Everything you need to keep moving forward.', despesasNote:'Your expenses, without missing a detail.', semanaNote:'Seven days. A clear view of your results.', relatorioNote:'Your results, organised and ready to save.', ajustesNote:'SmartSoma, your way.', theme:'Dark mode', profile:'Edit profile', help:'Help and tutorial', normal:'Normal', newPlatform:'New platform', manage:'Manage platforms', addIncome:'Add earnings' }
+    pt: { resumo:'Visão geral', ganhos:'Ganhos diários', despesas:'Despesas', semana:'Detalhes da semana', relatorio:'Relatórios', ajustes:'Ajustes', hello:'Bom dia', afternoon:'Boa tarde', evening:'Boa noite', record:'Adicionar registo', calendar:'Escolher data', tag:'Para Estafetas e Motoristas de App.', ganhosNote:'Cada percurso conta. Regista os teus rendimentos e acompanha o dia.', resumoNote:'Tudo o que precisas para continuar a avançar.', despesasNote:'As tuas despesas, sem perder nenhum detalhe.', semanaNote:'Sete dias. Uma visão clara dos teus resultados.', relatorioNote:'Os teus resultados, organizados e prontos a guardar.', ajustesNote:'O SmartSoma, à tua medida.', theme:'Modo escuro', profile:'Editar perfil', help:'Ajuda e tutorial', normal:'Normal', newPlatform:'Nova plataforma', manage:'Gerir plataformas', addIncome:'Adicionar rendimento' },
+    en: { resumo:'Overview', ganhos:'Daily earnings', despesas:'Expenses', semana:'Weekly details', relatorio:'Reports', ajustes:'Settings', hello:'Good morning', afternoon:'Good afternoon', evening:'Good evening', record:'Add entry', calendar:'Choose date', tag:'For couriers and app drivers.', ganhosNote:'Every journey counts. Record your earnings and track your day.', resumoNote:'Everything you need to keep moving forward.', despesasNote:'Your expenses, without missing a detail.', semanaNote:'Seven days. A clear view of your results.', relatorioNote:'Your results, organised and ready to save.', ajustesNote:'SmartSoma, your way.', theme:'Dark mode', profile:'Edit profile', help:'Help and tutorial', normal:'Normal', newPlatform:'New platform', manage:'Manage platforms', addIncome:'Add earnings' }
   };
   function t(key) { return (text[window.I18N && I18N.getLang()] || text.pt)[key] || key; }
   function svg(key) { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (icons[key] || icons.arrow) + '</svg>'; }
@@ -76,9 +76,15 @@
     started = true;
     document.body.classList.add('ui-v2');
     document.documentElement.classList.add('ui-v2');
-    var nav = create('aside', 'ui-sidebar', '<button type="button" class="ui-brand" aria-label="SmartSoma"><img src="logo-home.png" alt="SmartSoma"></button><p class="ui-brand-caption" data-ui-text="tag"></p><nav class="ui-navigation" aria-label="Menu principal"></nav><div class="ui-sidebar-footer"><span>SMARTSOMA</span><p data-ui-text="tag"></p></div>');
+    var nav = create('aside', 'ui-sidebar', '<button type="button" class="ui-brand" aria-label="SmartSoma"><img src="logo-home.png" alt="SmartSoma"></button><p class="ui-brand-caption" data-ui-text="tag"></p><nav class="ui-navigation" aria-label="Menu principal"></nav><div class="ui-sidebar-footer"><button type="button" class="ui-subscription-card" id="uiSidebarSubscription"><span class="ui-subscription-dot"></span><span><strong id="uiSidebarSubscriptionTitle"></strong><small id="uiSidebarSubscriptionNote"></small></span><b id="uiSidebarSubscriptionAction"></b></button><button type="button" class="ui-sidebar-profile" id="uiSidebarProfile"><span class="ui-sidebar-avatar" id="uiSidebarAvatar"></span><span><strong id="uiSidebarName"></strong><small>Conta pessoal</small></span><b>›</b></button></div>');
     $('appRoot').prepend(nav);
     nav.querySelector('.ui-brand').addEventListener('click',function(){go('resumo');});
+    $('uiSidebarProfile').addEventListener('click',function(){go('ajustes');});
+    $('uiSidebarSubscription').addEventListener('click',function(){
+      var manage=$('gerirSubscricaoBtn');
+      if(manage&&getComputedStyle(manage).display!=='none'){manage.click();return;}
+      go('ajustes');
+    });
     ['resumo','ganhos','despesas','semana','relatorio','ajustes'].forEach(function(key){
       var n=button('',function(){go(key);},'ui-nav-item');
       n.dataset.uiRoute=key; n.innerHTML=svg(key)+'<span class="ui-nav-full" data-ui-text="'+key+'"></span><span class="ui-nav-short" aria-hidden="true"></span>'; nav.querySelector('nav').append(n);
@@ -101,17 +107,35 @@
     // These original buttons call the private navigation function, so keep the shell in sync too.
     $('btnVerMeuResumo').addEventListener('click',function(){route='resumo';syncHeader();});
     $('btnRegistrarGanhos').addEventListener('click',function(){route='ganhos';syncHeader();});
-    var observer=new MutationObserver(syncHeader);
+    var observer=new MutationObserver(function(){syncHeader();syncSidebarAccount();});
     observer.observe($('profileSheet'),{attributes:true,subtree:true,attributeFilter:['class']});
     observer.observe($('sheetHandleTitle'),{childList:true,subtree:true,characterData:true});
     observer.observe($('sheetUsername'),{childList:true,subtree:true,characterData:true});
+    observer.observe($('sheetAvatar'),{childList:true,subtree:true,attributes:true,attributeFilter:['class','src']});
+    observer.observe($('subStatusText'),{childList:true,subtree:true,characterData:true});
+    observer.observe($('sheetProActiveBadge'),{attributes:true,attributeFilter:['style']});
     GanhosDate.onChange(syncHeader);
     document.addEventListener('languageChanged',function(){translate();syncHeader();});
     setupPages();
+    syncSidebarAccount();
     translate(); go('resumo');
     document.dispatchEvent(new CustomEvent('smartSomaUIReady'));
   }
   function money(value) { return Number(value).toLocaleString(I18N.t('lang.code'),{style:'currency',currency:'EUR'}); }
+  function syncSidebarAccount(){
+    var name=$('sheetUsername').textContent.trim()||say('Utilizador','User');
+    $('uiSidebarName').textContent=name;
+    var avatar=$('uiSidebarAvatar');avatar.replaceChildren();
+    var source=$('sheetAvatar img');
+    if(source){var image=create('img');image.src=source.src;image.alt='';avatar.append(image);}
+    else avatar.textContent=name.split(/\s+/).slice(0,2).map(function(part){return part[0]||'';}).join('').toUpperCase();
+    var status=$('subStatusText').textContent.trim();
+    var isTrial=/trial/i.test(status), isCancelled=/cancel/i.test(status), active=!isTrial&&!isCancelled;
+    var card=$('uiSidebarSubscription');card.classList.toggle('is-trial',isTrial);card.classList.toggle('is-cancelled',isCancelled);
+    $('uiSidebarSubscriptionTitle').textContent=isTrial?say('Período de trial','Trial period'):isCancelled?say('Subscrição cancelada','Subscription cancelled'):say('Subscrição ativa','Active subscription');
+    $('uiSidebarSubscriptionNote').textContent=isTrial?status:isCancelled?status:say('Gerir subscrição','Manage subscription');
+    $('uiSidebarSubscriptionAction').textContent=isTrial?'':active?say('Gerir','Manage'):'›';
+  }
   function say(pt,en) { return I18N.getLang()==='en'?en:pt; }
   function platforms() { return [{id:'uber',nome:'Uber',img:'01uber.png'},{id:'bolt',nome:'Bolt',img:'02bolt.png'}].concat(SmartSomaReadModel.platforms()); }
   function shortDate(d) { return d.toLocaleDateString(I18N.t('lang.code'),{day:'2-digit',month:'2-digit'}); }
@@ -371,7 +395,7 @@
     function navLabels(){var labels=say(['Início','Ganhos','Despesas','Semana','Relatórios','Ajustes'],['Home','Earnings','Expenses','Week','Reports','Settings']);document.querySelectorAll('.ui-nav-short').forEach(function(n,i){n.textContent=labels[i];});}
     labels();navLabels();document.addEventListener('languageChanged',function(){labels();navLabels();});
   }
-  window.SmartSomaUI={start:start,go:go,t:t,svg:svg,create:create,button:button,translate:translate,syncHeader:syncHeader};
+  window.SmartSomaUI={start:start,go:go,t:t,svg:svg,create:create,button:button,translate:translate,syncHeader:syncHeader,refreshSidebar:syncSidebarAccount};
   document.addEventListener('smartSomaAppReady',function(){setTimeout(start,0);});
   if (window.SmartSomaAppReady) start();
 })();
