@@ -69,3 +69,28 @@ persistidos não precisam de migração reversa, pois o seu formato não muda.
 Limite: a suite usa dados e respostas de autenticação/subscrição sintéticos.
 Não foi realizada uma cobrança, eliminação, alteração de password nem gravação
 numa conta real. A inspeção pública de produção não substitui estes testes.
+
+## Publicação concluída
+
+- Fonte da versão publicada: `1c2e8f4ee3d82a78fc92933d53d82e1fbb20b96f`.
+- Deployment: `dpl_CwNkRZUS8bmobcGbkzk6EmjA5pKa` — estado Ready.
+- URL imutável: https://smartsoma-buz1not8a-smart-soma.vercel.app
+- Aplicação: https://www.smartsoma.pt/app
+- Compilação: 15 segundos reportados por `vercel inspect`.
+- Criada com `--prod --skip-domain`, verificada e promovida sem reconstrução.
+- 16 verificações HTTP passaram na versão protegida e no domínio público:
+  sete ficheiros idênticos à fonte local, páginas e recursos 200, três áreas
+  excluídas 404, GET rejeitado com 405 nos dois endpoints de escrita.
+- Navegador sem sessão: `/app` redireciona para `/login`; formulário,
+  recuperação e botão Google presentes. Nenhuma credencial foi utilizada.
+- Consulta de erros Vercel após publicar: nenhum registo devolvido no intervalo.
+  Isto não comprova ausência de erros em todos os clientes, nem monitora Supabase.
+- Auditoria `npm audit --omit=dev --audit-level=high`: zero vulnerabilidades.
+
+Para repetir o smoke test público, na raiz do projeto:
+`./tests/smoke-release.ps1 -Deployment https://www.smartsoma.pt`
+
+Para reverter para a versão anterior, se necessário:
+`vercel promote https://smartsoma-in8x51ljv-smart-soma.vercel.app --scope team_6op6ddx7P3EyXYgyjX2amOv6`
+
+![Verificação visual local com dados sintéticos](interface-desktop.jpg)
