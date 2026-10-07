@@ -360,7 +360,7 @@
     $('uiEntrySave').textContent=say('Guardar','Save');$('uiEntryError').textContent='';
     $('uiPlatformSelector').hidden=!income;$('uiPlatformChoices').hidden=!income;$('uiPlatformChoices').replaceChildren();
     $('uiPlatformName').textContent=chosen?chosen.nome:say('Selecione','Select');
-    $('uiEntryHint').textContent=income?say('Total do dia','Daily total'):say('A despesa será guardada na data selecionada.','The expense will be saved for the selected date.');
+    $('uiEntryHint').textContent=income?(chosen?say('Total do dia na '+chosen.nome,'Daily total on '+chosen.nome):say('Total do dia','Daily total')):say('A despesa será guardada na data selecionada.','The expense will be saved for the selected date.');
     if(income)platforms().forEach(function(p){var n=button('',function(){chosen=chosen&&chosen.id===p.id?null:p;$('uiEntryValue').value=chosen?String(p.id==='uber'||p.id==='bolt'?HomeBadges.get()[p.id]||'':HomeBadges.getPlat(p.id)||''):'';renderEntry();},'ui-platform-choice');n.setAttribute('aria-label',p.nome);n.setAttribute('aria-pressed',String(!!chosen&&chosen.id===p.id));n.dataset.platform=p.id;
       if(p.img && (p.id==='uber'||p.id==='bolt'||SmartSomaSecurity.isSafeImageUrl(p.img))){var image=create('img');image.src=p.img;image.alt=p.nome;n.append(image);}else n.textContent=p.nome.slice(0,2).toUpperCase();$('uiPlatformChoices').append(n);});
     if(income&&chosen&&Number($('uiEntryValue').value)>0)$('uiEntryHint').textContent=say('Já existe um registo. Guardar substitui o total deste dia.','An entry exists. Saving replaces this day’s total.');

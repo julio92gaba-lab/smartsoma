@@ -140,13 +140,15 @@ html.ui-v2.theme-dark, body.ui-v2.theme-dark {
 .ui-v2 .sheet-username { font:700 1.5rem 'Bricolage Grotesque',sans-serif; color:#fff; }
 .ui-v2 .sheet-email,.ui-v2 .sheet-subinfo { color:#c2d7c7; font-size:.8rem; }
 .ui-v2 .sheet-close-btn { width:32px; height:32px; color:var(--ink); }
-.ui-v2.ui-sheet-page .profile-sheet { left:var(--sidebar); top:var(--ui-header); right:0; bottom:0; width:auto; height:auto; max-width:none; border:0; border-radius:0; background:var(--paper); box-shadow:none; transform:none; z-index:35; }
+.ui-v2.ui-sheet-page .profile-sheet { left:var(--sidebar); top:var(--ui-header); right:0; bottom:0; width:auto; height:auto; max-width:none; display:flex; flex-direction:column; border:0; border-radius:0; background:var(--paper); box-shadow:none; opacity:1; visibility:visible; transform:none !important; z-index:35; }
 .ui-v2.ui-sheet-page .sheet-backdrop { display:none; }
 .ui-v2.ui-sheet-page .sheet-content { max-width:960px; margin:auto; padding:25px clamp(20px,4vw,64px) 90px; }
 .ui-v2.ui-sheet-page .sheet-handle-area { padding:18px clamp(20px,4vw,64px); }
 .ui-v2.ui-sheet-page .sheet-handle-title { font-size:.75rem; color:var(--muted); }
-.ui-v2 .mm-backdrop,.ui-v2 .modal-backdrop { backdrop-filter:blur(4px); background:rgba(5,15,9,.55); padding:24px; }
-.ui-v2 .mm-card,.ui-v2 .modal-card { background:var(--card-bg); color:var(--ink); border:2px solid #142015; border-radius:14px; padding:26px; width:min(440px,calc(100vw - 48px)); max-height:82dvh; overflow-y:auto; box-shadow:5px 5px 0 var(--lime),-2px -2px 0 var(--brand-green),0 24px 80px #0004; }
+.ui-v2.ui-sheet-page .sheet-screens { background:var(--paper); }
+.ui-v2.ui-sheet-page .sheet-screen::before,.ui-v2.ui-sheet-page .sheet-screen::after { display:none; }
+.ui-v2 .mm-backdrop,.ui-v2 .modal-backdrop { top:var(--ui-header) !important; height:auto !important; backdrop-filter:blur(4px); background:rgba(5,15,9,.55); padding:24px; }
+.ui-v2 .mm-card,.ui-v2 .modal-card { background:var(--card-bg); color:var(--ink); border:2px solid #142015; border-radius:14px; padding:26px; width:min(440px,calc(100vw - 48px)); max-height:82dvh; overflow-y:auto; box-shadow:6px 6px 0 var(--brand-green),0 24px 80px #0004; }
 .ui-v2 .mm-title,.ui-v2 .modal-title { color:var(--ink); font-size:1.45rem; }
 .ui-v2 .mm-helper-text,.ui-v2 .mm-subtitle,.ui-v2 .dp-notice-text { font-size:.8rem; color:var(--muted); line-height:1.65; }
 .ui-v2 .mm-value-input-wrap,.ui-v2 .dp-input,.ui-v2 .despesa-desc-input,.ui-v2 .despesa-valor-input { background:var(--input-bg); border:1px solid var(--card-line); border-radius:8px; color:var(--ink); }
@@ -229,7 +231,7 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
 .ui-daily-total .ui-button { margin-left:auto; }
 .ui-expense-total { font:700 2.1rem 'Bricolage Grotesque',sans-serif; color:var(--danger); padding:12px 0 25px; }
 #uiExpenseFixed,#uiRecentAdd { margin-top:18px; }
-.ui-entry-dialog { width:min(420px,calc(100vw - 48px)); max-height:82dvh; overflow-y:auto; background:var(--card-bg); color:var(--ink); border:2px solid #142015; border-radius:14px; padding:20px; box-shadow:5px 5px 0 var(--lime),-2px -2px 0 var(--brand-green),0 24px 80px #0005; }
+.ui-entry-dialog { width:min(420px,calc(100vw - 48px)); max-height:82dvh; overflow-y:auto; background:var(--card-bg); color:var(--ink); border:2px solid #142015; border-radius:14px; padding:20px; box-shadow:6px 6px 0 var(--brand-green),0 24px 80px #0005; }
 .ui-entry-dialog::backdrop { background:#06130bb0; backdrop-filter:blur(4px); }
 .ui-entry-dialog label { display:grid; gap:6px; margin-top:12px; font-size:.8rem; font-weight:600; }
 .ui-entry-dialog input { width:100%; min-width:0; border:1px solid var(--card-line); border-radius:8px; background:var(--input-bg); color:var(--ink); padding:12px; font-size:1rem; }
