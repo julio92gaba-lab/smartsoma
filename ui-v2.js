@@ -1,309 +1,136 @@
-/* Presentation adapter. Persistence, validation and business rules live in app.js.
-   Never use mockup data or bypass cloud-init / subscription checks here. */
+/* =======================================================================
+   ui-v2.js — SmartSoma visual layer v2
+   Apenas lógica de apresentação. Não toca em dados, auth, Supabase.
+   ======================================================================= */
+
 (function () {
   'use strict';
-  var started = false;
-  var route = 'resumo';
-  var $ = function (id) { return document.getElementById(id); };
-  var icons = {
-    resumo: '<path d="M3 10 12 3l9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"/>',
-    ganhos: '<rect x="3" y="6" width="18" height="15" rx="3"/><path d="M3 10h18M7 6V3h10v3M16 15h2"/>',
-    despesas: '<path d="M6 3h12v18l-3-2-3 2-3-2-3 2Z M9 8h6M9 12h6"/>',
-    semana: '<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M7 3v4M17 3v4M3 11h18M8 15h2M14 15h2"/>',
-    relatorio: '<path d="M5 3h10l4 4v14H5ZM14 3v5h5M8 12h8M8 16h8"/>',
-    ajustes: '<path d="m12 3 2 3 4-.2.2 4 3 2-3 2 .2 4-4 .2-2 3-2-3-4 .2-.2-4-3-2 3-2-.2-4 4-.2Z"/><circle cx="12" cy="12" r="3"/>',
-    plus: '<path d="M12 5v14M5 12h14"/>',
-    arrow: '<path d="M5 12h14m-6-6 6 6-6 6"/>'
-  };
-  var text = {
-    pt: { resumo:'Visão geral', ganhos:'Ganhos diários', despesas:'Despesas', semana:'Detalhes da semana', relatorio:'Relatórios', ajustes:'Ajustes', hello:'Bom dia', afternoon:'Boa tarde', evening:'Boa noite', record:'Adicionar registo', calendar:'Escolher data', tag:'O teu trabalho, em perspetiva.', ganhosNote:'Cada percurso conta. Regista os teus rendimentos e acompanha o dia.', resumoNote:'Tudo o que precisas para continuar a avançar.', despesasNote:'As tuas despesas, sem perder nenhum detalhe.', semanaNote:'Sete dias. Uma visão clara dos teus resultados.', relatorioNote:'Os teus resultados, organizados e prontos a guardar.', ajustesNote:'O SmartSoma, à tua medida.', theme:'Modo escuro', profile:'Editar perfil', help:'Ajuda e tutorial', normal:'Normal', newPlatform:'Nova plataforma', manage:'Gerir plataformas', addIncome:'Adicionar rendimento' },
-    en: { resumo:'Overview', ganhos:'Daily earnings', despesas:'Expenses', semana:'Weekly details', relatorio:'Reports', ajustes:'Settings', hello:'Good morning', afternoon:'Good afternoon', evening:'Good evening', record:'Add entry', calendar:'Choose date', tag:'Your work, in perspective.', ganhosNote:'Every journey counts. Record your earnings and track your day.', resumoNote:'Everything you need to keep moving forward.', despesasNote:'Your expenses, without missing a detail.', semanaNote:'Seven days. A clear view of your results.', relatorioNote:'Your results, organised and ready to save.', ajustesNote:'SmartSoma, your way.', theme:'Dark mode', profile:'Edit profile', help:'Help and tutorial', normal:'Normal', newPlatform:'New platform', manage:'Manage platforms', addIncome:'Add earnings' }
-  };
-  function t(key) { return (text[window.I18N && I18N.getLang()] || text.pt)[key] || key; }
-  function svg(key) { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (icons[key] || icons.arrow) + '</svg>'; }
-  function create(tag, className, html) { var n = document.createElement(tag); n.className = className || ''; if (html) n.innerHTML = html; return n; }
-  function translate(root) { (root || document).querySelectorAll('[data-ui-text]').forEach(function(n) { n.textContent = t(n.dataset.uiText); }); }
-  function button(label, handler, className) { var n = create('button', className || 'ui-button'); n.type = 'button'; n.textContent = label; n.addEventListener('click', handler); return n; }
-  function heading(key) {
-    return create('div', 'ui-page-intro', '<p class="ui-eyebrow ui-selected-date"></p><h1 data-ui-text="'+key+'"></h1><p data-ui-text="'+key+'Note"></p>');
+
+  /* ── Aguarda o DOM estar pronto ── */
+  function ready(fn) {
+    if (document.readyState !== 'loading') { fn(); }
+    else { document.addEventListener('DOMContentLoaded', fn); }
   }
-  function currentSheet() { return document.querySelector('#profileSheet .sheet-screen.is-active'); }
-  function syncHeader() {
-    if (!started) return;
-    var sheet = currentSheet();
-    var inSettings = $('profileSheet').classList.contains('open');
-    document.body.classList.toggle('ui-settings-open', inSettings);
-    var pageSheet = inSettings && sheet && ['sheetScreenDefault','sheetScreenDadosPessoais','sheetScreenAjuda'].includes(sheet.id);
-    document.body.classList.toggle('ui-sheet-page', !!pageSheet);
-    $('profileSheet').setAttribute('role',pageSheet?'region':'dialog');
-    $('profileSheet').setAttribute('aria-modal',String(inSettings&&!pageSheet));
-    document.querySelector('.page').inert=!!pageSheet;
-    var selected = inSettings ? 'ajustes' : route;
-    document.querySelectorAll('[data-ui-route]').forEach(function(n) {
-      n.setAttribute('aria-label',t(n.dataset.uiRoute));
-      n.classList.toggle('is-active', n.dataset.uiRoute === selected);
-      if (n.dataset.uiRoute === selected) n.setAttribute('aria-current','page'); else n.removeAttribute('aria-current');
-    });
-    var now = new Date(), date = window.GanhosDate ? GanhosDate.get() : now;
-    var locale = I18N.t('lang.code');
-    $('uiHeaderDate').textContent = date.toLocaleDateString(locale,{weekday:'long',day:'numeric',month:'long'});
-    var name = $('sheetUsername').textContent.trim().split(' ')[0];
-    var greeting = t(now.getHours()<12?'hello':now.getHours()<19?'afternoon':'evening');
-    $('uiHeaderTitle').textContent = inSettings ? (sheet && sheet.id !== 'sheetScreenDefault' ? $('sheetHandleTitle').textContent : t('ajustes')) : route === 'resumo' ? greeting + ', ' + name + '.' : t(route);
-    document.body.dataset.uiRoute = route;
-    document.body.classList.toggle('ui-home', route === 'resumo' && !inSettings);
-    document.querySelectorAll('.ui-selected-date').forEach(function(n){ n.textContent = date.toLocaleDateString(locale,{day:'numeric',month:'long',year:'numeric'}); });
-    $('uiCalendar').setAttribute('aria-label',t('calendar'));
-    $('uiAdd').setAttribute('aria-label',t('record'));
-    $('uiThemeRow').setAttribute('aria-pressed',String(document.body.classList.contains('theme-dark')));
-  }
-  function go(key) {
-    window.closeAllOverlays();
-    if (key === 'ajustes') { window.openProfileSheetPublic(); syncHeader(); return; }
-    window.closeProfileSheetPublic();
-    var expenses = $('uiExpensesPage');
-    if (expenses) expenses.hidden = key !== 'despesas';
-    route = key;
-    if (key === 'despesas') { HomeNav.hideAllInstant(); $('metaSlotList').hidden = true; }
-    else HomeNav.goToSection(key);
-    syncHeader();
-    window.scrollTo({top:0,behavior:'instant'});
-  }
-  function start() {
-    if (started || !window.SmartSomaAppReady) return;
-    started = true;
-    document.body.classList.add('ui-v2');
-    document.documentElement.classList.add('ui-v2');
-    var nav = create('aside', 'ui-sidebar', '<button type="button" class="ui-brand" aria-label="SmartSoma"><img src="logo-home.png" alt="SmartSoma"></button><p class="ui-brand-caption" data-ui-text="tag"></p><nav class="ui-navigation" aria-label="Menu principal"></nav><div class="ui-sidebar-footer"><span>SMARTSOMA</span><p data-ui-text="tag"></p></div>');
-    $('appRoot').prepend(nav);
-    nav.querySelector('.ui-brand').addEventListener('click',function(){go('resumo');});
-    ['resumo','ganhos','despesas','semana','relatorio','ajustes'].forEach(function(key){
-      var n=button('',function(){go(key);},'ui-nav-item');
-      n.dataset.uiRoute=key; n.innerHTML=svg(key)+'<span class="ui-nav-full" data-ui-text="'+key+'"></span><span class="ui-nav-short" aria-hidden="true"></span>'; nav.querySelector('nav').append(n);
-    });
-    var header=create('header','ui-header','<div class="ui-header-copy"><p id="uiHeaderDate" class="ui-eyebrow"></p><h1 id="uiHeaderTitle"></h1></div><img class="ui-mobile-logo" src="logo-home.png" alt="SmartSoma"><div class="ui-header-actions"><button type="button" id="uiCalendar" class="ui-icon-button">'+svg('semana')+'</button><button type="button" id="uiAdd" class="ui-add">'+svg('plus')+'</button></div>');
-    $('appRoot').prepend(header);
-    $('uiCalendar').addEventListener('click',function(){window.closeProfileSheetPublic(); window.closeAllOverlays(); GanhosDate.open();});
-    $('uiAdd').addEventListener('click',function(){window.closeProfileSheetPublic(); if(window.SmartSomaUI.openEntry) SmartSomaUI.openEntry(); else PlataformaModals.uber.open();});
-    ['Ganhos','Resumo','Semana','Relatorio'].forEach(function(name){$('homeListPage'+name).prepend(heading(name.toLowerCase()));});
-    $('tamanhoOptionP').querySelector('.tamanho-option-letter').textContent='A';
-    $('tamanhoOptionG').querySelector('.tamanho-option-letter').textContent='A';
-    var theme=button('',function(){$('btnToggleTheme').click();syncHeader();},'sheet-action-btn');
-    theme.id='uiThemeRow'; theme.innerHTML=svg('ajustes')+'<span data-ui-text="theme"></span>'; $('openTermosMenuBtn').before(theme);
-    var manage=button('',function(){window.openProfileSheetPublic();$('openMultiplataformaBtn').click();},'ui-button ui-secondary');
-    manage.innerHTML='<span data-ui-text="manage"></span>'; manage.id='uiManagePlatforms';
-    $('homeListPageGanhos').querySelector('.tech-card-header').append(manage);
-    var viewControls=$('subHeaderViewToggleGroup'); $('semanaWeekPicker').after(viewControls); viewControls.hidden=false;
-    var originalGo=HomeNav.goToSection;
-    HomeNav.goToSection=function(key){ route=key==='default'?'ganhos':key; if($('uiExpensesPage')) $('uiExpensesPage').hidden=true; originalGo(key); syncHeader(); };
-    // These original buttons call the private navigation function, so keep the shell in sync too.
-    $('btnVerMeuResumo').addEventListener('click',function(){route='resumo';syncHeader();});
-    $('btnRegistrarGanhos').addEventListener('click',function(){route='ganhos';syncHeader();});
-    var observer=new MutationObserver(syncHeader);
-    observer.observe($('profileSheet'),{attributes:true,subtree:true,attributeFilter:['class']});
-    observer.observe($('sheetHandleTitle'),{childList:true,subtree:true,characterData:true});
-    observer.observe($('sheetUsername'),{childList:true,subtree:true,characterData:true});
-    GanhosDate.onChange(syncHeader);
-    document.addEventListener('languageChanged',function(){translate();syncHeader();});
-    setupPages();
-    translate(); go('resumo');
-    document.dispatchEvent(new CustomEvent('smartSomaUIReady'));
-  }
-  function money(value) { return Number(value).toLocaleString(I18N.t('lang.code'),{style:'currency',currency:'EUR'}); }
-  function say(pt,en) { return I18N.getLang()==='en'?en:pt; }
-  function platforms() { return [{id:'uber',nome:'Uber',img:'01uber.png'},{id:'bolt',nome:'Bolt',img:'02bolt.png'}].concat(SmartSomaReadModel.platforms()); }
-  function shortDate(d) { return d.toLocaleDateString(I18N.t('lang.code'),{day:'2-digit',month:'2-digit'}); }
-  function daysInPeriod() {
-    var ref=ResumoPeriod.getRefDate(), period=document.querySelector('.period-chip.selected').dataset.period;
-    var first=new Date(ref), count=1;
-    if(period==='semana'){first=ResumoPeriod.getWeekRange(ref).monday;count=7;}
-    if(period==='mes'){first=new Date(ref.getFullYear(),ref.getMonth(),1);count=new Date(ref.getFullYear(),ref.getMonth()+1,0).getDate();}
-    return Array.from({length:count},function(_,i){var d=new Date(first);d.setDate(first.getDate()+i);return SmartSomaReadModel.day(d);});
-  }
-  function setupPages() {
-    // Reposition existing elements, retaining their IDs, listeners and references.
-    var summary=$('resumoLiveContent');
-    summary.querySelector('.dash-cluster').before($('metaSlotList'));
-    var expenses=create('section','home-list-page'); expenses.id='uiExpensesPage'; expenses.hidden=true; expenses.append(heading('despesas'));
-    var expenseCard=create('div','home-card','<div class="ui-panel-head"><h2 id="uiExpenseTitle"></h2><button class="ui-button" id="uiExpenseAdd" type="button"></button></div><div class="ui-expense-total" id="uiExpenseTotal"></div><div id="uiExpenseRows"></div>');
-    expenses.append(expenseCard); document.querySelector('.home-list-inner').append(expenses);
-    $('uiExpenseAdd').addEventListener('click',function(){openEntry('expense');});
-    var fix=button('',function(){window.openProfileSheetPublic();$('openDespesasFixasBtn').click();},'ui-button ui-secondary');
-    fix.id='uiExpenseFixed';expenseCard.append(fix);
-    var daily=button('',function(){PlataformaModals.despesas.open();},'ui-button ui-secondary');
-    daily.id='uiExpenseManage';expenseCard.append(daily);
-    var dashboard=create('div','ui-dashboard-bottom','<section class="home-card ui-chart-panel"><div class="ui-panel-head"><div><p class="ui-eyebrow" id="uiChartEyebrow"></p><h2 id="uiChartTitle"></h2></div><button type="button" id="uiChartDetails" class="ui-text-button"></button></div><div class="ui-chart-legend"><span class="ui-gross-legend" id="uiGrossLegend"></span><span class="ui-net-legend" id="uiNetLegend"></span></div><div id="uiChart"></div></section><section class="home-card"><div class="ui-panel-head"><h2 id="uiRecentTitle"></h2></div><div id="uiRecentRows"></div><button type="button" class="ui-button" id="uiRecentAdd"></button></section>');
-    $('resumoTechCard').after(dashboard);
-    $('uiChartDetails').addEventListener('click',function(){go('semana');});
-    $('uiRecentAdd').addEventListener('click',function(){openEntry();});
-    var goal=create('div','ui-goal-progress','<p id="uiGoalCopy"></p><div class="ui-progress-track"><div id="uiGoalFill"></div></div><div id="uiGoalDays" class="ui-goal-days"></div>');
-    $('metaSemanalCard').append(goal);
-    var history=button('',function(){MetaSemanalRead.openHistory(ResumoPeriod.getRefDate());},'ui-goal-history');
-    history.id='uiGoalHistory';$('metaSemanalCard').prepend(history);
-    var dayTotal=create('div','ui-daily-total','<span id="uiDailyTitle"></span><strong id="uiDailyTotal"></strong>');
-    $('ganhosIncomeScrollWrap').after(dayTotal);
-    var add=button('',function(){openEntry();}); add.id='uiIncomeAdd'; dayTotal.append(add);
-    var dayHistory=create('section','home-card','<h2 id="uiDayHistoryTitle"></h2><div id="uiDayHistoryRows"></div>');
-    $('homeListPageGanhos').append(dayHistory);
-    setupEntry(); setupSettings();
-    var refreshQueued=false;
-    function schedule(){if(refreshQueued)return;refreshQueued=true;queueMicrotask(function(){refreshQueued=false;refreshData();});}
-    ['homeBadgesSaved','plataformasChanged','despesasFixasChanged','metaSemanalConfigChanged','languageChanged','cloudCacheReady'].forEach(function(name){document.addEventListener(name,schedule);});
-    GanhosDate.onChange(schedule);
-    document.querySelectorAll('.period-chip,#periodNavPrev,#periodNavNext').forEach(function(n){n.addEventListener('click',schedule);});
-    refreshData();
-    SmartSomaUI.refresh=refreshData;
-  }
-  function tableRows(target,rows) {
-    target.replaceChildren();
-    if(!rows.length){target.append(create('p','ui-empty',say('Ainda não há registos neste período.','No entries in this period yet.')));return;}
-    rows.forEach(function(row){
-      var n=create('div','ui-record-row');
-      var label=create('span');label.textContent=row.label;
-      var date=create('small');date.textContent=shortDate(row.date);
-      var value=create('strong',row.expense?'ui-negative':'ui-positive');value.textContent=(row.expense?'−':'')+money(row.value);
-      n.append(date,label,value);target.append(n);
-    });
-  }
-  function records(days){
-    var names=platforms();var result=[];
-    days.slice().reverse().forEach(function(d){
-      names.forEach(function(p){var value=p.id==='uber'?d.uber:p.id==='bolt'?d.bolt:d.platforms[p.id]||0;if(value)result.push({date:d.date,label:p.nome,value:value});});
-      d.entries.forEach(function(e){result.push({date:d.date,label:e.descricao,value:e.valor,expense:true});});
-    });return result;
-  }
-  function refreshData(){
-    var day=SmartSomaReadModel.day(GanhosDate.get());
-    $('uiExpenseTitle').textContent=say('Despesas do dia','Daily expenses')+' · '+shortDate(day.date);
-    $('uiExpenseTotal').textContent=money(day.expenses);
-    $('uiExpenseAdd').textContent=say('Adicionar despesa','Add expense');
-    $('uiExpenseFixed').textContent=say('Gerir despesas fixas','Manage fixed expenses');
-    $('uiExpenseManage').textContent=say('Gerir despesas do dia','Manage daily expenses');
-    tableRows($('uiExpenseRows'),day.entries.map(function(e){return{date:day.date,label:e.descricao,value:e.valor,expense:true};}));
-    $('uiDailyTitle').textContent=say('Rendimentos','Earnings')+' · '+GanhosDate.formatLabel(day.date);
-    $('uiDailyTotal').textContent=money(day.gross);$('uiIncomeAdd').textContent=t('addIncome');
-    $('uiDayHistoryTitle').textContent=say('Histórico do dia','Daily history');tableRows($('uiDayHistoryRows'),records([day]));
-    $('uiChartTitle').textContent=say('O ritmo dos teus ganhos','Your earnings rhythm');
-    $('uiChartEyebrow').textContent=say('CADA DIA CONTA','EVERY DAY COUNTS');
-    $('uiChartDetails').textContent=say('Ver detalhes →','View details →');
-    $('uiGrossLegend').textContent=say('Ganhos brutos','Gross earnings');$('uiNetLegend').textContent=say('Ganhos líquidos','Net earnings');
-    $('uiRecentTitle').textContent=say('Últimos registos','Latest entries');$('uiRecentAdd').textContent=t('record');
-    var days=daysInPeriod();renderChart(days);tableRows($('uiRecentRows'),records(days).slice(0,8));
-    // Same calculations as the weekly table, including current fixed expenses.
-    // Only presentation changes; no cached amounts or persisted data are rewritten.
-    var totals=days.reduce(function(s,d){s.gross+=d.gross;s.net+=d.net;s.expenses+=d.expenses;s.km+=d.km;return s;},{gross:0,net:0,expenses:0,km:0});
-    [['summaryBrutoValue','gross'],['summaryLiquidoValue','net'],['summaryDespesasValue','expenses']].forEach(function(pair){$(pair[0]).textContent='€'+totals[pair[1]].toFixed(2);});
-    $('summaryDistanciaValue').textContent=(Math.round(totals.km*10)/10)+' km';
-    var goalWeek=MetaSemanalRead.forDate(ResumoPeriod.getRefDate());
-    var cfg=goalWeek.config, pct=goalWeek.percent;
-    $('metaSemanalCard').classList.toggle('ui-historical-goal',!goalWeek.current);
-    $('uiGoalHistory').hidden=goalWeek.current;
-    $('uiGoalHistory').textContent=say('Meta da semana','Weekly goal')+' · '+shortDate(goalWeek.monday)+' · '+(cfg?pct+'%':say('Não definida','Not set'))+' →';
-    $('uiGoalCopy').textContent=cfg?say('Um dia de cada vez. Objetivo: ','One day at a time. Goal: ')+money(cfg.valor)+' '+I18N.t(cfg.tipo==='liquido'?'meta.liquidos':'meta.brutos'):say('Define a tua meta e dá direção à tua semana.','Set a goal and give your week direction.');
-    $('uiGoalFill').style.width=Math.min(100,Math.max(0,pct))+'%';
-    var monday=goalWeek.monday;
-    $('uiGoalDays').replaceChildren();
-    for(var i=0;i<7;i++){var d=new Date(monday);d.setDate(d.getDate()+i);var info=SmartSomaReadModel.day(d);var dot=create('span',info.gross>0?'has-entry':'');dot.textContent=I18N.list('weekday.abbr')[i];dot.title=shortDate(d)+' · '+money(info.gross);$('uiGoalDays').append(dot);}
-    syncHeader();
-  }
-  function renderChart(days){
-    var values=days.flatMap(function(d){return[d.gross,d.net];}),min=Math.min(0,...values),max=Math.max(10,...values),range=max-min;
-    var x=function(i){return 45+i*620/Math.max(1,days.length-1);},y=function(v){return 184-(v-min)/range*150;};
-    var svgNode=document.createElementNS('http://www.w3.org/2000/svg','svg');svgNode.setAttribute('viewBox','0 0 710 222');svgNode.setAttribute('role','img');svgNode.setAttribute('aria-label',say('Ganhos brutos e líquidos por dia','Gross and net earnings by day'));
-    function elem(tag,attrs,content){var n=document.createElementNS(svgNode.namespaceURI,tag);Object.entries(attrs).forEach(function(a){n.setAttribute(a[0],String(a[1]));});if(content)n.textContent=content;svgNode.append(n);return n;}
-    for(var j=0;j<4;j++){var v=min+range*j/3;elem('line',{x1:45,x2:675,y1:y(v),y2:y(v),class:'ui-chart-grid'});elem('text',{x:4,y:y(v)+4,class:'ui-chart-label'},String(Math.round(v)));}
-    ['gross','net'].forEach(function(kind){elem('polyline',{points:days.map(function(d,i){return x(i)+','+y(d[kind]);}).join(' '),fill:'none',class:'ui-chart-line '+kind});days.forEach(function(d,i){var n=elem('circle',{cx:x(i),cy:y(d[kind]),r:3.5,class:'ui-chart-point '+kind});var title=document.createElementNS(svgNode.namespaceURI,'title');title.textContent=shortDate(d.date)+' · '+money(d[kind]);n.append(title);});});
-    days.forEach(function(d,i){if(days.length<=7||i%5===0||i===days.length-1)elem('text',{x:x(i),y:212,'text-anchor':'middle',class:'ui-chart-label'},shortDate(d.date));});
-    $('uiChart').replaceChildren(svgNode);
-  }
-  var entryMode='income',chosen=null,entryReturnFocus=null;
-  function setupEntry(){
-    var dialog=create('dialog','ui-entry-dialog','<form id="uiEntryForm"><div class="ui-panel-head"><h2 id="uiEntryTitle"></h2><button type="button" id="uiEntryClose" class="ui-icon-button" aria-label="Fechar">×</button></div><p id="uiEntryDate" class="ui-eyebrow"></p><div class="ui-entry-tabs"><button type="button" id="uiEntryIncome"></button><button type="button" id="uiEntryExpense"></button></div><div id="uiPlatformChoices" class="ui-platform-choices"></div><p id="uiPlatformName" class="ui-platform-name"></p><label id="uiEntryDescriptionLabel"><span id="uiDescriptionLabel"></span><input id="uiEntryDescription" maxlength="60"></label><label><span id="uiValueLabel"></span><div class="ui-entry-amount"><span>€</span><input id="uiEntryValue" inputmode="decimal" autocomplete="off" required aria-label="Valor" placeholder="0,00"></div></label><p id="uiEntryHint" class="ui-muted" aria-live="polite"></p><p id="uiEntryError" class="ui-error" role="alert"></p><button type="submit" id="uiEntrySave" class="ui-button"></button></form>');
-    dialog.id='uiEntryDialog';dialog.setAttribute('aria-labelledby','uiEntryTitle');document.body.append(dialog);
-    $('uiEntryClose').addEventListener('click',function(){dialog.close();});
-    dialog.addEventListener('click',function(e){if(e.target===dialog)dialog.close();});
-    dialog.addEventListener('close',function(){if(entryReturnFocus)entryReturnFocus.focus();});
-    $('uiEntryIncome').addEventListener('click',function(){entryMode='income';chosen=null;renderEntry();});
-    $('uiEntryExpense').addEventListener('click',function(){entryMode='expense';chosen=null;renderEntry();});
-    $('uiEntryForm').addEventListener('submit',function(e){
-      e.preventDefault();
-      var value=Number($('uiEntryValue').value.trim().replace(',','.'));
-      if(!Number.isFinite(value)||value<0||value>999.99||!$('uiEntryValue').value.trim()||(entryMode==='expense'&&value===0)){$('uiEntryError').textContent=say('Insere um valor válido até 999,99 €.','Enter a valid amount up to €999.99.');return;}
-      if(window.SmartSomaPro && !SmartSomaPro.isPro){dialog.close();if(window.abrirModalSubExpirada)abrirModalSubExpirada();return;}
-      if(entryMode==='income'){
-        if(!chosen){$('uiEntryError').textContent=say('Seleciona uma plataforma.','Select a platform.');return;}
-        if(chosen.id==='uber'||chosen.id==='bolt'){
-          $(chosen.id+'ValorInput').value=String(value);$(chosen.id+'SalvarBtn').click();
-        }else{HomeBadges.setPlat(chosen.id,value);}
-      }else{
-        var desc=$('uiEntryDescription').value.trim();
-        if(!desc){$('uiEntryError').textContent=say('Adiciona uma descrição.','Add a description.');return;}
-        $('despesasSemanaDescInput').value=desc;$('despesasSemanaValorInput').value=String(value);$('despesasSemanaSalvarBtn').click();
+
+  ready(function () {
+
+    /* ─────────────────────────────────────────────────────────────────
+       1. Sincroniza o atributo aria-pressed dos botões de tema
+          (o app.js já gere a classe theme-dark; aqui apenas garantimos
+          que o botão reflecte o estado actual ao carregar a página).
+    ───────────────────────────────────────────────────────────────── */
+    var btnTheme = document.getElementById('btnToggleTheme');
+    if (btnTheme) {
+      var isDark = document.body.classList.contains('theme-dark') ||
+                   document.documentElement.classList.contains('theme-dark');
+      btnTheme.setAttribute('aria-pressed', isDark ? 'true' : 'false');
+      btnTheme.classList.toggle('is-alt', isDark);
+    }
+
+    /* ─────────────────────────────────────────────────────────────────
+       2. Correcção de scroll no painel de ajustes (profile sheet):
+          quando a sheet está aberta e o utilizador faz scroll,
+          impede o scroll do documento por baixo.
+    ───────────────────────────────────────────────────────────────── */
+    var profileSheet = document.getElementById('profileSheet');
+    var sheetBackdrop = document.getElementById('sheetBackdrop');
+
+    if (profileSheet) {
+      profileSheet.addEventListener('touchmove', function (e) {
+        e.stopPropagation();
+      }, { passive: true });
+    }
+
+    /* ─────────────────────────────────────────────────────────────────
+       3. Gradientes de scroll nos sheet-screens:
+          adiciona/remove .has-scroll-top e .has-scroll-bottom
+          para mostrar o degradê indicador de mais conteúdo.
+    ───────────────────────────────────────────────────────────────── */
+    function bindScrollGradients(screen) {
+      if (!screen) return;
+      function updateGradients() {
+        var st = screen.scrollTop;
+        var sh = screen.scrollHeight;
+        var ch = screen.clientHeight;
+        screen.classList.toggle('has-scroll-top',    st > 4);
+        screen.classList.toggle('has-scroll-bottom', st + ch < sh - 4);
       }
-      dialog.close();refreshData();
+      screen.addEventListener('scroll', updateGradients, { passive: true });
+      updateGradients();
+    }
+
+    var screens = document.querySelectorAll('.sheet-screen');
+    for (var i = 0; i < screens.length; i++) {
+      bindScrollGradients(screens[i]);
+    }
+
+    /* ─────────────────────────────────────────────────────────────────
+       4. Correcção visual: quando o langPopupModal é aberto,
+          garante que o fundo escurece correctamente.
+          (O app.js controla a lógica — aqui apenas o CSS helper).
+    ───────────────────────────────────────────────────────────────── */
+    var langPopup = document.getElementById('langPopupModal');
+    if (langPopup) {
+      /* Observa mutações de estilo/atributo para aplicar a classe CSS */
+      var langObserver = new MutationObserver(function () {
+        var style   = langPopup.getAttribute('style') || '';
+        var hidden  = langPopup.hasAttribute('hidden');
+        var isVisible = !hidden &&
+                        style.indexOf('display: none') === -1 &&
+                        style.indexOf('display:none')  === -1;
+        langPopup.classList.toggle('visible', isVisible);
+      });
+      langObserver.observe(langPopup, { attributes: true, attributeFilter: ['style', 'hidden'] });
+    }
+
+    /* ─────────────────────────────────────────────────────────────────
+       5. Fecha os modais ao clicar no backdrop (mm-backdrop),
+          caso o app.js não o faça para algum modal específico.
+          Só actua se o card filho NÃO for do subExpiradaBackdrop
+          (que é intencionalmente não dispensável).
+    ───────────────────────────────────────────────────────────────── */
+    document.addEventListener('click', function (e) {
+      var backdrop = e.target;
+      if (!backdrop.classList.contains('mm-backdrop')) return;
+      if (backdrop.id === 'subExpiradaBackdrop') return;
+      if (backdrop.id === 'eliminarContaBackdrop') return;
+      /* Se o app.js já trata, não duplicamos — verificamos se visible */
+      if (!backdrop.classList.contains('visible')) return;
+      backdrop.classList.remove('visible');
     });
-    SmartSomaUI.openEntry=openEntry;
-  }
-  function openEntry(mode){
-    window.closeAllOverlays();window.closeProfileSheetPublic();entryReturnFocus=document.activeElement;
-    entryMode=mode||'income';chosen=null;$('uiEntryValue').value='';$('uiEntryDescription').value='';renderEntry();
-    $('uiEntryDialog').showModal();
-  }
-  function renderEntry(){
-    var income=entryMode==='income';$('uiEntryTitle').textContent=t('record');$('uiEntryDate').textContent=GanhosDate.formatLabel(GanhosDate.get());
-    $('uiEntryIncome').textContent=say('Ganhos','Earnings');$('uiEntryExpense').textContent=t('despesas');
-    $('uiEntryIncome').setAttribute('aria-pressed',String(income));$('uiEntryExpense').setAttribute('aria-pressed',String(!income));
-    $('uiEntryDescriptionLabel').hidden=income;$('uiEntryDescription').required=!income;
-    $('uiDescriptionLabel').textContent=say('Descrição','Description');$('uiValueLabel').textContent=say('Valor','Amount');
-    $('uiEntrySave').textContent=say('Guardar','Save');$('uiEntryError').textContent='';
-    $('uiPlatformChoices').hidden=!income;$('uiPlatformChoices').replaceChildren();
-    $('uiPlatformName').textContent=chosen?chosen.nome:'';
-    $('uiEntryHint').textContent=income?say('Seleciona uma plataforma. Um total por plataforma e por dia.','Select a platform. One total per platform per day.'):say('A despesa será guardada na data selecionada.','The expense will be saved for the selected date.');
-    if(income)platforms().forEach(function(p){var n=button('',function(){chosen=chosen&&chosen.id===p.id?null:p;$('uiEntryValue').value=chosen?String(p.id==='uber'||p.id==='bolt'?HomeBadges.get()[p.id]||'':HomeBadges.getPlat(p.id)||''):'';renderEntry();},'ui-platform-choice');n.setAttribute('aria-label',p.nome);n.setAttribute('aria-pressed',String(!!chosen&&chosen.id===p.id));n.dataset.platform=p.id;
-      if(p.img && (p.id==='uber'||p.id==='bolt'||SmartSomaSecurity.isSafeImageUrl(p.img))){var image=create('img');image.src=p.img;image.alt=p.nome;n.append(image);}else n.textContent=p.nome.slice(0,2).toUpperCase();$('uiPlatformChoices').append(n);});
-    if(income&&chosen&&Number($('uiEntryValue').value)>0)$('uiEntryHint').textContent=say('Já existe um registo. Guardar substitui o total deste dia.','An entry exists. Saving replaces this day’s total.');
-  }
-  function setupSettings(){
-    var profileLabel=$('openDadosPessoaisBtn').querySelector('span');profileLabel.removeAttribute('data-i18n');profileLabel.dataset.uiText='profile';
-    var helpLabel=$('openAjudaBtn').querySelector('span');helpLabel.removeAttribute('data-i18n');helpLabel.dataset.uiText='help';
-    var settings=$('sheetScreenDefault').querySelector('.sheet-content');
-    var columns=create('div','ui-settings-columns');
-    var management=create('div','sheet-actions ui-settings-group');
-    var preferences=create('div','sheet-actions ui-settings-group');
-    ['openDespesasFixasBtn','openMultiplataformaBtn'].forEach(function(id){management.append($(id));});
-    ['openIdiomaBtn','openTamanhoBtn','openAjudaBtn'].forEach(function(id){preferences.append($(id));});
-    columns.append(management,preferences);
-    settings.querySelector('.sheet-profile-row').append($('openDadosPessoaisBtn'));
-    $('sheetProActiveBadge').after(columns);
-    // The tutorial remains the original guided flow; its launcher is now on Help.
-    $('openTutorialBtn').hidden=true;
-    settings.querySelectorAll('.sheet-actions').forEach(function(n){if(!n.children.length)n.remove();else if(Array.from(n.children).every(function(c){return c.hidden;}))n.hidden=true;});
-    var newPlatform=$('sheetScreenMultiplataforma').querySelector('[data-i18n="mp.adicionar"]');newPlatform.removeAttribute('data-i18n');newPlatform.dataset.uiText='newPlatform';
-    var fixedForm=$('sheetScreenDespesasFixas').querySelector('.despesa-form');
-    var fixedAdd=button('',function(){fixedForm.hidden=!fixedForm.hidden;fixedAdd.setAttribute('aria-expanded',String(!fixedForm.hidden));if(!fixedForm.hidden)$('despesaDescInput').focus();});
-    fixedAdd.id='uiFixedAdd';fixedAdd.setAttribute('aria-expanded','false');fixedForm.before(fixedAdd);fixedForm.hidden=true;
-    var helper=$('sheetScreenDespesasFixas').querySelector('.mm-helper-text');helper.removeAttribute('data-i18n');
-    var help=$('sheetScreenAjuda').querySelector('.sheet-content');
-    help.innerHTML='<section class="ui-help-hero"><p class="ui-eyebrow">SMARTSOMA</p><h2 id="uiHelpTitle"></h2><a href="mailto:contacto@smartsoma.pt">contacto@smartsoma.pt</a><p>Lisboa, Portugal</p><button id="uiTutorialStart" type="button" class="ui-button">Tutorial →</button></section><section class="home-card ui-faq"><h2 id="uiFaqTitle"></h2><div id="uiFaqItems"></div></section>';
-    $('uiTutorialStart').addEventListener('click',function(){$('openTutorialBtn').click();});
-    var faqs=[
-      ['Como registar os meus ganhos?','Escolhe a data no calendário e toca em +. Em Ganhos, seleciona o ícone da plataforma, insere o total do dia e guarda. Uber, Bolt e as tuas plataformas ficam separadas.','How do I record earnings?','Choose a date in the calendar and tap +. Under Earnings, select a platform, enter its daily total and save. Each platform is recorded separately.'],
-      ['Posso corrigir um valor já guardado?','Sim. Abre a plataforma na página Ganhos diários ou seleciona-a no registo rápido. O valor guardado aparece no campo. Guardar substitui esse total; não soma uma segunda entrada.','Can I correct an amount?','Yes. Open the platform in Daily earnings or select it in the quick entry. Saving replaces that day’s total rather than adding a second entry.'],
-      ['Como adicionar despesas?','No botão +, escolhe Despesas e preenche a descrição e o valor. Podes lançar várias despesas no mesmo dia. Para eliminar uma, abre as despesas do dia e confirma a exclusão.','How do I add expenses?','Tap +, choose Expenses and enter a description and amount. You can add multiple expenses per day. Open daily expenses to delete an entry with confirmation.'],
-      ['Como configurar despesas fixas?','Em Ajustes → Despesas fixas, toca em Adicionar despesa fixa. Define a descrição e um valor em euros ou uma percentagem dos ganhos brutos semanais. São contabilizadas na segunda-feira. A percentagem acompanha os ganhos da semana.','How do fixed expenses work?','In Settings → Fixed expenses, add a description and a euro amount or percentage of weekly gross earnings. These are included on Monday; percentages follow the weekly earnings.'],
-      ['Como registar a quilometragem?','Em Ganhos diários, abre Distância. Usa Km Total para o percurso completo, ou Início e Fim para o odómetro. Confirma o início com ✓; ao terminar o dia, confirma o fim e guarda a distância calculada.','How do I record mileage?','In Daily earnings, open Distance. Use Total km or Start and End for the odometer. Confirm the start with ✓, then confirm the end and save the calculated distance.'],
-      ['Qual é a diferença entre bruto e líquido?','O bruto soma os rendimentos das plataformas. O líquido desconta as despesas registadas e as despesas fixas aplicáveis. Podes definir a meta semanal em qualquer um destes valores.','What is gross versus net?','Gross is the sum of platform earnings. Net deducts recorded expenses and applicable fixed expenses. Your weekly goal can use either value.'],
-      ['Posso consultar ou editar dias anteriores?','Sim. Usa o calendário junto ao botão + e seleciona um dia anterior. Os registos e a quilometragem correspondem à data escolhida. Dias futuros não permitem lançamentos.','Can I edit earlier days?','Yes. Use the calendar beside + and select an earlier date. Entries and mileage apply to that date. Future dates cannot receive entries.'],
-      ['Como adicionar outra plataforma?','Em Ganhos diários → Gerir plataformas, dá um nome à nova plataforma e escolhe uma imagem. Uber e Bolt são fixas. A eliminação de uma plataforma personalizada pede confirmação e explica o impacto nos dados.','How do I add a platform?','In Daily earnings → Manage platforms, enter a name and choose an image. Uber and Bolt are permanent. Deleting a custom platform requires confirmation and explains the impact on data.'],
-      ['Como descarregar os relatórios?','Abre Relatórios, escolhe o mês e descarrega o PDF. O relatório mantém os detalhes e os totais calculados pela aplicação.','How do I download reports?','Open Reports, choose a month and download the PDF containing your daily details and calculated totals.'],
-      ['Onde posso gerir a minha subscrição?','Abre Ajustes → Editar perfil. Consulta o estado da subscrição e usa Gerir subscrição para abrir o portal seguro do Creem, onde podes alterar o plano, o cartão ou cancelar.','Where do I manage my subscription?','Open Settings → Edit profile. View the subscription status and use Manage subscription to access the secure Creem portal for plan, card or cancellation changes.'],
-      ['Os registos funcionam sem internet?','Com uma sessão já iniciada e os dados disponíveis no dispositivo, podes continuar offline. As alterações ficam na fila local e sincronizam quando a ligação regressa. Confirma o estado da sincronização antes de sair da conta ou limpar os dados do navegador.','Can I work offline?','With an existing session and data available on your device, entries queue locally and sync when connectivity returns. Check the sync status before signing out or clearing browser data.']
-    ];
-    function labels(){fixedAdd.textContent=say('Adicionar despesa fixa','Add fixed expense');helper.textContent=say('Despesas semanais, em € ou % do bruto. Entram na segunda-feira; a percentagem acompanha os ganhos. Ao excluir, as semanas anteriores ficam preservadas.','Weekly expenses, in € or % of gross. Added on Monday; percentages follow earnings. Deleting preserves previous weeks.');$('uiHelpTitle').textContent=say('Estamos por perto.','We are here to help.');$('uiFaqTitle').textContent=say('Perguntas frequentes','Frequently asked questions');$('uiFaqItems').replaceChildren();faqs.forEach(function(f){var n=create('details');var q=create('summary');q.textContent=say(f[0],f[2]);var p=create('p');p.textContent=say(f[1],f[3]);n.append(q,p);$('uiFaqItems').append(n);});}
-    function navLabels(){var labels=say(['Início','Ganhos','Despesas','Semana','Relatórios','Ajustes'],['Home','Earnings','Expenses','Week','Reports','Settings']);document.querySelectorAll('.ui-nav-short').forEach(function(n,i){n.textContent=labels[i];});}
-    labels();navLabels();document.addEventListener('languageChanged',function(){labels();navLabels();});
-  }
-  window.SmartSomaUI={start:start,go:go,t:t,svg:svg,create:create,button:button,translate:translate,syncHeader:syncHeader};
-  document.addEventListener('smartSomaAppReady',function(){setTimeout(start,0);});
-  if (window.SmartSomaAppReady) start();
+
+    /* ─────────────────────────────────────────────────────────────────
+       6. Sincroniza a meta-confetti-canvas com o tamanho real do ecrã
+          para que os confetes saiam no sítio certo.
+    ───────────────────────────────────────────────────────────────── */
+    var confettiCanvas = document.getElementById('metaConfettiCanvas');
+    if (confettiCanvas) {
+      function resizeConfetti() {
+        confettiCanvas.style.height = window.innerHeight + 'px';
+      }
+      window.addEventListener('resize', resizeConfetti, { passive: true });
+      resizeConfetti();
+    }
+
+    /* ─────────────────────────────────────────────────────────────────
+       7. Safe-area: actualiza as variáveis CSS em tempo real
+          (iOS Safari pode reportar 0 no primeiro frame).
+    ───────────────────────────────────────────────────────────────── */
+    function updateSafeArea() {
+      var top = 0, bottom = 0;
+      try {
+        var dummy = document.createElement('div');
+        dummy.style.cssText = 'position:fixed;top:env(safe-area-inset-top,0px);height:0;visibility:hidden;';
+        document.body.appendChild(dummy);
+        top = dummy.getBoundingClientRect().top;
+        document.body.removeChild(dummy);
+      } catch (_) {}
+      document.documentElement.style.setProperty('--safe-top',    top    + 'px');
+      document.documentElement.style.setProperty('--safe-bottom', bottom + 'px');
+    }
+    updateSafeArea();
+    window.addEventListener('resize', updateSafeArea, { passive: true });
+
+  }); /* fim ready() */
+
 })();
