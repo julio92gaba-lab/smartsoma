@@ -61,6 +61,7 @@ html.ui-v2.theme-dark, body.ui-v2.theme-dark {
 .ui-add { background:var(--lime); color:#112418; border:1px solid #172a17; box-shadow:2px 3px 0 #172a17; }
 .ui-icon-button svg,.ui-add svg { width:23px; height:23px; }
 .ui-mobile-logo { display:none; }
+.ui-mobile-logo img { display:block; width:144px; height:auto; }
 .ui-v2 .page { margin-left:var(--sidebar); padding:calc(var(--ui-header) + 30px) clamp(24px,4vw,64px) 45px; }
 .ui-v2 .container { max-width:var(--max-w); padding:0; }
 .ui-v2 .home-list-view { position:relative; inset:auto; padding:0; transform:none; overflow:visible; }
@@ -319,7 +320,8 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
   .ui-header-actions { gap:8px; }
   .ui-icon-button,.ui-add { width:37px; height:37px; border-radius:10px; }
   body.ui-v2:not(.ui-home) .ui-header-copy { display:none; }
-  body.ui-v2:not(.ui-home) .ui-mobile-logo { display:block; width:144px; height:auto; background:transparent; padding:0; border-radius:0; }
+  body.ui-v2:not(.ui-home) .ui-mobile-logo { display:grid; gap:3px; background:transparent; padding:0; border-radius:0; }
+  .ui-mobile-logo span { color:var(--muted); font-size:.48rem; font-weight:700; letter-spacing:.22px; white-space:nowrap; }
   body.ui-v2.ui-showing-other-date .ui-header-copy { display:block; }
   body.ui-v2.ui-showing-other-date .ui-mobile-logo { display:none; }
   .ui-v2 .mm-backdrop,.ui-v2 .modal-backdrop { top:var(--ui-header); padding:24px; }
