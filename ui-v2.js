@@ -35,7 +35,7 @@
     var sheet = currentSheet();
     var inSettings = $('profileSheet').classList.contains('open');
     document.body.classList.toggle('ui-settings-open', inSettings);
-    var pageSheet = inSettings && sheet && ['sheetScreenDefault','sheetScreenDadosPessoais','sheetScreenAjuda'].includes(sheet.id);
+    var pageSheet = false;
     document.body.classList.toggle('ui-sheet-page', !!pageSheet);
     $('profileSheet').setAttribute('role',pageSheet?'region':'dialog');
     $('profileSheet').setAttribute('aria-modal',String(inSettings&&!pageSheet));
@@ -71,8 +71,19 @@
   }
   function go(key) {
     window.closeAllOverlays();
-    if (key === 'ajustes') { window.openProfileSheetPublic(); syncHeader(); return; }
+    var settingsPage=$('uiSettingsPage');
+    if (key === 'ajustes') {
+      window.closeProfileSheetPublic();
+      HomeNav.hideAllInstant();
+      if($('metaSlotList'))$('metaSlotList').hidden=true;
+      if(settingsPage)settingsPage.hidden=false;
+      route=key;
+      syncHeader();
+      window.scrollTo({top:0,behavior:'instant'});
+      return;
+    }
     window.closeProfileSheetPublic();
+    if(settingsPage)settingsPage.hidden=true;
     var expenses = $('uiExpensesPage');
     if (expenses) expenses.hidden = key !== 'despesas';
     route = key;
@@ -101,6 +112,8 @@
     });
     var header=create('header','ui-header','<div class="ui-header-copy"><p id="uiHeaderDate" class="ui-eyebrow"></p><h1 id="uiHeaderTitle"></h1></div><img class="ui-mobile-logo" src="logo-home.png" alt="SmartSoma"><div class="ui-header-actions"><button type="button" id="uiCalendar" class="ui-icon-button">'+svg('semana')+'</button><button type="button" id="uiAdd" class="ui-add">'+svg('plus')+'</button></div>');
     $('appRoot').prepend(header);
+    var headerAvatar=$('headerAvatarBtn');
+    if(headerAvatar)headerAvatar.addEventListener('click',function(e){e.preventDefault();e.stopImmediatePropagation();go('ajustes');},true);
     $('uiCalendar').addEventListener('click',function(){window.closeProfileSheetPublic(); window.closeAllOverlays(); GanhosDate.open();});
     $('uiAdd').addEventListener('click',function(){window.closeProfileSheetPublic(); if(window.SmartSomaUI.openEntry) SmartSomaUI.openEntry(); else PlataformaModals.uber.open();});
     ['Ganhos','Resumo','Semana','Relatorio'].forEach(function(name){$('homeListPage'+name).prepend(heading(name.toLowerCase()));});
@@ -113,7 +126,7 @@
     $('homeListPageGanhos').querySelector('.tech-card-header').append(manage);
     var viewControls=$('subHeaderViewToggleGroup'); $('semanaWeekPicker').after(viewControls); viewControls.hidden=false;
     var originalGo=HomeNav.goToSection;
-    HomeNav.goToSection=function(key){ route=key==='default'?'ganhos':key; if($('uiExpensesPage')) $('uiExpensesPage').hidden=true; originalGo(key); syncHeader(); };
+    HomeNav.goToSection=function(key){ route=key==='default'?'ganhos':key; if($('uiSettingsPage'))$('uiSettingsPage').hidden=true; if($('uiExpensesPage')) $('uiExpensesPage').hidden=true; originalGo(key); syncHeader(); };
     // These original buttons call the private navigation function, so keep the shell in sync too.
     $('btnVerMeuResumo').addEventListener('click',function(){route='resumo';syncHeader();});
     $('btnRegistrarGanhos').addEventListener('click',function(){route='ganhos';syncHeader();});
@@ -159,6 +172,12 @@
   function setupPages() {
     // Reposition existing elements, retaining their IDs, listeners and references.
     var summary=$('resumoLiveContent');
+    var settingsPage=create('section','home-list-page');
+    settingsPage.id='uiSettingsPage';settingsPage.hidden=true;settingsPage.append(heading('ajustes'));
+    var settingsContent=$('sheetScreenDefault').querySelector('.sheet-content');
+    settingsPage.append(settingsContent);
+    $('sheetScreenDefault').append(create('div','sheet-content ui-settings-placeholder'));
+    document.querySelector('.home-list-inner').append(settingsPage);
     summary.querySelector('.dash-cluster').before($('metaSlotList'));
     var expenses=create('section','home-list-page'); expenses.id='uiExpensesPage'; expenses.hidden=true; expenses.append(heading('despesas'));
     var expenseCard=create('div','home-card','<div class="ui-panel-head"><h2 id="uiExpenseTitle"></h2><button class="ui-button" id="uiExpenseAdd" type="button"></button></div><div class="ui-expense-total" id="uiExpenseTotal"></div><div id="uiExpenseRows"></div>');
