@@ -133,6 +133,23 @@ html.ui-v2.theme-dark, body.ui-v2.theme-dark {
 .ui-v2 .dp-input { font-size:1rem; padding:12px; }
 .ui-v2 .mm-save-btn,.ui-v2 .dp-save-btn { background:var(--lime); color:#142617; border:1px solid #183421; border-radius:8px; min-height:44px; font-size:.85rem; font-weight:700; }
 .ui-v2 .mm-save-btn:disabled,.ui-v2 .dp-save-btn:disabled { opacity:.5; }
+body.ui-v2.theme-dark .mm-save-btn,
+body.ui-v2.theme-dark .distancia-mode-btn.active,
+body.ui-v2.theme-dark .meta-tipo-btn.active,
+body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#142617; border-color:#183421; }
+.ui-v2 .mm-subtitle-date,.ui-v2 .cancelar-sub-note { color:var(--muted); opacity:1; }
+.ui-v2 .tut-btn-primary { background:var(--lime); color:#142617; }
+.ui-v2 #langPopupModal { display:none; position:fixed; inset:0; z-index:500; padding:24px; align-items:center; justify-content:center; background:rgba(5,15,9,.6); backdrop-filter:blur(4px); }
+.ui-v2 #langPopupModal.is-open { display:flex; }
+.ui-v2 .lpm-card { width:min(420px,100%); border:1px solid var(--card-line); border-radius:18px; padding:26px; background:var(--card-bg); color:var(--ink); }
+.ui-v2 .lpm-title { font:700 1.4rem 'Bricolage Grotesque',sans-serif; margin:0 0 20px; }
+.ui-v2 .lpm-save-btn { width:100%; padding:12px; margin-top:20px; border:1px solid #183421; border-radius:8px; background:var(--lime); color:#142617; font-weight:700; }
+.ui-v2 #proWelcomeToast { display:none; position:fixed; z-index:550; bottom:100px; right:20px; max-width:calc(100vw - 40px); width:390px; padding:20px; border:1px solid #446b4c; border-radius:14px; background:#0e3b2a; color:#f4f9ec; box-shadow:0 10px 40px #0003; }
+.ui-v2 #proWelcomeToast.show { display:block; }
+.ui-v2 .pwt-inner { display:flex; gap:12px; align-items:flex-start; }
+.ui-v2 .pwt-title { font-weight:700; margin-bottom:8px; }
+.ui-v2 .pwt-sub { font-size:.8rem; line-height:1.5; color:#c2d9c9; }
+.ui-v2 .pwt-close { border:0; background:transparent; color:#fff; padding:0 4px; font-size:1.3rem; }
 .ui-v2 .distancia-mode-btn.active,.ui-v2 .meta-tipo-btn.active,.ui-v2 .despesa-type-btn.active { background:var(--lime); color:#142617; border-color:#183421; }
 .ui-v2 .distancia-mode-btn,.ui-v2 .meta-tipo-btn { font-size:.8rem; padding:10px; }
 .ui-v2 .tamanho-option { color:var(--ink); background:var(--input-bg); border-color:var(--card-line); }

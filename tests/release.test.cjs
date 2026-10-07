@@ -18,6 +18,13 @@ test('real cloud bootstrap hydrates before rendering and quick entry uses the ex
   const saved=a.writes.filter(row=>row.key==='homeBadgeValores:'+dateKey(new Date())).at(-1);
   assert.equal(saved.user_id,'isolated-test');assert.equal(JSON.parse(saved.value).uber,60);
   assert.equal(JSON.parse(a.w.cloudGet(saved.key)).bolt,10);assert.deepEqual(a.errors,[]);
+  Object.defineProperty(a.w.navigator,'onLine',{value:false,configurable:true});
+  const sent=a.writes.length;await a.w.cloudSet('offlineRegression',JSON.stringify({value:7}));
+  assert.equal(a.writes.length,sent);assert.match(a.w.localStorage.getItem('ss_q:isolated-test'),/offlineRegression/);
+  Object.defineProperty(a.w.navigator,'onLine',{value:true,configurable:true});
+  a.w.dispatchEvent(new a.w.Event('online'));await settle();
+  assert.equal(a.writes.at(-1).key,'offlineRegression');
+  assert.equal(a.w.localStorage.getItem('ss_q:isolated-test'),null);
 });
 
 test('calendar edits the selected day without changing today', async t => {

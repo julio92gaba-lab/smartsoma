@@ -3,3 +3,8 @@ docs/
 mockup/
 .agents/
 .codex/
+.github/
+supabase/
+*.zip
+.env*
+launch-checklist.md
