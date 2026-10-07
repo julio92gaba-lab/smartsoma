@@ -216,6 +216,7 @@ html.ui-v2.theme-dark, body.ui-v2.theme-dark {
 .ui-faq summary { font-size:.88rem; font-weight:700; cursor:pointer; line-height:1.5; }
 .ui-faq details p { color:var(--muted); font-size:.85rem; line-height:1.8; margin:12px 0 0; }
 #uiFixedAdd { margin:12px 0 20px; }
+#uiExpenseManage { margin:12px 0 0 8px; }
 .ui-v2 .despesa-form { padding:18px; background:var(--input-bg); border:1px solid var(--card-line); border-radius:12px; }
 .ui-v2 .despesa-card { background:var(--input-bg); border:1px solid var(--card-line); color:var(--ink); }
 .ui-v2 .despesa-card-desc { color:var(--ink); }
@@ -226,6 +227,9 @@ html.ui-v2.theme-dark, body.ui-v2.theme-dark {
 .ui-v2 .mm-backdrop:not(.visible),.ui-v2 .modal-backdrop:not(.visible) { visibility:hidden; }
 .ui-v2 .mm-backdrop.visible,.ui-v2 .modal-backdrop.visible { visibility:visible; }
 .ui-v2 #metaSemanalCard { display:block; }
+.ui-v2 #metaSemanalCard.ui-historical-goal #metaSemanalCurrentContent,
+.ui-v2 #metaSemanalWeekBox { display:none; }
+.ui-goal-history { border:0; background:transparent; color:#fff; font:700 1.2rem 'Bricolage Grotesque',sans-serif; text-align:left; padding:0; cursor:pointer; }
 .ui-v2 #metaSemanalPeriodLabel { text-align:left; }
 .ui-v2 #metaSlotList { margin:24px 0; }
 .ui-settings-columns { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin:24px 0; }

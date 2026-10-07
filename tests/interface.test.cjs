@@ -70,6 +70,7 @@ test('goal emits achievement once on crossing 100 percent and retains its origin
 test('settings keeps account flows, two font sizes, legal link and complete FAQ',async t=>{
   const a=setup(t);a.w.SmartSomaUI.go('ajustes');a.click('openDadosPessoaisBtn');await settle();
   assert.ok(a.el('dpNomeInput'));assert.ok(a.el('dpEmailInput'));assert.ok(a.el('dpChangePasswordBtn'));assert.ok(a.el('dpUploadPhotoBtn'));
+  assert.ok(a.w.document.body.classList.contains('ui-sheet-page'));
   assert.equal(a.el('openTermosMenuBtn').href,'https://smartsoma.pt/legal');
   assert.equal(a.w.document.querySelectorAll('.tamanho-option').length,2);
   assert.match(a.el('tamanhoOptionP').textContent,/Normal/);

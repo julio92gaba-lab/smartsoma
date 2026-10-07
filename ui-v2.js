@@ -35,6 +35,9 @@
     document.body.classList.toggle('ui-settings-open', inSettings);
     var pageSheet = inSettings && sheet && ['sheetScreenDefault','sheetScreenDadosPessoais','sheetScreenAjuda'].includes(sheet.id);
     document.body.classList.toggle('ui-sheet-page', !!pageSheet);
+    $('profileSheet').setAttribute('role',pageSheet?'region':'dialog');
+    $('profileSheet').setAttribute('aria-modal',String(inSettings&&!pageSheet));
+    document.querySelector('.page').inert=!!pageSheet;
     var selected = inSettings ? 'ajustes' : route;
     document.querySelectorAll('[data-ui-route]').forEach(function(n) {
       n.setAttribute('aria-label',t(n.dataset.uiRoute));
@@ -97,7 +100,7 @@
     $('btnVerMeuResumo').addEventListener('click',function(){route='resumo';syncHeader();});
     $('btnRegistrarGanhos').addEventListener('click',function(){route='ganhos';syncHeader();});
     var observer=new MutationObserver(syncHeader);
-    observer.observe($('profileSheet'),{attributes:true,attributeFilter:['class']});
+    observer.observe($('profileSheet'),{attributes:true,subtree:true,attributeFilter:['class']});
     observer.observe($('sheetHandleTitle'),{childList:true,subtree:true,characterData:true});
     observer.observe($('sheetUsername'),{childList:true,subtree:true,characterData:true});
     GanhosDate.onChange(syncHeader);
@@ -127,12 +130,16 @@
     $('uiExpenseAdd').addEventListener('click',function(){openEntry('expense');});
     var fix=button('',function(){window.openProfileSheetPublic();$('openDespesasFixasBtn').click();},'ui-button ui-secondary');
     fix.id='uiExpenseFixed';expenseCard.append(fix);
+    var daily=button('',function(){PlataformaModals.despesas.open();},'ui-button ui-secondary');
+    daily.id='uiExpenseManage';expenseCard.append(daily);
     var dashboard=create('div','ui-dashboard-bottom','<section class="home-card ui-chart-panel"><div class="ui-panel-head"><div><p class="ui-eyebrow" id="uiChartEyebrow"></p><h2 id="uiChartTitle"></h2></div><button type="button" id="uiChartDetails" class="ui-text-button"></button></div><div class="ui-chart-legend"><span class="ui-gross-legend" id="uiGrossLegend"></span><span class="ui-net-legend" id="uiNetLegend"></span></div><div id="uiChart"></div></section><section class="home-card"><div class="ui-panel-head"><h2 id="uiRecentTitle"></h2></div><div id="uiRecentRows"></div><button type="button" class="ui-button" id="uiRecentAdd"></button></section>');
     $('resumoTechCard').after(dashboard);
     $('uiChartDetails').addEventListener('click',function(){go('semana');});
     $('uiRecentAdd').addEventListener('click',function(){openEntry();});
     var goal=create('div','ui-goal-progress','<p id="uiGoalCopy"></p><div class="ui-progress-track"><div id="uiGoalFill"></div></div><div id="uiGoalDays" class="ui-goal-days"></div>');
     $('metaSemanalCard').append(goal);
+    var history=button('',function(){MetaSemanalRead.openHistory(ResumoPeriod.getRefDate());},'ui-goal-history');
+    history.id='uiGoalHistory';$('metaSemanalCard').prepend(history);
     var dayTotal=create('div','ui-daily-total','<span id="uiDailyTitle"></span><strong id="uiDailyTotal"></strong>');
     $('ganhosIncomeScrollWrap').after(dayTotal);
     var add=button('',function(){openEntry();}); add.id='uiIncomeAdd'; dayTotal.append(add);
@@ -171,6 +178,7 @@
     $('uiExpenseTotal').textContent=money(day.expenses);
     $('uiExpenseAdd').textContent=say('Adicionar despesa','Add expense');
     $('uiExpenseFixed').textContent=say('Gerir despesas fixas','Manage fixed expenses');
+    $('uiExpenseManage').textContent=say('Gerir despesas do dia','Manage daily expenses');
     tableRows($('uiExpenseRows'),day.entries.map(function(e){return{date:day.date,label:e.descricao,value:e.valor,expense:true};}));
     $('uiDailyTitle').textContent=say('Rendimentos','Earnings')+' · '+GanhosDate.formatLabel(day.date);
     $('uiDailyTotal').textContent=money(day.gross);$('uiIncomeAdd').textContent=t('addIncome');
@@ -181,11 +189,19 @@
     $('uiGrossLegend').textContent=say('Ganhos brutos','Gross earnings');$('uiNetLegend').textContent=say('Ganhos líquidos','Net earnings');
     $('uiRecentTitle').textContent=say('Últimos registos','Latest entries');$('uiRecentAdd').textContent=t('record');
     var days=daysInPeriod();renderChart(days);tableRows($('uiRecentRows'),records(days).slice(0,8));
-    var cfg=window.getMetaSemanalConfig && getMetaSemanalConfig();
-    var pct=cfg?Number(cfg.percent)||0:0;
+    // Same calculations as the weekly table, including current fixed expenses.
+    // Only presentation changes; no cached amounts or persisted data are rewritten.
+    var totals=days.reduce(function(s,d){s.gross+=d.gross;s.net+=d.net;s.expenses+=d.expenses;s.km+=d.km;return s;},{gross:0,net:0,expenses:0,km:0});
+    [['summaryBrutoValue','gross'],['summaryLiquidoValue','net'],['summaryDespesasValue','expenses']].forEach(function(pair){$(pair[0]).textContent='€'+totals[pair[1]].toFixed(2);});
+    $('summaryDistanciaValue').textContent=(Math.round(totals.km*10)/10)+' km';
+    var goalWeek=MetaSemanalRead.forDate(ResumoPeriod.getRefDate());
+    var cfg=goalWeek.config, pct=goalWeek.percent;
+    $('metaSemanalCard').classList.toggle('ui-historical-goal',!goalWeek.current);
+    $('uiGoalHistory').hidden=goalWeek.current;
+    $('uiGoalHistory').textContent=say('Meta da semana','Weekly goal')+' · '+shortDate(goalWeek.monday)+' · '+(cfg?pct+'%':say('Não definida','Not set'))+' →';
     $('uiGoalCopy').textContent=cfg?say('Um dia de cada vez. Objetivo: ','One day at a time. Goal: ')+money(cfg.valor)+' '+I18N.t(cfg.tipo==='liquido'?'meta.liquidos':'meta.brutos'):say('Define a tua meta e dá direção à tua semana.','Set a goal and give your week direction.');
     $('uiGoalFill').style.width=Math.min(100,Math.max(0,pct))+'%';
-    var monday=ResumoPeriod.getWeekRange(new Date()).monday;
+    var monday=goalWeek.monday;
     $('uiGoalDays').replaceChildren();
     for(var i=0;i<7;i++){var d=new Date(monday);d.setDate(d.getDate()+i);var info=SmartSomaReadModel.day(d);var dot=create('span',info.gross>0?'has-entry':'');dot.textContent=I18N.list('weekday.abbr')[i];dot.title=shortDate(d)+' · '+money(info.gross);$('uiGoalDays').append(dot);}
     syncHeader();

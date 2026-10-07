@@ -16,5 +16,4 @@
   window.currentUser={id:'visual-qa'};window.currentUserEmail='teste@example.invalid';
   window.SmartSomaPro={isPro:true,entitlementChecked:false};
   document.getElementById('splash')?.remove();
-  document.addEventListener('smartSomaAppReady',function(){document.dispatchEvent(new Event('DOMContentLoaded'));});
 })();

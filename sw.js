@@ -1,12 +1,14 @@
 /* SmartSoma — Service Worker */
 
-const CACHE_NAME = 'smartsoma-v5';
+const CACHE_NAME = 'smartsoma-v6';
 const NETWORK_TIMEOUT = 4000; /* ms: sem resposta da rede, usa a cache se existir */
 
 const ASSETS_TO_CACHE = [
   '/app',
   '/app.js',
   '/app.css',
+  '/ui-v2.js',
+  '/ui-v2.css',
   '/cloud-init.js',
   '/supabase.min.js',
   '/pwa-install.js',

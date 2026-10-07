@@ -286,7 +286,7 @@
 "tamanho.popupTexto": "Escolha para aumentar ou diminuir a fonte e os elementos em todo o app.",
 "tamanho.concluir": "Concluído",
 "sheet.tutorial": "Tutorial",
-"sheet.ajuda": "Falar connosco",
+"sheet.ajuda": "Ajuda e tutorial",
 "sheet.termosPrivacidade": "Termos e Privacidade",
 "sheet.apagarDados": "Apagar dados",
 "apagar.aviso": "A eliminação dos dados é permanente e irreversível. São apagados apenas os valores inseridos e os cálculos das tabelas. A sua conta de utilizador permanece ativa.",
@@ -443,7 +443,7 @@
 "tut.s2.title": "Os seus rendimentos",
 "tut.s2.text": "Registe quanto recebeu nas plataformas. Se já tiver lançado um valor nesse dia, carregue novamente para poder corrigir.",
 "tut.s2b.title": "Outras plataformas",
-"tut.s2b.text": "Trabalha noutras plataformas além da Uber e da Bolt? Toque em «+» para adicionar novas plataformas e registar também os seus ganhos nelas. Pode consultar e editar esta lista quando quiser, em Ajustes › Multiplataforma.",
+"tut.s2b.text": "Trabalha noutras plataformas além da Uber e da Bolt? Em Gerir plataformas, adicione um nome e uma imagem. Depois selecione a plataforma no registo de ganhos. Também encontra esta lista em Ajustes › Multiplataforma.",
 "tut.s3.title": "Despesas do dia",
 "tut.s3.text": "Gastos avulsos: combustível, refeições, portagens. Pode inserir quantos quiser e apagar depois.",
 "tut.s4.title": "Distância percorrida",
@@ -451,7 +451,7 @@
 "tut.s5.title": "Meta semanal",
 "tut.s5.text": "Defina quanto quer ganhar na semana, em bruto ou em líquido, e acompanhe aqui a percentagem já concluída.",
 "tut.s6.title": "Menu de páginas",
-"tut.s6.text": "Este botão abre o menu de páginas: daqui vai e volta entre as diferentes visualizações e detalhes dos seus ganhos.",
+"tut.s6.text": "Use este menu para navegar entre a visão geral, os ganhos, as despesas, os detalhes da semana, os relatórios e os ajustes. No telemóvel, o menu fica na parte inferior.",
 "tut.s7.title": "Navegar entre páginas",
 "tut.s7.text": "Este botão leva-o ao Resumo Financeiro. Vamos espreitar.",
 "tut.s8.title": "Escolher o período",
@@ -711,7 +711,7 @@
 "tamanho.popupTexto": "Choose to make the font and elements bigger or smaller across the whole app.",
 "tamanho.concluir": "Done",
 "sheet.tutorial": "Tutorial",
-"sheet.ajuda": "Contact us",
+"sheet.ajuda": "Help and tutorial",
 "sheet.termosPrivacidade": "Terms and Privacy",
 "sheet.apagarDados": "Delete data",
 "apagar.aviso": "Data deletion is permanent and irreversible. Only inserted values and table calculations are deleted. Your user account remains active.",
@@ -868,7 +868,7 @@
 "tut.s2.title": "Your earnings",
 "tut.s2.text": "Log how much you made on the platforms. If you've already entered an amount for that day, tap again to make a correction.",
 "tut.s2b.title": "Other platforms",
-"tut.s2b.text": "Do you work on platforms other than Uber and Bolt? Tap \"+\" to add new platforms and log your earnings on them too. You can review and edit this list anytime under Settings › Multi-platform.",
+"tut.s2b.text": "Do you work on platforms other than Uber and Bolt? In Manage platforms, add a name and image, then select that platform when recording earnings. This list is also available under Settings › Multi-platform.",
 "tut.s3.title": "Expenses of the day",
 "tut.s3.text": "One-off costs: fuel, meals, tolls. Enter as many as you like and delete them later.",
 "tut.s4.title": "Distance travelled",
@@ -876,7 +876,7 @@
 "tut.s5.title": "Weekly goal",
 "tut.s5.text": "Set how much you want to earn this week, gross or net, and follow the percentage completed right here.",
 "tut.s6.title": "Page menu",
-"tut.s6.text": "This button opens the page menu: from here you move back and forth between the different views and details of your earnings.",
+"tut.s6.text": "Use this menu to navigate between the overview, earnings, expenses, weekly details, reports and settings. On mobile, the menu is at the bottom.",
 "tut.s7.title": "Moving between pages",
 "tut.s7.text": "This button takes you to the Financial Summary. Let's have a look.",
 "tut.s8.title": "Choosing the period",
@@ -2899,6 +2899,23 @@
       function closeHistModal () {
         if (histBackdrop) histBackdrop.classList.remove('visible');
       }
+
+      // Presentation-only access to the existing weekly goal and history.
+      window.MetaSemanalRead = {
+        forDate: function (date) {
+          var monday = weekMonday(date);
+          var cfg = loadConfigForWeekKey(dateKeyFor(monday));
+          var achieved = cfg ? computeWeekEarnings(cfg.tipo, monday) : 0;
+          return { monday: monday, config: cfg, achieved: achieved,
+            percent: cfg && cfg.valor > 0 ? Math.max(0, Math.round(achieved / cfg.valor * 100)) : 0,
+            current: dateKeyFor(monday) === dateKeyFor(weekMonday(new Date())) };
+        },
+        openHistory: function (date) {
+          var monday = weekMonday(date);
+          populateHistModal(monday, loadConfigForWeekKey(dateKeyFor(monday)));
+          openHistModal();
+        }
+      };
 
       if (weekBoxBtn) {
         weekBoxBtn.addEventListener('click', function () {
@@ -7677,5 +7694,9 @@
     })();
 
     // A apresentação só inicia depois dos controlos reais e do cache estarem prontos.
-    window.SmartSomaAppReady = true;
-    document.dispatchEvent(new CustomEvent('smartSomaAppReady'));
+    // Last DOM-ready listener: cloud-init replays these after hydration when
+    // app.js loads dynamically. Announce readiness only after legacy setup.
+    document.addEventListener('DOMContentLoaded', function () {
+      window.SmartSomaAppReady = true;
+      document.dispatchEvent(new CustomEvent('smartSomaAppReady'));
+    }, { once: true });
