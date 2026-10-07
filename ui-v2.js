@@ -4,6 +4,7 @@
   'use strict';
   var started = false;
   var route = 'resumo';
+  var pageTransitioning = false;
   var $ = function (id) { return document.getElementById(id); };
   var icons = {
     resumo: '<path d="M3 10 12 3l9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"/>',
@@ -75,6 +76,7 @@
     if (key === 'ajustes') {
       window.closeProfileSheetPublic();
       HomeNav.hideAllInstant();
+      if($('uiExpensesPage'))$('uiExpensesPage').hidden=true;
       if($('metaSlotList'))$('metaSlotList').hidden=true;
       if(settingsPage)settingsPage.hidden=false;
       route=key;
@@ -85,10 +87,20 @@
     window.closeProfileSheetPublic();
     if(settingsPage)settingsPage.hidden=true;
     var expenses = $('uiExpensesPage');
-    if (expenses) expenses.hidden = key !== 'despesas';
+    if (key !== 'despesas' && expenses && !expenses.hidden && !pageTransitioning) {
+      pageTransitioning=true;
+      expenses.classList.add('is-fading');
+      setTimeout(function(){ expenses.hidden=true; expenses.classList.remove('is-fading'); pageTransitioning=false; go(key); },140);
+      return;
+    }
     route = key;
-    if (key === 'despesas') { HomeNav.hideAllInstant(); $('metaSlotList').hidden = true; }
-    else HomeNav.goToSection(key);
+    if (key === 'despesas') {
+      HomeNav.hideAllInstant(); $('metaSlotList').hidden = true;
+      if(expenses){expenses.hidden=false;expenses.classList.add('is-fading');void expenses.offsetWidth;expenses.classList.remove('is-fading');}
+    } else {
+      if($('metaSlotList'))$('metaSlotList').hidden = key !== 'resumo';
+      HomeNav.goToSection(key);
+    }
     syncHeader();
     window.scrollTo({top:0,behavior:'instant'});
   }
@@ -114,6 +126,9 @@
     $('appRoot').prepend(header);
     var headerAvatar=$('headerAvatarBtn');
     if(headerAvatar)headerAvatar.addEventListener('click',function(e){e.preventDefault();e.stopImmediatePropagation();go('ajustes');},true);
+    ['openDadosPessoaisBtn','openDespesasFixasBtn','openMultiplataformaBtn','openIdiomaBtn','openTamanhoBtn','openAjudaBtn'].forEach(function(id){
+      $(id).addEventListener('click',function(){window.openProfileSheetPublic();},true);
+    });
     $('uiCalendar').addEventListener('click',function(){window.closeProfileSheetPublic(); window.closeAllOverlays(); GanhosDate.open();});
     $('uiAdd').addEventListener('click',function(){window.closeProfileSheetPublic(); if(window.SmartSomaUI.openEntry) SmartSomaUI.openEntry(); else PlataformaModals.uber.open();});
     ['Ganhos','Resumo','Semana','Relatorio'].forEach(function(name){$('homeListPage'+name).prepend(heading(name.toLowerCase()));});
