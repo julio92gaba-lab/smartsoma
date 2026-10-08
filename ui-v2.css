@@ -455,7 +455,7 @@ body.ui-v2.theme-dark .amber .ui-metric-icon { background:#483e26; color:#f3ce80
   .ui-v2 .page { padding-bottom:calc(100px + env(safe-area-inset-bottom,0px)); }
   .ui-v2 .profile-sheet { top:calc(var(--ui-header) + 16px); height:calc(100dvh - var(--ui-header) - 104px); }
   .ui-v2 #metaSemanalCard { padding:19px 18px 15px; }
-  .ui-goal-watermark { width:93%; right:-15%; bottom:-38%; }
+  .ui-goal-watermark { width:93%; right:-55%; bottom:-58%; }
   .ui-goal-grid { grid-template-columns:1fr; gap:17px; padding:18px 0; }
   .ui-v2 .ui-goal-copy h2 { font-size:28px; }
   .ui-goal-copy p { font-size:.81rem; }
