@@ -399,8 +399,9 @@ body.ui-v2 #resumoLiveContent .period-filter-row { background:transparent; }
 .ui-v2 #metaSemanalCard::before { content:''; position:absolute; z-index:-1; pointer-events:none; right:-90px; top:-190px; width:530px; height:530px; background:radial-gradient(circle,#d4f53c30,transparent 64%); }
 .ui-goal-progress { position:relative; isolation:isolate; }
 .ui-goal-progress>:not(.ui-goal-watermark) { position:relative; z-index:1; }
-.ui-goal-watermark { position:absolute; z-index:0; width:max(45%,190px); right:-13%; bottom:-62%; color:#d4f53c; opacity:.09; pointer-events:none; transform:rotate(-45deg); }
-.ui-goal-watermark svg { display:block; width:100%; height:auto; stroke-width:1.1; }
+.ui-goal-watermark { position:absolute; z-index:0; width:max(45%,190px); right:-13%; bottom:-62%; color:#d4f53c; opacity:.1; pointer-events:none; transform:rotate(45deg); }
+.ui-goal-watermark svg { display:block; width:100%; height:auto; }
+.ui-goal-watermark text { fill:currentColor; font-family:'Bricolage Grotesque',sans-serif; font-size:220px; font-weight:900; }
 .ui-goal-topline { display:flex; justify-content:space-between; align-items:center; gap:12px; }
 .ui-goal-tag { display:inline-flex; background:#d4f53c1f; color:#d4f53c; border:1px solid #d4f53c47; border-radius:4px; padding:5px 9px; font-size:.625rem; font-weight:800; letter-spacing:.9px; }
 #uiGoalPeriod { font-size:.65rem; color:#c8d7cf; }
@@ -428,6 +429,7 @@ body.ui-v2 #resumoLiveContent .period-filter-row { background:transparent; }
 .ui-goal-days b { font-size:.625rem; color:#c8d7cf; }
 .ui-goal-days .is-today,.ui-goal-days .is-today b { color:#d4f53c; }
 .ui-goal-days .is-future { opacity:.45; }
+.ui-goal-progress .ui-goal-days { display:none; }
 .ui-goal-actions { margin-top:14px; }
 .ui-metrics { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; margin:17px 0 0; }
 .ui-metric { background:var(--card-bg); border:1px solid var(--card-line); border-radius:12px; padding:17px; box-shadow:0 4px 13px #0b0f0c06; min-width:0; }
@@ -453,6 +455,7 @@ body.ui-v2.theme-dark .amber .ui-metric-icon { background:#483e26; color:#f3ce80
   .ui-v2 .page { padding-bottom:calc(100px + env(safe-area-inset-bottom,0px)); }
   .ui-v2 .profile-sheet { top:calc(var(--ui-header) + 16px); height:calc(100dvh - var(--ui-header) - 104px); }
   .ui-v2 #metaSemanalCard { padding:19px 18px 15px; }
+  .ui-goal-watermark { width:58%; right:-15%; bottom:-38%; }
   .ui-goal-grid { grid-template-columns:1fr; gap:17px; padding:18px 0; }
   .ui-v2 .ui-goal-copy h2 { font-size:28px; }
   .ui-goal-copy p { font-size:.81rem; }

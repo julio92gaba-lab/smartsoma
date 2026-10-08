@@ -43,7 +43,7 @@ test('empty and negative data never display invalid percentages or divide by zer
 test('goal type uses existing save flow, preserves amount and exposes seven daily values',async t=>{
   const date=dateKey(new Date());
   const a=setup(t,{['metaSemanalConfig:'+dateKey(monday())]:JSON.stringify({valor:200,tipo:'bruto'}),['homeBadgeValores:'+date]:JSON.stringify({uber:100,despesas:20}),['despesasDiarias:'+date]:JSON.stringify({items:[{id:1,descricao:'Fuel',valor:20}]})});
-  await settle();assert.ok(a.el('metaSemanalCard').querySelector('.ui-goal-watermark svg'));assert.ok(a.el('uiGoalEdit').closest('.ui-goal-topline'));a.click('uiGoalNet');await settle();
+  await settle();assert.ok(a.el('metaSemanalCard').querySelector('.ui-goal-watermark text'));assert.ok(a.el('uiGoalEdit').closest('.ui-goal-topline'));assert.equal(a.el('uiGoalType').textContent,'Concluído');a.click('uiGoalNet');await settle();
   const goal=JSON.parse(a.cache['metaSemanalConfig:'+dateKey(monday())]);
   assert.equal(goal.tipo,'liquido');assert.equal(goal.valor,200);
   assert.equal(a.el('uiGoalPercent').textContent,'40%');
