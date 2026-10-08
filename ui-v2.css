@@ -213,20 +213,15 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
 .ui-overview-expenses { grid-area:expenses; }
 .ui-recent-panel { grid-area:recent; }
 .ui-text-button { border:0; background:transparent; color:var(--brand-green); font-size:.75rem; font-weight:700; white-space:nowrap; }
-.ui-chart-legend { display:flex; flex-wrap:wrap; gap:15px; color:var(--muted); font-size:.7rem; margin:20px 0 8px; }
-.ui-chart-legend span::before { content:''; display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:6px; }
-.ui-gross-legend::before { background:#249759; }
-.ui-net-legend::before { background:#9e72d1; }
-.ui-expenses-legend::before { background:var(--danger); }
-#uiChart svg { width:100%; height:auto; overflow:visible; }
-.ui-chart-grid { stroke:var(--card-line); stroke-dasharray:4 4; }
-.ui-chart-label { fill:var(--muted); font:11px 'DM Sans',sans-serif; }
-.ui-chart-bar.gross { fill:#249759; }
-.ui-chart-bar.net { fill:#9e72d1; }
-.ui-chart-bar.expenses { fill:var(--danger); }
-.ui-chart-bar.negative { fill:var(--danger); }
-.ui-chart-point.gross { fill:#249759; }
-.ui-chart-point.net { fill:#9e72d1; }
+.ui-rhythm-summary { margin:2px 0 17px; color:var(--muted); font-size:.78rem; }
+.ui-rhythm-days { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:8px; }
+.ui-rhythm-day { display:grid; justify-items:center; gap:8px; min-width:0; }
+.ui-rhythm-track { position:relative; display:block; width:100%; height:58px; overflow:hidden; border:1px solid var(--card-line); border-radius:9px; background:var(--input-bg); }
+.ui-rhythm-day.has-income .ui-rhythm-track::before { content:''; position:absolute; right:4px; bottom:4px; left:4px; height:70%; border-radius:6px; background:var(--brand-green); }
+.ui-rhythm-day.has-expense .ui-rhythm-track::after { content:''; position:absolute; right:6px; bottom:6px; width:7px; height:7px; border:2px solid var(--card-bg); border-radius:50%; background:var(--danger); }
+.ui-rhythm-day.is-today .ui-rhythm-track { border-color:var(--brand-green); box-shadow:0 0 0 2px color-mix(in srgb,var(--brand-green) 18%,transparent); }
+.ui-rhythm-label { overflow:hidden; color:var(--muted); font-size:.62rem; font-weight:800; text-overflow:ellipsis; white-space:nowrap; }
+.ui-rhythm-day.is-today .ui-rhythm-label { color:var(--brand-green); }
 .ui-record-row { display:grid; grid-template-columns:42px minmax(0,1fr) auto; align-items:center; gap:10px; padding:14px 0; border-top:1px solid var(--card-line); font-size:.8rem; }
 .ui-record-row>span { overflow-wrap:anywhere; }
 .ui-record-row small { color:var(--muted); font-size:.65rem; }

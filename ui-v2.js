@@ -202,7 +202,7 @@
     fix.id='uiExpenseFixed';expenseCard.append(fix);
     var daily=button('',function(){PlataformaModals.despesas.open();},'ui-button ui-secondary');
     daily.id='uiExpenseManage';expenseCard.append(daily);
-    var dashboard=create('div','ui-dashboard-bottom','<section class="home-card ui-chart-panel"><div class="ui-panel-head"><div><p class="ui-eyebrow" id="uiChartEyebrow"></p><h2 id="uiChartTitle"></h2></div><button type="button" id="uiChartDetails" class="ui-text-button"></button></div><div class="ui-chart-legend"><span class="ui-gross-legend" id="uiGrossLegend"></span><span class="ui-net-legend" id="uiNetLegend"></span><span class="ui-expenses-legend" id="uiExpensesLegend"></span></div><div id="uiChart"></div></section><section class="home-card ui-overview-expenses"><div class="ui-panel-head"><h2 id="uiOverviewExpensesTitle"></h2><button type="button" id="uiOverviewFixed" class="ui-text-button"></button></div><div id="uiOverviewFixedGroup" hidden><p class="ui-expense-section-label" id="uiOverviewFixedLabel"></p><div id="uiOverviewFixedRows"></div></div><p class="ui-expense-section-label" id="uiOverviewDailyLabel"></p><div id="uiOverviewExpenseRows"></div></section>');
+    var dashboard=create('div','ui-dashboard-bottom','<section class="home-card ui-chart-panel"><div class="ui-panel-head"><div><p class="ui-eyebrow" id="uiChartEyebrow"></p><h2 id="uiChartTitle"></h2></div><button type="button" id="uiChartDetails" class="ui-text-button"></button></div><div id="uiChart"></div></section><section class="home-card ui-overview-expenses"><div class="ui-panel-head"><h2 id="uiOverviewExpensesTitle"></h2><button type="button" id="uiOverviewFixed" class="ui-text-button"></button></div><div id="uiOverviewFixedGroup" hidden><p class="ui-expense-section-label" id="uiOverviewFixedLabel"></p><div id="uiOverviewFixedRows"></div></div><p class="ui-expense-section-label" id="uiOverviewDailyLabel"></p><div id="uiOverviewExpenseRows"></div></section>');
     $('resumoTechCard').after(dashboard);
     $('uiChartDetails').addEventListener('click',function(){go('semana');});
     $('uiOverviewFixed').addEventListener('click',openFixedExpensesModal);
@@ -273,10 +273,9 @@
     $('uiDailyTitle').textContent=say('Rendimentos','Earnings')+' · '+GanhosDate.formatLabel(day.date);
     $('uiDailyTotal').textContent=money(day.gross);$('uiIncomeAdd').textContent=t('addIncome');
     $('uiDayHistoryTitle').textContent=say('Histórico do dia','Daily history');tableRows($('uiDayHistoryRows'),records([day]));
-    $('uiChartTitle').textContent=say('O ritmo dos teus ganhos','Your earnings rhythm');
-    $('uiChartEyebrow').textContent=say('CADA DIA CONTA','EVERY DAY COUNTS');
-    $('uiChartDetails').textContent=say('Ver detalhes →','View details →');
-    $('uiGrossLegend').textContent=say('Ganhos brutos','Gross earnings');$('uiNetLegend').textContent=say('Ganhos líquidos','Net earnings');$('uiExpensesLegend').textContent=say('Despesas','Expenses');
+    $('uiChartTitle').textContent=say('O teu ritmo','Your rhythm');
+    $('uiChartEyebrow').textContent=say('SEMANA EM MOVIMENTO','WEEK IN MOTION');
+    $('uiChartDetails').textContent=say('Ver semana completa →','View full week →');
     $('uiOverviewExpensesTitle').textContent=say('Despesas','Expenses');$('uiOverviewFixed').textContent=say('Configurar','Configure');$('uiOverviewFixedLabel').textContent=say('DESPESAS FIXAS','FIXED EXPENSES');$('uiOverviewDailyLabel').textContent=say('DESPESAS DO DIA','DAILY EXPENSES');
     renderOverviewExpenses(day);
     var days=daysInPeriod();renderChart(days);
@@ -344,13 +343,17 @@
     $('uiMetricDistanceNote').textContent=totals.km>0?money(totals.net/totals.km)+say(' líquidos / km em média',' net / km on average'):say('Sem quilometragem registada','No mileage recorded');
   }
   function renderChart(days){
-    var values=days.flatMap(function(d){return[d.gross,d.net,d.expenses];}),max=Math.max(10,...values);
-    var base=184,scale=150/max,group=620/Math.max(1,days.length),barWidth=Math.max(4,Math.min(18,(group-10)/3));
-    var svgNode=document.createElementNS('http://www.w3.org/2000/svg','svg');svgNode.setAttribute('viewBox','0 0 710 222');svgNode.setAttribute('role','img');svgNode.setAttribute('aria-label',say('Ganhos brutos, ganhos líquidos e despesas por dia','Gross earnings, net earnings and expenses by day'));
-    function elem(tag,attrs,content){var n=document.createElementNS(svgNode.namespaceURI,tag);Object.entries(attrs).forEach(function(a){n.setAttribute(a[0],String(a[1]));});if(content)n.textContent=content;svgNode.append(n);return n;}
-    for(var j=0;j<4;j++){var v=max*j/3,y=base-v*scale;elem('line',{x1:45,x2:675,y1:y,y2:y,class:'ui-chart-grid'});elem('text',{x:4,y:y+4,class:'ui-chart-label'},String(Math.round(v)));}
-    days.forEach(function(d,i){var start=45+i*group+(group-(barWidth*3)-8)/2;['gross','net','expenses'].forEach(function(kind,index){var value=d[kind];if(value<=0)return;var height=value*scale,y=base-height;var n=elem('rect',{x:start+index*(barWidth+4),y:y,width:barWidth,height:height,rx:3,class:'ui-chart-bar '+kind});var title=document.createElementNS(svgNode.namespaceURI,'title');title.textContent=shortDate(d.date)+' · '+money(value);n.append(title);});if(days.length<=7||i%5===0||i===days.length-1)elem('text',{x:45+i*group+group/2,y:212,'text-anchor':'middle',class:'ui-chart-label'},shortDate(d.date));});
-    $('uiChart').replaceChildren(svgNode);
+    var target=$('uiChart'),recorded=days.filter(function(d){return d.gross>0||d.expenses>0;}).length;
+    var summary=create('p','ui-rhythm-summary');summary.textContent=recorded+say(' de ',' of ')+days.length+say(' dias registados',' days recorded');
+    var rhythm=create('div','ui-rhythm-days');rhythm.setAttribute('role','list');rhythm.setAttribute('aria-label',say('Ritmo semanal','Weekly rhythm'));
+    var today=new Date();today.setHours(0,0,0,0),labels=I18N.list('weekday.abbr');
+    days.forEach(function(d){
+      var hasIncome=d.gross>0,hasExpense=d.expenses>0,isToday=d.date.getTime()===today.getTime();
+      var day=create('div','ui-rhythm-day'+(hasIncome?' has-income':'')+(hasExpense?' has-expense':'')+(isToday?' is-today':''));day.setAttribute('role','listitem');
+      day.setAttribute('aria-label',labels[(d.date.getDay()+6)%7]+': '+(hasIncome&&hasExpense?say('ganhos e despesas registados','earnings and expenses recorded'):hasIncome?say('ganhos registados','earnings recorded'):hasExpense?say('despesas registadas','expenses recorded'):say('sem registos','no entries')));
+      var track=create('span','ui-rhythm-track'),label=create('span','ui-rhythm-label');label.textContent=labels[(d.date.getDay()+6)%7];day.append(track,label);rhythm.append(day);
+    });
+    target.replaceChildren(summary,rhythm);
   }
   function openFixedExpensesModal(){
     var screen=$('sheetScreenDespesasFixas'),content=screen&&screen.querySelector('.sheet-content');
