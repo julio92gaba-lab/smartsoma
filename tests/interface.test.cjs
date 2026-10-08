@@ -9,6 +9,8 @@ test('UI initializes once with six sections, unique IDs and no runtime errors',a
   const a=setup(t);a.w.SmartSomaUI.start();await settle();
   assert.equal(a.w.document.querySelectorAll('.ui-nav-item').length,6);
   assert.equal(a.el('uiChart').querySelectorAll('.ui-rhythm-row').length,7);
+  assert.equal(a.el('uiHeaderAvatar').textContent,'U');a.click('uiHeaderAvatar');await settle();
+  assert.equal(a.w.document.body.dataset.uiRoute,'ajustes');
   const ids=[...a.w.document.querySelectorAll('[id]')].map(n=>n.id);
   assert.equal(new Set(ids).size,ids.length);assert.deepEqual(a.errors,[]);
   for(const route of ['ganhos','semana','relatorio','despesas','resumo']){

@@ -123,8 +123,9 @@
       var n=button('',function(){go(key);},'ui-nav-item');
       n.dataset.uiRoute=key; n.innerHTML=svg(key)+'<span class="ui-nav-full" data-ui-text="'+key+'"></span><span class="ui-nav-short" aria-hidden="true"></span>'; nav.querySelector('nav').append(n);
     });
-    var header=create('header','ui-header','<div class="ui-header-copy"><p id="uiHeaderDate" class="ui-eyebrow"></p><h1 id="uiHeaderTitle"></h1></div><div class="ui-mobile-logo"><img src="logo-home.png" alt="SmartSoma"><span data-ui-text="tag"></span></div><div class="ui-header-actions"><button type="button" id="uiCalendar" class="ui-icon-button">'+svg('semana')+'</button><button type="button" id="uiAdd" class="ui-add">'+svg('plus')+'</button></div>');
+    var header=create('header','ui-header','<div class="ui-header-personal"><button type="button" id="uiHeaderAvatar" class="ui-header-avatar"></button><div class="ui-header-copy"><p id="uiHeaderDate" class="ui-eyebrow"></p><h1 id="uiHeaderTitle"></h1></div></div><div class="ui-mobile-logo"><img src="logo-home.png" alt="SmartSoma"><span data-ui-text="tag"></span></div><div class="ui-header-actions"><button type="button" id="uiCalendar" class="ui-icon-button">'+svg('semana')+'</button><button type="button" id="uiAdd" class="ui-add">'+svg('plus')+'</button></div>');
     $('appRoot').prepend(header);
+    $('uiHeaderAvatar').addEventListener('click',function(){go('ajustes');});
     var headerAvatar=$('headerAvatarBtn');
     if(headerAvatar)headerAvatar.addEventListener('click',function(e){e.preventDefault();e.stopImmediatePropagation();go('ajustes');},true);
     ['openDadosPessoaisBtn','openDespesasFixasBtn','openMultiplataformaBtn','openIdiomaBtn','openTamanhoBtn','openAjudaBtn'].forEach(function(id){
@@ -163,10 +164,8 @@
   function syncSidebarAccount(){
     var name=$('sheetUsername').textContent.trim()||say('Utilizador','User');
     $('uiSidebarName').textContent=name;
-    var avatar=$('uiSidebarAvatar');avatar.replaceChildren();
     var source=$('sheetAvatar img');
-    if(source){var image=create('img');image.src=source.src;image.alt='';avatar.append(image);}
-    else avatar.textContent=name.split(/\s+/).slice(0,2).map(function(part){return part[0]||'';}).join('').toUpperCase();
+    ['uiSidebarAvatar','uiHeaderAvatar'].forEach(function(id){var avatar=$(id);avatar.replaceChildren();avatar.setAttribute('aria-label',say('Abrir ajustes de ','Open settings for ')+name);if(source){var image=create('img');image.src=source.src;image.alt='';avatar.append(image);}else avatar.textContent=name.split(/\s+/).slice(0,2).map(function(part){return part[0]||'';}).join('').toUpperCase();});
     var status=$('subStatusText').textContent.trim();
     var isTrial=/trial/i.test(status), isCancelled=/cancel/i.test(status), active=!isTrial&&!isCancelled;
     var card=$('uiSidebarSubscription');card.classList.toggle('is-trial',isTrial);card.classList.toggle('is-cancelled',isCancelled);
