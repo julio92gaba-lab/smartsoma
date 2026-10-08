@@ -1074,6 +1074,8 @@
 
 
     function closeAllOverlays () {
+      var entryDialog = document.getElementById('uiEntryDialog');
+      if (entryDialog && entryDialog.open) entryDialog.close();
       document.querySelectorAll('.mm-backdrop.visible').forEach(function (b) {
         b.classList.remove('visible');
         b.querySelectorAll('input.mm-value-input, input.despesa-desc-input, input.despesa-valor-input').forEach(function (inp) {

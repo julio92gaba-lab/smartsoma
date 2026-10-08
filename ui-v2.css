@@ -246,8 +246,9 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
 .ui-overview-expense-row span { font-weight:700; }
 .ui-overview-expense-row small { color:var(--muted); font-size:.7rem; text-align:right; }
 .ui-fixed-expense-row { color:var(--brand-green); }
-.ui-entry-dialog { width:min(420px,calc(100vw - 48px)); max-height:82dvh; overflow-y:auto; background:var(--card-bg); color:var(--ink); border:2px solid #142015; border-radius:14px; padding:20px; box-shadow:6px 6px 0 var(--brand-green),0 24px 80px #0005; }
-.ui-entry-dialog::backdrop { background:#06130bb0; backdrop-filter:blur(4px); }
+.ui-entry-backdrop { position:fixed; z-index:200; top:var(--ui-header); right:0; bottom:0; left:0; visibility:hidden; opacity:0; background:rgba(5,15,9,.55); backdrop-filter:blur(4px); transition:opacity .18s ease; }
+.ui-entry-backdrop.visible { visibility:visible; opacity:1; }
+.ui-entry-dialog { position:fixed; z-index:201; top:calc(var(--ui-header) + 24px); width:min(420px,calc(100vw - 48px)); max-height:calc(82dvh - var(--ui-header)); overflow-y:auto; background:var(--card-bg); color:var(--ink); border:2px solid #142015; border-radius:14px; padding:20px; box-shadow:6px 6px 0 var(--brand-green),0 24px 80px #0005; }
 .ui-entry-dialog label { display:grid; gap:6px; margin-top:12px; font-size:.8rem; font-weight:600; }
 .ui-entry-dialog input { width:100%; min-width:0; border:1px solid var(--card-line); border-radius:8px; background:var(--input-bg); color:var(--ink); padding:12px; font-size:1rem; }
 .ui-entry-tabs { display:flex; gap:8px; margin:14px 0; }
@@ -375,7 +376,6 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
 /* Home fidelity: independent goal and metric cards, as in the preserved mockup. */
 .ui-v2 #resumoTechCard { background:transparent; border:0; box-shadow:none; padding:0; }
 body.ui-v2 #resumoLiveContent .period-filter-row { background:transparent; }
-.ui-v2 #homeListPageResumo .ui-page-intro .ui-selected-date { display:none; }
 .ui-v2 #resumoLiveContent .period-nav-row { justify-content:center; }
 .ui-v2 #resumoLiveContent .period-label { min-width:190px; text-align:center; }
 .ui-v2 #resumoTechCard .dash-cluster,

@@ -19,8 +19,8 @@
     distance: '<path d="M7 3 3 21M17 3l4 18M12 3v3M12 10v4M12 18v3"/>'
   };
   var text = {
-    pt: { resumo:'Visão geral', ganhos:'Ganhos diários', despesas:'Despesas', semana:'Detalhes da semana', relatorio:'Relatórios', ajustes:'Ajustes', hello:'Bom dia', afternoon:'Boa tarde', evening:'Boa noite', record:'Adicionar registo', calendar:'Escolher data', tag:'Para Estafetas e Motoristas de App.', ganhosNote:'Cada percurso conta. Regista os teus rendimentos e acompanha o dia.', resumoNote:'', despesasNote:'As tuas despesas, sem perder nenhum detalhe.', semanaNote:'Sete dias. Uma visão clara dos teus resultados.', relatorioNote:'Os teus resultados, organizados e prontos a guardar.', ajustesNote:'O SmartSoma, à tua medida.', theme:'Modo escuro', profile:'Editar perfil', help:'Ajuda e tutorial', normal:'Normal', newPlatform:'Nova plataforma', manage:'Gerir plataformas', addIncome:'Adicionar rendimento' },
-    en: { resumo:'Overview', ganhos:'Daily earnings', despesas:'Expenses', semana:'Weekly details', relatorio:'Reports', ajustes:'Settings', hello:'Good morning', afternoon:'Good afternoon', evening:'Good evening', record:'Add entry', calendar:'Choose date', tag:'For couriers and app drivers.', ganhosNote:'Every journey counts. Record your earnings and track your day.', resumoNote:'', despesasNote:'Your expenses, without missing a detail.', semanaNote:'Seven days. A clear view of your results.', relatorioNote:'Your results, organised and ready to save.', ajustesNote:'SmartSoma, your way.', theme:'Dark mode', profile:'Edit profile', help:'Help and tutorial', normal:'Normal', newPlatform:'New platform', manage:'Manage platforms', addIncome:'Add earnings' }
+    pt: { resumo:'Visão geral', ganhos:'Ganhos diários', despesas:'Despesas', semana:'Detalhes da semana', relatorio:'Relatórios', ajustes:'Ajustes', hello:'Bom dia', afternoon:'Boa tarde', evening:'Boa noite', record:'Adicionar registo', calendar:'Escolher data', tag:'Para Estafetas e Motoristas de App.', ganhosNote:'Cada percurso conta. Regista os teus rendimentos e acompanha o dia.', despesasNote:'As tuas despesas, sem perder nenhum detalhe.', semanaNote:'Sete dias. Uma visão clara dos teus resultados.', relatorioNote:'Os teus resultados, organizados e prontos a guardar.', ajustesNote:'O SmartSoma, à tua medida.', theme:'Modo escuro', profile:'Editar perfil', help:'Ajuda e tutorial', normal:'Normal', newPlatform:'Nova plataforma', manage:'Gerir plataformas', addIncome:'Adicionar rendimento' },
+    en: { resumo:'Overview', ganhos:'Daily earnings', despesas:'Expenses', semana:'Weekly details', relatorio:'Reports', ajustes:'Settings', hello:'Good morning', afternoon:'Good afternoon', evening:'Good evening', record:'Add entry', calendar:'Choose date', tag:'For couriers and app drivers.', ganhosNote:'Every journey counts. Record your earnings and track your day.', despesasNote:'Your expenses, without missing a detail.', semanaNote:'Seven days. A clear view of your results.', relatorioNote:'Your results, organised and ready to save.', ajustesNote:'SmartSoma, your way.', theme:'Dark mode', profile:'Edit profile', help:'Help and tutorial', normal:'Normal', newPlatform:'New platform', manage:'Manage platforms', addIncome:'Add earnings' }
   };
   function t(key) { return (text[window.I18N && I18N.getLang()] || text.pt)[key] || key; }
   function svg(key) { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (icons[key] || icons.arrow) + '</svg>'; }
@@ -132,7 +132,7 @@
     });
     $('uiCalendar').addEventListener('click',function(){window.closeProfileSheetPublic(); window.closeAllOverlays(); GanhosDate.open();});
     $('uiAdd').addEventListener('click',function(){window.closeProfileSheetPublic(); if(window.SmartSomaUI.openEntry) SmartSomaUI.openEntry(); else PlataformaModals.uber.open();});
-    ['Ganhos','Resumo','Semana','Relatorio'].forEach(function(name){$('homeListPage'+name).prepend(heading(name.toLowerCase()));});
+    ['Ganhos','Semana','Relatorio'].forEach(function(name){$('homeListPage'+name).prepend(heading(name.toLowerCase()));});
     $('tamanhoOptionP').querySelector('.tamanho-option-letter').textContent='A';
     $('tamanhoOptionG').querySelector('.tamanho-option-letter').textContent='A';
     var theme=button('',function(){$('btnToggleTheme').click();syncHeader();},'sheet-action-btn');
@@ -389,10 +389,10 @@
   var entryMode='income',chosen=null,entryReturnFocus=null;
   function setupEntry(){
     var dialog=create('dialog','ui-entry-dialog','<form id="uiEntryForm"><div class="ui-panel-head"><h2 id="uiEntryTitle"></h2><button type="button" id="uiEntryClose" class="ui-icon-button" aria-label="Fechar">×</button></div><p id="uiEntryDate" class="ui-eyebrow"></p><div class="ui-entry-tabs"><button type="button" id="uiEntryIncome"></button><button type="button" id="uiEntryExpense"></button></div><div class="ui-platform-selector" id="uiPlatformSelector"><div id="uiPlatformChoices" class="ui-platform-choices"></div><p id="uiPlatformName" class="ui-platform-name"></p></div><label id="uiEntryDescriptionLabel"><span id="uiDescriptionLabel"></span><input id="uiEntryDescription" maxlength="60"></label><label><span id="uiValueLabel"></span><div class="ui-entry-amount"><span>€</span><input id="uiEntryValue" inputmode="decimal" autocomplete="off" required aria-label="Valor" placeholder="0,00"></div></label><p id="uiEntryHint" class="ui-muted" aria-live="polite"></p><p id="uiEntryError" class="ui-error" role="alert"></p><button type="submit" id="uiEntrySave" class="ui-button"></button></form>');
-    dialog.id='uiEntryDialog';dialog.setAttribute('aria-labelledby','uiEntryTitle');document.body.append(dialog);
+    var backdrop=create('div','ui-entry-backdrop');dialog.id='uiEntryDialog';dialog.setAttribute('aria-labelledby','uiEntryTitle');document.body.append(backdrop,dialog);
     $('uiEntryClose').addEventListener('click',function(){dialog.close();});
-    dialog.addEventListener('click',function(e){if(e.target===dialog)dialog.close();});
-    dialog.addEventListener('close',function(){if(entryReturnFocus)entryReturnFocus.focus();});
+    backdrop.addEventListener('click',function(){dialog.close();});
+    dialog.addEventListener('close',function(){backdrop.classList.remove('visible');if(entryReturnFocus)entryReturnFocus.focus();});
     $('uiEntryIncome').addEventListener('click',function(){entryMode='income';chosen=null;renderEntry();});
     $('uiEntryExpense').addEventListener('click',function(){entryMode='expense';chosen=null;renderEntry();});
     $('uiEntryForm').addEventListener('submit',function(e){
@@ -417,7 +417,8 @@
   function openEntry(mode){
     window.closeAllOverlays();window.closeProfileSheetPublic();entryReturnFocus=document.activeElement;
     entryMode=mode||'income';chosen=null;$('uiEntryValue').value='';$('uiEntryDescription').value='';renderEntry();
-    $('uiEntryDialog').showModal();
+    var entryDialog=$('uiEntryDialog');entryDialog.previousElementSibling.classList.add('visible');
+    if(typeof entryDialog.show==='function')entryDialog.show();else entryDialog.showModal();
   }
   function renderEntry(){
     var income=entryMode==='income';$('uiEntryTitle').textContent=t('record');$('uiEntryDate').textContent=GanhosDate.formatLabel(GanhosDate.get());
