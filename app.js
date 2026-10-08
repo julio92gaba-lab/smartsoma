@@ -4740,8 +4740,13 @@
       function fitOpenPopupsToVisibleArea () {
         var offsetTop = vv.offsetTop || 0;
         document.querySelectorAll('.modal-backdrop.visible').forEach(function (el) {
-          el.style.top    = offsetTop + 'px';
-          el.style.height = vv.height + 'px';
+          if (document.body.classList.contains('ui-v2')) {
+            el.style.top = 'calc(var(--ui-header) + ' + offsetTop + 'px)';
+            el.style.height = 'calc(' + vv.height + 'px - var(--ui-header))';
+          } else {
+            el.style.top = offsetTop + 'px';
+            el.style.height = vv.height + 'px';
+          }
         });
       }
 
@@ -5009,7 +5014,7 @@
     });
 
     function anyOverlayOpen () {
-      if (document.querySelector('.mm-backdrop.visible')) return true;
+      if (document.querySelector('.mm-backdrop.visible, .ui-entry-backdrop.visible')) return true;
       if (!PROFILE_UI_READY) return false;
       return profileSheet.classList.contains('open') ||
              photoModalBackdrop.classList.contains('visible') ||

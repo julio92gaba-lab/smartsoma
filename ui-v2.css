@@ -129,8 +129,9 @@ html.ui-v2.theme-dark, body.ui-v2.theme-dark {
 .ui-v2 .sub-header-view-toggle-btn { color:var(--muted); background:var(--input-bg); width:38px; height:34px; }
 .ui-v2 .sub-header-view-toggle-btn.is-active { color:#173421; background:var(--lime); }
 .ui-v2 .semana-day-card { border:1px solid var(--card-line); border-radius:12px; background:var(--card-bg); padding:20px; margin-top:14px; }
-.ui-v2 .profile-sheet { inset:50% auto auto 50%; width:min(540px,calc(100vw - 32px)); max-width:none; height:min(720px,85dvh); border:1px solid var(--card-line); border-radius:18px; transform:translate(-50%,-45%); background:var(--card-bg); opacity:0; visibility:hidden; box-shadow:0 30px 100px #0005; }
-.ui-v2 .profile-sheet.open { transform:translate(-50%,-50%); opacity:1; visibility:visible; }
+.ui-v2 .sheet-backdrop { top:var(--ui-header); background:rgba(5,15,9,.55); backdrop-filter:blur(4px); }
+.ui-v2 .profile-sheet { inset:calc(var(--ui-header) + 24px) auto auto 50%; width:min(540px,calc(100vw - 32px)); max-width:none; height:min(720px,calc(100dvh - var(--ui-header) - 48px)); border:1px solid var(--card-line); border-radius:18px; transform:translate(-50%,-8px); background:var(--card-bg); opacity:0; visibility:hidden; box-shadow:0 30px 100px #0005; }
+.ui-v2 .profile-sheet.open { transform:translate(-50%,0); opacity:1; visibility:visible; }
 .ui-v2 .sheet-handle-area { padding:20px 24px; border-color:var(--card-line); }
 .ui-v2 .sheet-handle-title { color:var(--ink); font:700 1.25rem 'Bricolage Grotesque',sans-serif; text-transform:none; letter-spacing:0; }
 .ui-v2 .sheet-content { padding:24px; }
@@ -151,6 +152,10 @@ html.ui-v2.theme-dark, body.ui-v2.theme-dark {
 .ui-v2.ui-sheet-page .sheet-screen { transform:none; transition:none; }
 .ui-v2.ui-sheet-page .sheet-screen::before,.ui-v2.ui-sheet-page .sheet-screen::after { display:none; }
 .ui-v2 .mm-backdrop,.ui-v2 .modal-backdrop { top:var(--ui-header) !important; height:auto !important; backdrop-filter:blur(4px); background:rgba(5,15,9,.55); padding:24px; }
+body.ui-v2:has(.mm-backdrop.visible) .ui-header,
+body.ui-v2:has(.modal-backdrop.visible) .ui-header,
+body.ui-v2:has(.ui-entry-backdrop.visible) .ui-header,
+body.ui-v2.ui-settings-open .ui-header { pointer-events:none; }
 .ui-v2 .mm-card,.ui-v2 .modal-card { background:var(--card-bg); color:var(--ink); border:2px solid #142015; border-radius:14px; padding:26px; width:min(440px,calc(100vw - 48px)); max-height:82dvh; overflow-y:auto; box-shadow:6px 6px 0 var(--brand-green),0 24px 80px #0004; }
 .ui-v2 .mm-title,.ui-v2 .modal-title { color:var(--ink); font-size:1.45rem; }
 .ui-v2 .mm-helper-text,.ui-v2 .mm-subtitle,.ui-v2 .dp-notice-text { font-size:.8rem; color:var(--muted); line-height:1.65; }
@@ -425,6 +430,7 @@ body.ui-v2.theme-dark .amber .ui-metric-icon { background:#483e26; color:#f3ce80
   .ui-header h1 { font-size:25px; letter-spacing:-1px; }
   .ui-header-actions { flex-shrink:0; }
   .ui-v2 .page { padding-bottom:calc(100px + env(safe-area-inset-bottom,0px)); }
+  .ui-v2 .profile-sheet { top:calc(var(--ui-header) + 16px); height:calc(100dvh - var(--ui-header) - 104px); }
   .ui-v2 #metaSemanalCard { padding:19px 18px 15px; }
   .ui-goal-grid { grid-template-columns:1fr; gap:17px; padding:18px 0; }
   .ui-v2 .ui-goal-copy h2 { font-size:28px; }
