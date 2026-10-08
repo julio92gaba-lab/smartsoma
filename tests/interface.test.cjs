@@ -8,7 +8,7 @@ function setup(t,seed={}) { const a=createApp(seed,{ui:true}); t.after(a.close);
 test('UI initializes once with six sections, unique IDs and no runtime errors',async t=>{
   const a=setup(t);a.w.SmartSomaUI.start();await settle();
   assert.equal(a.w.document.querySelectorAll('.ui-nav-item').length,6);
-  assert.equal(a.el('uiChart').querySelectorAll('.ui-rhythm-day').length,7);
+  assert.equal(a.el('uiChart').querySelectorAll('.ui-rhythm-row').length,7);
   const ids=[...a.w.document.querySelectorAll('[id]')].map(n=>n.id);
   assert.equal(new Set(ids).size,ids.length);assert.deepEqual(a.errors,[]);
   for(const route of ['ganhos','semana','relatorio','despesas','resumo']){
@@ -16,6 +16,24 @@ test('UI initializes once with six sections, unique IDs and no runtime errors',a
     assert.equal(a.w.document.body.dataset.uiRoute,route);
     assert.equal(a.w.document.querySelectorAll('.home-list-page:not([hidden])').length,1);
   }
+});
+
+test('home rhythm uses the weekly divergent chart and lists only variable expenses from the selected period',async t=>{
+  const monday=new Date();monday.setHours(0,0,0,0);monday.setDate(monday.getDate()-(monday.getDay()+6)%7);
+  const tuesday=new Date(monday);tuesday.setDate(tuesday.getDate()+1);
+  const a=setup(t,{['homeBadgeValores:'+dateKey(monday)]:JSON.stringify({uber:120}),['homeBadgeValores:'+dateKey(tuesday)]:JSON.stringify({bolt:80}),['despesasDiarias:'+dateKey(monday)]:JSON.stringify({items:[{descricao:'Combustível',valor:20}]}),['despesasDiarias:'+dateKey(tuesday)]:JSON.stringify({items:[{descricao:'Portagem',valor:5}]}),despesasFixas:JSON.stringify({items:[{id:1,descricao:'Seguro',tipo:'euro',valor:30,desde:dateKey(monday)}]})});
+  a.w.SmartSomaUI.start();a.w.document.querySelector('[data-period="semana"]').click();await settle();
+  assert.equal(a.el('uiChart').querySelectorAll('.ui-rhythm-row').length,7);
+  assert.match(a.el('uiChart').textContent,/Despesas.*Lucro líquido.*Ganhos brutos/);
+  assert.match(a.el('uiChart').textContent,/Melhor dia: Segunda/);
+  assert.equal(a.el('uiOverviewDailyLabel').textContent,'DESPESAS DA SEMANA');
+  assert.match(a.el('uiOverviewExpenseRows').textContent,/Combustível/);
+  assert.match(a.el('uiOverviewExpenseRows').textContent,/Portagem/);
+  assert.doesNotMatch(a.el('uiOverviewExpenseRows').textContent,/Seguro/);
+  a.click('uiChartDetails');await new Promise(resolve=>setTimeout(resolve,340));
+  assert.equal(a.w.document.body.dataset.uiRoute,'semana');
+  assert.equal(a.el('homeListPageSemana').hidden,false);
+  assert.deepEqual(a.errors,[]);
 });
 
 test('quick entry requires platform and supports selecting, deselecting and replacing',t=>{

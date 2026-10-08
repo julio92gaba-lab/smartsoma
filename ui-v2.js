@@ -184,6 +184,10 @@
     if(period==='mes'){first=new Date(ref.getFullYear(),ref.getMonth(),1);count=new Date(ref.getFullYear(),ref.getMonth()+1,0).getDate();}
     return Array.from({length:count},function(_,i){var d=new Date(first);d.setDate(first.getDate()+i);return SmartSomaReadModel.day(d);});
   }
+  function daysInSelectedWeek() {
+    var monday=ResumoPeriod.getWeekRange(ResumoPeriod.getRefDate()).monday;
+    return Array.from({length:7},function(_,i){var d=new Date(monday);d.setDate(monday.getDate()+i);return SmartSomaReadModel.day(d);});
+  }
   function setupPages() {
     // Reposition existing elements, retaining their IDs, listeners and references.
     var summary=$('resumoLiveContent');
@@ -204,7 +208,11 @@
     daily.id='uiExpenseManage';expenseCard.append(daily);
     var dashboard=create('div','ui-dashboard-bottom','<section class="home-card ui-chart-panel"><div class="ui-panel-head"><div><p class="ui-eyebrow" id="uiChartEyebrow"></p><h2 id="uiChartTitle"></h2></div><button type="button" id="uiChartDetails" class="ui-text-button"></button></div><div id="uiChart"></div></section><section class="home-card ui-overview-expenses"><div class="ui-panel-head"><h2 id="uiOverviewExpensesTitle"></h2><button type="button" id="uiOverviewFixed" class="ui-text-button"></button></div><div id="uiOverviewFixedGroup" hidden><p class="ui-expense-section-label" id="uiOverviewFixedLabel"></p><div id="uiOverviewFixedRows"></div></div><p class="ui-expense-section-label" id="uiOverviewDailyLabel"></p><div id="uiOverviewExpenseRows"></div></section>');
     $('resumoTechCard').after(dashboard);
-    $('uiChartDetails').addEventListener('click',function(){go('semana');});
+    $('uiChartDetails').addEventListener('click',function(){
+      window.closeAllOverlays();window.closeProfileSheetPublic();
+      route='semana';$('metaSlotList').hidden=true;
+      HomeNav.slideToSection('semana','right');syncHeader();
+    });
     $('uiOverviewFixed').addEventListener('click',openFixedExpensesModal);
     var goal=create('div','ui-goal-progress','<div class="ui-goal-topline"><span class="ui-goal-tag" id="uiGoalTag"></span><span id="uiGoalPeriod"></span></div><div class="ui-goal-grid"><div class="ui-goal-copy"><h2 id="uiGoalTitle"></h2><p id="uiGoalCopy"></p><div class="ui-goal-actions"><button type="button" id="uiGoalGross"></button><button type="button" id="uiGoalNet"></button><button type="button" id="uiGoalEdit"></button></div></div><div class="ui-goal-number"><span id="uiGoalProgressLabel"></span><strong id="uiGoalPercent"></strong><small id="uiGoalAmounts"></small></div></div><div class="ui-progress-wrap"><div class="ui-progress-track" id="uiGoalTrack" role="progressbar" aria-valuemin="0" aria-valuemax="100"><div id="uiGoalFill"></div></div><div id="uiGoalDays" class="ui-goal-days"></div></div>');
     $('metaSemanalCard').append(goal);
@@ -276,9 +284,9 @@
     $('uiChartTitle').textContent=say('O teu ritmo','Your rhythm');
     $('uiChartEyebrow').textContent=say('SEMANA EM MOVIMENTO','WEEK IN MOTION');
     $('uiChartDetails').textContent=say('Ver semana completa →','View full week →');
-    $('uiOverviewExpensesTitle').textContent=say('Despesas','Expenses');$('uiOverviewFixed').textContent=say('Configurar','Configure');$('uiOverviewFixedLabel').textContent=say('DESPESAS FIXAS','FIXED EXPENSES');$('uiOverviewDailyLabel').textContent=say('DESPESAS DO DIA','DAILY EXPENSES');
-    renderOverviewExpenses(day);
-    var days=daysInPeriod();renderChart(days);
+    $('uiOverviewExpensesTitle').textContent=say('Despesas','Expenses');$('uiOverviewFixed').textContent=say('Configurar','Configure');$('uiOverviewFixedLabel').textContent=say('DESPESAS FIXAS','FIXED EXPENSES');$('uiOverviewDailyLabel').textContent=say('DESPESAS DA SEMANA','WEEKLY EXPENSES');
+    var days=daysInPeriod();renderOverviewExpenses(days);
+    renderChart(daysInSelectedWeek());
     // Same calculations as the weekly table, including current fixed expenses.
     // Only presentation changes; no cached amounts or persisted data are rewritten.
     var totals=days.reduce(function(s,d){s.gross+=d.gross;s.net+=d.net;s.expenses+=d.expenses;s.km+=d.km;return s;},{gross:0,net:0,expenses:0,km:0});
@@ -343,17 +351,25 @@
     $('uiMetricDistanceNote').textContent=totals.km>0?money(totals.net/totals.km)+say(' líquidos / km em média',' net / km on average'):say('Sem quilometragem registada','No mileage recorded');
   }
   function renderChart(days){
-    var target=$('uiChart'),recorded=days.filter(function(d){return d.gross>0||d.expenses>0;}).length;
-    var summary=create('p','ui-rhythm-summary');summary.textContent=recorded+say(' de ',' of ')+days.length+say(' dias registados',' days recorded');
-    var rhythm=create('div','ui-rhythm-days');rhythm.setAttribute('role','list');rhythm.setAttribute('aria-label',say('Ritmo semanal','Weekly rhythm'));
-    var today=new Date(),weekdayLabels=I18N.list('weekday.abbr')||[];today.setHours(0,0,0,0);
+    var target=$('uiChart'),rhythm=create('div','ui-rhythm-chart'),maxGross=Math.max.apply(null,days.map(function(d){return d.gross;}).concat([0]));
+    var legend=create('div','ui-rhythm-legend');
+    [["expense",say('Despesas','Expenses')],["net",say('Lucro líquido','Net profit')],["gross",say('Ganhos brutos','Gross earnings')]].forEach(function(item){var entry=create('span','ui-rhythm-legend-item');entry.append(create('i','ui-rhythm-legend-dot '+item[0]),document.createTextNode(item[1]));legend.append(entry);});
+    rhythm.setAttribute('role','list');rhythm.setAttribute('aria-label',say('Ritmo semanal','Weekly rhythm'));
+    var weekdayLabels=I18N.list('weekday.abbr')||[],weekdayFull=I18N.list('weekday.full')||[],today=new Date();today.setHours(0,0,0,0);
     days.forEach(function(d){
-      var hasIncome=d.gross>0,hasExpense=d.expenses>0,isToday=d.date.getTime()===today.getTime(),weekdayLabel=weekdayLabels[(d.date.getDay()+6)%7]||shortDate(d.date);
-      var day=create('div','ui-rhythm-day'+(hasIncome?' has-income':'')+(hasExpense?' has-expense':'')+(isToday?' is-today':''));day.setAttribute('role','listitem');
-      day.setAttribute('aria-label',weekdayLabel+': '+(hasIncome&&hasExpense?say('ganhos e despesas registados','earnings and expenses recorded'):hasIncome?say('ganhos registados','earnings recorded'):hasExpense?say('despesas registadas','expenses recorded'):say('sem registos','no entries')));
-      var track=create('span','ui-rhythm-track'),label=create('span','ui-rhythm-label');label.textContent=weekdayLabel;day.append(track,label);rhythm.append(day);
+      var index=(d.date.getDay()+6)%7,weekdayLabel=weekdayLabels[index]||shortDate(d.date),scale=maxGross?Math.min(100,d.gross/maxGross*100):0,expenseScale=maxGross?Math.min(100,d.expenses/maxGross*100):0,netScale=d.gross?Math.max(0,Math.min(100,d.net/d.gross*100)):0;
+      var row=create('div','ui-rhythm-row'+(d.date.getTime()===today.getTime()?' is-today':''));row.setAttribute('role','listitem');
+      row.setAttribute('aria-label',(weekdayFull[index]||weekdayLabel)+': '+money(d.expenses)+say(' em despesas, ',' in expenses, ')+money(d.net)+say(' líquido e ',' net and ')+money(d.gross)+say(' brutos',' gross'));
+      var label=create('span','ui-rhythm-day-label');label.textContent=weekdayLabel;
+      var expenseRail=create('span','ui-rhythm-expense-rail'),expenseBar=create('span','ui-rhythm-expense-bar');expenseBar.style.width=expenseScale+'%';expenseRail.append(expenseBar);
+      var zero=create('span','ui-rhythm-zero');
+      var incomeRail=create('span','ui-rhythm-income-rail'),incomeBar=create('span','ui-rhythm-income-bar'),netBar=create('span','ui-rhythm-net'),grossBar=create('span','ui-rhythm-gross');incomeBar.style.width=scale+'%';netBar.style.flexBasis=netScale+'%';incomeBar.append(netBar,grossBar);incomeRail.append(incomeBar);
+      row.append(label,expenseRail,zero,incomeRail);rhythm.append(row);
     });
-    target.replaceChildren(summary,rhythm);
+    var best=days.reduce(function(result,d){return d.gross>result.gross?d:result;},{gross:0}),bestDay='';
+    if(best.date){var bestIndex=(best.date.getDay()+6)%7;bestDay=weekdayFull[bestIndex]||weekdayLabels[bestIndex]||shortDate(best.date);}
+    var highlight=create('p','ui-rhythm-highlight');highlight.textContent=best.gross>0?'⭐ '+say('Melhor dia: ','Best day: ')+bestDay+', '+money(best.gross)+say(' brutos',' gross'):say('Ainda não há ganhos registados nesta semana.','No earnings recorded this week yet.');
+    target.replaceChildren(legend,rhythm,highlight);
   }
   function openFixedExpensesModal(){
     var screen=$('sheetScreenDespesasFixas'),content=screen&&screen.querySelector('.sheet-content');
@@ -381,13 +397,19 @@
     backdrop.classList.remove('visible');
     if(backdrop._returnFocus&&typeof backdrop._returnFocus.focus==='function')backdrop._returnFocus.focus();
   }
-  function renderOverviewExpenses(day){
+  function renderOverviewExpenses(days){
     var fixedSource=$('despesaFixaLembreteEl');
     var fixedRows=fixedSource?Array.from(fixedSource.querySelectorAll('.despesa-card')).map(function(card){return{label:(card.querySelector('.despesa-card-desc')||{}).textContent||'',detail:(card.querySelector('.despesa-card-sub')||{}).textContent||''};}):[];
     $('uiOverviewFixedGroup').hidden=!fixedRows.length;$('uiOverviewFixedRows').replaceChildren();
     fixedRows.forEach(function(row){var item=create('div','ui-overview-expense-row ui-fixed-expense-row'),label=create('span'),detail=create('small');label.textContent=row.label;detail.textContent=row.detail;item.append(label,detail);$('uiOverviewFixedRows').append(item);});
-    var dailyEntries=day.date.getDay()===1?day.entries.slice(0,Math.max(0,day.entries.length-fixedRows.length)):day.entries;
-    tableRows($('uiOverviewExpenseRows'),dailyEntries.map(function(entry){return{date:day.date,label:entry.descricao,value:entry.valor,expense:true};}));
+    var dailyEntries=[];
+    days.slice().reverse().forEach(function(day){
+      try {
+        var saved=window.cloudGet&&window.cloudGet('despesasDiarias:'+day.key),items=saved&&JSON.parse(saved).items||[];
+        items.forEach(function(entry){dailyEntries.push({date:day.date,label:entry.descricao,value:Number(entry.valor)||0,expense:true});});
+      } catch(e) {}
+    });
+    tableRows($('uiOverviewExpenseRows'),dailyEntries);
   }
   var entryMode='income',chosen=null,entryReturnFocus=null;
   function setupEntry(){
