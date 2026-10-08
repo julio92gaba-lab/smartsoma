@@ -16,6 +16,7 @@
     plus: '<path d="M12 5v14M5 12h14"/>',
     arrow: '<path d="M5 12h14m-6-6 6 6-6 6"/>',
     profit: '<path d="M5 18 19 4M5 4h14v14"/>',
+    goal: '<path d="M15.5 7.5C14.7 6.4 13.4 5.8 12 5.8c-2.2 0-4 1.3-4 3.2 0 4.2 8 2.1 8 6.1 0 1.9-1.8 3.2-4 3.2-1.6 0-3.1-.6-4-1.8M12 3v18"/>',
     distance: '<path d="M7 3 3 21M17 3l4 18M12 3v3M12 10v4M12 18v3"/>'
   };
   var text = {
@@ -214,7 +215,7 @@
       HomeNav.slideToSection('semana','right');syncHeader();
     });
     $('uiOverviewFixed').addEventListener('click',openFixedExpensesModal);
-    var goal=create('div','ui-goal-progress','<div class="ui-goal-topline"><span class="ui-goal-tag" id="uiGoalTag"></span><span id="uiGoalPeriod"></span></div><div class="ui-goal-grid"><div class="ui-goal-copy"><h2 id="uiGoalTitle"></h2><p id="uiGoalCopy"></p><div class="ui-goal-actions"><button type="button" id="uiGoalGross"></button><button type="button" id="uiGoalNet"></button><button type="button" id="uiGoalEdit"></button></div></div><div class="ui-goal-number"><span id="uiGoalProgressLabel"></span><strong id="uiGoalPercent"></strong><small id="uiGoalAmounts"></small><small id="uiGoalType"></small></div></div><div class="ui-progress-wrap"><div class="ui-progress-track" id="uiGoalTrack" role="progressbar" aria-valuemin="0" aria-valuemax="100"><div id="uiGoalFill"></div></div><div id="uiGoalDays" class="ui-goal-days"></div></div>');
+    var goal=create('div','ui-goal-progress','<div class="ui-goal-watermark" aria-hidden="true">'+svg('goal')+'</div><div class="ui-goal-topline"><span class="ui-goal-tag" id="uiGoalTag"></span><button type="button" id="uiGoalEdit" class="ui-goal-edit"></button><span id="uiGoalPeriod"></span></div><div class="ui-goal-grid"><div class="ui-goal-copy"><h2 id="uiGoalTitle"></h2><p id="uiGoalCopy"></p><div class="ui-goal-actions" hidden><button type="button" id="uiGoalGross"></button><button type="button" id="uiGoalNet"></button></div></div><div class="ui-goal-number"><span id="uiGoalProgressLabel"></span><strong id="uiGoalPercent"></strong><small id="uiGoalAmounts"></small><small id="uiGoalType"></small></div></div><div class="ui-progress-wrap"><div class="ui-progress-track" id="uiGoalTrack" role="progressbar" aria-valuemin="0" aria-valuemax="100"><div id="uiGoalFill"></div></div><div id="uiGoalDays" class="ui-goal-days"></div></div>');
     $('metaSemanalCard').append(goal);
     $('uiGoalEdit').addEventListener('click',function(){
       var week=MetaSemanalRead.forDate(ResumoPeriod.getRefDate());

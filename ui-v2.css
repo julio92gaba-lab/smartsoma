@@ -397,6 +397,10 @@ body.ui-v2 #resumoLiveContent .period-filter-row { background:transparent; }
 .ui-v2 #metaSlotList { margin:0 0 24px; }
 .ui-v2 #metaSemanalCard { overflow:hidden; isolation:isolate; padding:25px 30px 18px; border-radius:15px; border:0; margin:0; box-shadow:0 12px 32px #0b0f0c12; }
 .ui-v2 #metaSemanalCard::before { content:''; position:absolute; z-index:-1; pointer-events:none; right:-90px; top:-190px; width:530px; height:530px; background:radial-gradient(circle,#d4f53c30,transparent 64%); }
+.ui-goal-progress { position:relative; isolation:isolate; }
+.ui-goal-progress>:not(.ui-goal-watermark) { position:relative; z-index:1; }
+.ui-goal-watermark { position:absolute; z-index:0; width:max(45%,190px); right:-13%; bottom:-62%; color:#d4f53c; opacity:.09; pointer-events:none; transform:rotate(-45deg); }
+.ui-goal-watermark svg { display:block; width:100%; height:auto; stroke-width:1.1; }
 .ui-goal-topline { display:flex; justify-content:space-between; align-items:center; gap:12px; }
 .ui-goal-tag { display:inline-flex; background:#d4f53c1f; color:#d4f53c; border:1px solid #d4f53c47; border-radius:4px; padding:5px 9px; font-size:.625rem; font-weight:800; letter-spacing:.9px; }
 #uiGoalPeriod { font-size:.65rem; color:#c8d7cf; }
@@ -406,14 +410,14 @@ body.ui-v2 #resumoLiveContent .period-filter-row { background:transparent; }
 .ui-goal-copy strong { color:#d4f53c; }
 .ui-goal-number { display:grid; text-align:right; }
 .ui-goal-number>span { font-size:.75rem; color:#c8d7cf; font-weight:700; }
-.ui-goal-number>strong { font:800 clamp(47px,5vw,69px)/.95 'Bricolage Grotesque',sans-serif; letter-spacing:-3px; color:#d4f53c; }
+.ui-goal-number>strong { font:800 clamp(54px,5.5vw,76px)/.95 'Bricolage Grotesque',sans-serif; letter-spacing:-3px; color:#d4f53c; }
 .ui-goal-number small { color:#c8d7cf; margin-top:8px; font-size:.75rem; }
-#uiGoalPeriod,#uiGoalProgressLabel,#uiGoalAmounts,.ui-goal-actions #uiGoalGross,.ui-goal-actions #uiGoalNet,.ui-goal-days { display:none; }
+#uiGoalPeriod,#metaSemanalPeriodLabel,.ui-v2 .meta-semanal-period,#uiGoalProgressLabel,#uiGoalAmounts,.ui-goal-actions #uiGoalGross,.ui-goal-actions #uiGoalNet,.ui-goal-days { display:none; }
 #uiGoalType { display:block; color:#d4f53c; font-weight:800; letter-spacing:.06em; text-transform:uppercase; }
 .ui-goal-actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:20px; }
 .ui-goal-actions button { border:1px solid #597363; background:transparent; color:#c8d7cf; border-radius:5px; padding:8px 10px; font-size:.75rem; font-weight:800; min-height:36px; }
 .ui-goal-actions button[aria-pressed=true] { border-color:#d4f53c; background:#d4f53c; color:#0b0f0c; }
-.ui-goal-actions #uiGoalEdit { border-color:transparent; text-decoration:underline; text-underline-offset:3px; }
+.ui-goal-edit { margin-left:auto; border:0; padding:0; color:#d4f53c; background:transparent; font-size:.75rem; font-weight:800; text-decoration:underline; text-underline-offset:3px; }
 .ui-progress-wrap { border-top:1px solid #ffffff26; padding-top:13px; }
 .ui-progress-track { height:7px; background:#315543; border-radius:5px; margin:0; }
 #uiGoalFill { background:linear-gradient(90deg,#1e9e5a,#d4f53c); }
@@ -454,10 +458,9 @@ body.ui-v2.theme-dark .amber .ui-metric-icon { background:#483e26; color:#f3ce80
   .ui-goal-copy p { font-size:.81rem; }
   .ui-goal-number { text-align:left; grid-template-columns:auto 1fr; align-items:baseline; gap:12px; }
   .ui-goal-number>span { display:none; }
-  .ui-goal-number>strong { font-size:51px; }
+  .ui-goal-number>strong { font-size:58px; }
   .ui-goal-number small { margin:0; font-size:.7rem; }
   .ui-goal-actions { margin-top:15px; gap:4px; }
-  .ui-goal-actions #uiGoalEdit { margin-left:auto; }
   .ui-goal-days { gap:2px; }
   .ui-goal-days>span { font-size:.56rem; }
   .ui-metrics { gap:9px; margin-top:11px; }
