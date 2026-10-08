@@ -90,10 +90,10 @@ html.ui-v2.theme-dark, body.ui-v2.theme-dark {
 .ui-v2 .ganhos-tile-ticks,.ui-v2 .dash-tile-ticks { display:none; }
 .ui-v2 .ganhos-resumo-link-row { justify-content:flex-end; }
 .ui-v2 .ganhos-resumo-link-btn { color:var(--brand-green); font-size:.85rem; }
-.ui-v2 .period-filter-row { justify-content:flex-start; gap:8px; }
+.ui-v2 .period-filter-row { justify-content:center; gap:8px; }
 .ui-v2 .period-chip { padding:9px 17px; background:var(--input-bg); color:var(--ink); border:1px solid var(--card-line); border-radius:7px; font-size:.8rem; }
 .ui-v2 .period-chip.selected { background:var(--lime); color:#183021; border-color:#183021; }
-.ui-v2 .period-nav-row { margin:18px 0; gap:14px; justify-content:space-between; }
+.ui-v2 .period-nav-row { margin:18px 0; gap:14px; justify-content:center; }
 .ui-v2 .period-label { color:var(--ink); font-size:.85rem; }
 .ui-v2 .period-nav-btn { border:1px solid var(--card-line); background:var(--card-bg); color:var(--ink); width:34px; height:34px; border-radius:8px; }
 .ui-v2 .dash-cluster { display:grid; grid-template-columns:1fr 3fr; gap:14px; }
@@ -207,8 +207,11 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
 .ui-v2 .ganhos-resumo-link-btn span { color:var(--brand-green); }
 .ui-panel-head { display:flex; justify-content:space-between; align-items:center; gap:14px; margin-bottom:16px; }
 .ui-panel-head h2,.ui-v2 .ui-dashboard-bottom h2,.ui-v2 #uiDayHistoryTitle { color:var(--ink); font-size:1.4rem; margin:5px 0; }
-.ui-dashboard-bottom { display:grid; grid-template-columns:minmax(0,1.5fr) minmax(0,1fr); gap:20px; }
+.ui-dashboard-bottom { display:grid; grid-template-columns:minmax(0,1.5fr) minmax(0,1fr); grid-template-areas:'chart expenses' 'chart recent'; gap:20px; }
 .ui-dashboard-bottom .home-card { min-width:0; }
+.ui-chart-panel { grid-area:chart; }
+.ui-overview-expenses { grid-area:expenses; }
+.ui-recent-panel { grid-area:recent; }
 .ui-text-button { border:0; background:transparent; color:var(--brand-green); font-size:.75rem; font-weight:700; white-space:nowrap; }
 .ui-chart-legend { display:flex; flex-wrap:wrap; gap:15px; color:var(--muted); font-size:.7rem; margin:20px 0 8px; }
 .ui-chart-legend span::before { content:''; display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:6px; }
@@ -217,9 +220,9 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
 #uiChart svg { width:100%; height:auto; overflow:visible; }
 .ui-chart-grid { stroke:var(--card-line); stroke-dasharray:4 4; }
 .ui-chart-label { fill:var(--muted); font:11px 'DM Sans',sans-serif; }
-.ui-chart-line { stroke-width:3; stroke-linejoin:round; }
-.ui-chart-line.gross { stroke:#249759; }
-.ui-chart-line.net { stroke:#9e72d1; }
+.ui-chart-bar.gross { fill:#249759; }
+.ui-chart-bar.net { fill:#9e72d1; }
+.ui-chart-bar.negative { fill:var(--danger); }
 .ui-chart-point.gross { fill:#249759; }
 .ui-chart-point.net { fill:#9e72d1; }
 .ui-record-row { display:grid; grid-template-columns:42px minmax(0,1fr) auto; align-items:center; gap:10px; padding:14px 0; border-top:1px solid var(--card-line); font-size:.8rem; }
@@ -234,6 +237,11 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
 .ui-daily-total .ui-button { margin-left:auto; }
 .ui-expense-total { font:700 2.1rem 'Bricolage Grotesque',sans-serif; color:var(--danger); padding:12px 0 25px; }
 #uiExpenseFixed,#uiRecentAdd { margin-top:18px; }
+.ui-expense-section-label { color:var(--muted); font-size:.64rem; font-weight:800; letter-spacing:.8px; margin:18px 0 8px; }
+.ui-overview-expense-row { display:flex; justify-content:space-between; align-items:baseline; gap:12px; padding:10px 0; border-bottom:1px solid var(--card-line); font-size:.83rem; }
+.ui-overview-expense-row span { font-weight:700; }
+.ui-overview-expense-row small { color:var(--muted); font-size:.7rem; text-align:right; }
+.ui-fixed-expense-row { color:var(--brand-green); }
 .ui-entry-dialog { width:min(420px,calc(100vw - 48px)); max-height:82dvh; overflow-y:auto; background:var(--card-bg); color:var(--ink); border:2px solid #142015; border-radius:14px; padding:20px; box-shadow:6px 6px 0 var(--brand-green),0 24px 80px #0005; }
 .ui-entry-dialog::backdrop { background:#06130bb0; backdrop-filter:blur(4px); }
 .ui-entry-dialog label { display:grid; gap:6px; margin-top:12px; font-size:.8rem; font-weight:600; }
@@ -301,7 +309,7 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
   .ui-panel-head { flex-wrap:wrap; }
   .ui-panel-head h2 { font-size:1.25rem; }
 }
-@media(max-width:1100px) { .ui-dashboard-bottom { grid-template-columns:1fr; gap:0; } }
+@media(max-width:1100px) { .ui-dashboard-bottom { grid-template-columns:1fr; grid-template-areas:'chart' 'expenses' 'recent'; gap:0; } }
 @media (min-width:1100px) { .ui-v2 .semana-list-placeholder { grid-template-columns:repeat(2,1fr); } }
 @media (max-width:1100px) and (min-width:761px) { html.ui-v2,body.ui-v2 { --sidebar:200px; } .ui-nav-item { font-size:.75rem; padding:12px 8px; } .ui-v2 .dash-cluster { grid-template-columns:1fr; } }
 @media (max-width:760px) {
@@ -357,6 +365,9 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
 /* Home fidelity: independent goal and metric cards, as in the preserved mockup. */
 .ui-v2 #resumoTechCard { background:transparent; border:0; box-shadow:none; padding:0; }
 body.ui-v2 #resumoLiveContent .period-filter-row { background:transparent; }
+.ui-v2 #homeListPageResumo .ui-page-intro .ui-selected-date { display:none; }
+.ui-v2 #resumoLiveContent .period-nav-row { justify-content:center; }
+.ui-v2 #resumoLiveContent .period-label { min-width:190px; text-align:center; }
 .ui-v2 #resumoTechCard .dash-cluster,
 .ui-v2 #metaSemanalCurrentContent { display:none; }
 .ui-v2 #metaSlotList { margin:18px 0 0; }
