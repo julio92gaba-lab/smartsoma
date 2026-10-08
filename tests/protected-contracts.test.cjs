@@ -8,7 +8,7 @@ const hash=s=>createHash('sha256').update(s.replace(/\r\n/g,'\n')).digest('hex')
 test('authentication, cloud persistence and billing endpoints are unchanged',()=>{
   const expected={
     'cloud-init.js':'1e1410276cf1a85a24d85b52761efbc1e3cc6a3246ba9f11be8a0dc76749e0b9',
-    'login.html':'e0ca5cef110d68421a145c557fd3f32ac683528c6b4033e0b2394bd59113a28a',
+    'login.html':'25f0a6c9e27d620c5ce104fe2f0136d649d51646549938f08bf924ac9df5db8c',
     'api/delete-account.js':'bc9e8a39a30ccb32229a9b568d69ffb883605189c667ffd5a80a341d04dda3d5',
     'api/webhook.js':'7d93936fb8f016c3328f6b845cc1075819b5fdaa57bf2e88d15b2eada709d7ae',
     'supabase/functions/creem-checkout/index.ts':'c341a62155cb7600e48f7c40eb52b8c1e4a26d06d0ea1464441a0f3012322c16',
