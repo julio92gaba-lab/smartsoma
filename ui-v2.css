@@ -53,7 +53,8 @@ html.ui-v2.theme-dark, body.ui-v2.theme-dark {
 .ui-sidebar-profile>b { color:#9cab9d; font-size:1.35rem; font-weight:400; }
 .ui-sidebar-avatar { width:34px; height:34px; overflow:hidden; border-radius:50%; display:grid; place-items:center; background:linear-gradient(145deg,#f3b64c,#df7b55); color:#142015; font-size:.68rem; font-weight:800; }
 .ui-sidebar-avatar img { width:100%; height:100%; object-fit:cover; }
-.ui-header { position:fixed; z-index:40; left:var(--sidebar); right:0; top:0; height:var(--ui-header); display:flex; align-items:center; justify-content:space-between; gap:16px; padding:18px clamp(24px,4vw,64px); background:var(--paper); border-bottom:1px solid var(--card-line); }
+.ui-header { position:fixed; z-index:40; left:var(--sidebar); right:0; top:0; height:var(--ui-header); display:flex; align-items:center; justify-content:space-between; gap:16px; padding:18px clamp(24px,4vw,64px); background:var(--paper); border-bottom:1px solid transparent; transition:background .2s ease,border-color .2s ease,box-shadow .2s ease,backdrop-filter .2s ease; }
+.ui-header.is-scrolled { background:color-mix(in srgb,var(--paper) 92%,transparent); border-bottom-color:var(--card-line); box-shadow:0 5px 18px rgb(20 35 25 / .06); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); }
 .ui-header h1 { font-size:1.8rem; line-height:1.12; letter-spacing:-.7px; margin:5px 0 0; }
 .ui-eyebrow { font-size:.64rem; font-weight:700; letter-spacing:1.15px; text-transform:uppercase; color:var(--muted); margin:0; }
 .ui-header-actions { display:flex; align-items:center; gap:12px; }
@@ -347,6 +348,7 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
   .ui-nav-item svg { width:22px; height:22px; }
   .ui-nav-item.is-active { background:#203322; color:var(--lime); box-shadow:none; }
   .ui-header { padding:calc(16px + env(safe-area-inset-top,0px)) 18px 16px; }
+  .ui-header.is-scrolled { background:color-mix(in srgb,var(--paper) 97%,transparent); box-shadow:0 4px 14px rgb(20 35 25 / .08); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); }
   .ui-header h1 { font-size:1.4rem; }
   .ui-header .ui-eyebrow { font-size:.56rem; letter-spacing:.4px; }
   .ui-header #uiHeaderDate { display:inline-flex; align-items:center; width:max-content; min-height:25px; padding:5px 8px; border:1px solid var(--card-line); border-radius:8px; background:var(--card-bg); color:var(--muted); letter-spacing:.45px; }

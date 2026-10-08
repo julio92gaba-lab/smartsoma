@@ -9,6 +9,8 @@ test('UI initializes once with six sections, unique IDs and no runtime errors',a
   const a=setup(t);a.w.SmartSomaUI.start();await settle();
   assert.equal(a.w.document.querySelectorAll('.ui-nav-item').length,6);
   assert.equal(a.el('uiChart').querySelectorAll('.ui-rhythm-row').length,7);
+  Object.defineProperty(a.w,'scrollY',{value:12,configurable:true});a.w.dispatchEvent(new a.w.Event('scroll'));
+  assert.equal(a.w.document.querySelector('.ui-header').classList.contains('is-scrolled'),true);
   const ids=[...a.w.document.querySelectorAll('[id]')].map(n=>n.id);
   assert.equal(new Set(ids).size,ids.length);assert.deepEqual(a.errors,[]);
   for(const route of ['ganhos','semana','relatorio','despesas','resumo']){
