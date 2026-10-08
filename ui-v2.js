@@ -346,12 +346,12 @@
     var target=$('uiChart'),recorded=days.filter(function(d){return d.gross>0||d.expenses>0;}).length;
     var summary=create('p','ui-rhythm-summary');summary.textContent=recorded+say(' de ',' of ')+days.length+say(' dias registados',' days recorded');
     var rhythm=create('div','ui-rhythm-days');rhythm.setAttribute('role','list');rhythm.setAttribute('aria-label',say('Ritmo semanal','Weekly rhythm'));
-    var today=new Date();today.setHours(0,0,0,0),labels=I18N.list('weekday.abbr');
+    var today=new Date(),weekdayLabels=I18N.list('weekday.abbr')||[];today.setHours(0,0,0,0);
     days.forEach(function(d){
-      var hasIncome=d.gross>0,hasExpense=d.expenses>0,isToday=d.date.getTime()===today.getTime();
+      var hasIncome=d.gross>0,hasExpense=d.expenses>0,isToday=d.date.getTime()===today.getTime(),weekdayLabel=weekdayLabels[(d.date.getDay()+6)%7]||shortDate(d.date);
       var day=create('div','ui-rhythm-day'+(hasIncome?' has-income':'')+(hasExpense?' has-expense':'')+(isToday?' is-today':''));day.setAttribute('role','listitem');
-      day.setAttribute('aria-label',labels[(d.date.getDay()+6)%7]+': '+(hasIncome&&hasExpense?say('ganhos e despesas registados','earnings and expenses recorded'):hasIncome?say('ganhos registados','earnings recorded'):hasExpense?say('despesas registadas','expenses recorded'):say('sem registos','no entries')));
-      var track=create('span','ui-rhythm-track'),label=create('span','ui-rhythm-label');label.textContent=labels[(d.date.getDay()+6)%7];day.append(track,label);rhythm.append(day);
+      day.setAttribute('aria-label',weekdayLabel+': '+(hasIncome&&hasExpense?say('ganhos e despesas registados','earnings and expenses recorded'):hasIncome?say('ganhos registados','earnings recorded'):hasExpense?say('despesas registadas','expenses recorded'):say('sem registos','no entries')));
+      var track=create('span','ui-rhythm-track'),label=create('span','ui-rhythm-label');label.textContent=weekdayLabel;day.append(track,label);rhythm.append(day);
     });
     target.replaceChildren(summary,rhythm);
   }
