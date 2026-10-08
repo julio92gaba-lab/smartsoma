@@ -69,5 +69,6 @@ test('font assets are local, cached offline and mobile home selectors target the
     assert.equal(fs.readFileSync('fonts/'+name).subarray(0,4).toString(),'wOF2');assert.ok(css.includes(name)&&html.includes(name)&&sw.includes(name));
   }
   assert.match(css,/body\.ui-v2:not\(\.ui-home\) \.ui-header-copy/);
+  assert.match(css,/\.ui-header h1 \{[^}]*text-overflow:ellipsis;[^}]*white-space:nowrap;/);
   assert.match(css,/body\.ui-v2 \{ overflow:visible; \}/);
 });

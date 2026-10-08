@@ -56,7 +56,7 @@
     var headerDate = date.toLocaleDateString(locale,{weekday:'long',day:'numeric',month:'long'}).replace(/-feira\b/i,'');
     $('uiHeaderDate').textContent = showingOtherDate && window.matchMedia('(max-width:760px)').matches ? say('A mostrar dados de…','Showing data from…') : headerDate;
     var name = $('sheetUsername').textContent.trim().split(' ')[0];
-    var greeting = t(now.getHours()<12?'hello':now.getHours()<19?'afternoon':'evening');
+    var greeting = say('Olá','Hello');
     $('uiHeaderTitle').textContent = showingOtherDate && window.matchMedia('(max-width:760px)').matches ? shortHeaderDate(date) : inSettings ? (sheet && sheet.id !== 'sheetScreenDefault' ? $('sheetHandleTitle').textContent : t('ajustes')) : route === 'resumo' ? greeting + ', ' + name + '.' : t(route);
     document.body.dataset.uiRoute = route;
     document.body.classList.toggle('ui-home', route === 'resumo' && !inSettings);

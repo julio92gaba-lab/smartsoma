@@ -9,6 +9,7 @@ test('UI initializes once with six sections, unique IDs and no runtime errors',a
   const a=setup(t);a.w.SmartSomaUI.start();await settle();
   assert.equal(a.w.document.querySelectorAll('.ui-nav-item').length,6);
   assert.equal(a.el('uiChart').querySelectorAll('.ui-rhythm-row').length,7);
+  assert.equal(a.el('uiHeaderTitle').textContent,'Olá, Utilizador.');
   assert.equal(a.el('uiHeaderAvatar').textContent,'U');a.click('uiHeaderAvatar');
   assert.equal(a.el('homeListPageResumo').classList.contains('is-fading'),true);await settle();
   assert.equal(a.w.document.body.dataset.uiRoute,'ajustes');
