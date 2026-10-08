@@ -4636,6 +4636,9 @@
           });
           homeListInner.classList.remove('is-sliding');
           if (listView) listView.scrollTop = 0;
+          if (normalized === 'semana') {
+            document.dispatchEvent(new CustomEvent('semanaPageShown'));
+          }
           slideBusy = false;
         }, SLIDE_MS);
       }

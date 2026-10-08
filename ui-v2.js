@@ -284,7 +284,7 @@
     $('uiChartTitle').textContent=say('O teu ritmo','Your rhythm');
     $('uiChartEyebrow').textContent=say('SEMANA EM MOVIMENTO','WEEK IN MOTION');
     $('uiChartDetails').textContent=say('Ver semana completa →','View full week →');
-    $('uiOverviewExpensesTitle').textContent=say('Despesas','Expenses');$('uiOverviewFixed').textContent=say('Configurar','Configure');$('uiOverviewFixedLabel').textContent=say('DESPESAS FIXAS','FIXED EXPENSES');$('uiOverviewDailyLabel').textContent=say('DESPESAS DA SEMANA','WEEKLY EXPENSES');
+    $('uiOverviewExpensesTitle').textContent=say('Despesas','Expenses');$('uiOverviewFixed').textContent=say('Configurar','Configure');$('uiOverviewFixedLabel').textContent=say('DESPESAS FIXAS','FIXED EXPENSES');$('uiOverviewDailyLabel').textContent=say('DESPESAS DO PERÍODO','PERIOD EXPENSES');
     var days=daysInPeriod();renderOverviewExpenses(days);
     renderChart(daysInSelectedWeek());
     // Same calculations as the weekly table, including current fixed expenses.

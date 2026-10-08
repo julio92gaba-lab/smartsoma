@@ -26,13 +26,15 @@ test('home rhythm uses the weekly divergent chart and lists only variable expens
   assert.equal(a.el('uiChart').querySelectorAll('.ui-rhythm-row').length,7);
   assert.match(a.el('uiChart').textContent,/Despesas.*Lucro líquido.*Ganhos brutos/);
   assert.match(a.el('uiChart').textContent,/Melhor dia: Segunda/);
-  assert.equal(a.el('uiOverviewDailyLabel').textContent,'DESPESAS DA SEMANA');
+  assert.equal(a.el('uiOverviewDailyLabel').textContent,'DESPESAS DO PERÍODO');
   assert.match(a.el('uiOverviewExpenseRows').textContent,/Combustível/);
   assert.match(a.el('uiOverviewExpenseRows').textContent,/Portagem/);
   assert.doesNotMatch(a.el('uiOverviewExpenseRows').textContent,/Seguro/);
+  let weeklyPageShown=0;a.w.document.addEventListener('semanaPageShown',()=>weeklyPageShown++);
   a.click('uiChartDetails');await new Promise(resolve=>setTimeout(resolve,340));
   assert.equal(a.w.document.body.dataset.uiRoute,'semana');
   assert.equal(a.el('homeListPageSemana').hidden,false);
+  assert.equal(weeklyPageShown,1);
   assert.deepEqual(a.errors,[]);
 });
 
