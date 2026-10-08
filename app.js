@@ -1471,6 +1471,7 @@
 
         descInput.value = '';
         valorInput.value = '';
+        document.dispatchEvent(new CustomEvent('fixedExpenseSaved'));
       });
 
       function openDeleteConfirm (id, descricao) {

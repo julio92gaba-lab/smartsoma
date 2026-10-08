@@ -145,7 +145,6 @@
     HomeNav.goToSection=function(key){ route=key==='default'?'ganhos':key; if($('uiSettingsPage'))$('uiSettingsPage').hidden=true; if($('uiExpensesPage')) $('uiExpensesPage').hidden=true; originalGo(key); syncHeader(); };
     // These original buttons call the private navigation function, so keep the shell in sync too.
     $('btnVerMeuResumo').addEventListener('click',function(){route='resumo';syncHeader();});
-    $('btnRegistrarGanhos').addEventListener('click',function(){route='ganhos';syncHeader();});
     var observer=new MutationObserver(function(){syncHeader();syncSidebarAccount();});
     observer.observe($('profileSheet'),{attributes:true,subtree:true,attributeFilter:['class']});
     observer.observe($('sheetHandleTitle'),{childList:true,subtree:true,characterData:true});
@@ -203,11 +202,10 @@
     fix.id='uiExpenseFixed';expenseCard.append(fix);
     var daily=button('',function(){PlataformaModals.despesas.open();},'ui-button ui-secondary');
     daily.id='uiExpenseManage';expenseCard.append(daily);
-    var dashboard=create('div','ui-dashboard-bottom','<section class="home-card ui-chart-panel"><div class="ui-panel-head"><div><p class="ui-eyebrow" id="uiChartEyebrow"></p><h2 id="uiChartTitle"></h2></div><button type="button" id="uiChartDetails" class="ui-text-button"></button></div><div class="ui-chart-legend"><span class="ui-gross-legend" id="uiGrossLegend"></span><span class="ui-net-legend" id="uiNetLegend"></span><span class="ui-expenses-legend" id="uiExpensesLegend"></span></div><div id="uiChart"></div></section><section class="home-card ui-overview-expenses"><div class="ui-panel-head"><h2 id="uiOverviewExpensesTitle"></h2><button type="button" id="uiOverviewFixed" class="ui-text-button"></button></div><div id="uiOverviewFixedGroup" hidden><p class="ui-expense-section-label" id="uiOverviewFixedLabel"></p><div id="uiOverviewFixedRows"></div></div><p class="ui-expense-section-label" id="uiOverviewDailyLabel"></p><div id="uiOverviewExpenseRows"></div></section><section class="home-card ui-recent-panel"><div class="ui-panel-head"><h2 id="uiRecentTitle"></h2></div><div id="uiRecentRows"></div><button type="button" class="ui-button" id="uiRecentAdd"></button></section>');
+    var dashboard=create('div','ui-dashboard-bottom','<section class="home-card ui-chart-panel"><div class="ui-panel-head"><div><p class="ui-eyebrow" id="uiChartEyebrow"></p><h2 id="uiChartTitle"></h2></div><button type="button" id="uiChartDetails" class="ui-text-button"></button></div><div class="ui-chart-legend"><span class="ui-gross-legend" id="uiGrossLegend"></span><span class="ui-net-legend" id="uiNetLegend"></span><span class="ui-expenses-legend" id="uiExpensesLegend"></span></div><div id="uiChart"></div></section><section class="home-card ui-overview-expenses"><div class="ui-panel-head"><h2 id="uiOverviewExpensesTitle"></h2><button type="button" id="uiOverviewFixed" class="ui-text-button"></button></div><div id="uiOverviewFixedGroup" hidden><p class="ui-expense-section-label" id="uiOverviewFixedLabel"></p><div id="uiOverviewFixedRows"></div></div><p class="ui-expense-section-label" id="uiOverviewDailyLabel"></p><div id="uiOverviewExpenseRows"></div></section>');
     $('resumoTechCard').after(dashboard);
     $('uiChartDetails').addEventListener('click',function(){go('semana');});
     $('uiOverviewFixed').addEventListener('click',openFixedExpensesModal);
-    $('uiRecentAdd').addEventListener('click',function(){openEntry();});
     var goal=create('div','ui-goal-progress','<div class="ui-goal-topline"><span class="ui-goal-tag" id="uiGoalTag"></span><span id="uiGoalPeriod"></span></div><div class="ui-goal-grid"><div class="ui-goal-copy"><h2 id="uiGoalTitle"></h2><p id="uiGoalCopy"></p><div class="ui-goal-actions"><button type="button" id="uiGoalGross"></button><button type="button" id="uiGoalNet"></button><button type="button" id="uiGoalEdit"></button></div></div><div class="ui-goal-number"><span id="uiGoalProgressLabel"></span><strong id="uiGoalPercent"></strong><small id="uiGoalAmounts"></small></div></div><div class="ui-progress-wrap"><div class="ui-progress-track" id="uiGoalTrack" role="progressbar" aria-valuemin="0" aria-valuemax="100"><div id="uiGoalFill"></div></div><div id="uiGoalDays" class="ui-goal-days"></div></div>');
     $('metaSemanalCard').append(goal);
     $('uiGoalEdit').addEventListener('click',function(){
@@ -279,10 +277,9 @@
     $('uiChartEyebrow').textContent=say('CADA DIA CONTA','EVERY DAY COUNTS');
     $('uiChartDetails').textContent=say('Ver detalhes →','View details →');
     $('uiGrossLegend').textContent=say('Ganhos brutos','Gross earnings');$('uiNetLegend').textContent=say('Ganhos líquidos','Net earnings');$('uiExpensesLegend').textContent=say('Despesas','Expenses');
-    $('uiRecentTitle').textContent=say('Últimos registos','Latest entries');$('uiRecentAdd').textContent=t('record');
     $('uiOverviewExpensesTitle').textContent=say('Despesas','Expenses');$('uiOverviewFixed').textContent=say('Configurar','Configure');$('uiOverviewFixedLabel').textContent=say('DESPESAS FIXAS','FIXED EXPENSES');$('uiOverviewDailyLabel').textContent=say('DESPESAS DO DIA','DAILY EXPENSES');
     renderOverviewExpenses(day);
-    var days=daysInPeriod();renderChart(days);tableRows($('uiRecentRows'),records(days).slice(0,8));
+    var days=daysInPeriod();renderChart(days);
     // Same calculations as the weekly table, including current fixed expenses.
     // Only presentation changes; no cached amounts or persisted data are rewritten.
     var totals=days.reduce(function(s,d){s.gross+=d.gross;s.net+=d.net;s.expenses+=d.expenses;s.km+=d.km;return s;},{gross:0,net:0,expenses:0,km:0});
@@ -347,12 +344,12 @@
     $('uiMetricDistanceNote').textContent=totals.km>0?money(totals.net/totals.km)+say(' líquidos / km em média',' net / km on average'):say('Sem quilometragem registada','No mileage recorded');
   }
   function renderChart(days){
-    var values=days.flatMap(function(d){return[d.gross,d.net,d.expenses];}),max=Math.max(10,...values.map(function(v){return Math.abs(v);}));
+    var values=days.flatMap(function(d){return[d.gross,d.net,d.expenses];}),max=Math.max(10,...values);
     var base=184,scale=150/max,group=620/Math.max(1,days.length),barWidth=Math.max(4,Math.min(18,(group-10)/3));
     var svgNode=document.createElementNS('http://www.w3.org/2000/svg','svg');svgNode.setAttribute('viewBox','0 0 710 222');svgNode.setAttribute('role','img');svgNode.setAttribute('aria-label',say('Ganhos brutos, ganhos líquidos e despesas por dia','Gross earnings, net earnings and expenses by day'));
     function elem(tag,attrs,content){var n=document.createElementNS(svgNode.namespaceURI,tag);Object.entries(attrs).forEach(function(a){n.setAttribute(a[0],String(a[1]));});if(content)n.textContent=content;svgNode.append(n);return n;}
     for(var j=0;j<4;j++){var v=max*j/3,y=base-v*scale;elem('line',{x1:45,x2:675,y1:y,y2:y,class:'ui-chart-grid'});elem('text',{x:4,y:y+4,class:'ui-chart-label'},String(Math.round(v)));}
-    days.forEach(function(d,i){var start=45+i*group+(group-(barWidth*3)-8)/2;['gross','net','expenses'].forEach(function(kind,index){var value=d[kind],height=Math.abs(value)*scale,y=value>=0?base-height:base;var n=elem('rect',{x:start+index*(barWidth+4),y:y,width:barWidth,height:height,rx:3,class:'ui-chart-bar '+kind+(value<0?' negative':'')});var title=document.createElementNS(svgNode.namespaceURI,'title');title.textContent=shortDate(d.date)+' · '+money(value);n.append(title);});if(days.length<=7||i%5===0||i===days.length-1)elem('text',{x:45+i*group+group/2,y:212,'text-anchor':'middle',class:'ui-chart-label'},shortDate(d.date));});
+    days.forEach(function(d,i){var start=45+i*group+(group-(barWidth*3)-8)/2;['gross','net','expenses'].forEach(function(kind,index){var value=d[kind];if(value<=0)return;var height=value*scale,y=base-height;var n=elem('rect',{x:start+index*(barWidth+4),y:y,width:barWidth,height:height,rx:3,class:'ui-chart-bar '+kind});var title=document.createElementNS(svgNode.namespaceURI,'title');title.textContent=shortDate(d.date)+' · '+money(value);n.append(title);});if(days.length<=7||i%5===0||i===days.length-1)elem('text',{x:45+i*group+group/2,y:212,'text-anchor':'middle',class:'ui-chart-label'},shortDate(d.date));});
     $('uiChart').replaceChildren(svgNode);
   }
   function openFixedExpensesModal(){
@@ -367,7 +364,7 @@
       backdrop.addEventListener('click',function(e){if(e.target===backdrop)closeFixedExpensesModal();});
       document.addEventListener('keydown',function(e){if(e.key==='Escape'&&backdrop.classList.contains('visible'))closeFixedExpensesModal();});
     }
-    window.closeAllOverlays();
+    window.closeAllOverlays();document.dispatchEvent(new CustomEvent('fixedExpensesFormReset'));
     var card=backdrop.querySelector('.ui-fixed-expenses-modal-card');card.append(content);screen.hidden=true;
     backdrop.querySelector('h3').textContent=say('Despesas fixas','Fixed expenses');
     backdrop._returnFocus=document.activeElement;backdrop.classList.add('visible');
@@ -376,6 +373,7 @@
   function closeFixedExpensesModal(){
     var backdrop=$('uiFixedExpensesModalBackdrop'),screen=$('sheetScreenDespesasFixas');
     if(!backdrop||!backdrop.classList.contains('visible')||!screen)return;
+    document.dispatchEvent(new CustomEvent('fixedExpensesFormReset'));
     var content=backdrop.querySelector('.sheet-content');if(content)screen.append(content);
     backdrop.classList.remove('visible');
     if(backdrop._returnFocus&&typeof backdrop._returnFocus.focus==='function')backdrop._returnFocus.focus();
@@ -452,8 +450,11 @@
     settings.querySelectorAll('.sheet-actions').forEach(function(n){if(!n.children.length)n.remove();else if(Array.from(n.children).every(function(c){return c.hidden;}))n.hidden=true;});
     var newPlatform=$('sheetScreenMultiplataforma').querySelector('[data-i18n="mp.adicionar"]');newPlatform.removeAttribute('data-i18n');newPlatform.dataset.uiText='newPlatform';
     var fixedForm=$('sheetScreenDespesasFixas').querySelector('.despesa-form');
+    function resetFixedForm(){fixedForm.hidden=true;fixedAdd.setAttribute('aria-expanded','false');$('despesaDescInput').value='';$('despesaValorInput').value='';$('despesaTipoPercentBtn').click();}
     var fixedAdd=button('',function(){fixedForm.hidden=!fixedForm.hidden;fixedAdd.setAttribute('aria-expanded',String(!fixedForm.hidden));if(!fixedForm.hidden)$('despesaDescInput').focus();});
     fixedAdd.id='uiFixedAdd';fixedAdd.setAttribute('aria-expanded','false');fixedForm.before(fixedAdd);fixedForm.hidden=true;
+    document.addEventListener('fixedExpensesFormReset',resetFixedForm);
+    document.addEventListener('fixedExpenseSaved',resetFixedForm);
     var helper=$('sheetScreenDespesasFixas').querySelector('.mm-helper-text');helper.removeAttribute('data-i18n');
     var help=$('sheetScreenAjuda').querySelector('.sheet-content');
     help.innerHTML='<section class="ui-help-hero"><p class="ui-eyebrow">SMARTSOMA</p><h2 id="uiHelpTitle"></h2><a href="mailto:contacto@smartsoma.pt">contacto@smartsoma.pt</a><p>Lisboa, Portugal</p><button id="uiTutorialStart" type="button" class="ui-button">Tutorial →</button></section><section class="home-card ui-faq"><h2 id="uiFaqTitle"></h2><div id="uiFaqItems"></div></section>';

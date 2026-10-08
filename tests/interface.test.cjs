@@ -35,7 +35,7 @@ test('quick expense saves through the existing daily expense control and updates
   const saved=JSON.parse(a.cache['despesasDiarias:'+dateKey(new Date())]);
   assert.equal(saved.items[0].descricao,'Portagem');assert.equal(saved.items[0].valor,5.25);
   assert.equal(a.w.HomeBadges.get().despesas,5.25);assert.match(a.el('uiExpenseRows').textContent,/Portagem/);
-  assert.match(a.el('uiRecentRows').textContent,/Portagem/);assert.deepEqual(a.errors,[]);
+  assert.equal(a.w.document.getElementById('uiRecentRows'),null);assert.deepEqual(a.errors,[]);
 });
 
 test('mileage odometer persists the initial value and uses original final-minus-start calculation',t=>{

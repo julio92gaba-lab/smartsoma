@@ -207,7 +207,7 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
 .ui-v2 .ganhos-resumo-link-btn span { color:var(--brand-green); }
 .ui-panel-head { display:flex; justify-content:space-between; align-items:center; gap:14px; margin-bottom:16px; }
 .ui-panel-head h2,.ui-v2 .ui-dashboard-bottom h2,.ui-v2 #uiDayHistoryTitle { color:var(--ink); font-size:1.4rem; margin:5px 0; }
-.ui-dashboard-bottom { display:grid; grid-template-columns:minmax(0,1.5fr) minmax(0,1fr); grid-template-areas:'chart expenses' 'chart recent'; gap:20px; }
+.ui-dashboard-bottom { display:grid; grid-template-columns:minmax(0,1.5fr) minmax(0,1fr); grid-template-areas:'chart expenses'; gap:20px; }
 .ui-dashboard-bottom .home-card { min-width:0; }
 .ui-chart-panel { grid-area:chart; }
 .ui-overview-expenses { grid-area:expenses; }
@@ -288,6 +288,7 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
 .ui-fixed-expenses-modal-head .mm-title { text-align:left; }
 .ui-fixed-expenses-modal-head .ui-icon-button { flex:0 0 auto; width:32px; height:32px; font-size:1.2rem; }
 .ui-fixed-expenses-modal-card .sheet-content { display:flex; overflow:visible; padding:16px 0 4px; }
+#despesaConfirmBackdrop { z-index:210; }
 .ui-v2 #metaSemanalCard { display:block; }
 .ui-v2 #metaSemanalCard.ui-historical-goal #metaSemanalCurrentContent,
 .ui-v2 #metaSemanalWeekBox { display:none; }
@@ -318,7 +319,7 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
   .ui-panel-head { flex-wrap:wrap; }
   .ui-panel-head h2 { font-size:1.25rem; }
 }
-@media(max-width:1100px) { .ui-dashboard-bottom { grid-template-columns:1fr; grid-template-areas:'chart' 'expenses' 'recent'; gap:0; } }
+@media(max-width:1100px) { .ui-dashboard-bottom { grid-template-columns:1fr; grid-template-areas:'chart' 'expenses'; gap:0; } }
 @media (min-width:1100px) { .ui-v2 .semana-list-placeholder { grid-template-columns:repeat(2,1fr); } }
 @media (max-width:1100px) and (min-width:761px) { html.ui-v2,body.ui-v2 { --sidebar:200px; } .ui-nav-item { font-size:.75rem; padding:12px 8px; } .ui-v2 .dash-cluster { grid-template-columns:1fr; } }
 @media (max-width:760px) {
@@ -379,7 +380,7 @@ body.ui-v2 #resumoLiveContent .period-filter-row { background:transparent; }
 .ui-v2 #resumoLiveContent .period-label { min-width:190px; text-align:center; }
 .ui-v2 #resumoTechCard .dash-cluster,
 .ui-v2 #metaSemanalCurrentContent { display:none; }
-.ui-v2 #metaSlotList { margin:18px 0 24px; }
+.ui-v2 #metaSlotList { margin:0 0 24px; }
 .ui-v2 #metaSemanalCard { overflow:hidden; isolation:isolate; padding:25px 30px 18px; border-radius:15px; border:0; margin:0; box-shadow:0 12px 32px #0b0f0c12; }
 .ui-v2 #metaSemanalCard::before { content:''; position:absolute; z-index:-1; pointer-events:none; right:-90px; top:-190px; width:530px; height:530px; background:radial-gradient(circle,#d4f53c30,transparent 64%); }
 .ui-goal-topline { display:flex; justify-content:space-between; align-items:center; gap:12px; }
