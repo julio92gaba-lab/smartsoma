@@ -214,7 +214,7 @@
       HomeNav.slideToSection('semana','right');syncHeader();
     });
     $('uiOverviewFixed').addEventListener('click',openFixedExpensesModal);
-    var goal=create('div','ui-goal-progress','<div class="ui-goal-topline"><span class="ui-goal-tag" id="uiGoalTag"></span><span id="uiGoalPeriod"></span></div><div class="ui-goal-grid"><div class="ui-goal-copy"><h2 id="uiGoalTitle"></h2><p id="uiGoalCopy"></p><div class="ui-goal-actions"><button type="button" id="uiGoalGross"></button><button type="button" id="uiGoalNet"></button><button type="button" id="uiGoalEdit"></button></div></div><div class="ui-goal-number"><span id="uiGoalProgressLabel"></span><strong id="uiGoalPercent"></strong><small id="uiGoalAmounts"></small></div></div><div class="ui-progress-wrap"><div class="ui-progress-track" id="uiGoalTrack" role="progressbar" aria-valuemin="0" aria-valuemax="100"><div id="uiGoalFill"></div></div><div id="uiGoalDays" class="ui-goal-days"></div></div>');
+    var goal=create('div','ui-goal-progress','<div class="ui-goal-topline"><span class="ui-goal-tag" id="uiGoalTag"></span><span id="uiGoalPeriod"></span></div><div class="ui-goal-grid"><div class="ui-goal-copy"><h2 id="uiGoalTitle"></h2><p id="uiGoalCopy"></p><div class="ui-goal-actions"><button type="button" id="uiGoalGross"></button><button type="button" id="uiGoalNet"></button><button type="button" id="uiGoalEdit"></button></div></div><div class="ui-goal-number"><span id="uiGoalProgressLabel"></span><strong id="uiGoalPercent"></strong><small id="uiGoalAmounts"></small><small id="uiGoalType"></small></div></div><div class="ui-progress-wrap"><div class="ui-progress-track" id="uiGoalTrack" role="progressbar" aria-valuemin="0" aria-valuemax="100"><div id="uiGoalFill"></div></div><div id="uiGoalDays" class="ui-goal-days"></div></div>');
     $('metaSemanalCard').append(goal);
     $('uiGoalEdit').addEventListener('click',function(){
       var week=MetaSemanalRead.forDate(ResumoPeriod.getRefDate());
@@ -301,7 +301,7 @@
     $('uiGoalPeriod').textContent=shortDate(goalWeek.monday)+' — '+shortDate(sunday);
     $('uiGoalTitle').textContent=!cfg?say('Dá uma direção à tua semana.','Give your week direction.'):pct>=100?say('A tua meta foi atingida!','You reached your goal!'):say('A tua meta está mesmo ao alcance.','Your goal is within reach.');
     $('uiGoalCopy').replaceChildren();
-    if(cfg&&pct<100){var remaining=create('strong');remaining.textContent=money(Math.max(0,cfg.valor-goalWeek.achieved));$('uiGoalCopy').append(say('Mais ','Another '),remaining,goalWeek.current?say(' e fechas a semana em grande.',' to finish the week strong.'):say(' para atingir a meta desta semana.',' to reach this week’s goal.'));}
+    if(cfg&&pct<100){var remaining=create('strong');remaining.textContent=money(Math.max(0,cfg.valor-goalWeek.achieved));$('uiGoalCopy').append(say('Faltam ','Remaining '),remaining,say(' para atingir a meta semanal.',' to reach the weekly goal.'));}
     else $('uiGoalCopy').textContent=cfg?say('Objetivo cumprido. Cada percurso contou.','Goal achieved. Every journey counted.'):say('Define uma meta em bruto ou líquido e acompanha o teu progresso.','Set a gross or net goal and follow your progress.');
     $('uiGoalGross').textContent=say('Bruto','Gross');$('uiGoalNet').textContent=say('Líquido','Net');
     $('uiGoalGross').setAttribute('aria-pressed',String(!cfg||cfg.tipo==='bruto'));
@@ -311,6 +311,7 @@
     $('uiGoalProgressLabel').textContent=say('Progresso','Progress');
     $('uiGoalPercent').textContent=cfg?pct+'%':'—';
     $('uiGoalAmounts').textContent=cfg?money(goalWeek.achieved)+say(' de ',' of ')+money(cfg.valor):say('Meta por definir','No goal set');
+    $('uiGoalType').textContent=cfg?(cfg.tipo==='liquido'?say('Meta em líquido','Net goal'):say('Meta em bruto','Gross goal')):say('Meta por definir','No goal set');
     $('uiGoalTrack').setAttribute('aria-label',say('Progresso da meta semanal','Weekly goal progress'));
     $('uiGoalTrack').setAttribute('aria-valuenow',String(Math.min(100,Math.max(0,pct))));
     $('uiGoalTrack').setAttribute('aria-valuetext',cfg?pct+'%':say('Meta por definir','No goal set'));
