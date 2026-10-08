@@ -75,6 +75,17 @@
     window.closeAllOverlays();
     var settingsPage=$('uiSettingsPage');
     if (key === 'ajustes') {
+      if(settingsPage&&!settingsPage.hidden){route=key;syncHeader();return;}
+      var outgoing=document.querySelector('.home-list-page:not([hidden])');
+      if(outgoing&&!pageTransitioning){
+        pageTransitioning=true;outgoing.classList.add('is-fading');
+        setTimeout(function(){
+          HomeNav.hideAllInstant();if($('uiExpensesPage'))$('uiExpensesPage').hidden=true;if($('metaSlotList'))$('metaSlotList').hidden=true;
+          settingsPage.hidden=false;settingsPage.classList.add('is-fading');void settingsPage.offsetWidth;settingsPage.classList.remove('is-fading');
+          route=key;syncHeader();window.scrollTo({top:0,behavior:'instant'});pageTransitioning=false;
+        },140);
+        return;
+      }
       window.closeProfileSheetPublic();
       HomeNav.hideAllInstant();
       if($('uiExpensesPage'))$('uiExpensesPage').hidden=true;
@@ -86,6 +97,11 @@
       return;
     }
     window.closeProfileSheetPublic();
+    if(settingsPage&&!settingsPage.hidden&&!pageTransitioning){
+      pageTransitioning=true;settingsPage.classList.add('is-fading');
+      setTimeout(function(){settingsPage.hidden=true;settingsPage.classList.remove('is-fading');pageTransitioning=false;go(key);},140);
+      return;
+    }
     if(settingsPage)settingsPage.hidden=true;
     var expenses = $('uiExpensesPage');
     if (key !== 'despesas' && expenses && !expenses.hidden && !pageTransitioning) {
