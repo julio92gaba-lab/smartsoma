@@ -399,7 +399,7 @@ body.ui-v2 #resumoLiveContent .period-filter-row { background:transparent; }
 .ui-v2 #metaSemanalCard::before { content:''; position:absolute; z-index:-1; pointer-events:none; right:-90px; top:-190px; width:530px; height:530px; background:radial-gradient(circle,#d4f53c30,transparent 64%); }
 .ui-goal-progress { position:relative; isolation:isolate; }
 .ui-goal-progress>:not(.ui-goal-watermark) { position:relative; z-index:1; }
-.ui-goal-watermark { position:absolute; z-index:0; width:max(45%,190px); right:-13%; bottom:-62%; color:#d4f53c; opacity:.1; pointer-events:none; transform:rotate(25deg); }
+.ui-goal-watermark { position:absolute; z-index:0; width:max(45%,190px); right:-13%; bottom:-80%; color:#d4f53c; opacity:.1; pointer-events:none; transform:rotate(20deg); }
 .ui-goal-watermark svg { display:block; width:100%; height:auto; }
 .ui-goal-watermark text { fill:currentColor; font-family:'Bricolage Grotesque',sans-serif; font-size:220px; font-weight:900; }
 .ui-goal-topline { display:flex; justify-content:space-between; align-items:center; gap:12px; }
