@@ -346,7 +346,7 @@
     $('uiMetricDistanceNote').textContent=totals.km>0?money(totals.net/totals.km)+say(' líquidos / km em média',' net / km on average'):say('Sem quilometragem registada','No mileage recorded');
   }
   function renderChart(days){
-    var values=days.flatMap(function(d){return[d.gross,d.net];}),max=Math.max(10,...values.map(function(v){return Math.abs(v);});
+    var values=days.flatMap(function(d){return[d.gross,d.net];}),max=Math.max(10,...values.map(function(v){return Math.abs(v);}));
     var base=184,scale=150/max,group=620/Math.max(1,days.length),barWidth=Math.max(5,Math.min(18,(group-8)/2));
     var svgNode=document.createElementNS('http://www.w3.org/2000/svg','svg');svgNode.setAttribute('viewBox','0 0 710 222');svgNode.setAttribute('role','img');svgNode.setAttribute('aria-label',say('Ganhos brutos e líquidos por dia','Gross and net earnings by day'));
     function elem(tag,attrs,content){var n=document.createElementNS(svgNode.namespaceURI,tag);Object.entries(attrs).forEach(function(a){n.setAttribute(a[0],String(a[1]));});if(content)n.textContent=content;svgNode.append(n);return n;}
