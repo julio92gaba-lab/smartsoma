@@ -408,7 +408,8 @@ body.ui-v2 #resumoLiveContent .period-filter-row { background:transparent; }
 .ui-goal-number>span { font-size:.75rem; color:#c8d7cf; font-weight:700; }
 .ui-goal-number>strong { font:800 clamp(47px,5vw,69px)/.95 'Bricolage Grotesque',sans-serif; letter-spacing:-3px; color:#d4f53c; }
 .ui-goal-number small { color:#c8d7cf; margin-top:8px; font-size:.75rem; }
-#uiGoalType { display:none; }
+#uiGoalPeriod,#uiGoalProgressLabel,#uiGoalAmounts,.ui-goal-actions #uiGoalGross,.ui-goal-actions #uiGoalNet,.ui-goal-days { display:none; }
+#uiGoalType { display:block; color:#d4f53c; font-weight:800; letter-spacing:.06em; text-transform:uppercase; }
 .ui-goal-actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:20px; }
 .ui-goal-actions button { border:1px solid #597363; background:transparent; color:#c8d7cf; border-radius:5px; padding:8px 10px; font-size:.75rem; font-weight:800; min-height:36px; }
 .ui-goal-actions button[aria-pressed=true] { border-color:#d4f53c; background:#d4f53c; color:#0b0f0c; }
@@ -423,11 +424,7 @@ body.ui-v2 #resumoLiveContent .period-filter-row { background:transparent; }
 .ui-goal-days b { font-size:.625rem; color:#c8d7cf; }
 .ui-goal-days .is-today,.ui-goal-days .is-today b { color:#d4f53c; }
 .ui-goal-days .is-future { opacity:.45; }
-@media (min-width:761px) {
-  #uiGoalPeriod,#uiGoalProgressLabel,#uiGoalAmounts,.ui-goal-actions #uiGoalGross,.ui-goal-actions #uiGoalNet,.ui-goal-days { display:none; }
-  #uiGoalType { display:block; color:#d4f53c; font-weight:800; letter-spacing:.06em; text-transform:uppercase; }
-  .ui-goal-actions { margin-top:14px; }
-}
+.ui-goal-actions { margin-top:14px; }
 .ui-metrics { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; margin:17px 0 0; }
 .ui-metric { background:var(--card-bg); border:1px solid var(--card-line); border-radius:12px; padding:17px; box-shadow:0 4px 13px #0b0f0c06; min-width:0; }
 .ui-metric-icon { width:29px; height:29px; border-radius:7px; background:#d8f6e6; color:#197846; display:grid; place-items:center; }
