@@ -217,11 +217,13 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
 .ui-chart-legend span::before { content:''; display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:6px; }
 .ui-gross-legend::before { background:#249759; }
 .ui-net-legend::before { background:#9e72d1; }
+.ui-expenses-legend::before { background:var(--danger); }
 #uiChart svg { width:100%; height:auto; overflow:visible; }
 .ui-chart-grid { stroke:var(--card-line); stroke-dasharray:4 4; }
 .ui-chart-label { fill:var(--muted); font:11px 'DM Sans',sans-serif; }
 .ui-chart-bar.gross { fill:#249759; }
 .ui-chart-bar.net { fill:#9e72d1; }
+.ui-chart-bar.expenses { fill:var(--danger); }
 .ui-chart-bar.negative { fill:var(--danger); }
 .ui-chart-point.gross { fill:#249759; }
 .ui-chart-point.net { fill:#9e72d1; }
@@ -237,7 +239,9 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
 .ui-daily-total .ui-button { margin-left:auto; }
 .ui-expense-total { font:700 2.1rem 'Bricolage Grotesque',sans-serif; color:var(--danger); padding:12px 0 25px; }
 #uiExpenseFixed,#uiRecentAdd { margin-top:18px; }
-.ui-expense-section-label { color:var(--muted); font-size:.64rem; font-weight:800; letter-spacing:.8px; margin:18px 0 8px; }
+.ui-overview-expenses .ui-expense-section-label { position:relative; display:flex; align-items:center; gap:7px; color:var(--ink); font-size:.66rem; font-weight:800; letter-spacing:.9px; margin:20px 0 8px; }
+.ui-overview-expenses .ui-expense-section-label::before { content:''; width:3px; height:14px; border-radius:999px; background:var(--danger); }
+.ui-overview-expenses #uiOverviewFixedLabel::before { background:var(--brand-green); }
 .ui-overview-expense-row { display:flex; justify-content:space-between; align-items:baseline; gap:12px; padding:10px 0; border-bottom:1px solid var(--card-line); font-size:.83rem; }
 .ui-overview-expense-row span { font-weight:700; }
 .ui-overview-expense-row small { color:var(--muted); font-size:.7rem; text-align:right; }
@@ -279,6 +283,11 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
 .ui-v2 .dp-save-btn-danger { background:transparent; color:var(--danger); border-color:var(--danger); }
 .ui-v2 .mm-backdrop:not(.visible),.ui-v2 .modal-backdrop:not(.visible) { visibility:hidden; }
 .ui-v2 .mm-backdrop.visible,.ui-v2 .modal-backdrop.visible { visibility:visible; }
+.ui-fixed-expenses-modal-card { display:flex; flex-direction:column; }
+.ui-fixed-expenses-modal-head { display:flex; align-items:center; justify-content:space-between; gap:12px; padding-bottom:12px; border-bottom:1px solid var(--card-line); }
+.ui-fixed-expenses-modal-head .mm-title { text-align:left; }
+.ui-fixed-expenses-modal-head .ui-icon-button { flex:0 0 auto; width:32px; height:32px; font-size:1.2rem; }
+.ui-fixed-expenses-modal-card .sheet-content { display:flex; overflow:visible; padding:16px 0 4px; }
 .ui-v2 #metaSemanalCard { display:block; }
 .ui-v2 #metaSemanalCard.ui-historical-goal #metaSemanalCurrentContent,
 .ui-v2 #metaSemanalWeekBox { display:none; }
@@ -370,7 +379,7 @@ body.ui-v2 #resumoLiveContent .period-filter-row { background:transparent; }
 .ui-v2 #resumoLiveContent .period-label { min-width:190px; text-align:center; }
 .ui-v2 #resumoTechCard .dash-cluster,
 .ui-v2 #metaSemanalCurrentContent { display:none; }
-.ui-v2 #metaSlotList { margin:18px 0 0; }
+.ui-v2 #metaSlotList { margin:18px 0 24px; }
 .ui-v2 #metaSemanalCard { overflow:hidden; isolation:isolate; padding:25px 30px 18px; border-radius:15px; border:0; margin:0; box-shadow:0 12px 32px #0b0f0c12; }
 .ui-v2 #metaSemanalCard::before { content:''; position:absolute; z-index:-1; pointer-events:none; right:-90px; top:-190px; width:530px; height:530px; background:radial-gradient(circle,#d4f53c30,transparent 64%); }
 .ui-goal-topline { display:flex; justify-content:space-between; align-items:center; gap:12px; }
