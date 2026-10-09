@@ -281,6 +281,8 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
 .ui-platform-name { min-height:0; text-align:left; font-size:.82rem; font-weight:700; margin:0; color:var(--muted); }
 .ui-entry-amount { display:flex; align-items:center; background:var(--input-bg); border:1px solid var(--card-line); border-radius:8px; padding-left:14px; }
 .ui-entry-amount input { border:0; font-size:1.4rem; }
+.ui-entry-dialog #uiEntryKmContent .mm-value-input-wrap { padding:0; background:transparent; border:0; border-radius:0; }
+.ui-entry-dialog #uiEntryKmContent .mm-value-input { min-height:0; font-size:1rem; }
 #uiEntrySave { width:100%; margin-top:0; }
 .ui-error { color:var(--danger); font-size:.8rem; }
 .ui-v2 .ui-help-hero { padding:30px; border-radius:16px; background:#0e3b2a; color:#f4f9ec; margin-bottom:24px; }
