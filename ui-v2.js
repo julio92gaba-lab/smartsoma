@@ -276,7 +276,7 @@
   }
   var dayChartView='platforms';
   function refreshData(){
-    var day=SmartSomaReadModel.day(GanhosDate.get());
+    var day=SmartSomaReadModel.day(ResumoPeriod.getRefDate());
     var period=document.querySelector('.period-chip.selected').dataset.period;
     $('uiChartTitle').textContent=say('O teu ritmo','Your rhythm');
     $('uiChartEyebrow').textContent=period==='dia'?say('DIA EM MOVIMENTO','DAY IN MOTION'):period==='mes'?say('MÊS EM MOVIMENTO','MONTH IN MOTION'):say('SEMANA EM MOVIMENTO','WEEK IN MOTION');
@@ -376,7 +376,7 @@
     if(dayChartView==='balance'){
       var balance=create('div','ui-day-balance');[[say('Ganhos brutos','Gross earnings'),day.gross,'gross'],[say('− Despesas','− Expenses'),day.expenses,'expenses'],[say('= Lucro líquido','= Net profit'),day.net,'net']].forEach(function(item){var row=create('div','ui-day-balance-row '+item[2]),label=create('span'),value=create('strong');label.textContent=item[0];value.textContent=money(item[1]);row.append(label,value);balance.append(row);});target.replaceChildren(tabs,balance);return;
     }
-    var values=platforms().map(function(p){return{name:p.nome,value:p.id==='uber'?day.uber:p.id==='bolt'?day.bolt:day.platforms[p.id]||0};}).filter(function(item){return item.value>0;});if(day.expenses>0)values.push({name:say('Despesas','Expenses'),value:day.expenses,expense:true});
+    var values=platforms().map(function(p){return{name:p.nome,value:p.id==='uber'?day.uber:p.id==='bolt'?day.bolt:(day.platforms||{})[p.id]||0};}).filter(function(item){return item.value>0;});if(day.expenses>0)values.push({name:say('Despesas','Expenses'),value:day.expenses,expense:true});
     var total=values.reduce(function(sum,item){return sum+item.value;},0),colors=['#d4f53c','#176c47','#6f9f75','#a8dd42','#db756a'],offset=0,stops=values.map(function(item,index){var end=total?offset+item.value/total*100:100,stop=colors[index%colors.length]+' '+offset+'% '+end+'%';offset=end;return stop;});
     var donut=create('div','ui-day-donut');donut.style.background=total?'conic-gradient('+stops.join(',')+')':'var(--card-line)';var center=create('div','ui-day-donut-center');center.innerHTML='<strong>'+money(day.gross)+'</strong><span>'+say('Total do dia','Day total')+'</span>';donut.append(center);
     var legend=create('div','ui-day-donut-legend');if(values.length)values.forEach(function(item,index){var row=create('div','ui-day-donut-item'),dot=create('i'),label=create('span'),percent=create('strong');dot.style.background=colors[index%colors.length];label.textContent=item.name;percent.textContent=(item.value/total*100).toLocaleString(I18N.t('lang.code'),{maximumFractionDigits:0})+'%';row.append(dot,label,percent);legend.append(row);});else legend.append(create('p','ui-empty',say('Ainda não há registos neste dia.','There are no entries for this day yet.')));

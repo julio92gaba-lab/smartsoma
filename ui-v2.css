@@ -257,9 +257,9 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
 .ui-day-donut-center { position:relative; z-index:1; display:grid; gap:3px; max-width:72%; text-align:center; }
 .ui-day-donut-center strong { font:700 .95rem 'Bricolage Grotesque',sans-serif; color:var(--ink); }
 .ui-day-donut-center span { color:var(--muted); font-size:.62rem; font-weight:700; }
-.ui-day-donut-legend { display:grid; gap:8px; }
-.ui-day-donut-item { display:grid; grid-template-columns:10px minmax(0,1fr) auto; align-items:center; gap:8px; color:var(--muted); font-size:.74rem; font-weight:700; }
-.ui-day-donut-item i { width:9px; height:9px; border-radius:50%; }.ui-day-donut-item strong { color:var(--ink); }
+.ui-day-donut-legend { display:grid; gap:5px; }
+.ui-day-donut-item { display:grid; grid-template-columns:8px minmax(0,1fr) auto; align-items:center; gap:6px; color:var(--muted); font-size:.66rem; font-weight:700; }
+.ui-day-donut-item i { width:7px; height:7px; border-radius:50%; }.ui-day-donut-item strong { color:var(--ink); }
 .ui-day-balance { display:grid; gap:0; border-top:1px solid var(--card-line); }
 .ui-day-balance-row { display:flex; justify-content:space-between; gap:16px; padding:13px 2px; border-bottom:1px solid var(--card-line); color:var(--muted); font-size:.82rem; font-weight:700; }
 .ui-day-balance-row strong { color:var(--ink); }.ui-day-balance-row.expenses strong { color:var(--danger); }.ui-day-balance-row.net { font-size:.92rem; }.ui-day-balance-row.net strong { color:var(--brand-green); }
