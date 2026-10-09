@@ -249,6 +249,22 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
 .ui-rhythm-row.is-today .ui-rhythm-day-label { color:var(--brand-green); }
 .ui-rhythm-row.is-today .ui-rhythm-zero { background:var(--brand-green); }
 .ui-rhythm-highlight { margin:19px 0 0; padding:11px 12px; border:1px solid color-mix(in srgb,var(--brand-green) 28%,var(--card-line)); border-radius:9px; background:color-mix(in srgb,var(--brand-green) 8%,var(--input-bg)); color:var(--ink); font-size:.78rem; font-weight:800; }
+.ui-chart-tabs { display:flex; gap:7px; margin:-2px 0 16px; }
+.ui-chart-tab { flex:1; min-height:32px; padding:7px 10px; border:1px solid var(--card-line); border-radius:7px; background:var(--input-bg); color:var(--muted); font-size:.72rem; font-weight:800; }
+.ui-chart-tab.is-active { border-color:#18351f; background:var(--lime); color:#17321c; }
+.ui-day-donut { position:relative; display:grid; place-items:center; width:min(176px,58vw); aspect-ratio:1; margin:2px auto 18px; border-radius:50%; }
+.ui-day-donut::before { content:''; position:absolute; inset:23%; border-radius:50%; background:var(--card-bg); }
+.ui-day-donut-center { position:relative; z-index:1; display:grid; gap:3px; max-width:72%; text-align:center; }
+.ui-day-donut-center strong { font:700 .95rem 'Bricolage Grotesque',sans-serif; color:var(--ink); }
+.ui-day-donut-center span { color:var(--muted); font-size:.62rem; font-weight:700; }
+.ui-day-donut-legend { display:grid; gap:8px; }
+.ui-day-donut-item { display:grid; grid-template-columns:10px minmax(0,1fr) auto; align-items:center; gap:8px; color:var(--muted); font-size:.74rem; font-weight:700; }
+.ui-day-donut-item i { width:9px; height:9px; border-radius:50%; }.ui-day-donut-item strong { color:var(--ink); }
+.ui-day-balance { display:grid; gap:0; border-top:1px solid var(--card-line); }
+.ui-day-balance-row { display:flex; justify-content:space-between; gap:16px; padding:13px 2px; border-bottom:1px solid var(--card-line); color:var(--muted); font-size:.82rem; font-weight:700; }
+.ui-day-balance-row strong { color:var(--ink); }.ui-day-balance-row.expenses strong { color:var(--danger); }.ui-day-balance-row.net { font-size:.92rem; }.ui-day-balance-row.net strong { color:var(--brand-green); }
+.ui-month-chart { display:flex; align-items:flex-end; gap:11px; height:170px; padding:0 4px; border-bottom:1px solid var(--card-line); }
+.ui-month-bar { flex:1; display:grid; grid-template-rows:1fr auto; align-items:end; gap:8px; height:100%; min-width:0; text-align:center; }.ui-month-bar i { display:block; width:100%; min-height:4px; border-radius:7px 7px 0 0; background:linear-gradient(#d4f53c,#176c47); }.ui-month-bar span { color:var(--muted); font-size:.62rem; font-weight:800; white-space:nowrap; }
 .ui-record-row { display:grid; grid-template-columns:42px minmax(0,1fr) auto; align-items:center; gap:10px; padding:14px 0; border-top:1px solid var(--card-line); font-size:.8rem; }
 .ui-record-row>span { overflow-wrap:anywhere; }
 .ui-record-row small { color:var(--muted); font-size:.65rem; }

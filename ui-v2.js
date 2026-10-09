@@ -274,14 +274,17 @@
       d.entries.forEach(function(e){result.push({date:d.date,label:e.descricao,value:e.valor,expense:true});});
     });return result;
   }
+  var dayChartView='platforms';
   function refreshData(){
     var day=SmartSomaReadModel.day(GanhosDate.get());
+    var period=document.querySelector('.period-chip.selected').dataset.period;
     $('uiChartTitle').textContent=say('O teu ritmo','Your rhythm');
-    $('uiChartEyebrow').textContent=say('SEMANA EM MOVIMENTO','WEEK IN MOTION');
+    $('uiChartEyebrow').textContent=period==='dia'?say('DIA EM MOVIMENTO','DAY IN MOTION'):period==='mes'?say('MÊS EM MOVIMENTO','MONTH IN MOTION'):say('SEMANA EM MOVIMENTO','WEEK IN MOTION');
     $('uiChartDetails').textContent=say('Ver semana completa →','View full week →');
+    $('uiChartDetails').hidden=period!=='semana';
     $('uiOverviewExpensesTitle').textContent=say('Despesas','Expenses');$('uiOverviewFixed').textContent=say('Configurar','Configure');$('uiOverviewFixedLabel').textContent=say('DESPESAS FIXAS','FIXED EXPENSES');$('uiOverviewDailyLabel').textContent=say('DESPESAS DO PERÍODO','PERIOD EXPENSES');
     var days=daysInPeriod();renderOverviewExpenses(days);
-    renderChart(daysInSelectedWeek());
+    if(period==='dia')renderDayChart(day);else if(period==='mes')renderMonthChart(days);else renderChart(daysInSelectedWeek());
     // Same calculations as the weekly table, including current fixed expenses.
     // Only presentation changes; no cached amounts or persisted data are rewritten.
     var totals=days.reduce(function(s,d){s.gross+=d.gross;s.net+=d.net;s.expenses+=d.expenses;s.km+=d.km;return s;},{gross:0,net:0,expenses:0,km:0});
@@ -366,6 +369,23 @@
     if(best.date){var bestIndex=(best.date.getDay()+6)%7;bestDay=weekdayFull[bestIndex]||weekdayLabels[bestIndex]||shortDate(best.date);}
     var highlight=create('p','ui-rhythm-highlight');highlight.textContent=best.gross>0?'⭐ '+say('Melhor dia: ','Best day: ')+bestDay+', '+money(best.gross)+say(' brutos',' gross'):say('Ainda não há ganhos registados nesta semana.','No earnings recorded this week yet.');
     target.replaceChildren(legend,rhythm,highlight);
+  }
+  function renderDayChart(day){
+    var target=$('uiChart'),tabs=create('div','ui-chart-tabs'),platformTab=button(say('Por plataforma','By platform'),function(){dayChartView='platforms';renderDayChart(day);},'ui-chart-tab'),balanceTab=button(say('Balanço do dia','Daily balance'),function(){dayChartView='balance';renderDayChart(day);},'ui-chart-tab');
+    platformTab.classList.toggle('is-active',dayChartView==='platforms');balanceTab.classList.toggle('is-active',dayChartView==='balance');platformTab.setAttribute('aria-pressed',String(dayChartView==='platforms'));balanceTab.setAttribute('aria-pressed',String(dayChartView==='balance'));tabs.append(platformTab,balanceTab);
+    if(dayChartView==='balance'){
+      var balance=create('div','ui-day-balance');[[say('Ganhos brutos','Gross earnings'),day.gross,'gross'],[say('− Despesas','− Expenses'),day.expenses,'expenses'],[say('= Lucro líquido','= Net profit'),day.net,'net']].forEach(function(item){var row=create('div','ui-day-balance-row '+item[2]),label=create('span'),value=create('strong');label.textContent=item[0];value.textContent=money(item[1]);row.append(label,value);balance.append(row);});target.replaceChildren(tabs,balance);return;
+    }
+    var values=platforms().map(function(p){return{name:p.nome,value:p.id==='uber'?day.uber:p.id==='bolt'?day.bolt:day.platforms[p.id]||0};}).filter(function(item){return item.value>0;});if(day.expenses>0)values.push({name:say('Despesas','Expenses'),value:day.expenses,expense:true});
+    var total=values.reduce(function(sum,item){return sum+item.value;},0),colors=['#d4f53c','#176c47','#6f9f75','#a8dd42','#db756a'],offset=0,stops=values.map(function(item,index){var end=total?offset+item.value/total*100:100,stop=colors[index%colors.length]+' '+offset+'% '+end+'%';offset=end;return stop;});
+    var donut=create('div','ui-day-donut');donut.style.background=total?'conic-gradient('+stops.join(',')+')':'var(--card-line)';var center=create('div','ui-day-donut-center');center.innerHTML='<strong>'+money(day.gross)+'</strong><span>'+say('Total do dia','Day total')+'</span>';donut.append(center);
+    var legend=create('div','ui-day-donut-legend');if(values.length)values.forEach(function(item,index){var row=create('div','ui-day-donut-item'),dot=create('i'),label=create('span'),percent=create('strong');dot.style.background=colors[index%colors.length];label.textContent=item.name;percent.textContent=(item.value/total*100).toLocaleString(I18N.t('lang.code'),{maximumFractionDigits:0})+'%';row.append(dot,label,percent);legend.append(row);});else legend.append(create('p','ui-empty',say('Ainda não há registos neste dia.','There are no entries for this day yet.')));
+    target.replaceChildren(tabs,donut,legend);
+  }
+  function renderMonthChart(days){
+    var target=$('uiChart'),weeks=[];days.forEach(function(day){var index=Math.floor((day.date.getDate()-1)/7);if(!weeks[index])weeks[index]={gross:0};weeks[index].gross+=day.gross;});if(!weeks.length)weeks=[{gross:0}];
+    var max=Math.max.apply(null,weeks.map(function(week){return week.gross;}).concat([0])),chart=create('div','ui-month-chart');weeks.forEach(function(week,index){var bar=create('div','ui-month-bar'),fill=create('i'),label=create('span');fill.style.height=(max?Math.max(4,week.gross/max*100):4)+'%';fill.title=money(week.gross);label.textContent=say('Semana ','Week ')+(index+1);bar.append(fill,label);chart.append(bar);});
+    var best=weeks.reduce(function(result,week,index){return week.gross>result.gross?{gross:week.gross,index:index}:result;},{gross:0,index:0}),highlight=create('p','ui-rhythm-highlight');highlight.textContent=best.gross>0?'⭐ '+say('Melhor semana: Semana ','Best week: Week ')+(best.index+1)+say(' foi a tua mais lucrativa: ',' was your most profitable: ')+money(best.gross):say('Ainda não há ganhos registados neste mês.','No earnings recorded this month yet.');target.replaceChildren(chart,highlight);
   }
   function openFixedExpensesModal(){
     var screen=$('sheetScreenDespesasFixas'),content=screen&&screen.querySelector('.sheet-content');
