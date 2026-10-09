@@ -441,15 +441,31 @@
     });
     tableRows($('uiOverviewExpenseRows'),dailyEntries);
   }
-  var entryMode='income',chosen=null,entryReturnFocus=null;
+  var entryMode='income',chosen=null,entryReturnFocus=null,restoreKmComponent=function(){},mountKmComponent=function(){};
   function setupEntry(){
-    var dialog=create('dialog','ui-entry-dialog','<form id="uiEntryForm"><div class="ui-panel-head"><h2 id="uiEntryTitle"></h2><button type="button" id="uiEntryClose" class="ui-icon-button" aria-label="Fechar">×</button></div><p id="uiEntryDate" class="ui-eyebrow"></p><div class="ui-entry-tabs"><button type="button" id="uiEntryIncome"></button><button type="button" id="uiEntryExpense"></button></div><div class="ui-platform-selector" id="uiPlatformSelector"><div id="uiPlatformChoices" class="ui-platform-choices"></div><p id="uiPlatformName" class="ui-platform-name"></p></div><label id="uiEntryDescriptionLabel"><span id="uiDescriptionLabel"></span><input id="uiEntryDescription" maxlength="60"></label><label><span id="uiValueLabel"></span><div class="ui-entry-amount"><span>€</span><input id="uiEntryValue" inputmode="decimal" autocomplete="off" required aria-label="Valor" placeholder="0,00"></div></label><p id="uiEntryHint" class="ui-muted" aria-live="polite"></p><p id="uiEntryError" class="ui-error" role="alert"></p><button type="submit" id="uiEntrySave" class="ui-button"></button></form>');
+    var dialog=create('dialog','ui-entry-dialog','<form id="uiEntryForm"><div class="ui-panel-head"><h2 id="uiEntryTitle"></h2><button type="button" id="uiEntryClose" class="ui-icon-button" aria-label="Fechar">×</button></div><p id="uiEntryDate" class="ui-eyebrow"></p><div class="ui-entry-tabs"><button type="button" id="uiEntryIncome"></button><button type="button" id="uiEntryExpense"></button><button type="button" id="uiEntryKm">KM</button></div><div id="uiEntryKmContent" hidden></div><div id="uiEntryStandardFields"><div class="ui-platform-selector" id="uiPlatformSelector"><div id="uiPlatformChoices" class="ui-platform-choices"></div><p id="uiPlatformName" class="ui-platform-name"></p></div><label id="uiEntryDescriptionLabel"><span id="uiDescriptionLabel"></span><input id="uiEntryDescription" maxlength="60"></label><label><span id="uiValueLabel"></span><div class="ui-entry-amount"><span>€</span><input id="uiEntryValue" inputmode="decimal" autocomplete="off" required aria-label="Valor" placeholder="0,00"></div></label><p id="uiEntryHint" class="ui-muted" aria-live="polite"></p><p id="uiEntryError" class="ui-error" role="alert"></p><button type="submit" id="uiEntrySave" class="ui-button"></button></div></form>');
     var backdrop=create('div','ui-entry-backdrop');dialog.id='uiEntryDialog';dialog.setAttribute('aria-labelledby','uiEntryTitle');document.body.append(backdrop,dialog);
+    var distanceCard=$('distanciaModalCard'),kmContent=$('uiEntryKmContent');
+    var kmNodes=distanceCard?['.distancia-mode-row','#distanciaModoHelperText','#distanciaTotalForm','#distanciaInicioFimForm','#distanciaSalvarBtn'].map(function(selector){return distanceCard.querySelector(selector);}):[];
+    restoreKmComponent=function(){
+      if(!distanceCard)return;
+      kmNodes.forEach(function(node){if(node)distanceCard.append(node);});
+      kmContent.hidden=true;
+      var save=$('distanciaSalvarBtn');if(save)save.textContent=I18N.t('app.save');
+    };
+    mountKmComponent=function(){
+      kmNodes.forEach(function(node){if(node)kmContent.append(node);});
+      kmContent.hidden=false;
+      if(window.DistanciaModo)window.DistanciaModo.restore();
+      $('distanciaSalvarBtn').textContent=say('Guardar','Save');
+    };
     $('uiEntryClose').addEventListener('click',function(){dialog.close();});
     backdrop.addEventListener('click',function(){dialog.close();});
-    dialog.addEventListener('close',function(){backdrop.classList.remove('visible');if(entryReturnFocus)entryReturnFocus.focus();});
+    dialog.addEventListener('close',function(){restoreKmComponent();backdrop.classList.remove('visible');if(entryReturnFocus)entryReturnFocus.focus();});
     $('uiEntryIncome').addEventListener('click',function(){entryMode='income';chosen=null;renderEntry();});
     $('uiEntryExpense').addEventListener('click',function(){entryMode='expense';chosen=null;renderEntry();});
+    $('uiEntryKm').addEventListener('click',function(){entryMode='km';chosen=null;renderEntry();});
+    $('distanciaSalvarBtn').addEventListener('click',function(){if(entryMode==='km'){dialog.close();refreshData();}});
     $('uiEntryForm').addEventListener('submit',function(e){
       e.preventDefault();
       var value=Number($('uiEntryValue').value.trim().replace(',','.'));
@@ -476,9 +492,12 @@
     if(typeof entryDialog.show==='function')entryDialog.show();else entryDialog.showModal();
   }
   function renderEntry(){
-    var income=entryMode==='income';$('uiEntryTitle').textContent=t('record');$('uiEntryDate').textContent=GanhosDate.formatLabel(GanhosDate.get());
+    var income=entryMode==='income',km=entryMode==='km';$('uiEntryTitle').textContent=t('record');$('uiEntryDate').textContent=GanhosDate.formatLabel(GanhosDate.get());
     $('uiEntryIncome').textContent=say('Ganhos','Earnings');$('uiEntryExpense').textContent=t('despesas');
-    $('uiEntryIncome').setAttribute('aria-pressed',String(income));$('uiEntryExpense').setAttribute('aria-pressed',String(!income));
+    $('uiEntryIncome').setAttribute('aria-pressed',String(income));$('uiEntryExpense').setAttribute('aria-pressed',String(entryMode==='expense'));$('uiEntryKm').setAttribute('aria-pressed',String(km));
+    $('uiEntryStandardFields').hidden=km;
+    if(km){mountKmComponent();return;}
+    restoreKmComponent();
     $('uiEntryDescriptionLabel').hidden=income;$('uiEntryDescription').required=!income;
     $('uiDescriptionLabel').textContent=say('Descrição','Description');$('uiValueLabel').textContent=say('Valor','Amount');
     $('uiEntrySave').textContent=say('Guardar','Save');$('uiEntryError').textContent='';
