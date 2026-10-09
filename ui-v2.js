@@ -225,6 +225,7 @@
     $('sheetScreenDefault').append(create('div','sheet-content ui-settings-placeholder'));
     document.querySelector('.home-list-inner').append(settingsPage);
     summary.prepend($('metaSlotList'));
+    $('metaSlotList').after($('resumoPeriodControls'));
     var expenses=create('section','home-list-page'); expenses.id='uiExpensesPage'; expenses.hidden=true; expenses.append(heading('despesas'));
     var expenseCard=create('div','home-card','<div class="ui-panel-head"><h2 id="uiExpenseTitle"></h2><button class="ui-button" id="uiExpenseAdd" type="button"></button></div><div class="ui-expense-total" id="uiExpenseTotal"></div><div id="uiExpenseRows"></div>');
     expenses.append(expenseCard); document.querySelector('.home-list-inner').append(expenses);
@@ -234,7 +235,7 @@
     var daily=button('',function(){PlataformaModals.despesas.open();},'ui-button ui-secondary');
     daily.id='uiExpenseManage';expenseCard.append(daily);
     var dashboard=create('div','ui-dashboard-bottom','<section class="home-card ui-chart-panel"><div class="ui-panel-head"><div><p class="ui-eyebrow" id="uiChartEyebrow"></p><h2 id="uiChartTitle"></h2></div><button type="button" id="uiChartDetails" class="ui-text-button"></button></div><div id="uiChart"></div></section><section class="home-card ui-overview-expenses"><div class="ui-panel-head"><h2 id="uiOverviewExpensesTitle"></h2><button type="button" id="uiOverviewFixed" class="ui-text-button"></button></div><div id="uiOverviewFixedGroup" hidden><p class="ui-expense-section-label" id="uiOverviewFixedLabel"></p><div id="uiOverviewFixedRows"></div></div><p class="ui-expense-section-label" id="uiOverviewDailyLabel"></p><div id="uiOverviewExpenseRows"></div></section>');
-    $('resumoPeriodControls').after(dashboard);
+    summary.append(dashboard);
     $('uiChartDetails').addEventListener('click',function(){
       window.closeAllOverlays();window.closeProfileSheetPublic();
       route='semana';$('metaSlotList').hidden=true;
@@ -265,6 +266,7 @@
       var card=create('article','ui-metric '+item[1],'<div class="ui-metric-icon">'+svg(item[2])+'</div><p id="uiMetric'+item[0]+'Label"></p><h3 id="uiMetric'+item[0]+'Value"></h3><small id="uiMetric'+item[0]+'Note"></small>');metrics.append(card);
     });
     summary.append(metrics);
+    metrics.after(dashboard);
     var dayTotal=create('div','ui-daily-total','<span id="uiDailyTitle"></span><strong id="uiDailyTotal"></strong>');
     $('ganhosIncomeScrollWrap').after(dayTotal);
     var add=button('',function(){openEntry();}); add.id='uiIncomeAdd'; dayTotal.append(add);
