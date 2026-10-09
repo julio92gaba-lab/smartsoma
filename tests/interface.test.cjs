@@ -61,7 +61,7 @@ test('daily rhythm follows the global period navigation date',async t=>{
   const a=setup(t,{['homeBadgeValores:'+dateKey(previous)]:JSON.stringify({uber:90,bolt:30}),['despesasDiarias:'+dateKey(previous)]:JSON.stringify({items:[{descricao:'Portagem',valor:15}]})});
   a.w.document.querySelector('[data-period="dia"]').click();a.click('periodNavPrev');await settle();
   assert.match(a.el('uiChart').querySelector('.ui-day-donut-center').textContent,/120/);
-  a.el('uiChart').querySelectorAll('.ui-chart-tab')[1].click();assert.match(a.el('uiChart').textContent,/120.*15.*105/);assert.deepEqual(a.errors,[]);
+  a.el('uiChart').querySelectorAll('.ui-chart-tab')[1].click();assert.ok(a.el('uiChart').querySelector('.ui-day-balance-meter'));assert.match(a.el('uiChart').textContent,/120.*15.*105/);assert.deepEqual(a.errors,[]);
 });
 
 test('quick entry opens a platform subpage and replaces its daily value',t=>{

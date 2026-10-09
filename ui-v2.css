@@ -261,6 +261,8 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
 .ui-day-donut-item { display:grid; grid-template-columns:8px minmax(0,1fr) auto; align-items:center; gap:6px; color:var(--muted); font-size:.66rem; font-weight:700; }
 .ui-day-donut-item i { width:7px; height:7px; border-radius:50%; }.ui-day-donut-item strong { color:var(--ink); }
 .ui-day-balance { display:grid; gap:0; border-top:1px solid var(--card-line); }
+.ui-day-balance-meter { display:flex; height:13px; overflow:hidden; margin:15px 0 8px; border-radius:999px; background:var(--input-bg); box-shadow:inset 0 0 0 1px var(--card-line); }
+.ui-day-balance-meter i { display:block; min-width:0; transition:width .2s ease; }.ui-day-balance-net { background:var(--lime); }.ui-day-balance-expenses { background:var(--danger); }
 .ui-day-balance-row { display:flex; justify-content:space-between; gap:16px; padding:13px 2px; border-bottom:1px solid var(--card-line); color:var(--muted); font-size:.82rem; font-weight:700; }
 .ui-day-balance-row strong { color:var(--ink); }.ui-day-balance-row.expenses strong { color:var(--danger); }.ui-day-balance-row.net { font-size:.92rem; }.ui-day-balance-row.net strong { color:var(--brand-green); }
 .ui-month-chart { display:flex; align-items:flex-end; gap:11px; height:170px; padding:0 4px; border-bottom:1px solid var(--card-line); }
