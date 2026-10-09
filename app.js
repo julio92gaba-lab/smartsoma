@@ -5017,7 +5017,7 @@
     });
 
     function anyOverlayOpen () {
-      if (document.querySelector('.mm-backdrop.visible, .ui-entry-backdrop.visible')) return true;
+      if (document.querySelector('.mm-backdrop.visible, .modal-backdrop.visible, .ui-entry-backdrop.visible')) return true;
       if (!PROFILE_UI_READY) return false;
       return profileSheet.classList.contains('open') ||
              photoModalBackdrop.classList.contains('visible') ||
@@ -5049,6 +5049,11 @@
         window.scrollTo(0, bodyScrollLockY);
       }
     }
+    new MutationObserver(function () { syncBodyScroll(); }).observe(document.body, {
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['class', 'open']
+    });
 
     var closeResetTimer = null;
 
