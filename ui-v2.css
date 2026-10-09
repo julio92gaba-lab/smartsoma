@@ -353,9 +353,10 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
   .ui-brand,.ui-brand-caption,.ui-sidebar-footer { display:none; }
   .ui-navigation { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); height:100%; gap:0; }
   .ui-nav-item { grid-column:auto; min-width:0; display:flex; flex-direction:column; justify-content:center; gap:5px; padding:5px 2px; border:0; border-radius:8px; }
-  .ui-nav-item[data-ui-route="downloads"] { grid-column:4; }
+  .ui-nav-item[data-ui-route="semana"] { margin-right:16px; }
+  .ui-nav-item[data-ui-route="downloads"] { grid-column:4; margin-left:16px; }
   .ui-nav-item[data-ui-route="ajustes"] { grid-column:5; }
-  .ui-mobile-nav-brand { position:absolute; z-index:1; top:-16px; left:50%; display:grid; place-items:center; width:92px; height:46px; padding:5px 10px; border:1px solid rgba(212,245,60,.45); border-radius:999px; background:transparent; box-shadow:0 4px 14px rgba(0,0,0,.18); transform:translateX(-50%); pointer-events:none; }
+  .ui-mobile-nav-brand { position:absolute; z-index:1; top:50%; left:50%; display:grid; place-items:center; width:92px; height:46px; padding:0; border:0; border-radius:0; background:transparent; box-shadow:none; transform:translate(-50%,-50%); pointer-events:none; }
   .ui-mobile-nav-brand img { display:block; width:100%; height:100%; object-fit:contain; }
   .ui-nav-item span { font-size:.56rem; white-space:nowrap; }
   .ui-nav-item svg { width:22px; height:22px; }
