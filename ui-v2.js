@@ -441,9 +441,9 @@
     });
     tableRows($('uiOverviewExpenseRows'),dailyEntries);
   }
-  var entryMode='income',chosen=null,entryReturnFocus=null,restoreKmComponent=function(){},mountKmComponent=function(){};
+  var entryMode='income',entryScreen='home',chosen=null,entryReturnFocus=null,restoreKmComponent=function(){},mountKmComponent=function(){};
   function setupEntry(){
-    var dialog=create('dialog','ui-entry-dialog','<form id="uiEntryForm"><div class="ui-panel-head"><h2 id="uiEntryTitle"></h2><button type="button" id="uiEntryClose" class="ui-icon-button" aria-label="Fechar">×</button></div><p id="uiEntryDate" class="ui-eyebrow"></p><div class="ui-entry-tabs"><button type="button" id="uiEntryIncome"></button><button type="button" id="uiEntryExpense"></button><button type="button" id="uiEntryKm">KM</button></div><div id="uiEntryKmContent" hidden></div><div id="uiEntryStandardFields"><div class="ui-platform-selector" id="uiPlatformSelector"><div id="uiPlatformChoices" class="ui-platform-choices"></div><p id="uiPlatformName" class="ui-platform-name"></p></div><label id="uiEntryDescriptionLabel"><span id="uiDescriptionLabel"></span><input id="uiEntryDescription" maxlength="60"></label><label><span id="uiValueLabel"></span><div class="ui-entry-amount"><span>€</span><input id="uiEntryValue" inputmode="decimal" autocomplete="off" required aria-label="Valor" placeholder="0,00"></div></label><p id="uiEntryHint" class="ui-muted" aria-live="polite"></p><p id="uiEntryError" class="ui-error" role="alert"></p><button type="submit" id="uiEntrySave" class="ui-button"></button></div></form>');
+    var dialog=create('dialog','ui-entry-dialog','<form id="uiEntryForm"><div class="ui-panel-head"><h2 id="uiEntryTitle"></h2><button type="button" id="uiEntryClose" class="ui-icon-button" aria-label="Fechar">×</button></div><p id="uiEntryDate" class="ui-eyebrow"></p><div class="ui-entry-tabs" id="uiEntryTabs"><button type="button" id="uiEntryIncome"></button><button type="button" id="uiEntryExpense"></button><button type="button" id="uiEntryKm">KM</button></div><div id="uiEntryHomeContent"><div class="ui-platform-selector" id="uiPlatformSelector"><div id="uiPlatformChoices" class="ui-platform-choices"></div></div></div><div id="uiEntryFormContent" hidden><label id="uiEntryDescriptionLabel"><span id="uiDescriptionLabel"></span><input id="uiEntryDescription" maxlength="60"></label><label><span id="uiValueLabel"></span><div class="ui-entry-amount"><span>€</span><input id="uiEntryValue" inputmode="decimal" autocomplete="off" required aria-label="Valor" placeholder="0,00"></div></label><p id="uiEntryHint" class="ui-muted" aria-live="polite"></p><p id="uiEntryError" class="ui-error" role="alert"></p><button type="submit" id="uiEntrySave" class="ui-button"></button></div><div id="uiEntryKmContent" hidden></div></form>');
     var backdrop=create('div','ui-entry-backdrop');dialog.id='uiEntryDialog';dialog.setAttribute('aria-labelledby','uiEntryTitle');document.body.append(backdrop,dialog);
     var distanceCard=$('distanciaModalCard'),kmContent=$('uiEntryKmContent');
     var kmNodes=distanceCard?['.distancia-mode-row','#distanciaModoHelperText','#distanciaTotalForm','#distanciaInicioFimForm','#distanciaSalvarBtn'].map(function(selector){return distanceCard.querySelector(selector);}):[];
@@ -459,12 +459,12 @@
       if(window.DistanciaModo)window.DistanciaModo.restore();
       $('distanciaSalvarBtn').textContent=say('Guardar','Save');
     };
-    $('uiEntryClose').addEventListener('click',function(){dialog.close();});
+    $('uiEntryClose').addEventListener('click',function(){if(entryScreen==='home')dialog.close();else{entryMode='income';entryScreen='home';chosen=null;renderEntry();}});
     backdrop.addEventListener('click',function(){dialog.close();});
     dialog.addEventListener('close',function(){restoreKmComponent();backdrop.classList.remove('visible');if(entryReturnFocus)entryReturnFocus.focus();});
-    $('uiEntryIncome').addEventListener('click',function(){entryMode='income';chosen=null;renderEntry();});
-    $('uiEntryExpense').addEventListener('click',function(){entryMode='expense';chosen=null;renderEntry();});
-    $('uiEntryKm').addEventListener('click',function(){entryMode='km';chosen=null;renderEntry();});
+    $('uiEntryIncome').addEventListener('click',function(){entryMode='income';entryScreen='home';chosen=null;renderEntry();});
+    $('uiEntryExpense').addEventListener('click',function(){entryMode='expense';entryScreen='expense';chosen=null;renderEntry();});
+    $('uiEntryKm').addEventListener('click',function(){entryMode='km';entryScreen='km';chosen=null;renderEntry();});
     $('distanciaSalvarBtn').addEventListener('click',function(){if(entryMode==='km'){dialog.close();refreshData();}});
     $('uiEntryForm').addEventListener('submit',function(e){
       e.preventDefault();
@@ -487,25 +487,28 @@
   }
   function openEntry(mode){
     window.closeAllOverlays();window.closeProfileSheetPublic();entryReturnFocus=document.activeElement;
-    entryMode=mode||'income';chosen=null;$('uiEntryValue').value='';$('uiEntryDescription').value='';renderEntry();
+    entryMode=mode||'income';entryScreen=mode==='expense'?'expense':mode==='km'?'km':'home';chosen=null;$('uiEntryValue').value='';$('uiEntryDescription').value='';renderEntry();
     var entryDialog=$('uiEntryDialog');entryDialog.previousElementSibling.classList.add('visible');
     if(typeof entryDialog.show==='function')entryDialog.show();else entryDialog.showModal();
   }
   function renderEntry(){
-    var income=entryMode==='income',km=entryMode==='km';$('uiEntryTitle').textContent=t('record');$('uiEntryDate').textContent=GanhosDate.formatLabel(GanhosDate.get());
+    var income=entryMode==='income',km=entryMode==='km',home=entryScreen==='home',incomeForm=entryScreen==='income';
+    $('uiEntryTitle').textContent=home?t('record'):incomeForm?say('Ganhos ','Earnings ')+chosen.nome:entryScreen==='expense'?say('Nova Despesa','New expense'):say('Registrar KM','Record KM');$('uiEntryDate').textContent=GanhosDate.formatLabel(GanhosDate.get());
     $('uiEntryIncome').textContent=say('Ganhos','Earnings');$('uiEntryExpense').textContent=t('despesas');
     $('uiEntryIncome').setAttribute('aria-pressed',String(income));$('uiEntryExpense').setAttribute('aria-pressed',String(entryMode==='expense'));$('uiEntryKm').setAttribute('aria-pressed',String(km));
-    $('uiEntryStandardFields').hidden=km;
+    $('uiEntryTabs').hidden=!home;$('uiEntryHomeContent').hidden=!home;$('uiEntryFormContent').hidden=home||km;
+    $('uiEntryClose').innerHTML=home?'×':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6"/></svg>';$('uiEntryClose').setAttribute('aria-label',home?say('Fechar','Close'):say('Voltar','Back'));
     if(km){mountKmComponent();return;}
     restoreKmComponent();
+    if(home){
+      $('uiPlatformChoices').replaceChildren();
+      platforms().forEach(function(p){var n=button('',function(){chosen=p;entryMode='income';entryScreen='income';$('uiEntryValue').value=String(p.id==='uber'||p.id==='bolt'?HomeBadges.get()[p.id]||'':HomeBadges.getPlat(p.id)||'');renderEntry();},'ui-platform-choice');n.setAttribute('aria-label',p.nome);n.dataset.platform=p.id;var avatar=create('span','ui-platform-choice-avatar');if(p.img && (p.id==='uber'||p.id==='bolt'||SmartSomaSecurity.isSafeImageUrl(p.img))){var image=create('img');image.src=p.img;image.alt='';avatar.append(image);}else avatar.textContent=p.nome.slice(0,2).toUpperCase();var label=create('span','ui-platform-choice-label');label.textContent=p.nome;n.append(avatar,label);$('uiPlatformChoices').append(n);});
+      return;
+    }
     $('uiEntryDescriptionLabel').hidden=income;$('uiEntryDescription').required=!income;
     $('uiDescriptionLabel').textContent=say('Descrição','Description');$('uiValueLabel').textContent=say('Valor','Amount');
     $('uiEntrySave').textContent=say('Guardar','Save');$('uiEntryError').textContent='';
-    $('uiPlatformSelector').hidden=!income;$('uiPlatformChoices').hidden=!income;$('uiPlatformChoices').replaceChildren();
-    $('uiPlatformName').textContent=chosen?chosen.nome:say('Selecione','Select');
     $('uiEntryHint').textContent=income?(chosen?say('Total do dia na '+chosen.nome,'Daily total on '+chosen.nome):say('Total do dia','Daily total')):say('A despesa será guardada na data selecionada.','The expense will be saved for the selected date.');
-    if(income)platforms().forEach(function(p){var n=button('',function(){chosen=chosen&&chosen.id===p.id?null:p;$('uiEntryValue').value=chosen?String(p.id==='uber'||p.id==='bolt'?HomeBadges.get()[p.id]||'':HomeBadges.getPlat(p.id)||''):'';renderEntry();},'ui-platform-choice');n.setAttribute('aria-label',p.nome);n.setAttribute('aria-pressed',String(!!chosen&&chosen.id===p.id));n.dataset.platform=p.id;
-      if(p.img && (p.id==='uber'||p.id==='bolt'||SmartSomaSecurity.isSafeImageUrl(p.img))){var image=create('img');image.src=p.img;image.alt=p.nome;n.append(image);}else n.textContent=p.nome.slice(0,2).toUpperCase();$('uiPlatformChoices').append(n);});
     if(income&&chosen&&Number($('uiEntryValue').value)>0)$('uiEntryHint').textContent=say('Já existe um registo. Guardar substitui o total deste dia.','An entry exists. Saving replaces this day’s total.');
   }
   function setupSettings(){

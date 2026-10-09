@@ -46,13 +46,13 @@ test('home rhythm uses the weekly divergent chart and lists only variable expens
   assert.deepEqual(a.errors,[]);
 });
 
-test('quick entry requires platform and supports selecting, deselecting and replacing',t=>{
+test('quick entry opens a platform subpage and replaces its daily value',t=>{
   const a=setup(t);a.click('uiAdd');assert.equal(a.el('uiEntryDialog').open,true);
-  a.input('uiEntryValue','50');submit(a);assert.match(a.el('uiEntryError').textContent,/plataforma/);
+  assert.match(a.el('uiPlatformChoices').textContent,/Uber/);
   a.w.document.querySelector('[data-platform="uber"]').click();
-  assert.equal(a.el('uiPlatformName').textContent,'Uber');
-  a.w.document.querySelector('[data-platform="uber"]').click();assert.equal(a.el('uiPlatformName').textContent,'Selecione');
-  a.w.document.querySelector('[data-platform="bolt"]').click();a.input('uiEntryValue','123,45');submit(a);
+  assert.equal(a.el('uiEntryTitle').textContent,'Ganhos Uber');
+  assert.equal(a.el('uiEntryClose').getAttribute('aria-label'),'Voltar');
+  a.click('uiEntryClose');a.w.document.querySelector('[data-platform="bolt"]').click();a.input('uiEntryValue','123,45');submit(a);
   assert.equal(a.w.HomeBadges.get().bolt,123.45);assert.equal(a.el('uiEntryDialog').open,false);
   a.click('uiIncomeAdd');a.w.document.querySelector('[data-platform="bolt"]').click();
   assert.equal(a.el('uiEntryValue').value,'123.45');a.input('uiEntryValue','40');submit(a);
