@@ -429,29 +429,28 @@
                         </div>
 
                         <div class="home-list-page" id="homeListPageResumo" hidden>
+                            <div class="resumo-period-controls" id="resumoPeriodControls">
+                                <div class="period-filter-row">
+                                    <button type="button" class="period-chip" id="periodChipDia" data-period="dia" aria-pressed="false" data-i18n="resumo.dia">Dia</button>
+                                    <button type="button" class="period-chip selected" id="periodChipSemana" data-period="semana" aria-pressed="true" data-i18n="resumo.semana">Semana</button>
+                                    <button type="button" class="period-chip" id="periodChipMes" data-period="mes" aria-pressed="false" data-i18n="resumo.mes">Mês</button>
+                                </div>
+                                <div class="period-nav-row">
+                                    <button type="button" class="period-nav-btn" id="periodNavPrev" data-i18n-aria="resumo.prevAria" aria-label="Período anterior">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="15 18 9 12 15 6"/>
+                                        </svg>
+                                    </button>
+                                    <div class="period-label" id="periodLabel"></div>
+                                    <button type="button" class="period-nav-btn" id="periodNavNext" data-i18n-aria="resumo.nextAria" aria-label="Próximo período">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="9 18 15 12 9 6"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
                             <div class="home-card resumo-tech-card" id="resumoTechCard">
                                 <div class="resumo-live-content" id="resumoLiveContent">
-                                    <div class="resumo-period-controls" id="resumoPeriodControls">
-                                    <div class="period-filter-row">
-                                        <button type="button" class="period-chip" id="periodChipDia" data-period="dia" aria-pressed="false" data-i18n="resumo.dia">Dia</button>
-                                        <button type="button" class="period-chip selected" id="periodChipSemana" data-period="semana" aria-pressed="true" data-i18n="resumo.semana">Semana</button>
-                                        <button type="button" class="period-chip" id="periodChipMes" data-period="mes" aria-pressed="false" data-i18n="resumo.mes">Mês</button>
-                                    </div>
-                                    <div class="period-nav-row">
-                                        <button type="button" class="period-nav-btn" id="periodNavPrev" data-i18n-aria="resumo.prevAria" aria-label="Período anterior">
-                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                <polyline points="15 18 9 12 15 6"/>
-                                            </svg>
-                                        </button>
-                                        <div class="period-label" id="periodLabel"></div>
-                                        <button type="button" class="period-nav-btn" id="periodNavNext" data-i18n-aria="resumo.nextAria" aria-label="Próximo período">
-                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                <polyline points="9 18 15 12 9 6"/>
-                                            </svg>
-                                        </button>
-                                    </div>
-                                    </div>
-
                                     <div class="dash-cluster">
                                         <div class="dash-main-row" id="dashMainRow">
                                             <div class="dash-main-gauge">

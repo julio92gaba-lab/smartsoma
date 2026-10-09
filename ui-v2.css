@@ -396,9 +396,9 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
 }
 /* Home fidelity: independent goal and metric cards, as in the preserved mockup. */
 .ui-v2 #resumoTechCard { overflow:visible; background:transparent; border:0; box-shadow:none; padding:0; }
-body.ui-v2 #resumoLiveContent .period-filter-row { background:transparent; }
-.ui-v2 #resumoLiveContent .period-nav-row { justify-content:center; margin-bottom:0; }
-.ui-v2 #resumoLiveContent .period-label { min-width:190px; text-align:center; }
+body.ui-v2 #resumoPeriodControls .period-filter-row { background:transparent; }
+.ui-v2 #resumoPeriodControls .period-nav-row { justify-content:center; margin-bottom:0; }
+.ui-v2 #resumoPeriodControls .period-label { min-width:190px; text-align:center; }
 .ui-v2 #resumoTechCard .dash-cluster,
 .ui-v2 #metaSemanalCurrentContent { display:none; }
 .ui-v2 #metaSlotList { margin:0 0 24px; }
