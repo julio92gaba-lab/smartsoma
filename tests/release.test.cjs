@@ -40,19 +40,19 @@ test('calendar edits the selected day without changing today', async t => {
   await settle();
   assert.equal(JSON.parse(a.cache['homeBadgeValores:'+dateKey(yesterday)]).uber,42);
   assert.equal(JSON.parse(a.cache['homeBadgeValores:'+dateKey(today)]).uber,75);
-  assert.match(a.el('uiDailyTitle').textContent,new RegExp(String(yesterday.getDate())));
+  assert.equal(a.w.document.body.dataset.uiRoute,'resumo');
   assert.deepEqual(a.errors,[]);
 });
 
 test('custom platform creation, quick entry and confirmed deletion preserve earlier history', async t => {
-  const a = setup(t); a.click('uiManagePlatforms'); a.input('mpNovaInput','Entrega'); a.click('mpSalvarBtn');
+  const a = setup(t); a.w.SmartSomaUI.go('ajustes'); a.click('openMultiplataformaBtn'); a.input('mpNovaInput','Entrega'); a.click('mpSalvarBtn');
   const p = a.w.SmartSomaReadModel.platforms()[0]; assert.equal(p.nome,'Entrega');
   const old = new Date(); old.setDate(old.getDate()-14);
   a.cache['homeBadgeValores:'+dateKey(old)] = JSON.stringify({plat:{[p.id]:20}});
   a.click('uiAdd'); a.w.document.querySelector('[data-platform="'+p.id+'"]').click();
   a.input('uiEntryValue','50'); a.el('uiEntryForm').dispatchEvent(new a.w.Event('submit',{cancelable:true}));
   assert.equal(a.w.HomeBadges.getPlat(p.id),50);
-  a.click('uiManagePlatforms');
+  a.click('openMultiplataformaBtn');
   assert.equal(a.el('mpListaAtuais').querySelectorAll('.mp-card-del').length,1);
   a.el('mpListaAtuais').querySelector('.mp-card-del').click();
   assert.ok(a.el('mpConfirmBackdrop').classList.contains('visible'));

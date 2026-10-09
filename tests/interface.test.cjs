@@ -5,9 +5,11 @@ const settle = () => new Promise(resolve => setTimeout(resolve, 180));
 function submit(a) { a.el('uiEntryForm').dispatchEvent(new a.w.Event('submit', { bubbles:true, cancelable:true })); }
 function setup(t,seed={}) { const a=createApp(seed,{ui:true}); t.after(a.close);return a; }
 
-test('UI initializes once with six sections, unique IDs and no runtime errors',async t=>{
+test('UI keeps five navigation items and redirects retired routes to overview',async t=>{
   const a=setup(t);a.w.SmartSomaUI.start();await settle();
-  assert.equal(a.w.document.querySelectorAll('.ui-nav-item').length,6);
+  assert.equal(a.w.document.querySelectorAll('.ui-nav-item').length,5);
+  assert.deepEqual([...a.w.document.querySelectorAll('.ui-nav-full')].map(n=>n.textContent),['Visão geral','Detalhes da semana','Relatórios','Calc','Ajustes']);
+  const calc=a.w.document.querySelector('[data-ui-route="calc"]');assert.equal(calc.disabled,true);
   assert.equal(a.el('uiChart').querySelectorAll('.ui-rhythm-row').length,7);
   assert.equal(a.el('uiHeaderTitle').textContent,'Olá, Utilizador.');
   assert.equal(a.el('uiHeaderAvatar').textContent,'U');a.el('sheetAvatar').innerHTML='<img src="https://example.com/avatar.jpg">';a.w.SmartSomaUI.refreshSidebar();
@@ -16,14 +18,15 @@ test('UI initializes once with six sections, unique IDs and no runtime errors',a
   assert.equal(a.el('homeListPageResumo').classList.contains('is-fading'),true);await settle();
   assert.equal(a.w.document.body.dataset.uiRoute,'ajustes');
   a.w.SmartSomaUI.go('ganhos');assert.equal(a.el('uiSettingsPage').classList.contains('is-fading'),true);await settle();
-  assert.equal(a.w.document.body.dataset.uiRoute,'ganhos');
+  assert.equal(a.w.document.body.dataset.uiRoute,'resumo');
   const ids=[...a.w.document.querySelectorAll('[id]')].map(n=>n.id);
   assert.equal(new Set(ids).size,ids.length);assert.deepEqual(a.errors,[]);
-  for(const route of ['ganhos','semana','relatorio','despesas','resumo']){
+  for(const route of ['semana','relatorio','resumo']){
     a.w.SmartSomaUI.go(route);await settle();
     assert.equal(a.w.document.body.dataset.uiRoute,route);
     assert.equal(a.w.document.querySelectorAll('.home-list-page:not([hidden])').length,1);
   }
+  for(const route of ['ganhos','despesas']){a.w.SmartSomaUI.go(route);await settle();assert.equal(a.w.document.body.dataset.uiRoute,'resumo');}
 });
 
 test('home rhythm uses the weekly divergent chart and lists only variable expenses from the selected period',async t=>{
@@ -54,7 +57,7 @@ test('quick entry opens a platform subpage and replaces its daily value',t=>{
   assert.equal(a.el('uiEntryClose').getAttribute('aria-label'),'Voltar');
   a.click('uiEntryClose');a.w.document.querySelector('[data-platform="bolt"]').click();a.input('uiEntryValue','123,45');submit(a);
   assert.equal(a.w.HomeBadges.get().bolt,123.45);assert.equal(a.el('uiEntryDialog').open,false);
-  a.click('uiIncomeAdd');a.w.document.querySelector('[data-platform="bolt"]').click();
+  a.click('uiAdd');a.w.document.querySelector('[data-platform="bolt"]').click();
   assert.equal(a.el('uiEntryValue').value,'123.45');a.input('uiEntryValue','40');submit(a);
   assert.equal(a.w.HomeBadges.get().bolt,40);
 });
@@ -63,7 +66,7 @@ test('quick expense saves through the existing daily expense control and updates
   const a=setup(t);a.click('uiAdd');a.click('uiEntryExpense');a.input('uiEntryDescription','Portagem');a.input('uiEntryValue','5,25');submit(a);await settle();
   const saved=JSON.parse(a.cache['despesasDiarias:'+dateKey(new Date())]);
   assert.equal(saved.items[0].descricao,'Portagem');assert.equal(saved.items[0].valor,5.25);
-  assert.equal(a.w.HomeBadges.get().despesas,5.25);assert.match(a.el('uiExpenseRows').textContent,/Portagem/);
+  assert.equal(a.w.HomeBadges.get().despesas,5.25);assert.match(a.el('uiOverviewExpenseRows').textContent,/Portagem/);
   assert.equal(a.w.document.getElementById('uiRecentRows'),null);assert.deepEqual(a.errors,[]);
 });
 

@@ -1,5 +1,9 @@
 {
   "cleanUrls": true,
+  "redirects": [
+    { "source": "/ganhos", "destination": "/", "permanent": false },
+    { "source": "/despesas", "destination": "/", "permanent": false }
+  ],
   "headers": [
     {
       "source": "/(.*)",

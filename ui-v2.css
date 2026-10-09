@@ -36,6 +36,8 @@ html.ui-v2.theme-dark, body.ui-v2.theme-dark {
 .ui-nav-item { display:flex; align-items:center; gap:12px; border:1px solid transparent; padding:13px 14px; color:#b8c5bb; background:transparent; text-align:left; border-radius:10px; font-size:.82rem; font-weight:600; }
 .ui-nav-item svg { width:21px; height:21px; flex:none; }
 .ui-nav-item:hover { background:#1b2b20; color:#fff; }
+.ui-nav-item:disabled { opacity:.4; cursor:not-allowed; }
+.ui-nav-item:disabled:hover { color:#b8c5bb; background:transparent; }
 .ui-nav-item.is-active { background:var(--lime); color:#142015; box-shadow:0 3px 0 #739334; }
 .ui-sidebar-footer { margin-top:auto; padding:20px 2px 0; border-top:1px solid #2a392e; color:#fff; font-size:.72rem; }
 .ui-subscription-card { width:100%; display:grid; grid-template-columns:10px minmax(0,1fr) auto; align-items:center; gap:8px; padding:13px 11px; border:1px solid #334036; border-radius:10px; background:#17211b; color:#fff; text-align:left; }

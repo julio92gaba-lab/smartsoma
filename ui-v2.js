@@ -12,6 +12,7 @@
     despesas: '<path d="M6 3h12v18l-3-2-3 2-3-2-3 2Z M9 8h6M9 12h6"/>',
     semana: '<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M7 3v4M17 3v4M3 11h18M8 15h2M14 15h2"/>',
     relatorio: '<path d="M5 3h10l4 4v14H5ZM14 3v5h5M8 12h8M8 16h8"/>',
+    calc: '<rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M8 11h.01M12 11h.01M16 11h.01M8 15h.01M12 15h.01M16 15h.01M8 18h.01M12 18h.01M16 18h.01"/>',
     ajustes: '<path d="m12 3 2 3 4-.2.2 4 3 2-3 2 .2 4-4 .2-2 3-2-3-4 .2-.2-4-3-2 3-2-.2-4 4-.2Z"/><circle cx="12" cy="12" r="3"/>',
     plus: '<path d="M12 5v14M5 12h14"/>',
     arrow: '<path d="M5 12h14m-6-6 6 6-6 6"/>',
@@ -19,8 +20,8 @@
     distance: '<path d="M7 3 3 21M17 3l4 18M12 3v3M12 10v4M12 18v3"/>'
   };
   var text = {
-    pt: { resumo:'Visão geral', ganhos:'Ganhos diários', despesas:'Despesas', semana:'Detalhes da semana', relatorio:'Relatórios', ajustes:'Ajustes', hello:'Bom dia', afternoon:'Boa tarde', evening:'Boa noite', record:'Adicionar registo', calendar:'Escolher data', tag:'Para Estafetas e Motoristas de App.', ganhosNote:'Cada percurso conta. Regista os teus rendimentos e acompanha o dia.', despesasNote:'As tuas despesas, sem perder nenhum detalhe.', semanaNote:'Sete dias. Uma visão clara dos teus resultados.', relatorioNote:'Os teus resultados, organizados e prontos a guardar.', ajustesNote:'O SmartSoma, à tua medida.', theme:'Modo escuro', profile:'Editar perfil', help:'Ajuda e tutorial', normal:'Normal', newPlatform:'Nova plataforma', manage:'Gerir plataformas', addIncome:'Adicionar rendimento' },
-    en: { resumo:'Overview', ganhos:'Daily earnings', despesas:'Expenses', semana:'Weekly details', relatorio:'Reports', ajustes:'Settings', hello:'Good morning', afternoon:'Good afternoon', evening:'Good evening', record:'Add entry', calendar:'Choose date', tag:'For couriers and app drivers.', ganhosNote:'Every journey counts. Record your earnings and track your day.', despesasNote:'Your expenses, without missing a detail.', semanaNote:'Seven days. A clear view of your results.', relatorioNote:'Your results, organised and ready to save.', ajustesNote:'SmartSoma, your way.', theme:'Dark mode', profile:'Edit profile', help:'Help and tutorial', normal:'Normal', newPlatform:'New platform', manage:'Manage platforms', addIncome:'Add earnings' }
+    pt: { resumo:'Visão geral', ganhos:'Ganhos diários', despesas:'Despesas', semana:'Detalhes da semana', relatorio:'Relatórios', calc:'Calc', ajustes:'Ajustes', hello:'Bom dia', afternoon:'Boa tarde', evening:'Boa noite', record:'Adicionar registo', calendar:'Escolher data', tag:'Para Estafetas e Motoristas de App.', ganhosNote:'Cada percurso conta. Regista os teus rendimentos e acompanha o dia.', despesasNote:'As tuas despesas, sem perder nenhum detalhe.', semanaNote:'Sete dias. Uma visão clara dos teus resultados.', relatorioNote:'Os teus resultados, organizados e prontos a guardar.', ajustesNote:'O SmartSoma, à tua medida.', theme:'Modo escuro', profile:'Editar perfil', help:'Ajuda e tutorial', normal:'Normal', newPlatform:'Nova plataforma', manage:'Gerir plataformas', addIncome:'Adicionar rendimento' },
+    en: { resumo:'Overview', ganhos:'Daily earnings', despesas:'Expenses', semana:'Weekly details', relatorio:'Reports', calc:'Calc', ajustes:'Settings', hello:'Good morning', afternoon:'Good afternoon', evening:'Good evening', record:'Add entry', calendar:'Choose date', tag:'For couriers and app drivers.', ganhosNote:'Every journey counts. Record your earnings and track your day.', despesasNote:'Your expenses, without missing a detail.', semanaNote:'Seven days. A clear view of your results.', relatorioNote:'Your results, organised and ready to save.', ajustesNote:'SmartSoma, your way.', theme:'Dark mode', profile:'Edit profile', help:'Help and tutorial', normal:'Normal', newPlatform:'New platform', manage:'Manage platforms', addIncome:'Add earnings' }
   };
   function t(key) { return (text[window.I18N && I18N.getLang()] || text.pt)[key] || key; }
   function svg(key) { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (icons[key] || icons.arrow) + '</svg>'; }
@@ -72,6 +73,7 @@
     return days[date.getDay()]+', '+date.getDate()+' de '+months[date.getMonth()];
   }
   function go(key) {
+    if (key === 'default' || key === 'ganhos' || key === 'despesas') key = 'resumo';
     window.closeAllOverlays();
     var settingsPage=$('uiSettingsPage');
     if (key === 'ajustes') {
@@ -80,7 +82,7 @@
       if(outgoing&&!pageTransitioning){
         pageTransitioning=true;outgoing.classList.add('is-fading');
         setTimeout(function(){
-          HomeNav.hideAllInstant();if($('uiExpensesPage'))$('uiExpensesPage').hidden=true;if($('metaSlotList'))$('metaSlotList').hidden=true;
+          HomeNav.hideAllInstant();if($('metaSlotList'))$('metaSlotList').hidden=true;
           settingsPage.hidden=false;settingsPage.classList.add('is-fading');void settingsPage.offsetWidth;settingsPage.classList.remove('is-fading');
           route=key;syncHeader();window.scrollTo({top:0,behavior:'instant'});pageTransitioning=false;
         },140);
@@ -88,7 +90,6 @@
       }
       window.closeProfileSheetPublic();
       HomeNav.hideAllInstant();
-      if($('uiExpensesPage'))$('uiExpensesPage').hidden=true;
       if($('metaSlotList'))$('metaSlotList').hidden=true;
       if(settingsPage)settingsPage.hidden=false;
       route=key;
@@ -103,21 +104,9 @@
       return;
     }
     if(settingsPage)settingsPage.hidden=true;
-    var expenses = $('uiExpensesPage');
-    if (key !== 'despesas' && expenses && !expenses.hidden && !pageTransitioning) {
-      pageTransitioning=true;
-      expenses.classList.add('is-fading');
-      setTimeout(function(){ expenses.hidden=true; expenses.classList.remove('is-fading'); pageTransitioning=false; go(key); },140);
-      return;
-    }
     route = key;
-    if (key === 'despesas') {
-      HomeNav.hideAllInstant(); $('metaSlotList').hidden = true;
-      if(expenses){expenses.hidden=false;expenses.classList.add('is-fading');void expenses.offsetWidth;expenses.classList.remove('is-fading');}
-    } else {
-      if($('metaSlotList'))$('metaSlotList').hidden = key !== 'resumo';
-      HomeNav.goToSection(key);
-    }
+    if($('metaSlotList'))$('metaSlotList').hidden = key !== 'resumo';
+    HomeNav.goToSection(key);
     syncHeader();
     window.scrollTo({top:0,behavior:'instant'});
   }
@@ -135,8 +124,9 @@
       if(manage&&getComputedStyle(manage).display!=='none'){manage.click();return;}
       go('ajustes');
     });
-    ['resumo','ganhos','despesas','semana','relatorio','ajustes'].forEach(function(key){
+    ['resumo','semana','relatorio','calc','ajustes'].forEach(function(key){
       var n=button('',function(){go(key);},'ui-nav-item');
+      if(key==='calc'){n.disabled=true;n.setAttribute('aria-disabled','true');}
       n.dataset.uiRoute=key; n.innerHTML=svg(key)+'<span class="ui-nav-full" data-ui-text="'+key+'"></span><span class="ui-nav-short" aria-hidden="true"></span>'; nav.querySelector('nav').append(n);
     });
     var header=create('header','ui-header','<div class="ui-header-personal"><button type="button" id="uiHeaderAvatar" class="ui-header-avatar"></button><div class="ui-header-copy"><p id="uiHeaderDate" class="ui-eyebrow"></p><h1 id="uiHeaderTitle"></h1></div></div><div class="ui-mobile-logo"><img src="logo-home.png" alt="SmartSoma"><span data-ui-text="tag"></span></div><div class="ui-header-actions"><button type="button" id="uiCalendar" class="ui-icon-button">'+svg('semana')+'</button><button type="button" id="uiAdd" class="ui-add">'+svg('plus')+'</button></div>');
@@ -149,17 +139,14 @@
     });
     $('uiCalendar').addEventListener('click',function(){window.closeProfileSheetPublic(); window.closeAllOverlays(); GanhosDate.open();});
     $('uiAdd').addEventListener('click',function(){window.closeProfileSheetPublic(); if(window.SmartSomaUI.openEntry) SmartSomaUI.openEntry(); else PlataformaModals.uber.open();});
-    ['Ganhos','Semana','Relatorio'].forEach(function(name){$('homeListPage'+name).prepend(heading(name.toLowerCase()));});
+    ['Semana','Relatorio'].forEach(function(name){$('homeListPage'+name).prepend(heading(name.toLowerCase()));});
     $('tamanhoOptionP').querySelector('.tamanho-option-letter').textContent='A';
     $('tamanhoOptionG').querySelector('.tamanho-option-letter').textContent='A';
     var theme=button('',function(){$('btnToggleTheme').click();syncHeader();},'sheet-action-btn');
     theme.id='uiThemeRow'; theme.innerHTML=svg('ajustes')+'<span data-ui-text="theme"></span>'; $('openTermosMenuBtn').before(theme);
-    var manage=button('',function(){window.openProfileSheetPublic();$('openMultiplataformaBtn').click();},'ui-button ui-secondary');
-    manage.innerHTML='<span data-ui-text="manage"></span>'; manage.id='uiManagePlatforms';
-    $('homeListPageGanhos').querySelector('.tech-card-header').append(manage);
     var viewControls=$('subHeaderViewToggleGroup'); $('semanaWeekPicker').after(viewControls); viewControls.hidden=false;
     var originalGo=HomeNav.goToSection;
-    HomeNav.goToSection=function(key){ route=key==='default'?'ganhos':key; if($('uiSettingsPage'))$('uiSettingsPage').hidden=true; if($('uiExpensesPage')) $('uiExpensesPage').hidden=true; originalGo(key); syncHeader(); };
+    HomeNav.goToSection=function(key){ key=(key==='default'||key==='ganhos'||key==='despesas')?'resumo':key; route=key; if($('uiSettingsPage'))$('uiSettingsPage').hidden=true; originalGo(key); syncHeader(); };
     // These original buttons call the private navigation function, so keep the shell in sync too.
     $('btnVerMeuResumo').addEventListener('click',function(){route='resumo';syncHeader();});
     var observer=new MutationObserver(function(){syncHeader();syncSidebarAccount();});
@@ -226,14 +213,6 @@
     document.querySelector('.home-list-inner').append(settingsPage);
     summary.prepend($('metaSlotList'));
     $('metaSlotList').after($('resumoPeriodControls'));
-    var expenses=create('section','home-list-page'); expenses.id='uiExpensesPage'; expenses.hidden=true; expenses.append(heading('despesas'));
-    var expenseCard=create('div','home-card','<div class="ui-panel-head"><h2 id="uiExpenseTitle"></h2><button class="ui-button" id="uiExpenseAdd" type="button"></button></div><div class="ui-expense-total" id="uiExpenseTotal"></div><div id="uiExpenseRows"></div>');
-    expenses.append(expenseCard); document.querySelector('.home-list-inner').append(expenses);
-    $('uiExpenseAdd').addEventListener('click',function(){openEntry('expense');});
-    var fix=button('',openFixedExpensesModal,'ui-button ui-secondary');
-    fix.id='uiExpenseFixed';expenseCard.append(fix);
-    var daily=button('',function(){PlataformaModals.despesas.open();},'ui-button ui-secondary');
-    daily.id='uiExpenseManage';expenseCard.append(daily);
     var dashboard=create('div','ui-dashboard-bottom','<section class="home-card ui-chart-panel"><div class="ui-panel-head"><div><p class="ui-eyebrow" id="uiChartEyebrow"></p><h2 id="uiChartTitle"></h2></div><button type="button" id="uiChartDetails" class="ui-text-button"></button></div><div id="uiChart"></div></section><section class="home-card ui-overview-expenses"><div class="ui-panel-head"><h2 id="uiOverviewExpensesTitle"></h2><button type="button" id="uiOverviewFixed" class="ui-text-button"></button></div><div id="uiOverviewFixedGroup" hidden><p class="ui-expense-section-label" id="uiOverviewFixedLabel"></p><div id="uiOverviewFixedRows"></div></div><p class="ui-expense-section-label" id="uiOverviewDailyLabel"></p><div id="uiOverviewExpenseRows"></div></section>');
     summary.append(dashboard);
     $('uiChartDetails').addEventListener('click',function(){
@@ -267,11 +246,6 @@
     });
     summary.append(metrics);
     metrics.after(dashboard);
-    var dayTotal=create('div','ui-daily-total','<span id="uiDailyTitle"></span><strong id="uiDailyTotal"></strong>');
-    $('ganhosIncomeScrollWrap').after(dayTotal);
-    var add=button('',function(){openEntry();}); add.id='uiIncomeAdd'; dayTotal.append(add);
-    var dayHistory=create('section','home-card','<h2 id="uiDayHistoryTitle"></h2><div id="uiDayHistoryRows"></div>');
-    $('homeListPageGanhos').append(dayHistory);
     setupEntry(); setupSettings();
     var refreshQueued=false;
     function schedule(){if(refreshQueued)return;refreshQueued=true;queueMicrotask(function(){refreshQueued=false;refreshData();});}
@@ -301,15 +275,6 @@
   }
   function refreshData(){
     var day=SmartSomaReadModel.day(GanhosDate.get());
-    $('uiExpenseTitle').textContent=say('Despesas do dia','Daily expenses')+' · '+shortDate(day.date);
-    $('uiExpenseTotal').textContent=money(day.expenses);
-    $('uiExpenseAdd').textContent=say('Adicionar despesa','Add expense');
-    $('uiExpenseFixed').textContent=say('Gerir despesas fixas','Manage fixed expenses');
-    $('uiExpenseManage').textContent=say('Gerir despesas do dia','Manage daily expenses');
-    tableRows($('uiExpenseRows'),day.entries.map(function(e){return{date:day.date,label:e.descricao,value:e.valor,expense:true};}));
-    $('uiDailyTitle').textContent=say('Rendimentos','Earnings')+' · '+GanhosDate.formatLabel(day.date);
-    $('uiDailyTotal').textContent=money(day.gross);$('uiIncomeAdd').textContent=t('addIncome');
-    $('uiDayHistoryTitle').textContent=say('Histórico do dia','Daily history');tableRows($('uiDayHistoryRows'),records([day]));
     $('uiChartTitle').textContent=say('O teu ritmo','Your rhythm');
     $('uiChartEyebrow').textContent=say('SEMANA EM MOVIMENTO','WEEK IN MOTION');
     $('uiChartDetails').textContent=say('Ver semana completa →','View full week →');
@@ -551,7 +516,7 @@
       ['Os registos funcionam sem internet?','Com uma sessão já iniciada e os dados disponíveis no dispositivo, podes continuar offline. As alterações ficam na fila local e sincronizam quando a ligação regressa. Confirma o estado da sincronização antes de sair da conta ou limpar os dados do navegador.','Can I work offline?','With an existing session and data available on your device, entries queue locally and sync when connectivity returns. Check the sync status before signing out or clearing browser data.']
     ];
     function labels(){fixedAdd.textContent=say('Adicionar despesa fixa','Add fixed expense');helper.textContent=say('Despesas semanais, em € ou % do bruto. Entram na segunda-feira; a percentagem acompanha os ganhos. Ao excluir, as semanas anteriores ficam preservadas.','Weekly expenses, in € or % of gross. Added on Monday; percentages follow earnings. Deleting preserves previous weeks.');$('uiHelpTitle').textContent=say('Estamos por perto.','We are here to help.');$('uiFaqTitle').textContent=say('Perguntas frequentes','Frequently asked questions');$('uiFaqItems').replaceChildren();faqs.forEach(function(f){var n=create('details');var q=create('summary');q.textContent=say(f[0],f[2]);var p=create('p');p.textContent=say(f[1],f[3]);n.append(q,p);$('uiFaqItems').append(n);});}
-    function navLabels(){var labels=say(['Início','Ganhos','Despesas','Semana','Relatórios','Ajustes'],['Home','Earnings','Expenses','Week','Reports','Settings']);document.querySelectorAll('.ui-nav-short').forEach(function(n,i){n.textContent=labels[i];});}
+    function navLabels(){var labels=say(['Início','Semana','Relatórios','Calc','Ajustes'],['Home','Week','Reports','Calc','Settings']);document.querySelectorAll('.ui-nav-short').forEach(function(n,i){n.textContent=labels[i];});}
     labels();navLabels();document.addEventListener('languageChanged',function(){labels();navLabels();});
   }
   window.SmartSomaUI={start:start,go:go,t:t,svg:svg,create:create,button:button,translate:translate,syncHeader:syncHeader,refreshSidebar:syncSidebarAccount};
