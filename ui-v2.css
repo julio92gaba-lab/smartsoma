@@ -356,6 +356,11 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
   .ui-header h1 { font-size:1.4rem; }
   .ui-header .ui-eyebrow { font-size:.56rem; letter-spacing:.4px; }
   .ui-header #uiHeaderDate { display:inline-flex; align-items:center; width:max-content; min-height:25px; padding:5px 8px; border:1px solid var(--card-line); border-radius:8px; background:var(--card-bg); color:var(--muted); letter-spacing:.45px; }
+  .ui-v2 .resumo-period-controls { margin:0 -4px 14px; padding:6px 8px 7px; }
+  .ui-v2 #resumoPeriodControls .period-filter-row { gap:6px; margin-bottom:6px; }
+  .ui-v2 #resumoPeriodControls .period-chip { padding:7px 13px; }
+  .ui-v2 #resumoPeriodControls .period-nav-row { gap:10px; margin:0; }
+  .ui-v2 #resumoPeriodControls .period-nav-btn { width:32px; height:32px; }
   .ui-header-actions { gap:8px; }
   .ui-icon-button,.ui-add { width:37px; height:37px; border-radius:10px; }
   body.ui-v2:not(.ui-home) .ui-header-copy { display:none; }
