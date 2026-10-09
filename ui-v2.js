@@ -170,11 +170,23 @@
     observer.observe($('subStatusText'),{childList:true,subtree:true,characterData:true});
     observer.observe($('sheetProActiveBadge'),{attributes:true,attributeFilter:['style']});
     GanhosDate.onChange(syncHeader);
+    setupStickyPeriodControls();
     document.addEventListener('languageChanged',function(){translate();syncHeader();});
     setupPages();
     syncSidebarAccount();
     translate(); go('resumo');
     document.dispatchEvent(new CustomEvent('smartSomaUIReady'));
+  }
+  function setupStickyPeriodControls(){
+    var controls=$('resumoPeriodControls'), header=document.querySelector('.ui-header');
+    if(!controls||!header)return;
+    function update(){
+      var visible=!$('homeListPageResumo').hidden;
+      controls.classList.toggle('is-sticky',visible&&controls.getBoundingClientRect().top<=header.getBoundingClientRect().bottom+.5);
+    }
+    window.addEventListener('scroll',update,{passive:true});
+    window.addEventListener('resize',update,{passive:true});
+    requestAnimationFrame(update);
   }
   function money(value) { return Number(value).toLocaleString(I18N.t('lang.code'),{style:'currency',currency:'EUR'}); }
   function syncSidebarAccount(){
