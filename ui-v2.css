@@ -98,8 +98,8 @@ html.ui-v2.theme-dark, body.ui-v2.theme-dark {
 .ui-v2 .period-nav-row { margin:18px 0; gap:14px; justify-content:center; }
 .ui-v2 .period-label { color:var(--ink); font-size:.85rem; }
 .ui-v2 .period-nav-btn { border:1px solid var(--card-line); background:var(--card-bg); color:var(--ink); width:34px; height:34px; border-radius:8px; }
-.ui-v2 .resumo-period-controls { position:sticky; top:var(--ui-header); z-index:30; margin:0 -12px 20px; padding:12px; border-radius:0 0 12px 12px; background:transparent; transition:background-color .2s ease,box-shadow .2s ease; }
-.ui-v2 .resumo-period-controls.is-sticky { background:color-mix(in srgb,var(--paper) 94%,var(--card-bg)); box-shadow:0 8px 16px rgba(10,28,17,.12); }
+.ui-v2 .resumo-period-controls { position:sticky; top:var(--ui-header); z-index:30; margin:0 -12px 20px; padding:12px; border-radius:0 0 12px 12px; background:transparent; transition:background-color .3s ease,box-shadow .3s ease; }
+.ui-v2 .resumo-period-controls.is-sticky { background:rgba(14,59,42,.14); box-shadow:0 8px 16px rgba(10,28,17,.12); }
 .ui-v2 .dash-cluster { display:grid; grid-template-columns:1fr 3fr; gap:14px; }
 .ui-v2 .dash-main-row { display:block; }
 .ui-v2 .dash-main-gauge { width:100%; height:145px; border:1px solid var(--card-line); border-radius:12px; background:var(--input-bg); }
@@ -217,6 +217,7 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
 .ui-panel-head { display:flex; justify-content:space-between; align-items:center; gap:14px; margin-bottom:16px; }
 .ui-panel-head h2,.ui-v2 .ui-dashboard-bottom h2,.ui-v2 #uiDayHistoryTitle { color:var(--ink); font-size:1.4rem; margin:5px 0; }
 .ui-dashboard-bottom { display:grid; grid-template-columns:minmax(0,1.5fr) minmax(0,1fr); grid-template-areas:'chart expenses'; gap:20px; }
+.ui-v2 .ui-metrics + .ui-dashboard-bottom { margin-top:24px; }
 .ui-dashboard-bottom .home-card { min-width:0; }
 .ui-chart-panel { grid-area:chart; }
 .ui-overview-expenses { grid-area:expenses; }
