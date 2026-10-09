@@ -71,5 +71,7 @@ test('font assets are local, cached offline and mobile home selectors target the
   assert.match(css,/body\.ui-v2:not\(\.ui-home\) \.ui-header-copy/);
   assert.match(css,/\.ui-header h1 \{[^}]*text-overflow:ellipsis;[^}]*white-space:nowrap;/);
   assert.match(css,/\.ui-sidebar-avatar img,\.ui-header-avatar img \{[^}]*border-radius:inherit;[^}]*object-fit:cover;[^}]*object-position:center;/);
+  assert.match(css,/body\.ui-v2\.ui-home \.ui-header-avatar:has\(img\) \{ background:transparent; \}/);
+  assert.match(css,/body\.ui-v2\.ui-home \.ui-header-avatar:has\(img\) img \{ object-fit:contain; \}/);
   assert.match(css,/body\.ui-v2 \{ overflow:visible; \}/);
 });
