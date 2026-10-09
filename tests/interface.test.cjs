@@ -11,6 +11,7 @@ test('UI keeps four navigation items, mobile brand and redirects retired routes 
   assert.deepEqual([...a.w.document.querySelectorAll('.ui-nav-full')].map(n=>n.textContent),['Visão geral','Detalhes da semana','Downloads','Ajustes']);
   assert.deepEqual([...a.w.document.querySelectorAll('.ui-nav-short')].map(n=>n.textContent),['Início','Semana','Downloads','Ajustes']);
   assert.equal(a.w.document.querySelector('.ui-mobile-nav-brand img').getAttribute('src'),'logopeq.png');
+  a.w.SmartSomaUI.go('semana');await settle();a.w.document.querySelector('.ui-mobile-nav-brand').click();await settle();assert.equal(a.w.document.body.dataset.uiRoute,'resumo');
   assert.equal(a.el('uiChart').querySelectorAll('.ui-rhythm-row').length,7);
   assert.equal(a.el('uiHeaderTitle').textContent,'Olá, Utilizador.');
   assert.equal(a.el('uiHeaderAvatar').textContent,'U');a.el('sheetAvatar').innerHTML='<img src="https://example.com/avatar.jpg">';a.w.SmartSomaUI.refreshSidebar();

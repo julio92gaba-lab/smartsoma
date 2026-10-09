@@ -356,8 +356,9 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
   .ui-nav-item[data-ui-route="semana"] { margin-right:16px; }
   .ui-nav-item[data-ui-route="downloads"] { grid-column:4; margin-left:16px; }
   .ui-nav-item[data-ui-route="ajustes"] { grid-column:5; }
-  .ui-mobile-nav-brand { position:absolute; z-index:1; top:50%; left:50%; display:grid; place-items:center; width:64px; height:32px; padding:0; border:0; border-radius:0; background:transparent; box-shadow:none; transform:translate(-50%,-50%); pointer-events:none; }
+  .ui-mobile-nav-brand { position:absolute; z-index:1; top:50%; left:50%; display:grid; place-items:center; width:55px; height:28px; padding:0; border:0; border-radius:0; background:transparent; box-shadow:none; transform:translate(-50%,-50%); transition:opacity .16s ease,transform .16s ease; }
   .ui-mobile-nav-brand img { display:block; width:100%; height:100%; object-fit:contain; }
+  .ui-mobile-nav-brand:active { opacity:.8; transform:translate(-50%,-50%) scale(.96); }
   .ui-nav-item span { font-size:.56rem; white-space:nowrap; }
   .ui-nav-item svg { width:22px; height:22px; }
   .ui-nav-item.is-active { background:#203322; color:var(--lime); box-shadow:none; }

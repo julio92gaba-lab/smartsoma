@@ -115,9 +115,10 @@
     started = true;
     document.body.classList.add('ui-v2');
     document.documentElement.classList.add('ui-v2');
-    var nav = create('aside', 'ui-sidebar', '<button type="button" class="ui-brand" aria-label="SmartSoma"><img src="logo.png" alt="SmartSoma"></button><p class="ui-brand-caption" data-ui-text="tag"></p><nav class="ui-navigation" aria-label="Menu principal"></nav><div class="ui-mobile-nav-brand" aria-label="Smart Soma"><img src="logopeq.png" alt="Smart Soma"></div><div class="ui-sidebar-footer"><button type="button" class="ui-subscription-card" id="uiSidebarSubscription"><span class="ui-subscription-dot"></span><span><strong id="uiSidebarSubscriptionTitle"></strong><small id="uiSidebarSubscriptionNote"></small></span><b id="uiSidebarSubscriptionAction"></b></button><button type="button" class="ui-sidebar-profile" id="uiSidebarProfile"><span class="ui-sidebar-avatar" id="uiSidebarAvatar"></span><span><strong id="uiSidebarName"></strong><small>Conta pessoal</small></span><b>›</b></button></div>');
+    var nav = create('aside', 'ui-sidebar', '<button type="button" class="ui-brand" aria-label="SmartSoma"><img src="logo.png" alt="SmartSoma"></button><p class="ui-brand-caption" data-ui-text="tag"></p><nav class="ui-navigation" aria-label="Menu principal"></nav><button type="button" class="ui-mobile-nav-brand" aria-label="Ir para Início"><img src="logopeq.png" alt="Smart Soma"></button><div class="ui-sidebar-footer"><button type="button" class="ui-subscription-card" id="uiSidebarSubscription"><span class="ui-subscription-dot"></span><span><strong id="uiSidebarSubscriptionTitle"></strong><small id="uiSidebarSubscriptionNote"></small></span><b id="uiSidebarSubscriptionAction"></b></button><button type="button" class="ui-sidebar-profile" id="uiSidebarProfile"><span class="ui-sidebar-avatar" id="uiSidebarAvatar"></span><span><strong id="uiSidebarName"></strong><small>Conta pessoal</small></span><b>›</b></button></div>');
     $('appRoot').prepend(nav);
     nav.querySelector('.ui-brand').addEventListener('click',function(){go('resumo');});
+    nav.querySelector('.ui-mobile-nav-brand').addEventListener('click',function(){go('resumo');});
     $('uiSidebarProfile').addEventListener('click',function(){go('ajustes');});
     $('uiSidebarSubscription').addEventListener('click',function(){
       var manage=$('gerirSubscricaoBtn');
