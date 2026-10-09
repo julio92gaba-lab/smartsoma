@@ -234,7 +234,7 @@
     var daily=button('',function(){PlataformaModals.despesas.open();},'ui-button ui-secondary');
     daily.id='uiExpenseManage';expenseCard.append(daily);
     var dashboard=create('div','ui-dashboard-bottom','<section class="home-card ui-chart-panel"><div class="ui-panel-head"><div><p class="ui-eyebrow" id="uiChartEyebrow"></p><h2 id="uiChartTitle"></h2></div><button type="button" id="uiChartDetails" class="ui-text-button"></button></div><div id="uiChart"></div></section><section class="home-card ui-overview-expenses"><div class="ui-panel-head"><h2 id="uiOverviewExpensesTitle"></h2><button type="button" id="uiOverviewFixed" class="ui-text-button"></button></div><div id="uiOverviewFixedGroup" hidden><p class="ui-expense-section-label" id="uiOverviewFixedLabel"></p><div id="uiOverviewFixedRows"></div></div><p class="ui-expense-section-label" id="uiOverviewDailyLabel"></p><div id="uiOverviewExpenseRows"></div></section>');
-    $('resumoTechCard').after(dashboard);
+    $('resumoPeriodControls').after(dashboard);
     $('uiChartDetails').addEventListener('click',function(){
       window.closeAllOverlays();window.closeProfileSheetPublic();
       route='semana';$('metaSlotList').hidden=true;
