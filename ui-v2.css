@@ -99,7 +99,7 @@ html.ui-v2.theme-dark, body.ui-v2.theme-dark {
 .ui-v2 .period-label { color:var(--ink); font-size:.85rem; }
 .ui-v2 .period-nav-btn { border:1px solid var(--card-line); background:var(--card-bg); color:var(--ink); width:34px; height:34px; border-radius:8px; }
 .ui-v2 .resumo-period-controls { position:sticky; top:var(--ui-header); z-index:30; margin:0 -12px 20px; padding:12px; border-radius:0 0 12px 12px; background:transparent; transition:background-color .3s ease,box-shadow .3s ease; }
-.ui-v2 .resumo-period-controls.is-sticky { background:rgba(14,59,42,.14); box-shadow:0 8px 16px rgba(10,28,17,.12); }
+.ui-v2 .resumo-period-controls.is-sticky { background:rgba(14,59,42,.70); box-shadow:0 8px 16px rgba(10,28,17,.12); }
 .ui-v2 .dash-cluster { display:grid; grid-template-columns:1fr 3fr; gap:14px; }
 .ui-v2 .dash-main-row { display:block; }
 .ui-v2 .dash-main-gauge { width:100%; height:145px; border:1px solid var(--card-line); border-radius:12px; background:var(--input-bg); }
