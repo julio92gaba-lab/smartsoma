@@ -348,7 +348,7 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
   .ui-nav-item span { font-size:.56rem; white-space:nowrap; }
   .ui-nav-item svg { width:22px; height:22px; }
   .ui-nav-item.is-active { background:#203322; color:var(--lime); box-shadow:none; }
-  .ui-header { padding:calc(16px + env(safe-area-inset-top,0px)) 18px 16px; background:color-mix(in srgb,var(--paper) 80%,transparent); border-bottom-color:rgba(0,0,0,.05); box-shadow:0 4px 14px rgba(0,0,0,.05); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); }
+  .ui-header { padding:calc(16px + env(safe-area-inset-top,0px)) 18px 16px; background:color-mix(in srgb,var(--paper) 75%,transparent); border-bottom-color:rgba(0,0,0,.05); box-shadow:0 4px 14px rgba(0,0,0,.05); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); }
   body.ui-v2.ui-home .ui-header-avatar { display:grid; flex:0 0 auto; width:46px; height:46px; margin-right:10px; overflow:hidden; place-items:center; border:1px solid rgba(0,0,0,.08); border-radius:50%; background:linear-gradient(145deg,#f3b64c,#df7b55); color:#142015; font-size:.66rem; font-weight:800; }
   .ui-header-avatar img { width:100%; height:100%; object-fit:cover; }
   .ui-header h1 { font-size:1.4rem; }
