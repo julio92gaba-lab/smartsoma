@@ -180,7 +180,7 @@
   function syncSidebarAccount(){
     var name=$('sheetUsername').textContent.trim()||say('Utilizador','User');
     $('uiSidebarName').textContent=name;
-    var source=$('sheetAvatar img');
+    var source=document.querySelector('#sheetAvatar img');
     ['uiSidebarAvatar','uiHeaderAvatar'].forEach(function(id){var avatar=$(id);avatar.replaceChildren();avatar.setAttribute('aria-label',say('Abrir ajustes de ','Open settings for ')+name);if(source){var image=create('img');image.src=source.src;image.alt='';avatar.append(image);}else avatar.textContent=name.split(/\s+/).slice(0,2).map(function(part){return part[0]||'';}).join('').toUpperCase();});
     var status=$('subStatusText').textContent.trim();
     var isTrial=/trial/i.test(status), isCancelled=/cancel/i.test(status), active=!isTrial&&!isCancelled;

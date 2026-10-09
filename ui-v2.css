@@ -51,7 +51,7 @@ html.ui-v2.theme-dark, body.ui-v2.theme-dark {
 .ui-sidebar-profile { width:100%; display:grid; grid-template-columns:34px minmax(0,1fr) auto; align-items:center; gap:9px; margin-top:17px; padding:0 2px; border:0; background:transparent; color:#fff; text-align:left; }
 .ui-sidebar-profile:hover strong { color:#d4f53c; }
 .ui-sidebar-profile>b { color:#9cab9d; font-size:1.35rem; font-weight:400; }
-.ui-sidebar-avatar { width:34px; height:34px; overflow:hidden; border-radius:50%; display:grid; place-items:center; background:linear-gradient(145deg,#f3b64c,#df7b55); color:#142015; font-size:.68rem; font-weight:800; }
+.ui-sidebar-avatar { width:34px; height:34px; overflow:hidden; border:2px solid var(--lime); border-radius:50%; display:grid; place-items:center; background:linear-gradient(145deg,#f3b64c,#df7b55); color:#142015; font-size:.68rem; font-weight:800; }
 .ui-sidebar-avatar img { width:100%; height:100%; object-fit:cover; }
 .ui-header { position:fixed; z-index:40; left:var(--sidebar); right:0; top:0; height:var(--ui-header); display:flex; align-items:center; justify-content:space-between; gap:16px; padding:18px clamp(24px,4vw,64px); background:var(--paper); border-bottom:1px solid var(--card-line); }
 .ui-header-personal { display:flex; align-items:center; min-width:0; }
@@ -349,7 +349,7 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
   .ui-nav-item svg { width:22px; height:22px; }
   .ui-nav-item.is-active { background:#203322; color:var(--lime); box-shadow:none; }
   .ui-header { padding:calc(16px + env(safe-area-inset-top,0px)) 18px 16px; background:color-mix(in srgb,var(--paper) 75%,transparent); border-bottom-color:rgba(0,0,0,.05); box-shadow:0 4px 14px rgba(0,0,0,.05); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); }
-  body.ui-v2.ui-home .ui-header-avatar { display:grid; flex:0 0 auto; width:46px; height:46px; margin-right:10px; overflow:hidden; place-items:center; border:1px solid rgba(0,0,0,.08); border-radius:50%; background:linear-gradient(145deg,#f3b64c,#df7b55); color:#142015; font-size:.66rem; font-weight:800; }
+  body.ui-v2.ui-home .ui-header-avatar { display:grid; flex:0 0 auto; width:46px; height:46px; margin-right:10px; overflow:hidden; place-items:center; border:2px solid var(--brand-green); border-radius:50%; background:linear-gradient(145deg,#f3b64c,#df7b55); color:#142015; font-size:.66rem; font-weight:800; }
   .ui-header-avatar img { width:100%; height:100%; object-fit:cover; }
   .ui-header h1 { font-size:1.4rem; }
   .ui-header .ui-eyebrow { font-size:.56rem; letter-spacing:.4px; }
