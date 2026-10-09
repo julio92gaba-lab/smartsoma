@@ -5,11 +5,11 @@ const settle = () => new Promise(resolve => setTimeout(resolve, 180));
 function submit(a) { a.el('uiEntryForm').dispatchEvent(new a.w.Event('submit', { bubbles:true, cancelable:true })); }
 function setup(t,seed={}) { const a=createApp(seed,{ui:true}); t.after(a.close);return a; }
 
-test('UI keeps five navigation items and redirects retired routes to overview',async t=>{
+test('UI keeps four navigation items, mobile brand and redirects retired routes to overview',async t=>{
   const a=setup(t);a.w.SmartSomaUI.start();await settle();
-  assert.equal(a.w.document.querySelectorAll('.ui-nav-item').length,5);
-  assert.deepEqual([...a.w.document.querySelectorAll('.ui-nav-full')].map(n=>n.textContent),['Visão geral','Detalhes da semana','Relatórios','Calc','Ajustes']);
-  const calc=a.w.document.querySelector('[data-ui-route="calc"]');assert.equal(calc.disabled,true);
+  assert.equal(a.w.document.querySelectorAll('.ui-nav-item').length,4);
+  assert.deepEqual([...a.w.document.querySelectorAll('.ui-nav-full')].map(n=>n.textContent),['Visão geral','Detalhes da semana','Downloads','Ajustes']);
+  assert.equal(a.w.document.querySelector('.ui-mobile-nav-brand img').getAttribute('src'),'logopeq.png');
   assert.equal(a.el('uiChart').querySelectorAll('.ui-rhythm-row').length,7);
   assert.equal(a.el('uiHeaderTitle').textContent,'Olá, Utilizador.');
   assert.equal(a.el('uiHeaderAvatar').textContent,'U');a.el('sheetAvatar').innerHTML='<img src="https://example.com/avatar.jpg">';a.w.SmartSomaUI.refreshSidebar();
@@ -21,7 +21,7 @@ test('UI keeps five navigation items and redirects retired routes to overview',a
   assert.equal(a.w.document.body.dataset.uiRoute,'resumo');
   const ids=[...a.w.document.querySelectorAll('[id]')].map(n=>n.id);
   assert.equal(new Set(ids).size,ids.length);assert.deepEqual(a.errors,[]);
-  for(const route of ['semana','relatorio','resumo']){
+  for(const route of ['semana','downloads','resumo']){
     a.w.SmartSomaUI.go(route);await settle();
     assert.equal(a.w.document.body.dataset.uiRoute,route);
     assert.equal(a.w.document.querySelectorAll('.home-list-page:not([hidden])').length,1);

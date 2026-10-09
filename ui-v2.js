@@ -12,7 +12,7 @@
     despesas: '<path d="M6 3h12v18l-3-2-3 2-3-2-3 2Z M9 8h6M9 12h6"/>',
     semana: '<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M7 3v4M17 3v4M3 11h18M8 15h2M14 15h2"/>',
     relatorio: '<path d="M5 3h10l4 4v14H5ZM14 3v5h5M8 12h8M8 16h8"/>',
-    calc: '<rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M8 11h.01M12 11h.01M16 11h.01M8 15h.01M12 15h.01M16 15h.01M8 18h.01M12 18h.01M16 18h.01"/>',
+    downloads: '<path d="M5 3h10l4 4v14H5Z M15 3v5h5M12 10v7m-3-3 3 3 3-3"/>',
     ajustes: '<path d="m12 3 2 3 4-.2.2 4 3 2-3 2 .2 4-4 .2-2 3-2-3-4 .2-.2-4-3-2 3-2-.2-4 4-.2Z"/><circle cx="12" cy="12" r="3"/>',
     plus: '<path d="M12 5v14M5 12h14"/>',
     arrow: '<path d="M5 12h14m-6-6 6 6-6 6"/>',
@@ -20,8 +20,8 @@
     distance: '<path d="M7 3 3 21M17 3l4 18M12 3v3M12 10v4M12 18v3"/>'
   };
   var text = {
-    pt: { resumo:'Visão geral', ganhos:'Ganhos diários', despesas:'Despesas', semana:'Detalhes da semana', relatorio:'Relatórios', calc:'Calc', ajustes:'Ajustes', hello:'Bom dia', afternoon:'Boa tarde', evening:'Boa noite', record:'Adicionar registo', calendar:'Escolher data', tag:'Para Estafetas e Motoristas de App.', ganhosNote:'Cada percurso conta. Regista os teus rendimentos e acompanha o dia.', despesasNote:'As tuas despesas, sem perder nenhum detalhe.', semanaNote:'Sete dias. Uma visão clara dos teus resultados.', relatorioNote:'Os teus resultados, organizados e prontos a guardar.', ajustesNote:'O SmartSoma, à tua medida.', theme:'Modo escuro', profile:'Editar perfil', help:'Ajuda e tutorial', normal:'Normal', newPlatform:'Nova plataforma', manage:'Gerir plataformas', addIncome:'Adicionar rendimento' },
-    en: { resumo:'Overview', ganhos:'Daily earnings', despesas:'Expenses', semana:'Weekly details', relatorio:'Reports', calc:'Calc', ajustes:'Settings', hello:'Good morning', afternoon:'Good afternoon', evening:'Good evening', record:'Add entry', calendar:'Choose date', tag:'For couriers and app drivers.', ganhosNote:'Every journey counts. Record your earnings and track your day.', despesasNote:'Your expenses, without missing a detail.', semanaNote:'Seven days. A clear view of your results.', relatorioNote:'Your results, organised and ready to save.', ajustesNote:'SmartSoma, your way.', theme:'Dark mode', profile:'Edit profile', help:'Help and tutorial', normal:'Normal', newPlatform:'New platform', manage:'Manage platforms', addIncome:'Add earnings' }
+    pt: { resumo:'Visão geral', ganhos:'Ganhos diários', despesas:'Despesas', semana:'Detalhes da semana', relatorio:'Relatórios', downloads:'Downloads', ajustes:'Ajustes', hello:'Bom dia', afternoon:'Boa tarde', evening:'Boa noite', record:'Adicionar registo', calendar:'Escolher data', tag:'Para Estafetas e Motoristas de App.', ganhosNote:'Cada percurso conta. Regista os teus rendimentos e acompanha o dia.', despesasNote:'As tuas despesas, sem perder nenhum detalhe.', semanaNote:'Sete dias. Uma visão clara dos teus resultados.', relatorioNote:'Os teus resultados, organizados e prontos a guardar.', downloadsNote:'Os teus resultados, organizados e prontos a descarregar.', ajustesNote:'O SmartSoma, à tua medida.', theme:'Modo escuro', profile:'Editar perfil', help:'Ajuda e tutorial', normal:'Normal', newPlatform:'Nova plataforma', manage:'Gerir plataformas', addIncome:'Adicionar rendimento' },
+    en: { resumo:'Overview', ganhos:'Daily earnings', despesas:'Expenses', semana:'Weekly details', relatorio:'Reports', downloads:'Downloads', ajustes:'Settings', hello:'Good morning', afternoon:'Good afternoon', evening:'Good evening', record:'Add entry', calendar:'Choose date', tag:'For couriers and app drivers.', ganhosNote:'Every journey counts. Record your earnings and track your day.', despesasNote:'Your expenses, without missing a detail.', semanaNote:'Sete days. A clear view of your results.', relatorioNote:'Your results, organised and ready to save.', downloadsNote:'Your results, organised and ready to download.', ajustesNote:'SmartSoma, your way.', theme:'Dark mode', profile:'Edit profile', help:'Help and tutorial', normal:'Normal', newPlatform:'New platform', manage:'Manage platforms', addIncome:'Add earnings' }
   };
   function t(key) { return (text[window.I18N && I18N.getLang()] || text.pt)[key] || key; }
   function svg(key) { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (icons[key] || icons.arrow) + '</svg>'; }
@@ -115,7 +115,7 @@
     started = true;
     document.body.classList.add('ui-v2');
     document.documentElement.classList.add('ui-v2');
-    var nav = create('aside', 'ui-sidebar', '<button type="button" class="ui-brand" aria-label="SmartSoma"><img src="logo.png" alt="SmartSoma"></button><p class="ui-brand-caption" data-ui-text="tag"></p><nav class="ui-navigation" aria-label="Menu principal"></nav><div class="ui-sidebar-footer"><button type="button" class="ui-subscription-card" id="uiSidebarSubscription"><span class="ui-subscription-dot"></span><span><strong id="uiSidebarSubscriptionTitle"></strong><small id="uiSidebarSubscriptionNote"></small></span><b id="uiSidebarSubscriptionAction"></b></button><button type="button" class="ui-sidebar-profile" id="uiSidebarProfile"><span class="ui-sidebar-avatar" id="uiSidebarAvatar"></span><span><strong id="uiSidebarName"></strong><small>Conta pessoal</small></span><b>›</b></button></div>');
+    var nav = create('aside', 'ui-sidebar', '<button type="button" class="ui-brand" aria-label="SmartSoma"><img src="logo.png" alt="SmartSoma"></button><p class="ui-brand-caption" data-ui-text="tag"></p><nav class="ui-navigation" aria-label="Menu principal"></nav><div class="ui-mobile-nav-brand" aria-label="Smart Soma"><img src="logopeq.png" alt="Smart Soma"></div><div class="ui-sidebar-footer"><button type="button" class="ui-subscription-card" id="uiSidebarSubscription"><span class="ui-subscription-dot"></span><span><strong id="uiSidebarSubscriptionTitle"></strong><small id="uiSidebarSubscriptionNote"></small></span><b id="uiSidebarSubscriptionAction"></b></button><button type="button" class="ui-sidebar-profile" id="uiSidebarProfile"><span class="ui-sidebar-avatar" id="uiSidebarAvatar"></span><span><strong id="uiSidebarName"></strong><small>Conta pessoal</small></span><b>›</b></button></div>');
     $('appRoot').prepend(nav);
     nav.querySelector('.ui-brand').addEventListener('click',function(){go('resumo');});
     $('uiSidebarProfile').addEventListener('click',function(){go('ajustes');});
@@ -124,9 +124,8 @@
       if(manage&&getComputedStyle(manage).display!=='none'){manage.click();return;}
       go('ajustes');
     });
-    ['resumo','semana','relatorio','calc','ajustes'].forEach(function(key){
+    ['resumo','semana','downloads','ajustes'].forEach(function(key){
       var n=button('',function(){go(key);},'ui-nav-item');
-      if(key==='calc'){n.disabled=true;n.setAttribute('aria-disabled','true');}
       n.dataset.uiRoute=key; n.innerHTML=svg(key)+'<span class="ui-nav-full" data-ui-text="'+key+'"></span><span class="ui-nav-short" aria-hidden="true"></span>'; nav.querySelector('nav').append(n);
     });
     var header=create('header','ui-header','<div class="ui-header-personal"><button type="button" id="uiHeaderAvatar" class="ui-header-avatar"></button><div class="ui-header-copy"><p id="uiHeaderDate" class="ui-eyebrow"></p><h1 id="uiHeaderTitle"></h1></div></div><div class="ui-mobile-logo"><img src="logo-home.png" alt="SmartSoma"><span data-ui-text="tag"></span></div><div class="ui-header-actions"><button type="button" id="uiCalendar" class="ui-icon-button">'+svg('semana')+'</button><button type="button" id="uiAdd" class="ui-add">'+svg('plus')+'</button></div>');
@@ -139,14 +138,15 @@
     });
     $('uiCalendar').addEventListener('click',function(){window.closeProfileSheetPublic(); window.closeAllOverlays(); GanhosDate.open();});
     $('uiAdd').addEventListener('click',function(){window.closeProfileSheetPublic(); if(window.SmartSomaUI.openEntry) SmartSomaUI.openEntry(); else PlataformaModals.uber.open();});
-    ['Semana','Relatorio'].forEach(function(name){$('homeListPage'+name).prepend(heading(name.toLowerCase()));});
+    $('homeListPageSemana').prepend(heading('semana'));
+    $('homeListPageRelatorio').prepend(heading('downloads'));
     $('tamanhoOptionP').querySelector('.tamanho-option-letter').textContent='A';
     $('tamanhoOptionG').querySelector('.tamanho-option-letter').textContent='A';
     var theme=button('',function(){$('btnToggleTheme').click();syncHeader();},'sheet-action-btn');
     theme.id='uiThemeRow'; theme.innerHTML=svg('ajustes')+'<span data-ui-text="theme"></span>'; $('openTermosMenuBtn').before(theme);
     var viewControls=$('subHeaderViewToggleGroup'); $('semanaWeekPicker').after(viewControls); viewControls.hidden=false;
     var originalGo=HomeNav.goToSection;
-    HomeNav.goToSection=function(key){ key=(key==='default'||key==='ganhos'||key==='despesas')?'resumo':key; route=key; if($('uiSettingsPage'))$('uiSettingsPage').hidden=true; originalGo(key); syncHeader(); };
+    HomeNav.goToSection=function(key){ key=(key==='default'||key==='ganhos'||key==='despesas')?'resumo':key; route=key; if($('uiSettingsPage'))$('uiSettingsPage').hidden=true; originalGo(key==='downloads'?'relatorio':key); syncHeader(); };
     // These original buttons call the private navigation function, so keep the shell in sync too.
     $('btnVerMeuResumo').addEventListener('click',function(){route='resumo';syncHeader();});
     var observer=new MutationObserver(function(){syncHeader();syncSidebarAccount();});

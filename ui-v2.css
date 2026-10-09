@@ -33,6 +33,7 @@ html.ui-v2.theme-dark, body.ui-v2.theme-dark {
 .ui-brand img { display:block; width:184px; max-width:100%; height:auto; }
 .ui-brand-caption { font-size:.68rem; color:#9cab9d; margin:12px 8px 35px; }
 .ui-navigation { display:grid; gap:9px; }
+.ui-mobile-nav-brand { display:none; }
 .ui-nav-item { display:flex; align-items:center; gap:12px; border:1px solid transparent; padding:13px 14px; color:#b8c5bb; background:transparent; text-align:left; border-radius:10px; font-size:.82rem; font-weight:600; }
 .ui-nav-item svg { width:21px; height:21px; flex:none; }
 .ui-nav-item:hover { background:#1b2b20; color:#fff; }
@@ -350,8 +351,12 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
   html.ui-v2,body.ui-v2 { --sidebar:0px; --ui-header:calc(82px + env(safe-area-inset-top,0px)); }
   .ui-sidebar { top:auto; width:100%; height:calc(72px + env(safe-area-inset-bottom,0px)); bottom:0; padding:8px 6px calc(8px + env(safe-area-inset-bottom,0px)); border:0; border-top:1px solid #2d3b30; }
   .ui-brand,.ui-brand-caption,.ui-sidebar-footer { display:none; }
-  .ui-navigation { display:flex; height:100%; justify-content:space-between; gap:0; }
-  .ui-nav-item { flex:1; min-width:0; display:flex; flex-direction:column; justify-content:center; gap:5px; padding:5px 2px; border:0; border-radius:8px; }
+  .ui-navigation { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); height:100%; gap:0; }
+  .ui-nav-item { grid-column:auto; min-width:0; display:flex; flex-direction:column; justify-content:center; gap:5px; padding:5px 2px; border:0; border-radius:8px; }
+  .ui-nav-item[data-ui-route="downloads"] { grid-column:4; }
+  .ui-nav-item[data-ui-route="ajustes"] { grid-column:5; }
+  .ui-mobile-nav-brand { position:absolute; z-index:1; top:-16px; left:50%; display:grid; place-items:center; width:92px; height:46px; padding:5px 10px; border:1px solid rgba(212,245,60,.45); border-radius:999px; background:transparent; box-shadow:0 4px 14px rgba(0,0,0,.18); transform:translateX(-50%); pointer-events:none; }
+  .ui-mobile-nav-brand img { display:block; width:100%; height:100%; object-fit:contain; }
   .ui-nav-item span { font-size:.56rem; white-space:nowrap; }
   .ui-nav-item svg { width:22px; height:22px; }
   .ui-nav-item.is-active { background:#203322; color:var(--lime); box-shadow:none; }
