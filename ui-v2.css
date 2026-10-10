@@ -720,3 +720,6 @@ body.ui-v2.theme-dark .amber .ui-metric-icon { background:#483e26; color:#f3ce80
   .ui-v2 .ui-metric h3 { font-size:23px; }
 }
 @media(prefers-reduced-motion:reduce) { .ui-v2 *, .ui-v2 *::before, .ui-v2 *::after { animation-duration:.01ms !important; transition-duration:.01ms !important; scroll-behavior:auto !important; } }
+/* A tabela de despesas usa a largura natural das células e permanece rolável. */
+.ui-v2 #homeListPageSemana .semana-despesas-detail-table :is(th,td) { padding:0 !important; white-space:nowrap; }
+.ui-v2 #homeListPageSemana .semana-despesas-detail-table { border-collapse:separate; border-spacing:12px 0; }
