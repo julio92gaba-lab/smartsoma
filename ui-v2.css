@@ -434,7 +434,7 @@ body.ui-v2 #resumoPeriodControls .period-filter-row { background:transparent; }
   .ui-v2 #resumoPeriodControls { display:flex; align-items:center; justify-content:flex-start; gap:14px; }
   .ui-v2 #resumoPeriodControls .period-filter-row,
   .ui-v2 #resumoPeriodControls .period-nav-row { flex:0 0 auto; justify-content:flex-start; margin:0; }
-  .ui-v2 #resumoPeriodControls .period-label { text-align:left; }
+  .ui-v2 #resumoPeriodControls .period-label { text-align:center; }
 }
 .ui-v2 #resumoTechCard .dash-cluster,
 .ui-v2 #metaSemanalCurrentContent { display:none; }
