@@ -508,6 +508,87 @@ body.ui-v2 #resumoPeriodControls .period-filter-row { background:transparent; }
   .ui-v2 #resumoPeriodControls .period-nav-row { flex:0 0 auto; justify-content:flex-start; margin:0; }
   .ui-v2 #resumoPeriodControls .period-label { text-align:center; }
 }
+/* Mobile-only internal-page refresh. The overview and desktop stay untouched. */
+@media (max-width:760px) {
+  body.ui-v2:not(.ui-home) .ui-header-personal { gap:10px; }
+  body.ui-v2:not(.ui-home) .ui-header-avatar { display:grid; flex:0 0 50px; place-items:center; width:50px; height:50px; overflow:hidden; border:2px solid var(--lime); border-radius:50%; background:var(--teal); color:var(--paper); font-size:.8rem; font-weight:800; }
+  body.ui-v2:not(.ui-home) .ui-header-copy { display:block; }
+  body.ui-v2:not(.ui-home) .ui-mobile-logo { display:none; }
+
+  .ui-v2 #homeListPageSemana > .ui-page-intro,
+  .ui-v2 #homeListPageRelatorio > .ui-page-intro,
+  .ui-v2 #uiSettingsPage > .ui-page-intro { position:relative; overflow:hidden; margin:0 0 18px; padding:18px; border:1px solid color-mix(in srgb,var(--lime) 20%,transparent); border-radius:14px; background:linear-gradient(112deg,rgba(14,59,42,.96),rgba(22,79,51,.82)); box-shadow:0 12px 26px rgba(10,42,28,.12); color:#f4f9ec; backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); }
+  .ui-v2 #homeListPageSemana > .ui-page-intro::before,
+  .ui-v2 #homeListPageRelatorio > .ui-page-intro::before,
+  .ui-v2 #uiSettingsPage > .ui-page-intro::before { content:''; position:absolute; top:0; left:18px; right:38%; height:1px; background:linear-gradient(90deg,transparent,var(--lime),transparent); opacity:.75; }
+  .ui-v2 #homeListPageSemana > .ui-page-intro .ui-selected-date,
+  .ui-v2 #homeListPageRelatorio > .ui-page-intro .ui-selected-date,
+  .ui-v2 #uiSettingsPage > .ui-page-intro .ui-selected-date { display:none; }
+  .ui-v2 #homeListPageSemana > .ui-page-intro h1,
+  .ui-v2 #homeListPageRelatorio > .ui-page-intro h1,
+  .ui-v2 #uiSettingsPage > .ui-page-intro h1 { position:relative; margin:0; color:#fff; font-size:1.5rem; letter-spacing:-.45px; }
+  .ui-v2 #homeListPageSemana > .ui-page-intro > p:last-child,
+  .ui-v2 #homeListPageRelatorio > .ui-page-intro > p:last-child,
+  .ui-v2 #uiSettingsPage > .ui-page-intro > p:last-child { position:relative; margin:6px 0 0; color:#c6dacb; font-size:.76rem; line-height:1.45; }
+
+  .ui-v2 #homeListPageSemana #semanaTechCard { padding:0; border:0; background:transparent; box-shadow:none; }
+  .ui-v2 #homeListPageSemana .semana-live-content { display:grid; gap:0; }
+  .ui-v2 #homeListPageSemana .period-nav-row { width:100%; margin:0; padding:8px; border:1px solid #274d38; border-radius:12px 12px 0 0; background:#0e3b2a; }
+  .ui-v2 #homeListPageSemana .period-nav-btn { width:34px; height:34px; border-color:#355e45; border-radius:999px; background:#173f2d; color:var(--lime); transition:transform .16s ease,background-color .16s ease; }
+  .ui-v2 #homeListPageSemana .period-nav-btn:active,
+  .ui-v2 #homeListPageSemana .semana-week-picker-btn:active { transform:scale(.98); }
+  .ui-v2 #homeListPageSemana .period-label { color:#f4f9ec; font-size:.8rem; }
+  .ui-v2 #homeListPageSemana .semana-week-picker { margin:0 0 14px; }
+  .ui-v2 #homeListPageSemana .semana-week-picker-btn { min-height:52px; border:1px solid #274d38; border-radius:0 0 12px 12px; background:#123f2b; color:#f4f9ec; box-shadow:none; transition:transform .16s ease; }
+  .ui-v2 #homeListPageSemana .semana-week-picker-num { padding:4px 6px; border-radius:6px; background:rgba(212,245,60,.13); color:var(--lime); opacity:1; }
+  .ui-v2 #homeListPageSemana .semana-week-picker-chevron { color:var(--lime); }
+  .ui-v2 #homeListPageSemana .semana-week-picker-panel { border-color:#315a43; background:#163d2b; box-shadow:0 16px 36px rgba(4,20,12,.28); }
+  .ui-v2 #homeListPageSemana .semana-week-picker-option { border-color:#315a43; color:#e8f2e8; }
+  .ui-v2 #homeListPageSemana .semana-week-picker-option.is-active { background:rgba(212,245,60,.12); color:var(--lime); }
+  .ui-v2 #subHeaderViewToggleGroup { display:grid; grid-template-columns:1fr 1fr; gap:4px; margin:0 0 14px; padding:4px; border:1px solid #274d38; border-radius:11px; background:#0e3b2a; }
+  .ui-v2 #subHeaderViewToggleGroup .sub-header-view-toggle-btn { width:100%; min-height:38px; border-radius:8px; background:transparent; color:#acc7b4; transition:background-color .18s ease,transform .18s ease; }
+  .ui-v2 #subHeaderViewToggleGroup .sub-header-view-toggle-btn.is-active { background:var(--lime); color:#142617; box-shadow:0 2px 0 #8dac29; }
+  .ui-v2 #subHeaderViewToggleGroup .sub-header-view-toggle-btn:active { transform:scale(.98); }
+
+  .ui-v2 #homeListPageSemana .semana-week-summary,
+  .ui-v2 #homeListPageSemana .semana-list-summary { position:relative; overflow:hidden; padding:19px; border-color:#245239; background:radial-gradient(circle at 92% 6%,rgba(212,245,60,.18),transparent 31%),linear-gradient(135deg,#0b3122,#12452f); box-shadow:0 12px 25px rgba(10,42,28,.14); }
+  .ui-v2 #homeListPageSemana .semana-week-summary::after,
+  .ui-v2 #homeListPageSemana .semana-list-summary::after { content:'↗'; position:absolute; top:-18px; right:6px; color:rgba(212,245,60,.11); font:800 6.8rem/1 'Bricolage Grotesque',sans-serif; transform:rotate(-8deg); pointer-events:none; }
+  .ui-v2 #homeListPageSemana .semana-week-summary > *,
+  .ui-v2 #homeListPageSemana .semana-list-summary > * { position:relative; z-index:1; }
+  .ui-v2 #homeListPageSemana .semana-week-summary .dash-sub-tile,
+  .ui-v2 #homeListPageSemana .semana-list-summary .dash-sub-tile { border-color:rgba(212,245,60,.19); background:rgba(255,255,255,.045); }
+  .ui-v2 #homeListPageSemana .semana-week-summary .dash-tile-icon,
+  .ui-v2 #homeListPageSemana .semana-list-summary .dash-tile-icon { filter:drop-shadow(0 0 5px rgba(212,245,60,.42)); }
+  .ui-v2 #homeListPageSemana .semana-list-summary { margin:0 0 14px; }
+
+  .ui-v2 #homeListPageSemana .semana-table-scroll { border-radius:14px; box-shadow:0 8px 18px rgba(17,35,23,.06); }
+  .ui-v2 #homeListPageSemana .semana-table-wrap { border-color:#cad7cb; border-radius:14px; }
+  .ui-v2 #homeListPageSemana .semana-table { min-width:660px; }
+  .ui-v2 #homeListPageSemana .semana-table thead th { padding:12px 10px; border-color:#28543c; background:#0e3b2a; color:#d9e6db; font-size:.6rem; letter-spacing:.8px; }
+  .ui-v2 #homeListPageSemana .semana-table thead th::before { content:'•'; margin-right:4px; color:var(--lime); }
+  .ui-v2 #homeListPageSemana .semana-table tbody td { padding:16px 10px; border-color:color-mix(in srgb,var(--card-line) 70%,transparent); font-size:.69rem; }
+  .ui-v2 #homeListPageSemana .semana-table tbody tr:nth-child(even) { background:color-mix(in srgb,var(--input-bg) 65%,transparent); }
+  .ui-v2 #homeListPageSemana .semana-table tbody tr.is-today { background:rgba(30,158,90,.12); box-shadow:inset 4px 0 0 var(--lime); }
+  .ui-v2 #homeListPageSemana .semana-table tbody td.semana-cell-total { position:relative; padding-bottom:21px; }
+  .ui-v2 #homeListPageSemana .semana-table tbody td.semana-cell-total::after { content:''; position:absolute; left:10px; right:10px; bottom:9px; height:3px; border-radius:999px; background:linear-gradient(90deg,var(--brand-green),rgba(30,158,90,.16)); }
+  .ui-v2 #homeListPageSemana .semana-despesas-detail-card { margin-top:2px; border-color:var(--card-line); background:var(--card-bg); }
+  .ui-v2 #homeListPageSemana .semana-despesas-detail-card .semana-table thead th { background:#0e3b2a; color:#d9e6db; }
+
+  .ui-v2 #homeListPageRelatorio .home-card { padding:0; border:0; background:transparent; box-shadow:none; }
+  .ui-v2 #homeListPageRelatorio .legal-title,
+  .ui-v2 #homeListPageRelatorio .ajuda-intro-text,
+  .ui-v2 #homeListPageRelatorio .relatorio-illustration,
+  .ui-v2 #homeListPageRelatorio .relatorio-highlights,
+  .ui-v2 #homeListPageRelatorio .ui-download-action { margin-left:0; margin-right:0; }
+  .ui-v2 #homeListPageRelatorio .relatorio-illustration { width:100%; height:132px; border-radius:14px; }
+  .ui-v2 #homeListPageRelatorio .ui-download-action { border-radius:14px; background:radial-gradient(circle at 100% 0,rgba(212,245,60,.16),transparent 35%),#0e3b2a; }
+
+  .ui-v2 #uiSettingsPage .sheet-profile-row { border:1px solid #245239; background:radial-gradient(circle at 100% 0,rgba(212,245,60,.15),transparent 38%),#0e3b2a; }
+  .ui-v2 #uiSettingsPage .ui-settings-group,
+  .ui-v2 #uiSettingsPage .sheet-actions:not(.ui-settings-group) { border-radius:14px; }
+  .ui-v2 #uiSettingsPage .sheet-action-btn { min-height:58px; border-radius:10px; }
+}
 .ui-v2 #resumoTechCard .dash-cluster,
 .ui-v2 #metaSemanalCurrentContent { display:none; }
 .ui-v2 #metaSlotList { margin:0 0 24px; }

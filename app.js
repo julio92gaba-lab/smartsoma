@@ -3943,6 +3943,15 @@
         if (!listPlaceholder) return;
         listPlaceholder.innerHTML = '';
         if (!week) return;
+        if (window.matchMedia && window.matchMedia('(max-width: 760px)').matches) {
+          var activeBlock = document.getElementById('semanaWeekBlock-' + currentWeekIndex);
+          var activeSummary = activeBlock && activeBlock.querySelector('.semana-week-summary');
+          if (activeSummary) {
+            var summaryCopy = activeSummary.cloneNode(true);
+            summaryCopy.classList.add('semana-list-summary');
+            listPlaceholder.appendChild(summaryCopy);
+          }
+        }
         var cards = [];
         for (var i = 0; i < 7; i++) {
           var d = new Date(week.monday.getTime());

@@ -55,10 +55,11 @@
     var showingOtherDate=selectedDay.getTime()!==today.getTime();
     document.body.classList.toggle('ui-showing-other-date',showingOtherDate);
     var headerDate = date.toLocaleDateString(locale,{weekday:'long',day:'numeric',month:'long'}).replace(/-feira\b/i,'');
-    $('uiHeaderDate').textContent = showingOtherDate && window.matchMedia('(max-width:760px)').matches ? say('A mostrar dados de…','Showing data from…') : headerDate;
+    var mobileInternal = route !== 'resumo' && !inSettings && window.matchMedia('(max-width:760px)').matches;
+    $('uiHeaderDate').textContent = mobileInternal ? headerDate : (showingOtherDate && window.matchMedia('(max-width:760px)').matches ? say('A mostrar dados de…','Showing data from…') : headerDate);
     var name = $('sheetUsername').textContent.trim().split(' ')[0];
     var greeting = say('Olá','Hello');
-    $('uiHeaderTitle').textContent = showingOtherDate && window.matchMedia('(max-width:760px)').matches ? shortHeaderDate(date) : inSettings ? (sheet && sheet.id !== 'sheetScreenDefault' ? $('sheetHandleTitle').textContent : t('ajustes')) : route === 'resumo' ? greeting + ', ' + name + '.' : t(route);
+    $('uiHeaderTitle').textContent = mobileInternal ? greeting + ', ' + name + '.' : (showingOtherDate && window.matchMedia('(max-width:760px)').matches ? shortHeaderDate(date) : inSettings ? (sheet && sheet.id !== 'sheetScreenDefault' ? $('sheetHandleTitle').textContent : t('ajustes')) : route === 'resumo' ? greeting + ', ' + name + '.' : t(route));
     document.body.dataset.uiRoute = route;
     document.body.classList.toggle('ui-home', route === 'resumo' && !inSettings);
     document.querySelectorAll('.ui-selected-date').forEach(function(n){ n.textContent = date.toLocaleDateString(locale,{day:'numeric',month:'long',year:'numeric'}); });
@@ -158,6 +159,7 @@
     observer.observe($('subStatusText'),{childList:true,subtree:true,characterData:true});
     observer.observe($('sheetProActiveBadge'),{attributes:true,attributeFilter:['style']});
     GanhosDate.onChange(syncHeader);
+    window.addEventListener('resize',syncHeader);
     setupStickyPeriodControls();
     document.addEventListener('languageChanged',function(){translate();syncHeader();});
     setupPages();
