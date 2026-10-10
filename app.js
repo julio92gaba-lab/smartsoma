@@ -3950,7 +3950,7 @@
           if (d.getTime() > today.getTime()) tr.classList.add('is-future');
 
           var tdData = document.createElement('td');
-          tdData.className = 'semana-cell-data';
+          tdData.className = 'semana-metric-all semana-cell-data';
           tdData.innerHTML = DIAS_ABBR()[i] + '<span class="semana-cell-date">' + pad2(d.getDate()) + '/' + pad2(d.getMonth() + 1) + '</span>';
           tr.appendChild(tdData);
 
