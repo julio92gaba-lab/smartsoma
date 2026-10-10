@@ -40,7 +40,7 @@ test('calendar edits the selected day without changing today', async t => {
   await settle();
   assert.equal(JSON.parse(a.cache['homeBadgeValores:'+dateKey(yesterday)]).uber,42);
   assert.equal(JSON.parse(a.cache['homeBadgeValores:'+dateKey(today)]).uber,75);
-  assert.equal(a.w.document.body.dataset.uiRoute,'resumo');
+  assert.equal(a.w.document.body.dataset.uiRoute,'semana');
   assert.deepEqual(a.errors,[]);
 });
 

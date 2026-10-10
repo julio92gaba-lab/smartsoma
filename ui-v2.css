@@ -502,6 +502,45 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
 body.ui-v2 #resumoPeriodControls .period-filter-row { background:transparent; }
 .ui-v2 #resumoPeriodControls .period-nav-row { justify-content:center; margin-bottom:0; }
 .ui-v2 #resumoPeriodControls .period-label { min-width:190px; text-align:center; }
+/* Cabeçalhos internos e composição semanal: apenas camada de apresentação. */
+body.ui-v2[data-ui-route="semana"] .ui-header .ui-header-avatar,
+body.ui-v2[data-ui-route="downloads"] .ui-header .ui-header-avatar,
+body.ui-v2[data-ui-route="ajustes"] .ui-header .ui-header-avatar { display:none !important; }
+body.ui-v2:is([data-ui-route="semana"],[data-ui-route="downloads"],[data-ui-route="ajustes"]) .ui-header #uiHeaderDate { display:inline-flex; align-items:center; width:max-content; min-height:25px; padding:5px 8px; border:1px solid var(--card-line); border-radius:8px; background:var(--card-bg); color:var(--muted); font-size:.56rem; font-weight:700; line-height:1; letter-spacing:.45px; text-transform:uppercase; }
+.ui-v2 #homeListPageSemana #semanaTechCard { max-width:960px; padding:0; border:0; background:transparent; box-shadow:none; }
+.ui-v2 #homeListPageSemana .semana-live-content { display:flex; flex-direction:column; gap:18px; }
+.ui-v2 #homeListPageSemana .semana-summary-slot { order:0; }
+.ui-v2 #homeListPageSemana .semana-summary-slot-card { margin:0; }
+.ui-v2 #homeListPageSemana .semana-filter-controls { position:sticky; top:var(--ui-header); z-index:30; order:1; display:grid; gap:7px; margin:0 -12px; padding:10px 12px; border:1px solid transparent; border-radius:14px; background:transparent; transition:background-color .3s ease,box-shadow .3s ease,border-color .3s ease; }
+.ui-v2 #homeListPageSemana .semana-filter-controls.is-sticky { border-color:color-mix(in srgb,var(--ink) 10%,transparent); background:color-mix(in srgb,var(--paper) 75%,transparent); box-shadow:0 4px 14px rgba(0,0,0,.05),inset 1px 0 rgba(21,36,27,.10),inset -1px 0 rgba(21,36,27,.10),inset 0 -1px rgba(21,36,27,.10); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); }
+.ui-v2 #homeListPageSemana .semana-filter-controls .period-nav-row { display:grid; grid-template-columns:34px minmax(0,auto) 34px; align-items:center; justify-content:center; width:100%; margin:0; padding:0; border:0; border-radius:0; background:transparent; }
+.ui-v2 #homeListPageSemana .semana-filter-controls .period-label { min-width:0; width:max-content; margin:auto; padding:8px 16px; border:1px solid #183021; border-radius:999px; background:var(--lime); color:#183021; font-size:.76rem; font-weight:800; text-align:center; }
+.ui-v2 #homeListPageSemana .semana-filter-controls .period-nav-btn { border:0; background:transparent; color:var(--ink); box-shadow:none; }
+.ui-v2 #homeListPageSemana .semana-week-nav { display:grid; grid-template-columns:34px minmax(0,1fr) 34px; align-items:center; gap:4px; }
+.ui-v2 #homeListPageSemana .semana-week-nav .period-nav-btn { border:0; background:transparent; color:var(--muted); }
+.ui-v2 #homeListPageSemana .semana-week-picker { margin:0; min-width:0; }
+.ui-v2 #homeListPageSemana .semana-week-picker-btn { min-height:36px; padding:6px 8px; border:0; border-radius:0; background:transparent; box-shadow:none; color:var(--ink); justify-content:center; }
+.ui-v2 #homeListPageSemana .semana-week-picker-btn > span { display:block; overflow:hidden; text-align:center; text-overflow:ellipsis; white-space:nowrap; }
+.ui-v2 #homeListPageSemana .semana-week-picker-num { padding:0; border-radius:0; background:transparent; color:inherit; }
+.ui-v2 #homeListPageSemana .semana-week-picker-chevron { display:none; }
+.ui-v2 #homeListPageSemana .semana-week-picker-panel { z-index:35; }
+.ui-v2 #homeListPageSemana #subHeaderViewToggleGroup { justify-self:center; width:min(220px,100%); margin:2px 0 0; }
+.ui-v2 #homeListPageSemana .semana-weeks-container,
+.ui-v2 #homeListPageSemana .semana-list-placeholder { order:2; }
+.ui-v2 #homeListPageSemana .semana-week-block > .semana-week-summary:not(.semana-despesas-detail-card) { display:none; }
+.ui-v2 #homeListPageSemana .semana-expenses-section { display:flex; flex-direction:column; gap:9px; margin-top:18px; }
+.ui-v2 #homeListPageSemana .semana-despesas-detail-title { margin:0; color:var(--ink); font:700 1rem 'Bricolage Grotesque',sans-serif; letter-spacing:-.2px; }
+.ui-v2 #homeListPageSemana .semana-despesas-detail-card { padding:0; border:0; border-radius:14px; background:transparent; }
+.ui-v2 #homeListPageSemana .semana-despesas-detail-card .semana-table-wrap { overflow:auto; }
+.ui-v2 #homeListPageSemana .semana-despesas-detail-table { width:max-content; min-width:100%; table-layout:auto; }
+.ui-v2 #homeListPageSemana .semana-despesas-detail-table :is(th,td) { padding:0; white-space:nowrap; }
+.ui-v2 #homeListPageSemana .semana-despesas-detail-table td + td,
+.ui-v2 #homeListPageSemana .semana-despesas-detail-table th + th { padding-left:12px; }
+@media (max-width:760px) {
+  .ui-v2 #homeListPageSemana .semana-filter-controls { margin-inline:-8px; padding:8px; }
+  .ui-v2 #homeListPageSemana .semana-filter-controls .period-label { padding:7px 14px; font-size:.7rem; }
+  .ui-v2 #homeListPageSemana .semana-live-content { gap:14px; }
+}
 @media (min-width:761px) {
   .ui-v2 #resumoPeriodControls { display:flex; align-items:center; justify-content:flex-start; gap:14px; }
   .ui-v2 #resumoPeriodControls .period-filter-row,

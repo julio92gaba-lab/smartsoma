@@ -4,6 +4,7 @@
   'use strict';
   var started = false;
   var route = 'resumo';
+  var calendarWeekSelection = false;
   var pageTransitioning = false;
   var $ = function (id) { return document.getElementById(id); };
   var icons = {
@@ -56,11 +57,13 @@
     document.body.classList.toggle('ui-showing-other-date',showingOtherDate);
     var headerDate = date.toLocaleDateString(locale,{weekday:'long',day:'numeric',month:'long'}).replace(/-feira\b/i,'');
     var mobileInternal = route !== 'resumo' && !inSettings && window.matchMedia('(max-width:760px)').matches;
-    var mobileWeek = route === 'semana' && mobileInternal;
-    $('uiHeaderDate').textContent = mobileInternal ? headerDate : (showingOtherDate && window.matchMedia('(max-width:760px)').matches ? say('A mostrar dados de…','Showing data from…') : headerDate);
+    var internalPage = route !== 'resumo' && !inSettings;
+    var calendarWeekHeader = route === 'semana' && calendarWeekSelection;
+    $('uiHeaderDate').textContent = calendarWeekHeader ? say('A mostrar dados de…','Showing data from…') : headerDate;
     var name = $('sheetUsername').textContent.trim().split(' ')[0];
     var greeting = say('Olá','Hello');
-    $('uiHeaderTitle').textContent = mobileWeek ? 'Minha semana' : (mobileInternal ? greeting + ', ' + name + '.' : (showingOtherDate && window.matchMedia('(max-width:760px)').matches ? shortHeaderDate(date) : inSettings ? (sheet && sheet.id !== 'sheetScreenDefault' ? $('sheetHandleTitle').textContent : t('ajustes')) : route === 'resumo' ? greeting + ', ' + name + '.' : t(route)));
+    var internalTitle = route === 'semana' ? say('Minha semana','My week') : t(route);
+    $('uiHeaderTitle').textContent = calendarWeekHeader ? calendarHeaderTitle(date) : (internalPage ? internalTitle : (inSettings ? (sheet && sheet.id !== 'sheetScreenDefault' ? $('sheetHandleTitle').textContent : t('ajustes')) : greeting + ', ' + name + '.'));
     document.body.dataset.uiRoute = route;
     document.body.classList.toggle('ui-home', route === 'resumo' && !inSettings);
     document.querySelectorAll('.ui-selected-date').forEach(function(n){ n.textContent = date.toLocaleDateString(locale,{day:'numeric',month:'long',year:'numeric'}); });
@@ -74,8 +77,15 @@
     var months=['Jan.','Fev.','Mar.','Abr.','Mai.','Jun.','Jul.','Ago.','Set.','Out.','Nov.','Dez.'];
     return days[date.getDay()]+', '+date.getDate()+' de '+months[date.getMonth()];
   }
+  function calendarHeaderTitle(date){
+    if(I18N.getLang()==='en')return date.toLocaleDateString(I18N.t('lang.code'),{weekday:'short',day:'numeric',month:'short'}).replace(',', ' |');
+    var days=['Dom.','Seg.','Ter.','Qua.','Qui.','Sex.','Sáb.'];
+    var months=['jan.','fev.','mar.','abr.','mai.','jun.','jul.','ago.','set.','out.','nov.','dez.'];
+    return days[date.getDay()]+' | '+date.getDate()+' de '+months[date.getMonth()];
+  }
   function go(key) {
     if (key === 'default' || key === 'ganhos' || key === 'despesas') key = 'resumo';
+    if (key !== 'semana') calendarWeekSelection = false;
     window.closeAllOverlays();
     var settingsPage=$('uiSettingsPage');
     if (key === 'ajustes') {
@@ -147,9 +157,13 @@
     $('tamanhoOptionG').querySelector('.tamanho-option-letter').textContent='A';
     var theme=button('',function(){$('btnToggleTheme').click();syncHeader();},'sheet-action-btn');
     theme.id='uiThemeRow'; theme.innerHTML=svg('ajustes')+'<span data-ui-text="theme"></span>'; $('openTermosMenuBtn').before(theme);
-    var viewControls=$('subHeaderViewToggleGroup'); $('semanaWeekPicker').after(viewControls); viewControls.hidden=false;
+    var viewControls=$('subHeaderViewToggleGroup');
+    var filters=create('div','semana-filter-controls');
+    filters.append($('semanaMonthPrev').parentNode,$('semanaWeekPicker').parentNode,viewControls);
+    $('semanaWeeksContainer').before(filters);
+    viewControls.hidden=false;
     var originalGo=HomeNav.goToSection;
-    HomeNav.goToSection=function(key){ key=(key==='default'||key==='ganhos'||key==='despesas')?'resumo':key; route=key; if($('uiSettingsPage'))$('uiSettingsPage').hidden=true; originalGo(key==='downloads'?'relatorio':key); syncHeader(); };
+    HomeNav.goToSection=function(key){ key=(key==='default'||key==='ganhos'||key==='despesas')?'resumo':key; if(key!=='semana')calendarWeekSelection=false; route=key; if($('uiSettingsPage'))$('uiSettingsPage').hidden=true; originalGo(key==='downloads'?'relatorio':key); syncHeader(); };
     // These original buttons call the private navigation function, so keep the shell in sync too.
     $('btnVerMeuResumo').addEventListener('click',function(){route='resumo';syncHeader();});
     var observer=new MutationObserver(function(){syncHeader();syncSidebarAccount();});
@@ -160,8 +174,13 @@
     observer.observe($('subStatusText'),{childList:true,subtree:true,characterData:true});
     observer.observe($('sheetProActiveBadge'),{attributes:true,attributeFilter:['style']});
     GanhosDate.onChange(syncHeader);
+    document.addEventListener('calendarDateSelected',function(){
+      calendarWeekSelection=true;
+      go('semana');
+    });
     window.addEventListener('resize',syncHeader);
     setupStickyPeriodControls();
+    setupStickyWeekFilters();
     document.addEventListener('languageChanged',function(){translate();syncHeader();});
     setupPages();
     syncSidebarAccount();
@@ -177,6 +196,18 @@
     }
     window.addEventListener('scroll',update,{passive:true});
     window.addEventListener('resize',update,{passive:true});
+    requestAnimationFrame(update);
+  }
+  function setupStickyWeekFilters(){
+    var controls=document.querySelector('.semana-filter-controls'), header=document.querySelector('.ui-header');
+    if(!controls||!header)return;
+    function update(){
+      var visible=route==='semana'&&!$('homeListPageSemana').hidden;
+      controls.classList.toggle('is-sticky',visible&&controls.getBoundingClientRect().top<=header.getBoundingClientRect().bottom+.5);
+    }
+    window.addEventListener('scroll',update,{passive:true});
+    window.addEventListener('resize',update,{passive:true});
+    document.addEventListener('semanaPageShown',function(){requestAnimationFrame(update);});
     requestAnimationFrame(update);
   }
   function money(value) { return Number(value).toLocaleString(I18N.t('lang.code'),{style:'currency',currency:'EUR'}); }

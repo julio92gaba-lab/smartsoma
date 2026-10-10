@@ -528,6 +528,7 @@
                         <div class="home-list-page" id="homeListPageSemana" hidden>
                             <div class="home-card" id="semanaTechCard">
                                 <div class="semana-live-content" id="semanaLiveContent">
+                                    <div class="semana-summary-slot" id="semanaSummarySlot" aria-live="polite"></div>
                                     <div class="period-nav-row">
                                         <button type="button" class="period-nav-btn" id="semanaMonthPrev" data-i18n-aria="semana.prevMesAria" aria-label="Mês anterior">
                                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -541,14 +542,22 @@
                                             </svg>
                                         </button>
                                     </div>
-                                    <div class="semana-week-picker" id="semanaWeekPicker">
-                                        <button type="button" class="semana-week-picker-btn" id="semanaWeekPickerBtn" aria-haspopup="true" aria-expanded="false">
-                                            <span id="semanaWeekPickerLabel"></span>
-                                            <svg class="semana-week-picker-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                                <polyline points="6 9 12 15 18 9"/>
-                                            </svg>
+                                    <div class="semana-week-nav">
+                                        <button type="button" class="period-nav-btn" id="semanaWeekPrev" aria-label="Semana anterior">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
                                         </button>
-                                        <div class="semana-week-picker-panel" id="semanaWeekPickerPanel" hidden></div>
+                                        <div class="semana-week-picker" id="semanaWeekPicker">
+                                            <button type="button" class="semana-week-picker-btn" id="semanaWeekPickerBtn" aria-haspopup="true" aria-expanded="false">
+                                                <span id="semanaWeekPickerLabel"></span>
+                                                <svg class="semana-week-picker-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                                    <polyline points="6 9 12 15 18 9"/>
+                                                </svg>
+                                            </button>
+                                            <div class="semana-week-picker-panel" id="semanaWeekPickerPanel" hidden></div>
+                                        </div>
+                                        <button type="button" class="period-nav-btn" id="semanaWeekNext" aria-label="Próxima semana">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+                                        </button>
                                     </div>
                                     <div class="semana-weeks-container" id="semanaWeeksContainer"></div>
                                     <div class="semana-list-placeholder" id="semanaListPlaceholder" hidden></div>

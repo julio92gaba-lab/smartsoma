@@ -2033,6 +2033,7 @@
               updateDateBtnLabel();
               closeCalendarModal();
               notifyDateChange();
+              document.dispatchEvent(new CustomEvent('calendarDateSelected', { detail: { date: new Date(selectedDate) } }));
             });
           })(d);
 
@@ -4167,13 +4168,16 @@
         }
         if (!linhas.length) return null;
 
-        var card = document.createElement('div');
-        card.className = 'semana-week-summary semana-despesas-detail-card';
+        var section = document.createElement('section');
+        section.className = 'semana-expenses-section';
 
         var title = document.createElement('h4');
         title.className = 'semana-despesas-detail-title';
         title.textContent = I18N.t('semana.despesasTitle');
-        card.appendChild(title);
+        section.appendChild(title);
+
+        var card = document.createElement('div');
+        card.className = 'semana-despesas-detail-card';
 
         var scrollWrap = document.createElement('div');
         scrollWrap.className = 'semana-table-scroll';
@@ -4201,6 +4205,7 @@
         tableWrap.appendChild(table);
         scrollWrap.appendChild(tableWrap);
         card.appendChild(scrollWrap);
+        section.appendChild(card);
 
         tableWrap.addEventListener('scroll', function () {
           updateTableScrollFade(scrollWrap, tableWrap);
@@ -4209,13 +4214,31 @@
           updateTableScrollFade(scrollWrap, tableWrap);
         });
 
-        return card;
+        return section;
       }
 
       var pickerBtn   = document.getElementById('semanaWeekPickerBtn');
       var pickerLabel = document.getElementById('semanaWeekPickerLabel');
       var pickerPanel = document.getElementById('semanaWeekPickerPanel');
+      var pickerPrev  = document.getElementById('semanaWeekPrev');
+      var pickerNext  = document.getElementById('semanaWeekNext');
+      var summarySlot = document.getElementById('semanaSummarySlot');
       var currentWeeks = [];
+
+      function syncSummarySlot (block) {
+        if (!summarySlot) return;
+        summarySlot.replaceChildren();
+        var summary = block && block.querySelector('.semana-week-summary:not(.semana-despesas-detail-card)');
+        if (!summary) return;
+        var copy = summary.cloneNode(true);
+        copy.classList.add('semana-summary-slot-card');
+        summarySlot.appendChild(copy);
+      }
+
+      function syncWeekStepButtons () {
+        if (pickerPrev) pickerPrev.disabled = currentWeekIndex <= 0;
+        if (pickerNext) pickerNext.disabled = currentWeekIndex >= currentWeeks.length - 1;
+      }
 
       function closeWeekPicker () {
         if (!pickerPanel || pickerPanel.hidden) return;
@@ -4248,6 +4271,8 @@
         if (!block) return;
 
         currentWeekIndex = idx;
+        syncSummarySlot(block);
+        syncWeekStepButtons();
 
         if (animate === false) {
           weeksTrackEl.style.transition = 'none';
@@ -4309,6 +4334,12 @@
           else closeWeekPicker();
         });
       }
+      if (pickerPrev) pickerPrev.addEventListener('click', function () {
+        if (currentWeekIndex > 0) setActiveWeek(currentWeekIndex - 1, true);
+      });
+      if (pickerNext) pickerNext.addEventListener('click', function () {
+        if (currentWeekIndex < currentWeeks.length - 1) setActiveWeek(currentWeekIndex + 1, true);
+      });
       document.addEventListener('click', function (e) {
         if (!pickerPanel || pickerPanel.hidden) return;
         if (pickerBtn && (pickerBtn.contains(e.target) || pickerPanel.contains(e.target))) return;
@@ -4369,15 +4400,15 @@
         // Usa o mês ao qual a semana de hoje pertence (regra do 4 e 3),
         // que pode ser o mês seguinte ao calendário quando hoje é segunda
         // e a semana já pertence ao mês seguinte.
-        var cm = currentWeekMonth();
-        refYear  = cm.year;
-        refMonth = cm.month;
+        var selected = (window.GanhosDate && typeof window.GanhosDate.get === 'function') ? window.GanhosDate.get() : today;
+        refYear  = selected.getFullYear();
+        refMonth = selected.getMonth();
 
         var weeksForToday = computeWeeksForMonth(refYear, refMonth);
         var idx = 0;
         for (var i = 0; i < weeksForToday.length; i++) {
-          if (today.getTime() >= weeksForToday[i].monday.getTime() &&
-              today.getTime() <= weeksForToday[i].sunday.getTime()) {
+          if (selected.getTime() >= weeksForToday[i].monday.getTime() &&
+              selected.getTime() <= weeksForToday[i].sunday.getTime()) {
             idx = i;
             break;
           }
