@@ -504,6 +504,8 @@
     var columns=create('div','ui-settings-columns');
     var management=create('div','sheet-actions ui-settings-group');
     var preferences=create('div','sheet-actions ui-settings-group');
+    management.dataset.title=say('Gestão','Management');
+    preferences.dataset.title=say('Preferências','Preferences');
     ['openDespesasFixasBtn','openMultiplataformaBtn'].forEach(function(id){management.append($(id));});
     ['openIdiomaBtn','openTamanhoBtn','openAjudaBtn'].forEach(function(id){preferences.append($(id));});
     columns.append(management,preferences);
@@ -512,6 +514,8 @@
     // The tutorial remains the original guided flow; its launcher is now on Help.
     $('openTutorialBtn').hidden=true;
     settings.querySelectorAll('.sheet-actions').forEach(function(n){if(!n.children.length)n.remove();else if(Array.from(n.children).every(function(c){return c.hidden;}))n.hidden=true;});
+    var support=settings.querySelector('.sheet-actions:not(.ui-settings-group)');
+    if(support) support.dataset.title=say('Conta e suporte','Account and support');
     var newPlatform=$('sheetScreenMultiplataforma').querySelector('[data-i18n="mp.adicionar"]');newPlatform.removeAttribute('data-i18n');newPlatform.dataset.uiText='newPlatform';
     var fixedForm=$('sheetScreenDespesasFixas').querySelector('.despesa-form');
     function resetFixedForm(){fixedForm.hidden=true;fixedAdd.setAttribute('aria-expanded','false');$('despesaDescInput').value='';$('despesaValorInput').value='';$('despesaTipoPercentBtn').click();}

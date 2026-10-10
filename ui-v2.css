@@ -211,7 +211,25 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
 .ui-v2 #homeListPageSemana .semana-week-summary,
 .ui-v2 #homeListPageSemana .semana-despesas-detail-card,
 .ui-v2 #homeListPageSemana .semana-day-card { border-color:var(--card-line); border-radius:14px; background:var(--input-bg); box-shadow:none; }
-.ui-v2 #homeListPageSemana .semana-week-summary { padding:20px 0; }
+.ui-v2 #homeListPageSemana .semana-week-block { display:flex; flex-direction:column; gap:18px; }
+.ui-v2 #homeListPageSemana .semana-week-summary { order:0; margin:0; padding:24px; border:1px solid #1c5539; border-radius:16px; background:#0e3b2a; color:#f4f9ec; }
+.ui-v2 #homeListPageSemana .semana-week-summary .semana-summary-tiles { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+.ui-v2 #homeListPageSemana .semana-week-summary .dash-sub-tile { min-height:110px; padding:14px 10px; border:1px solid #3c6249; border-radius:11px; background:#183c2a; color:#f4f9ec; }
+.ui-v2 #homeListPageSemana .semana-week-summary .dash-tile-label { color:#bdd3c3; font-size:.62rem; }
+.ui-v2 #homeListPageSemana .semana-week-summary .dash-tile-value { color:#fff; font-size:1.15rem; }
+.ui-v2 #homeListPageSemana .semana-week-summary .dash-tile-icon { color:var(--lime); }
+.ui-v2 #homeListPageSemana .semana-summary-divider { background:#3c6249; margin:20px 0 14px; }
+.ui-v2 #homeListPageSemana .semana-summary-liquido { display:flex; align-items:center; justify-content:space-between; gap:16px; }
+.ui-v2 #homeListPageSemana .semana-summary-liquido-label { color:#c6dacb; font-size:.8rem; font-weight:700; }
+.ui-v2 #homeListPageSemana .semana-summary-liquido-value { color:var(--lime); font:700 1.45rem 'Bricolage Grotesque',sans-serif; }
+.ui-v2 #homeListPageSemana .semana-summary-liquido-value.is-negative { color:#ffab96; }
+.ui-v2 #homeListPageSemana .semana-goal-progress { margin:0 0 20px; }
+.ui-v2 #homeListPageSemana .semana-goal-progress-copy { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:8px; color:#c6dacb; font-size:.74rem; font-weight:700; }
+.ui-v2 #homeListPageSemana .semana-goal-progress-copy strong { color:var(--lime); font:700 1rem 'Bricolage Grotesque',sans-serif; }
+.ui-v2 #homeListPageSemana .semana-goal-progress-track { height:8px; overflow:hidden; border-radius:999px; background:#34604a; }
+.ui-v2 #homeListPageSemana .semana-goal-progress-track i { display:block; height:100%; border-radius:inherit; background:var(--lime); transition:width .3s ease; }
+.ui-v2 #homeListPageSemana .semana-table-scroll { order:1; border:1px solid var(--card-line); border-radius:14px; background:var(--card-bg); }
+.ui-v2 #homeListPageSemana .semana-despesas-detail-card { order:2; margin:0; }
 .ui-v2 #homeListPageSemana .semana-despesas-detail-card,
 .ui-v2 #homeListPageSemana .semana-day-card { padding:20px; }
 .ui-v2 #homeListPageRelatorio .home-card { margin-inline:auto; padding:34px; text-align:center; background:var(--card-bg); }
@@ -221,13 +239,18 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
 .ui-v2 #homeListPageRelatorio .relatorio-illustration svg { width:100%; height:100%; }
 .ui-v2 #homeListPageRelatorio .relatorio-highlights { display:flex; flex-wrap:wrap; justify-content:center; gap:7px; }
 .ui-v2 #homeListPageRelatorio .relatorio-highlight-pill { border:1px solid color-mix(in srgb,var(--brand-green) 22%,var(--card-line)); border-radius:999px; background:color-mix(in srgb,var(--brand-green) 8%,var(--input-bg)); color:var(--ink); font-size:.69rem; font-weight:700; }
-.ui-v2 #homeListPageRelatorio .period-nav-row { margin:24px auto 18px; }
-.ui-v2 #homeListPageRelatorio .period-label { min-width:190px; text-align:center; font-weight:700; }
-.ui-v2 #relatorioPageDownloadBtn { width:100%; max-width:300px; min-height:46px; margin:auto; border-radius:9px; }
+.ui-v2 #homeListPageRelatorio .ui-download-action { display:grid; gap:14px; max-width:390px; margin:26px auto 0; padding:18px; border:1px solid #1c5539; border-radius:14px; background:#0e3b2a; }
+.ui-v2 #homeListPageRelatorio .period-nav-row { width:100%; margin:0; padding:7px; background:#183c2a; border-color:#3c6249; }
+.ui-v2 #homeListPageRelatorio .period-label { min-width:0; flex:1; text-align:center; color:#f4f9ec; font-weight:700; }
+.ui-v2 #homeListPageRelatorio .period-nav-btn { border-color:#3c6249; background:#234c35; color:#f4f9ec; }
+.ui-v2 #relatorioPageDownloadBtn { width:100%; min-height:46px; margin:auto; border-radius:9px; }
 .ui-v2 #uiSettingsPage .sheet-profile-row { width:100%; box-shadow:0 3px 0 rgba(17,35,23,.06); }
 .ui-v2 #uiSettingsPage .sheet-profile-row .sheet-action-btn { flex:none; min-height:36px; margin-left:auto; padding:8px 12px; border:1px solid #4f745b; border-radius:8px; background:transparent; color:#f4f9ec; font-size:.74rem; }
 .ui-v2 #uiSettingsPage .ui-settings-group,
 .ui-v2 #uiSettingsPage .sheet-actions:not(.ui-settings-group) { padding:8px; border-radius:14px; box-shadow:0 3px 0 rgba(17,35,23,.025); }
+.ui-v2 #uiSettingsPage .ui-settings-group::before,
+.ui-v2 #uiSettingsPage .sheet-actions:not(.ui-settings-group)::before { content:attr(data-title); display:block; padding:6px 8px 10px; color:var(--muted); font-size:.66rem; font-weight:800; letter-spacing:.9px; text-transform:uppercase; }
+.ui-v2 #uiSettingsPage .sheet-actions:not(.ui-settings-group) { max-width:470px; margin:0 auto 20px; }
 .ui-v2 #uiSettingsPage .sheet-action-btn { display:grid; grid-template-columns:24px minmax(0,1fr) auto; align-items:center; min-height:54px; padding:12px; border:0; border-bottom:1px solid var(--card-line); border-radius:9px; font-size:.84rem; font-weight:700; transition:background-color .2s ease,color .2s ease; }
 .ui-v2 #uiSettingsPage .sheet-action-btn:hover { background:var(--input-bg); color:var(--brand-green); }
 .ui-v2 #uiSettingsPage .sheet-action-btn:last-child { border-bottom:0; }
@@ -442,6 +465,11 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
   .ui-v2 #homeListPageSemana .period-label,
   .ui-v2 #homeListPageRelatorio .period-label { flex:1; min-width:0; }
   .ui-v2 #homeListPageRelatorio .relatorio-illustration { width:128px; height:128px; }
+  .ui-v2 #homeListPageSemana .semana-week-summary { padding:18px; }
+  .ui-v2 #homeListPageSemana .semana-week-summary .dash-sub-tile { min-height:94px; padding:11px 6px; }
+  .ui-v2 #homeListPageSemana .semana-week-summary .dash-tile-value { font-size:.95rem; }
+  .ui-v2 #homeListPageSemana .semana-goal-progress { margin-bottom:16px; }
+  .ui-v2 #homeListPageRelatorio .ui-download-action { margin-top:20px; padding:14px; }
   .ui-v2 #uiSettingsPage .sheet-profile-row .sheet-action-btn { margin-left:0; }
   .ui-page-intro { margin-bottom:20px; }
   .ui-page-intro h1 { display:block; font-size:1.8rem; letter-spacing:-.6px; margin:7px 0; }

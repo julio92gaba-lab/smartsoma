@@ -4062,8 +4062,6 @@
         table.appendChild(tbody);
         tableWrap.appendChild(table);
         scrollWrap.appendChild(tableWrap);
-        block.appendChild(scrollWrap);
-
         tableWrap.addEventListener('scroll', function () {
           updateTableScrollFade(scrollWrap, tableWrap);
         }, { passive: true });
@@ -4076,6 +4074,22 @@
 
         var summary = document.createElement('div');
         summary.className = 'semana-week-summary';
+
+        var meta = window.MetaSemanalRead && window.MetaSemanalRead.forDate(week.monday);
+        if (meta && meta.config) {
+          var goal = document.createElement('div');
+          goal.className = 'semana-goal-progress';
+          var goalPercent = Math.min(100, meta.percent);
+          goal.innerHTML =
+            '<div class="semana-goal-progress-copy">' +
+              '<span>' + I18N.t('metacard.label') + '</span>' +
+              '<strong>' + meta.percent + '%</strong>' +
+            '</div>' +
+            '<div class="semana-goal-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + goalPercent + '">' +
+              '<i style="width:' + goalPercent + '%"></i>' +
+            '</div>';
+          summary.appendChild(goal);
+        }
 
         var tiles = document.createElement('div');
         tiles.className = 'dash-sub-row semana-summary-tiles';
@@ -4117,6 +4131,7 @@
         liquidoValueEl.textContent = formatEuro(sumLiquido);
 
         block.appendChild(summary);
+        block.appendChild(scrollWrap);
 
         var detalhesCard = buildWeekExpensesDetailCard(week);
         if (detalhesCard) block.appendChild(detalhesCard);
