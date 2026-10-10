@@ -159,8 +159,11 @@
     theme.id='uiThemeRow'; theme.innerHTML=svg('ajustes')+'<span data-ui-text="theme"></span>'; $('openTermosMenuBtn').before(theme);
     var viewControls=$('subHeaderViewToggleGroup');
     var filters=create('div','semana-filter-controls');
-    filters.append($('semanaMonthPrev').parentNode,$('semanaWeekPicker').parentNode,viewControls);
+    filters.append($('semanaMonthPrev').parentNode,$('semanaWeekPicker').parentNode);
     $('semanaWeeksContainer').before(filters);
+    var viewRow=create('div','semana-view-controls');
+    viewRow.append(viewControls);
+    filters.after(viewRow);
     viewControls.hidden=false;
     var originalGo=HomeNav.goToSection;
     HomeNav.goToSection=function(key){ key=(key==='default'||key==='ganhos'||key==='despesas')?'resumo':key; if(key!=='semana')calendarWeekSelection=false; route=key; if($('uiSettingsPage'))$('uiSettingsPage').hidden=true; originalGo(key==='downloads'?'relatorio':key); syncHeader(); };

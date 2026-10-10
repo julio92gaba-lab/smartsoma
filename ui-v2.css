@@ -723,3 +723,16 @@ body.ui-v2.theme-dark .amber .ui-metric-icon { background:#483e26; color:#f3ce80
 /* A tabela de despesas usa a largura natural das células e permanece rolável. */
 .ui-v2 #homeListPageSemana .semana-despesas-detail-table :is(th,td) { padding:0 !important; white-space:nowrap; }
 .ui-v2 #homeListPageSemana .semana-despesas-detail-table { border-collapse:separate; border-spacing:12px 0; }
+/* Segundo cabeçalho da Semana: mesmas proporções dos controlos da Início. */
+.ui-v2 #homeListPageSemana .semana-filter-controls { gap:5px; }
+.ui-v2 #homeListPageSemana .semana-filter-controls .period-nav-row,
+.ui-v2 #homeListPageSemana .semana-week-nav { grid-template-columns:36px minmax(0,auto) 36px; min-height:36px; }
+.ui-v2 #homeListPageSemana .semana-filter-controls .period-nav-btn,
+.ui-v2 #homeListPageSemana .semana-week-nav .period-nav-btn { width:34px; height:34px; padding:0; border:1px solid var(--card-line); border-radius:9px; background:var(--card-bg); color:var(--ink); box-shadow:none; }
+.ui-v2 #homeListPageSemana .semana-filter-controls .period-label { padding:8px 18px; border-radius:9px; text-transform:uppercase; }
+.ui-v2 #homeListPageSemana .semana-week-nav { grid-template-columns:36px minmax(0,1fr) 36px; }
+.ui-v2 #homeListPageSemana .semana-week-picker-btn { min-height:34px; padding:5px 8px; }
+.ui-v2 #homeListPageSemana .semana-view-controls { order:2; display:flex; justify-content:center; margin:0; }
+.ui-v2 #homeListPageSemana .semana-view-controls #subHeaderViewToggleGroup { width:min(220px,100%); margin:0; border-radius:10px; }
+.ui-v2 #homeListPageSemana .semana-weeks-container,
+.ui-v2 #homeListPageSemana .semana-list-placeholder { order:3; }

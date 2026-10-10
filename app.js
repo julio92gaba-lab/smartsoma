@@ -3722,11 +3722,11 @@
       // meses diferentes -> "31 de ago. à 6 de set."
       function formatWeekPickerPeriod (monday, sunday) {
         if (monday.getMonth() === sunday.getMonth()) {
-          return I18N.t('fmt.rangeSameMonthDot', { d1: monday.getDate(), d2: sunday.getDate(), m: MESES_ABBR()[monday.getMonth()] });
+          return I18N.t('fmt.rangeSameMonthDot', { d1: monday.getDate(), d2: sunday.getDate(), m: MESES_MINUS()[monday.getMonth()] });
         }
         return I18N.t('fmt.rangeCrossMonthDot2', {
-          d1: monday.getDate(), m1: MESES_ABBR()[monday.getMonth()],
-          d2: sunday.getDate(), m2: MESES_ABBR()[sunday.getMonth()]
+          d1: monday.getDate(), m1: MESES_MINUS()[monday.getMonth()],
+          d2: sunday.getDate(), m2: MESES_MINUS()[sunday.getMonth()]
         });
       }
 
@@ -3735,7 +3735,7 @@
       // <span class="semana-week-picker-period">14 a 20 de set.</span>
       function formatWeekPickerLabelHTML (weekIndex, monday, sunday) {
         return '<span class="semana-week-picker-num">' + I18N.t('semana.weekNum', { n: weekIndex + 1 }) + '</span>' +
-               '<span class="semana-week-picker-sep">&middot;</span>' +
+               '<span class="semana-week-picker-sep"> - </span>' +
                '<span class="semana-week-picker-period">' + formatWeekPickerPeriod(monday, sunday) + '</span>';
       }
 
