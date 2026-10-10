@@ -56,10 +56,11 @@
     document.body.classList.toggle('ui-showing-other-date',showingOtherDate);
     var headerDate = date.toLocaleDateString(locale,{weekday:'long',day:'numeric',month:'long'}).replace(/-feira\b/i,'');
     var mobileInternal = route !== 'resumo' && !inSettings && window.matchMedia('(max-width:760px)').matches;
+    var mobileWeek = route === 'semana' && mobileInternal;
     $('uiHeaderDate').textContent = mobileInternal ? headerDate : (showingOtherDate && window.matchMedia('(max-width:760px)').matches ? say('A mostrar dados de…','Showing data from…') : headerDate);
     var name = $('sheetUsername').textContent.trim().split(' ')[0];
     var greeting = say('Olá','Hello');
-    $('uiHeaderTitle').textContent = mobileInternal ? greeting + ', ' + name + '.' : (showingOtherDate && window.matchMedia('(max-width:760px)').matches ? shortHeaderDate(date) : inSettings ? (sheet && sheet.id !== 'sheetScreenDefault' ? $('sheetHandleTitle').textContent : t('ajustes')) : route === 'resumo' ? greeting + ', ' + name + '.' : t(route));
+    $('uiHeaderTitle').textContent = mobileWeek ? 'Minha semana' : (mobileInternal ? greeting + ', ' + name + '.' : (showingOtherDate && window.matchMedia('(max-width:760px)').matches ? shortHeaderDate(date) : inSettings ? (sheet && sheet.id !== 'sheetScreenDefault' ? $('sheetHandleTitle').textContent : t('ajustes')) : route === 'resumo' ? greeting + ', ' + name + '.' : t(route)));
     document.body.dataset.uiRoute = route;
     document.body.classList.toggle('ui-home', route === 'resumo' && !inSettings);
     document.querySelectorAll('.ui-selected-date').forEach(function(n){ n.textContent = date.toLocaleDateString(locale,{day:'numeric',month:'long',year:'numeric'}); });

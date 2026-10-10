@@ -510,6 +510,14 @@ body.ui-v2 #resumoPeriodControls .period-filter-row { background:transparent; }
 }
 /* Mobile-only internal-page refresh. The overview and desktop stay untouched. */
 @media (max-width:760px) {
+  /* Semana: cabeçalho e filtros próprios, sem alterar os restantes ecrãs mobile. */
+  body.ui-v2[data-ui-route="semana"] .ui-header-avatar { display:none; }
+  body.ui-v2[data-ui-route="semana"] .ui-header-personal { display:block; min-width:0; }
+  body.ui-v2[data-ui-route="semana"] .ui-header-copy { display:block; }
+  body.ui-v2[data-ui-route="semana"] .ui-header #uiHeaderDate { display:block; min-height:0; padding:0; border:0; border-radius:0; background:transparent; color:var(--muted); font-size:.58rem; line-height:1.1; }
+  body.ui-v2[data-ui-route="semana"] .ui-header #uiHeaderTitle { margin:5px 0 0; color:var(--ink); font-size:1.35rem; font-weight:800; line-height:1; letter-spacing:-.55px; }
+
+  .ui-v2 #homeListPageSemana > .ui-page-intro { display:none; }
   body.ui-v2:not(.ui-home) .ui-header-personal { gap:10px; }
   body.ui-v2:not(.ui-home) .ui-header-avatar { display:grid; flex:0 0 50px; place-items:center; width:50px; height:50px; overflow:hidden; border:2px solid var(--lime); border-radius:50%; background:var(--teal); color:var(--paper); font-size:.8rem; font-weight:800; }
   body.ui-v2:not(.ui-home) .ui-header-copy { display:block; }
@@ -533,19 +541,19 @@ body.ui-v2 #resumoPeriodControls .period-filter-row { background:transparent; }
 
   .ui-v2 #homeListPageSemana #semanaTechCard { padding:0; border:0; background:transparent; box-shadow:none; }
   .ui-v2 #homeListPageSemana .semana-live-content { display:grid; gap:0; }
-  .ui-v2 #homeListPageSemana .period-nav-row { width:100%; margin:0; padding:8px; border:1px solid #274d38; border-radius:12px 12px 0 0; background:#0e3b2a; }
+  .ui-v2 #homeListPageSemana .period-nav-row { width:100%; margin:0; padding:9px 10px; border:1px solid #274d38; border-bottom:0; border-radius:14px 14px 0 0; background:#0e3b2a; }
   .ui-v2 #homeListPageSemana .period-nav-btn { width:34px; height:34px; border-color:#355e45; border-radius:999px; background:#173f2d; color:var(--lime); transition:transform .16s ease,background-color .16s ease; }
   .ui-v2 #homeListPageSemana .period-nav-btn:active,
   .ui-v2 #homeListPageSemana .semana-week-picker-btn:active { transform:scale(.98); }
-  .ui-v2 #homeListPageSemana .period-label { color:#f4f9ec; font-size:.8rem; }
-  .ui-v2 #homeListPageSemana .semana-week-picker { margin:0 0 14px; }
-  .ui-v2 #homeListPageSemana .semana-week-picker-btn { min-height:52px; border:1px solid #274d38; border-radius:0 0 12px 12px; background:#123f2b; color:#f4f9ec; box-shadow:none; transition:transform .16s ease; }
+  .ui-v2 #homeListPageSemana .period-label { color:#f4f9ec; font-size:.8rem; font-weight:800; }
+  .ui-v2 #homeListPageSemana .semana-week-picker { margin:0; }
+  .ui-v2 #homeListPageSemana .semana-week-picker-btn { min-height:50px; border:1px solid #274d38; border-top-color:rgba(212,245,60,.13); border-bottom:0; border-radius:0; background:#123f2b; color:#f4f9ec; box-shadow:none; transition:transform .16s ease; }
   .ui-v2 #homeListPageSemana .semana-week-picker-num { padding:4px 6px; border-radius:6px; background:rgba(212,245,60,.13); color:var(--lime); opacity:1; }
   .ui-v2 #homeListPageSemana .semana-week-picker-chevron { color:var(--lime); }
   .ui-v2 #homeListPageSemana .semana-week-picker-panel { border-color:#315a43; background:#163d2b; box-shadow:0 16px 36px rgba(4,20,12,.28); }
   .ui-v2 #homeListPageSemana .semana-week-picker-option { border-color:#315a43; color:#e8f2e8; }
   .ui-v2 #homeListPageSemana .semana-week-picker-option.is-active { background:rgba(212,245,60,.12); color:var(--lime); }
-  .ui-v2 #subHeaderViewToggleGroup { display:grid; grid-template-columns:1fr 1fr; gap:4px; margin:0 0 14px; padding:4px; border:1px solid #274d38; border-radius:11px; background:#0e3b2a; }
+  .ui-v2 #subHeaderViewToggleGroup { display:grid; grid-template-columns:1fr 1fr; gap:4px; margin:0 0 16px; padding:5px; border:1px solid #274d38; border-top-color:rgba(212,245,60,.13); border-radius:0 0 14px 14px; background:#0e3b2a; }
   .ui-v2 #subHeaderViewToggleGroup .sub-header-view-toggle-btn { width:100%; min-height:38px; border-radius:8px; background:transparent; color:#acc7b4; transition:background-color .18s ease,transform .18s ease; }
   .ui-v2 #subHeaderViewToggleGroup .sub-header-view-toggle-btn.is-active { background:var(--lime); color:#142617; box-shadow:0 2px 0 #8dac29; }
   .ui-v2 #subHeaderViewToggleGroup .sub-header-view-toggle-btn:active { transform:scale(.98); }
