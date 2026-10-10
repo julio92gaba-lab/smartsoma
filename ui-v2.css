@@ -796,11 +796,11 @@ body.ui-v2.theme-dark .amber .ui-metric-icon { background:#483e26; color:#f3ce80
   .ui-v2 #homeListPageSemana .semana-week-block .semana-table :is(th,td) { padding:12px 6px; font-size:.62rem; }
 }
 /* Alternador binário e seletor de semana — apenas Minha Semana. */
-.ui-v2 #homeListPageSemana .semana-view-controls #subHeaderViewToggleGroup { display:flex; align-items:center; justify-content:center; width:auto; gap:18px; margin:4px auto 0; padding:0; border:0; border-radius:0; background:transparent; }
+.ui-v2 #homeListPageSemana .semana-view-controls #subHeaderViewToggleGroup { display:flex; align-items:center; justify-content:center; width:auto; gap:24px; margin:4px auto 0; padding:2px 0; border:0; border-radius:0; background:transparent; }
 .ui-v2 #homeListPageSemana .semana-view-controls .sub-header-view-toggle-divider { display:none; }
-.ui-v2 #homeListPageSemana .semana-view-controls .sub-header-view-toggle-btn { display:inline-flex; align-items:center; justify-content:center; gap:6px; width:auto; min-height:34px; padding:4px 2px; border:0; border-radius:0; background:transparent; color:var(--muted); font:800 .75rem/1 'Bricolage Grotesque',sans-serif; opacity:.45; transform:scale(1); transition:color .3s ease,opacity .3s ease,transform .3s ease; }
-.ui-v2 #homeListPageSemana .semana-view-controls .sub-header-view-toggle-btn svg { width:18px; height:18px; }
-.ui-v2 #homeListPageSemana .semana-view-controls .sub-header-view-toggle-btn.is-active { background:transparent; color:var(--lime); box-shadow:none; opacity:1; transform:scale(1.05); }
+.ui-v2 #homeListPageSemana .semana-view-controls .sub-header-view-toggle-btn { display:inline-flex; align-items:center; justify-content:center; gap:8px; width:auto; min-height:48px; padding:6px 4px; border:0; border-radius:0; background:transparent; color:#173421; font:800 .8rem/1 'Bricolage Grotesque',sans-serif; opacity:.36; transform:scale(1); transition:color .3s ease,opacity .3s ease,transform .3s ease; }
+.ui-v2 #homeListPageSemana .semana-view-controls .sub-header-view-toggle-btn svg { width:38px; height:38px; }
+.ui-v2 #homeListPageSemana .semana-view-controls .sub-header-view-toggle-btn.is-active { background:transparent; color:#173421; box-shadow:none; opacity:1; transform:scale(1.07); }
 .ui-v2 #homeListPageSemana .semana-view-controls .sub-header-view-toggle-btn:active { transform:scale(.98); }
 .ui-v2 #homeListPageSemana .semana-filter-controls .semana-week-nav { display:block; min-height:0; }
 .ui-v2 #homeListPageSemana .semana-filter-controls .semana-week-nav > .period-nav-btn { display:none; }
