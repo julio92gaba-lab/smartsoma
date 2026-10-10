@@ -37,11 +37,11 @@ test('total mileage persists and updates summary', t => {
   assert.equal(a.el('summaryDistanciaValue').textContent, '115 km');
 });
 
-test('weekly table always includes seven days and gross, net and km columns', t => {
+test('weekly table keeps seven days and exposes the three metric groups', t => {
   const a = createApp(); t.after(a.close);
   const table = a.w.document.querySelector('.semana-table');
   assert.ok(table); assert.equal(table.querySelectorAll('tbody tr').length, 7);
-  assert.equal(table.querySelectorAll('thead th').length, 7);
+  assert.equal(table.querySelectorAll('thead th').length, 10);
 });
 
 test('language, theme and font controls stay available', t => {

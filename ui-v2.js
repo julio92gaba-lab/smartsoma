@@ -49,7 +49,9 @@
       n.classList.toggle('is-active', n.dataset.uiRoute === selected);
       if (n.dataset.uiRoute === selected) n.setAttribute('aria-current','page'); else n.removeAttribute('aria-current');
     });
-    var now = new Date(), date = window.GanhosDate ? GanhosDate.get() : now;
+    var now = new Date(), selectedDate = window.GanhosDate ? GanhosDate.get() : now;
+    // O calendário encaminha para a Semana; a Início mantém sempre o seu cabeçalho próprio.
+    var date = route === 'resumo' ? now : selectedDate;
     var locale = I18N.t('lang.code');
     var today=new Date();today.setHours(0,0,0,0);
     var selectedDay=new Date(date);selectedDay.setHours(0,0,0,0);

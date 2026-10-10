@@ -3539,6 +3539,7 @@
 
       var weeksTrackEl    = null;
       var currentWeekIndex = 0;
+      var activeTableMetric = 'financeiro';
 
       function dateKeyFor (d) {
         return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
@@ -3550,6 +3551,7 @@
         var str = (Math.round(n * 10) / 10).toString();
         return str + ' km';
       }
+      function formatPlainNumber (v) { return Number(v || 0).toFixed(2).replace('.', ','); }
 
       function loadDayBadges (d) {
         var badges = { uber: 0, bolt: 0, despesas: 0, distancia: 0 };
@@ -3798,144 +3800,40 @@
         var badges = loadDayBadges(d);
         var ganhosDia = badges.uber + badges.bolt + badges.extras;
         var extraCols = weekPlatCols(getMonday(d));
-        var extraRows = extraCols.map(function (p) {
-          return '<div class="semana-day-card-row is-plus">' +
-            '<span class="row-label"><span class="row-sign">+</span>' + escHtml(p.nome) + ':</span>' +
-            '<span class="row-value">' + formatEuro(badges.plat[p.id] || 0) + '</span>' +
-          '</div>';
-        }).join('');
         var expenseEntries = loadDayExpenseEntries(d);
         var despesasDia = sumExpenseEntries(expenseEntries);
         var liquidoDia = ganhosDia - despesasDia;
+        var platforms = [{ nome: 'Uber', valor: badges.uber }, { nome: 'Bolt', valor: badges.bolt }]
+          .concat(extraCols.map(function (p) { return { nome: p.nome, valor: badges.plat[p.id] || 0 }; }));
+        var principal = platforms.reduce(function (best, item) { return item.valor > best.valor ? item : best; }, { nome: '—', valor: 0 });
+        var platformRows = platforms.filter(function (item) { return item.valor > 0; }).map(function (item) {
+          return '<div class="semana-day-card-row is-plus"><span class="row-label">' + escHtml(item.nome) + '</span><span class="row-value">' + formatEuro(item.valor) + '</span></div>';
+        }).join('') || '<div class="semana-day-card-row"><span class="row-label">Sem ganhos registados</span><span class="row-value">—</span></div>';
 
-        var card = document.createElement('div');
+        var card = document.createElement('article');
         card.className = 'semana-day-card';
         if (d.getTime() === today.getTime()) card.classList.add('is-today');
 
-        var header = document.createElement('div');
+        var header = document.createElement('button');
+        header.type = 'button';
         header.className = 'semana-day-card-header';
+        header.setAttribute('aria-expanded', 'false');
         header.innerHTML =
-          '<span class="semana-day-card-weekday">' + DIAS_FULL()[weekdayIndex] + '</span>' +
-          '<span class="semana-day-card-sep">&middot;</span>' +
-          '<span class="semana-day-card-date">' + I18N.t('fmt.dayMonth', { d: d.getDate(), m: MESES_MINUS()[d.getMonth()] }) + '</span>';
+          '<span class="semana-day-card-date-wrap"><strong class="semana-day-card-weekday">' + DIAS_ABBR()[weekdayIndex] + ' ' + d.getDate() + '/' + (d.getMonth() + 1) + '</strong><small>' + escHtml(principal.nome) + '</small></span>' +
+          '<span class="semana-day-card-net"><small>Lucro líquido</small><strong>' + formatEuro(liquidoDia) + '</strong></span>' +
+          '<svg class="semana-day-card-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>';
         card.appendChild(header);
 
-        var flipWrap = document.createElement('div');
-        flipWrap.className = 'semana-day-flip-wrap';
-
-        var ganhosView = document.createElement('div');
-        ganhosView.className = 'semana-day-flip-view semana-day-card-body';
-        ganhosView.innerHTML =
-          '<div class="semana-day-card-row is-plus">' +
-            '<span class="row-label"><span class="row-sign">+</span>' + I18N.t('semana.rowUber') + '</span>' +
-            '<span class="row-value">' + formatEuro(badges.uber) + '</span>' +
-          '</div>' +
-          '<div class="semana-day-card-row is-plus">' +
-            '<span class="row-label"><span class="row-sign">+</span>' + I18N.t('semana.rowBolt') + '</span>' +
-            '<span class="row-value">' + formatEuro(badges.bolt) + '</span>' +
-          '</div>' +
-          extraRows +
-          '<div class="semana-day-card-row is-minus">' +
-            '<span class="row-label"><span class="row-sign">-</span>' + I18N.t('semana.rowDespesas') + '</span>' +
-            '<span class="row-value">' + formatEuro(despesasDia) + '</span>' +
-          '</div>' +
-          '<div class="semana-day-card-row">' +
-            '<span class="row-label"><span class="row-sign">&middot;</span>' + I18N.t('semana.rowDistancia') + '</span>' +
-            '<span class="row-value">' + formatKm(badges.distancia) + '</span>' +
-          '</div>';
-
-        var badgesWrap = document.createElement('div');
-        badgesWrap.className = 'semana-day-card-badges';
-        badgesWrap.innerHTML =
-          '<div class="semana-day-card-badge semana-day-card-badge-ganhos">' +
-            '<span class="semana-day-card-badge-label">' + I18N.t('semana.ganhosDoDia') + '</span>' +
-            '<span class="semana-day-card-badge-value">' + formatEuro(ganhosDia) + '</span>' +
-          '</div>' +
-          '<div class="semana-day-card-badge semana-day-card-badge-liquido">' +
-            '<span class="semana-day-card-badge-label">' + I18N.t('semana.liquido') + '</span>' +
-            '<span class="semana-day-card-badge-value">' + formatEuro(liquidoDia) + '</span>' +
-          '</div>';
-        ganhosView.appendChild(badgesWrap);
-
-        var despesasView = document.createElement('div');
-        despesasView.className = 'semana-day-flip-view semana-day-despesas-view is-hidden';
-
-        var despesasScroll = document.createElement('div');
-        despesasScroll.className = 'semana-day-despesas-scroll';
-        expenseEntries.forEach(function (entry) {
-          var line = document.createElement('div');
-          line.className = 'semana-day-despesa-line';
-          line.innerHTML = '<span class="valor">' + formatEuro(entry.valor) + '</span> - ' + window.SmartSomaSecurity.escapeHtml(entry.descricao);
-          despesasScroll.appendChild(line);
+        var details = document.createElement('div');
+        details.className = 'semana-day-card-details';
+        details.innerHTML =
+          '<div class="semana-day-card-metrics"><div><small>Ganhos brutos</small><strong>' + formatEuro(ganhosDia) + '</strong></div><div><small>Despesas do dia</small><strong class="is-expense">' + formatEuro(despesasDia) + '</strong></div><div><small>KM percorridos</small><strong>' + formatKm(badges.distancia) + '</strong></div><div><small>Horas trabalhadas</small><strong>—</strong></div></div>' +
+          '<div class="semana-day-card-platforms"><span>Por plataforma</span>' + platformRows + '</div>';
+        card.appendChild(details);
+        header.addEventListener('click', function () {
+          var expanded = card.classList.toggle('is-expanded');
+          header.setAttribute('aria-expanded', String(expanded));
         });
-        despesasView.appendChild(despesasScroll);
-
-        function updateDespesaScrollState () {
-          var maxScroll = despesasScroll.scrollHeight - despesasScroll.clientHeight;
-          if (maxScroll <= 1) {
-            despesasView.classList.remove('has-scroll-up', 'has-scroll-down');
-            return;
-          }
-          despesasView.classList.toggle('has-scroll-up', despesasScroll.scrollTop > 2);
-          despesasView.classList.toggle('has-scroll-down', despesasScroll.scrollTop < maxScroll - 2);
-        }
-        despesasScroll.addEventListener('scroll', updateDespesaScrollState, { passive: true });
-
-        if (expenseEntries.length > 1) {
-          var setaUp = document.createElement('button');
-          setaUp.type = 'button';
-          setaUp.className = 'semana-day-despesas-arrow is-up';
-          setaUp.setAttribute('aria-label', I18N.t('semana.scrollUpAria'));
-          setaUp.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>';
-          setaUp.addEventListener('click', function () { despesasScroll.scrollBy({ top: -48, behavior: 'smooth' }); });
-
-          var setaDown = document.createElement('button');
-          setaDown.type = 'button';
-          setaDown.className = 'semana-day-despesas-arrow is-down';
-          setaDown.setAttribute('aria-label', I18N.t('semana.scrollDownAria'));
-          setaDown.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
-          setaDown.addEventListener('click', function () { despesasScroll.scrollBy({ top: 48, behavior: 'smooth' }); });
-
-          despesasView.appendChild(setaUp);
-          despesasView.appendChild(setaDown);
-        }
-
-        flipWrap.appendChild(ganhosView);
-        flipWrap.appendChild(despesasView);
-        card.appendChild(flipWrap);
-
-        // O link "Despesas" (vermelho) só aparece quando o dia tem
-        // alguma despesa. Ao clicar, o conteúdo do card (Uber…Distância +
-        // os dois balões) faz fade out e as despesas do dia fazem fade in
-        // no mesmo lugar, sem o card mudar de tamanho ou posição — a
-        // altura do card fica travada na altura da visualização de
-        // ganhos; se houver mais despesas do que cabe nesse espaço, a
-        // lista de despesas rola internamente (com degradê e setas).
-        if (expenseEntries.length > 0) {
-          var toggleBtn = document.createElement('button');
-          toggleBtn.type = 'button';
-          toggleBtn.className = 'semana-day-toggle-btn';
-          toggleBtn.textContent = I18N.t('semana.verDespesas');
-          toggleBtn.addEventListener('click', function () {
-            var mostrandoDespesas = !despesasView.classList.contains('is-hidden');
-            despesasView.classList.toggle('is-hidden');
-            ganhosView.classList.toggle('is-hidden');
-            toggleBtn.textContent = mostrandoDespesas ? I18N.t('semana.verDespesas') : I18N.t('semana.verGanhos');
-            toggleBtn.classList.toggle('is-ganhos', !mostrandoDespesas);
-            if (!mostrandoDespesas) {
-              despesasScroll.scrollTop = 0;
-              updateDespesaScrollState();
-            }
-          });
-          header.appendChild(toggleBtn);
-        }
-
-        // Guarda uma referência para o ajuste de altura feito depois que o
-        // card já está inserido no DOM (offsetHeight só é confiável então).
-        card._fixarAlturaFlip = function () {
-          flipWrap.style.height = ganhosView.scrollHeight + 'px';
-          updateDespesaScrollState();
-        };
 
         return card;
       }
@@ -3953,15 +3851,12 @@
             listPlaceholder.appendChild(summaryCopy);
           }
         }
-        var cards = [];
         for (var i = 0; i < 7; i++) {
           var d = new Date(week.monday.getTime());
           d.setDate(week.monday.getDate() + i);
           var card = buildDayCard(d, i);
-          cards.push(card);
           listPlaceholder.appendChild(card);
         }
-        fixarAlturasListCards(cards);
       }
 
       // A altura de cada card no modo lista fica travada na altura da
@@ -3969,17 +3864,42 @@
       // ser medido depois que o card está no DOM e visível — por isso
       // reexecuta também quando o modo lista volta a ficar visível.
       function fixarAlturasListCards (cards) {
-        requestAnimationFrame(function () {
-          cards.forEach(function (card) {
-            if (typeof card._fixarAlturaFlip === 'function') card._fixarAlturaFlip();
-          });
-        });
+        return cards;
       }
 
       function buildWeekBlock (week, weekIndex) {
         var block = document.createElement('div');
         block.className = 'semana-week-block';
         block.id = 'semanaWeekBlock-' + weekIndex;
+
+        var metricTabs = document.createElement('div');
+        metricTabs.className = 'semana-metric-tabs';
+        metricTabs.setAttribute('role', 'tablist');
+        [
+          { key: 'financeiro', label: 'Financeiro' },
+          { key: 'operacional', label: 'Operacional / KM' },
+          { key: 'apps', label: 'Resumo por App' }
+        ].forEach(function (metric) {
+          var tab = document.createElement('button');
+          tab.type = 'button'; tab.className = 'semana-metric-tab';
+          tab.dataset.metric = metric.key; tab.textContent = metric.label;
+          tab.setAttribute('role', 'tab');
+          tab.setAttribute('aria-selected', String(metric.key === activeTableMetric));
+          tab.classList.toggle('is-active', metric.key === activeTableMetric);
+          tab.addEventListener('click', function () {
+            activeTableMetric = metric.key;
+            document.querySelectorAll('.semana-week-block').forEach(function (weekBlock) {
+              weekBlock.dataset.metric = activeTableMetric;
+              weekBlock.querySelectorAll('.semana-metric-tab').forEach(function (button) {
+                var selected = button.dataset.metric === activeTableMetric;
+                button.classList.toggle('is-active', selected);
+                button.setAttribute('aria-selected', String(selected));
+              });
+            });
+          });
+          metricTabs.appendChild(tab);
+        });
+        block.dataset.metric = activeTableMetric;
 
         var scrollWrap = document.createElement('div');
         scrollWrap.className = 'semana-table-scroll';
@@ -3993,14 +3913,16 @@
         var extraCols = weekPlatCols(week.monday);
         thead.innerHTML =
           '<tr>' +
-            '<th>' + I18N.t('semana.th.data') + '</th>' +
-            '<th>' + I18N.t('semana.th.uber') + '</th>' +
-            '<th>' + I18N.t('semana.th.bolt') + '</th>' +
-            extraCols.map(function (p) { return '<th>' + escHtml(p.nome) + '</th>'; }).join('') +
-            '<th>' + I18N.t('semana.th.despesas') + '</th>' +
-            '<th>' + I18N.t('semana.th.km') + '</th>' +
-            '<th>' + I18N.t('semana.th.total') + '</th>' +
-            '<th>' + I18N.t('semana.th.liquido') + '</th>' +
+            '<th class="semana-metric-all semana-cell-data">' + I18N.t('semana.th.data') + '</th>' +
+            '<th class="semana-metric-financeiro">Ganhos brutos</th>' +
+            '<th class="semana-metric-financeiro">' + I18N.t('semana.th.despesas') + '</th>' +
+            '<th class="semana-metric-financeiro">' + I18N.t('semana.th.liquido') + '</th>' +
+            '<th class="semana-metric-operacional">' + I18N.t('semana.th.km') + '</th>' +
+            '<th class="semana-metric-operacional">Horas</th>' +
+            '<th class="semana-metric-operacional">Ganho/hora</th>' +
+            '<th class="semana-metric-apps">' + I18N.t('semana.th.uber') + '</th>' +
+            '<th class="semana-metric-apps">' + I18N.t('semana.th.bolt') + '</th>' +
+            '<th class="semana-metric-apps">Outros</th>' +
           '</tr>';
         table.appendChild(thead);
 
@@ -4032,40 +3954,47 @@
           tdData.innerHTML = DIAS_ABBR()[i] + '<span class="semana-cell-date">' + pad2(d.getDate()) + '/' + pad2(d.getMonth() + 1) + '</span>';
           tr.appendChild(tdData);
 
-          var tdUber = document.createElement('td');
-          tdUber.textContent = formatEuro(dayBadges.uber);
-          tr.appendChild(tdUber);
-
-          var tdBolt = document.createElement('td');
-          tdBolt.textContent = formatEuro(dayBadges.bolt);
-          tr.appendChild(tdBolt);
-
-          extraCols.forEach(function (p) {
-            var tdX = document.createElement('td');
-            tdX.textContent = formatEuro(dayBadges.plat[p.id] || 0);
-            tr.appendChild(tdX);
-          });
+          var dayLiquido = dayTotal - despesasDia;
+          var otherApps = dayBadges.extras;
+          var tdGross = document.createElement('td');
+          tdGross.className = 'semana-metric-financeiro semana-cell-total';
+          tdGross.textContent = formatEuro(dayTotal);
+          totalCells.push({ el: tdGross, value: dayTotal });
+          tr.appendChild(tdGross);
 
           var tdDespesas = document.createElement('td');
+          tdDespesas.className = 'semana-metric-financeiro';
           tdDespesas.textContent = formatEuro(despesasDia);
           tr.appendChild(tdDespesas);
 
-          var tdKm = document.createElement('td');
-          tdKm.textContent = formatKm(dayBadges.distancia);
-          tr.appendChild(tdKm);
-
-          var tdTotal = document.createElement('td');
-          tdTotal.className = 'semana-cell-total';
-          tdTotal.textContent = formatEuro(dayTotal);
-          totalCells.push({ el: tdTotal, value: dayTotal });
-          tr.appendChild(tdTotal);
-
           var tdLiquido = document.createElement('td');
-          tdLiquido.className = 'semana-cell-liquido';
-          var dayLiquido = dayTotal - despesasDia;
+          tdLiquido.className = 'semana-metric-financeiro semana-cell-liquido';
           tdLiquido.textContent = formatEuro(dayLiquido);
           if (Math.round(dayLiquido * 100) >= 1) tdLiquido.classList.add('is-positive');
           tr.appendChild(tdLiquido);
+
+          var tdKm = document.createElement('td');
+          tdKm.className = 'semana-metric-operacional';
+          tdKm.textContent = formatKm(dayBadges.distancia);
+          tr.appendChild(tdKm);
+
+          var tdHours = document.createElement('td');
+          tdHours.className = 'semana-metric-operacional';
+          tdHours.textContent = '—';
+          tr.appendChild(tdHours);
+
+          var tdRate = document.createElement('td');
+          tdRate.className = 'semana-metric-operacional';
+          tdRate.textContent = '—';
+          tr.appendChild(tdRate);
+
+          [dayBadges.uber, dayBadges.bolt, otherApps].forEach(function (value) {
+            var cell = document.createElement('td');
+            cell.className = 'semana-metric-apps semana-cell-total';
+            cell.textContent = formatEuro(value);
+            cell.style.setProperty('--semana-bar-size', (dayTotal ? Math.max(8, value / dayTotal * 100) : 8) + '%');
+            tr.appendChild(cell);
+          });
 
           tbody.appendChild(tr);
         }
@@ -4073,12 +4002,7 @@
         table.appendChild(tbody);
         tableWrap.appendChild(table);
         scrollWrap.appendChild(tableWrap);
-        tableWrap.addEventListener('scroll', function () {
-          updateTableScrollFade(scrollWrap, tableWrap);
-        }, { passive: true });
-        requestAnimationFrame(function () {
-          updateTableScrollFade(scrollWrap, tableWrap);
-        });
+        block.appendChild(metricTabs);
 
         var sumBruto   = sumUber + sumBolt + sumExtras;
         var sumLiquido = sumBruto - sumDespesas;
@@ -4186,33 +4110,36 @@
         tableWrap.className = 'semana-table-wrap';
         var table = document.createElement('table');
         table.className = 'semana-table semana-despesas-detail-table';
-        table.innerHTML = '<thead><tr><th>' + I18N.t('semana.dth.dia') + '</th><th>' + I18N.t('semana.dth.valor') + '</th><th>' + I18N.t('semana.dth.desc') + '</th></tr></thead>';
+        table.innerHTML = '<thead><tr><th>' + I18N.t('semana.dth.dia') + '</th><th>' + I18N.t('semana.dth.desc') + '</th><th>' + I18N.t('semana.dth.valor') + '</th></tr></thead>';
         var tbody = document.createElement('tbody');
+        var total = 0;
+        var maior = null;
         linhas.forEach(function (linha) {
+          total += Number(linha.entry.valor) || 0;
+          if (!maior || Number(linha.entry.valor) > Number(maior.valor)) maior = linha.entry;
           var tr = document.createElement('tr');
           var tdDia = document.createElement('td');
           tdDia.textContent = linha.dia;
-          var tdValor = document.createElement('td');
-          tdValor.textContent = formatEuro(linha.entry.valor);
           var tdDesc = document.createElement('td');
           tdDesc.textContent = linha.entry.descricao;
+          var tdValor = document.createElement('td');
+          tdValor.className = 'semana-expense-value';
+          tdValor.textContent = formatPlainNumber(linha.entry.valor);
           tr.appendChild(tdDia);
-          tr.appendChild(tdValor);
           tr.appendChild(tdDesc);
+          tr.appendChild(tdValor);
           tbody.appendChild(tr);
         });
         table.appendChild(tbody);
         tableWrap.appendChild(table);
         scrollWrap.appendChild(tableWrap);
         card.appendChild(scrollWrap);
+        var footer = document.createElement('footer');
+        footer.className = 'semana-expenses-footer';
+        footer.innerHTML = '<div class="semana-expenses-total"><span>Total da semana</span><strong>' + formatPlainNumber(total) + '</strong></div>' +
+          (maior ? '<span class="semana-expenses-largest">Maior gasto: ' + escHtml(maior.descricao) + ' - ' + formatPlainNumber(maior.valor) + '</span>' : '');
+        card.appendChild(footer);
         section.appendChild(card);
-
-        tableWrap.addEventListener('scroll', function () {
-          updateTableScrollFade(scrollWrap, tableWrap);
-        }, { passive: true });
-        requestAnimationFrame(function () {
-          updateTableScrollFade(scrollWrap, tableWrap);
-        });
 
         return section;
       }
