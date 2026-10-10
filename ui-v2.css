@@ -511,7 +511,7 @@ body.ui-v2 #resumoPeriodControls .period-filter-row { background:transparent; }
 /* Mobile-only internal-page refresh. The overview and desktop stay untouched. */
 @media (max-width:760px) {
   /* Semana: cabeçalho e filtros próprios, sem alterar os restantes ecrãs mobile. */
-  body.ui-v2[data-ui-route="semana"] .ui-header-avatar { display:none; }
+  body.ui-v2[data-ui-route="semana"] .ui-header .ui-header-avatar { display:none; }
   body.ui-v2[data-ui-route="semana"] .ui-header-personal { display:block; min-width:0; }
   body.ui-v2[data-ui-route="semana"] .ui-header-copy { display:block; }
   body.ui-v2[data-ui-route="semana"] .ui-header #uiHeaderDate { display:block; min-height:0; padding:0; border:0; border-radius:0; background:transparent; color:var(--muted); font-size:.58rem; line-height:1.1; }
