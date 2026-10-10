@@ -795,3 +795,18 @@ body.ui-v2.theme-dark .amber .ui-metric-icon { background:#483e26; color:#f3ce80
   .ui-v2 #homeListPageSemana .semana-metric-tab { font-size:.58rem; padding-inline:4px; }
   .ui-v2 #homeListPageSemana .semana-week-block .semana-table :is(th,td) { padding:12px 6px; font-size:.62rem; }
 }
+/* Alternador binário e seletor de semana — apenas Minha Semana. */
+.ui-v2 #homeListPageSemana .semana-view-controls #subHeaderViewToggleGroup { display:flex; align-items:center; justify-content:center; width:auto; gap:18px; margin:4px auto 0; padding:0; border:0; border-radius:0; background:transparent; }
+.ui-v2 #homeListPageSemana .semana-view-controls .sub-header-view-toggle-divider { display:none; }
+.ui-v2 #homeListPageSemana .semana-view-controls .sub-header-view-toggle-btn { display:inline-flex; align-items:center; justify-content:center; gap:6px; width:auto; min-height:34px; padding:4px 2px; border:0; border-radius:0; background:transparent; color:var(--muted); font:800 .75rem/1 'Bricolage Grotesque',sans-serif; opacity:.45; transform:scale(1); transition:color .3s ease,opacity .3s ease,transform .3s ease; }
+.ui-v2 #homeListPageSemana .semana-view-controls .sub-header-view-toggle-btn svg { width:18px; height:18px; }
+.ui-v2 #homeListPageSemana .semana-view-controls .sub-header-view-toggle-btn.is-active { background:transparent; color:var(--lime); box-shadow:none; opacity:1; transform:scale(1.05); }
+.ui-v2 #homeListPageSemana .semana-view-controls .sub-header-view-toggle-btn:active { transform:scale(.98); }
+.ui-v2 #homeListPageSemana .semana-filter-controls .semana-week-nav { display:block; min-height:0; }
+.ui-v2 #homeListPageSemana .semana-filter-controls .semana-week-nav > .period-nav-btn { display:none; }
+.ui-v2 #homeListPageSemana .semana-filter-controls .semana-week-picker { width:100%; }
+.ui-v2 #homeListPageSemana .semana-filter-controls .semana-week-picker-btn { display:flex; align-items:center; justify-content:center; width:100%; min-height:38px; padding:7px 12px; border:1px solid color-mix(in srgb,var(--card-line) 90%,transparent); border-radius:9px; background:color-mix(in srgb,var(--card-bg) 84%,transparent); }
+.ui-v2 #homeListPageSemana .semana-filter-controls .semana-week-picker-btn > span { flex:1; text-align:center; }
+.ui-v2 #homeListPageSemana .semana-filter-controls .semana-week-picker-chevron { display:block; flex:0 0 18px; width:18px; height:18px; color:var(--muted); transition:transform .25s ease; }
+.ui-v2 #homeListPageSemana .semana-filter-controls .semana-week-picker-btn[aria-expanded="true"] .semana-week-picker-chevron { transform:rotate(180deg); }
+.ui-v2 #homeListPageSemana .semana-filter-controls .semana-week-picker-num { padding:0; background:transparent; color:inherit; }

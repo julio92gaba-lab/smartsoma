@@ -3540,6 +3540,7 @@
       var weeksTrackEl    = null;
       var currentWeekIndex = 0;
       var activeTableMetric = 'financeiro';
+      var currentWeekView = 'list';
 
       function dateKeyFor (d) {
         return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
@@ -3724,11 +3725,11 @@
       // meses diferentes -> "31 de ago. à 6 de set."
       function formatWeekPickerPeriod (monday, sunday) {
         if (monday.getMonth() === sunday.getMonth()) {
-          return I18N.t('fmt.rangeSameMonthDot', { d1: monday.getDate(), d2: sunday.getDate(), m: MESES_MINUS()[monday.getMonth()] });
+          return I18N.t('fmt.rangeSameMonthDot', { d1: monday.getDate(), d2: sunday.getDate(), m: MESES_ABBR()[monday.getMonth()] });
         }
         return I18N.t('fmt.rangeCrossMonthDot2', {
-          d1: monday.getDate(), m1: MESES_MINUS()[monday.getMonth()],
-          d2: sunday.getDate(), m2: MESES_MINUS()[sunday.getMonth()]
+          d1: monday.getDate(), m1: MESES_ABBR()[monday.getMonth()],
+          d2: sunday.getDate(), m2: MESES_ABBR()[sunday.getMonth()]
         });
       }
 
@@ -4232,6 +4233,10 @@
           pickerLabel.innerHTML = formatWeekPickerLabelHTML(idx, week.monday, week.sunday);
         }
         if (week) renderListCards(week);
+        if (currentWeekView === 'list') {
+          weeksContainer.hidden = true;
+          if (listPlaceholder) listPlaceholder.hidden = false;
+        }
         if (pickerPanel) {
           pickerPanel.querySelectorAll('.semana-week-picker-option').forEach(function (b, i) {
             b.classList.toggle('is-active', i === idx);
@@ -4359,6 +4364,7 @@
       // ainda está em manutenção.
       window.SemanaView = {
         showList: function () {
+          currentWeekView = 'list';
           weeksContainer.hidden = true;
           if (listPlaceholder) {
             listPlaceholder.hidden = false;
@@ -4367,6 +4373,7 @@
           }
         },
         showTable: function () {
+          currentWeekView = 'table';
           if (listPlaceholder) listPlaceholder.hidden = true;
           weeksContainer.hidden = false;
           // A tabela pode ter ficado oculta enquanto o modo lista estava
