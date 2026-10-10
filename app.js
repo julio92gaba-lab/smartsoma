@@ -4005,7 +4005,7 @@
 
         var tbody = document.createElement('tbody');
 
-        var sumUber = 0, sumBolt = 0, sumExtras = 0, sumDespesas = 0, sumKm = 0;
+        var sumUber = 0, sumBolt = 0, sumExtras = 0, sumDespesas = 0, sumKm = 0, totalCells = [];
 
         for (var i = 0; i < 7; i++) {
           var d = new Date(week.monday.getTime());
@@ -4056,6 +4056,7 @@
           var tdTotal = document.createElement('td');
           tdTotal.className = 'semana-cell-total';
           tdTotal.textContent = formatEuro(dayTotal);
+          totalCells.push({ el: tdTotal, value: dayTotal });
           tr.appendChild(tdTotal);
 
           var tdLiquido = document.createElement('td');
@@ -4080,6 +4081,10 @@
 
         var sumBruto   = sumUber + sumBolt + sumExtras;
         var sumLiquido = sumBruto - sumDespesas;
+        var maxDayTotal = Math.max.apply(null, totalCells.map(function (item) { return item.value; }).concat([0]));
+        totalCells.forEach(function (item) {
+          item.el.style.setProperty('--semana-bar-size', (maxDayTotal ? Math.max(8, item.value / maxDayTotal * 100) : 8) + '%');
+        });
 
         var summary = document.createElement('div');
         summary.className = 'semana-week-summary';

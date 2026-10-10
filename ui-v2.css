@@ -571,7 +571,7 @@ body.ui-v2 #resumoPeriodControls .period-filter-row { background:transparent; }
   .ui-v2 #homeListPageSemana .semana-table tbody tr:nth-child(even) { background:color-mix(in srgb,var(--input-bg) 65%,transparent); }
   .ui-v2 #homeListPageSemana .semana-table tbody tr.is-today { background:rgba(30,158,90,.12); box-shadow:inset 4px 0 0 var(--lime); }
   .ui-v2 #homeListPageSemana .semana-table tbody td.semana-cell-total { position:relative; padding-bottom:21px; }
-  .ui-v2 #homeListPageSemana .semana-table tbody td.semana-cell-total::after { content:''; position:absolute; left:10px; right:10px; bottom:9px; height:3px; border-radius:999px; background:linear-gradient(90deg,var(--brand-green),rgba(30,158,90,.16)); }
+  .ui-v2 #homeListPageSemana .semana-table tbody td.semana-cell-total::after { content:''; position:absolute; left:10px; bottom:9px; width:var(--semana-bar-size,8%); max-width:calc(100% - 20px); height:3px; border-radius:999px; background:linear-gradient(90deg,var(--brand-green),rgba(30,158,90,.16)); }
   .ui-v2 #homeListPageSemana .semana-despesas-detail-card { margin-top:2px; border-color:var(--card-line); background:var(--card-bg); }
   .ui-v2 #homeListPageSemana .semana-despesas-detail-card .semana-table thead th { background:#0e3b2a; color:#d9e6db; }
 
