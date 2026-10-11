@@ -863,8 +863,8 @@ body.ui-v2.theme-dark .amber .ui-metric-icon { background:#483e26; color:#f3ce80
 .ui-v2 #homeListPageSemana .semana-filter-fields .semana-week-picker { width:100%; }
 .ui-v2 #homeListPageSemana .semana-filter-fields .semana-week-picker-btn {
   justify-content:center;
-  min-height:32px;
-  padding:3px 8px;
+  min-height:28px;
+  padding:1px 8px;
   text-align:center;
 }
 .ui-v2 #homeListPageSemana .semana-filter-fields .semana-week-picker-btn > span {
@@ -885,12 +885,15 @@ body.ui-v2.theme-dark .amber .ui-metric-icon { background:#483e26; color:#f3ce80
 }
 .ui-v2 #homeListPageSemana #subHeaderViewToggleGroup {
   display:grid;
-  grid-template:28px 14px / 76px;
+  grid-template:30px 14px / 76px;
   place-items:center;
+  align-content:center;
+  gap:4px;
+  box-sizing:border-box;
   width:112px;
   min-height:78px;
   margin:0;
-  padding:0;
+  padding:10px;
   border:0;
   border-radius:0;
   background:transparent;
@@ -934,6 +937,13 @@ body.ui-v2.theme-dark .amber .ui-metric-icon { background:#483e26; color:#f3ce80
   text-align:center;
 }
 .ui-v2 #homeListPageSemana .semana-filter-controls.is-sticky { min-height:96px; }
+.ui-v2 #homeListPageSemana .semana-filter-fields .semana-week-picker-btn[aria-expanded="true"] {
+  border-color:color-mix(in srgb,var(--brand-green) 45%,var(--card-line));
+  background:color-mix(in srgb,var(--lime) 22%,var(--card-bg));
+}
+.ui-v2 #homeListPageSemana .semana-filter-fields .semana-week-picker-btn[aria-expanded="true"] .semana-week-picker-chevron {
+  color:var(--brand-green);
+}
 @media (max-width:760px) {
   .ui-v2 #homeListPageSemana .semana-filter-controls { grid-template-columns:minmax(0,1fr) 1px 96px; min-height:92px; padding:7px 8px; }
   .ui-v2 #homeListPageSemana .semana-filter-controls.is-sticky { min-height:92px; }
