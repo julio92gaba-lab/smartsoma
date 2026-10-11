@@ -858,6 +858,9 @@ body.ui-v2.theme-dark .amber .ui-metric-icon { background:#483e26; color:#f3ce80
   width:100%;
   margin:0;
   padding-inline:8px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
 }
 .ui-v2 #homeListPageSemana .semana-filter-fields .semana-week-nav { display:block; min-width:0; }
 .ui-v2 #homeListPageSemana .semana-filter-fields .semana-week-picker { width:100%; }
