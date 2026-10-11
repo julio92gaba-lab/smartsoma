@@ -193,7 +193,7 @@
 "semana.th.km": "Km",
 "semana.th.total": "Total",
 "semana.th.liquido": "Líquido",
-"semana.weekNum": "SEMANA {n}",
+"semana.weekNum": "SEM. {n}",
 "semana.ganhosDoDia": "Ganhos do dia",
 "semana.liquido": "Líquido",
 "semana.verDespesas": "ver despesas",

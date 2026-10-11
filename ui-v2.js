@@ -161,14 +161,15 @@
     theme.id='uiThemeRow'; theme.innerHTML=svg('ajustes')+'<span data-ui-text="theme"></span>'; $('openTermosMenuBtn').before(theme);
     var viewControls=$('subHeaderViewToggleGroup');
     var filters=create('div','semana-filter-controls');
-    filters.append($('semanaMonthPrev').parentNode,$('semanaWeekPicker').parentNode);
+    var weekModeRow=create('div','semana-filter-lower-row');
+    var weekModeDivider=create('span','semana-filter-divider');
+    weekModeDivider.setAttribute('aria-hidden','true');
+    weekModeRow.append($('semanaWeekPicker').parentNode,weekModeDivider,viewControls);
+    filters.append($('semanaMonthPrev').parentNode,weekModeRow);
     $('semanaWeeksContainer').before(filters);
-    var viewRow=create('div','semana-view-controls');
-    viewRow.append(viewControls);
-    filters.after(viewRow);
     var earningsTitle=$('semanaEarningsTitle'), metricSlot=$('semanaMetricSlot');
     if(earningsTitle&&metricSlot){
-      viewRow.after(earningsTitle);
+      filters.after(earningsTitle);
       earningsTitle.after(metricSlot);
     }
     viewControls.hidden=false;
