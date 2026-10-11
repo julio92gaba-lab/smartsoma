@@ -163,12 +163,17 @@
     var filters=create('div','semana-filter-controls');
     var filterFields=create('div','semana-filter-fields');
     var weekModeDivider=create('span','semana-filter-divider');
+    var viewModeLabels=create('span','semana-view-toggle-labels');
     var viewModeLabel=create('span','semana-view-toggle-active-label');
+    var viewModeInactiveLabel=create('span','semana-view-toggle-inactive-label');
     weekModeDivider.setAttribute('aria-hidden','true');
     viewModeLabel.id='semanaViewToggleActiveLabel';
+    viewModeInactiveLabel.id='semanaViewToggleInactiveLabel';
     viewModeLabel.textContent='Lista';
+    viewModeInactiveLabel.textContent='Tabela';
     filterFields.append($('semanaMonthPrev').parentNode,$('semanaWeekPicker').parentNode);
-    viewControls.append(viewModeLabel);
+    viewModeLabels.append(viewModeLabel,viewModeInactiveLabel);
+    viewControls.append(viewModeLabels);
     filters.append(filterFields,weekModeDivider,viewControls);
     $('semanaWeeksContainer').before(filters);
     var earningsTitle=$('semanaEarningsTitle'), metricSlot=$('semanaMetricSlot');

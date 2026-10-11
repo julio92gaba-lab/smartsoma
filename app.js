@@ -4543,7 +4543,9 @@
           });
           var isList = btn === btnList;
           var activeLabel = document.getElementById('semanaViewToggleActiveLabel');
+          var inactiveLabel = document.getElementById('semanaViewToggleInactiveLabel');
           if (activeLabel) activeLabel.textContent = isList ? 'Lista' : 'Tabela';
+          if (inactiveLabel) inactiveLabel.textContent = isList ? 'Tabela' : 'Lista';
           toggle.setAttribute('aria-pressed', isList ? 'true' : 'false');
           toggle.setAttribute('aria-label', isList ? 'Alternar para tabela' : 'Alternar para lista');
         }
