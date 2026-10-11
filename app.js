@@ -3925,6 +3925,8 @@
         var tbody = document.createElement('tbody');
 
         var sumUber = 0, sumBolt = 0, sumExtras = 0, sumDespesas = 0, sumKm = 0, totalCells = [];
+        var meta = window.MetaSemanalRead && window.MetaSemanalRead.forDate(week.monday);
+        var activeDays = 0, elapsedDays = 0;
 
         for (var i = 0; i < 7; i++) {
           var d = new Date(week.monday.getTime());
@@ -3951,6 +3953,11 @@
           tr.appendChild(tdData);
 
           var dayLiquido = dayTotal - despesasDia;
+          var dayGoalValue = meta && meta.config && meta.config.tipo === 'liquido' ? dayLiquido : dayTotal;
+          if (d.getTime() <= today.getTime()) {
+            elapsedDays++;
+            if (dayGoalValue > 0) activeDays++;
+          }
           var otherApps = dayBadges.extras;
           var tdGross = document.createElement('td');
           tdGross.className = 'semana-metric-financeiro semana-cell-total';
@@ -4008,62 +4015,26 @@
         });
 
         var summary = document.createElement('div');
-        summary.className = 'semana-week-summary';
-
-        var meta = window.MetaSemanalRead && window.MetaSemanalRead.forDate(week.monday);
-        if (meta && meta.config) {
-          var goal = document.createElement('div');
-          goal.className = 'semana-goal-progress';
-          var goalPercent = Math.min(100, meta.percent);
-          goal.innerHTML =
-            '<div class="semana-goal-progress-copy">' +
-              '<span>' + I18N.t('metacard.label') + '</span>' +
-              '<strong>' + meta.percent + '%</strong>' +
-            '</div>' +
-            '<div class="semana-goal-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + goalPercent + '">' +
-              '<i style="width:' + goalPercent + '%"></i>' +
-            '</div>';
-          summary.appendChild(goal);
-        }
-
-        var tiles = document.createElement('div');
-        tiles.className = 'dash-sub-row semana-summary-tiles';
-        tiles.innerHTML =
-          '<div class="dash-sub-tile dash-tile-bruto">' +
-            '<span class="dash-tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15l3.5-3.5"/><path d="M20.3 18a9 9 0 1 0-16.6 0"/></svg></span>' +
-            '<span class="dash-tile-label">' + I18N.t('semana.tileGanhos') + '</span>' +
-            '<span class="dash-tile-value" data-field="bruto"></span>' +
+        summary.className = 'semana-week-summary semana-goal-card';
+        var achieved = meta && meta.config ? meta.achieved : sumBruto;
+        var target = meta && meta.config ? meta.config.valor : null;
+        var percent = meta && meta.config ? Math.max(0, meta.percent) : 0;
+        var progress = Math.min(100, percent);
+        var dailyAverage = activeDays ? achieved / activeDays : 0;
+        summary.innerHTML =
+          '<div class="semana-goal-card-head">' +
+            '<span>Meta da Semana</span>' +
+            '<strong>' + (target ? percent + '%' : '—') + '</strong>' +
           '</div>' +
-          '<div class="dash-sub-tile dash-tile-despesas">' +
-            '<span class="dash-tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="22" x2="15" y2="22"/><line x1="4" y1="9" x2="14" y2="9"/><path d="M14 22V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v18"/><path d="M14 13h1.5a2 2 0 0 1 2 2v2a1.5 1.5 0 0 0 3 0V9.5L17 6"/></svg></span>' +
-            '<span class="dash-tile-label">' + I18N.t('semana.tileDespesas') + '</span>' +
-            '<span class="dash-tile-value" data-field="despesas"></span>' +
+          '<div class="semana-goal-card-values">' +
+            '<strong>' + formatEuro(achieved) + '</strong>' +
+            '<span>' + (target ? '/ ' + formatEuro(target) : 'Meta por definir') + '</span>' +
           '</div>' +
-          '<div class="dash-sub-tile dash-tile-distancia">' +
-            '<span class="dash-tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.5-6.1-6.5-11A6.5 6.5 0 0 1 18.5 10c0 4.9-6.5 11-6.5 11Z"/><circle cx="12" cy="10" r="2.2"/></svg></span>' +
-            '<span class="dash-tile-label">' + I18N.t('semana.tileDistancia') + '</span>' +
-            '<span class="dash-tile-value" data-field="km"></span>' +
+          '<div class="semana-goal-card-track" role="progressbar" aria-label="Progresso da meta semanal" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + progress + '"><i style="width:' + progress + '%"></i></div>' +
+          '<div class="semana-goal-card-footer">' +
+            '<span>Média diária: <strong>' + formatEuro(dailyAverage) + '</strong></span>' +
+            '<span>' + activeDays + ' de ' + elapsedDays + ' dias ativos</span>' +
           '</div>';
-        summary.appendChild(tiles);
-
-        tiles.querySelector('[data-field="bruto"]').textContent = formatEuro(sumBruto);
-        tiles.querySelector('[data-field="despesas"]').textContent = formatEuro(sumDespesas);
-        tiles.querySelector('[data-field="km"]').textContent = formatKm(sumKm);
-
-        var divider = document.createElement('div');
-        divider.className = 'semana-summary-divider';
-        summary.appendChild(divider);
-
-        var liquidoRow = document.createElement('div');
-        liquidoRow.className = 'semana-summary-liquido';
-        liquidoRow.innerHTML =
-          '<span class="semana-summary-liquido-label">' + I18N.t('semana.totalLiquido') + '</span>' +
-          '<span class="semana-summary-liquido-value"></span>';
-        summary.appendChild(liquidoRow);
-
-        var liquidoValueEl = liquidoRow.querySelector('.semana-summary-liquido-value');
-        liquidoValueEl.classList.toggle('is-negative', sumLiquido < 0);
-        liquidoValueEl.textContent = formatEuro(sumLiquido);
 
         block.appendChild(summary);
         block.appendChild(scrollWrap);
