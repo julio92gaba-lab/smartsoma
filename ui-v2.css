@@ -803,7 +803,7 @@ body.ui-v2.theme-dark .amber .ui-metric-icon { background:#483e26; color:#f3ce80
 .ui-v2 #homeListPageSemana .semana-view-controls .sub-header-view-toggle-btn.is-active { background:transparent; color:#173421; box-shadow:none; opacity:1; transform:scale(1.07); }
 .ui-v2 #homeListPageSemana .semana-view-controls .sub-header-view-toggle-btn:active { transform:scale(.98); }
 /* Imagens do alternador: o modo ativo fica colorido à frente do inativo. */
-.ui-v2 #homeListPageSemana .semana-view-controls #subHeaderViewToggleGroup { gap:0; overflow:visible; }
+.ui-v2 #homeListPageSemana .semana-view-controls #subHeaderViewToggleGroup { gap:0; overflow:visible; appearance:none; cursor:pointer; }
 .ui-v2 #homeListPageSemana .semana-view-controls .sub-header-view-toggle-btn { position:relative; gap:7px; overflow:visible; opacity:1; transform:none; }
 .ui-v2 #homeListPageSemana .semana-view-controls .sub-header-view-toggle-btn:first-child { z-index:1; }
 .ui-v2 #homeListPageSemana .semana-view-controls .sub-header-view-toggle-btn:last-child { z-index:1; }
@@ -811,9 +811,9 @@ body.ui-v2.theme-dark .amber .ui-metric-icon { background:#483e26; color:#f3ce80
 .ui-v2 #homeListPageSemana .semana-view-controls .sub-header-view-toggle-btn:active { transform:none; }
 .ui-v2 #homeListPageSemana .semana-view-toggle-label { color:#173421; font-size:.8rem; line-height:1; opacity:.45; transition:opacity .3s ease; }
 .ui-v2 #homeListPageSemana .sub-header-view-toggle-btn.is-active .semana-view-toggle-label { opacity:1; }
-.ui-v2 #homeListPageSemana .semana-view-toggle-image { position:relative; display:inline-flex; width:40px; height:40px; flex:0 0 40px; z-index:0; opacity:.5; transform:scale(.92); filter:grayscale(100%); transition:transform .3s ease,filter .3s ease,opacity .3s ease; }
-.ui-v2 #homeListPageSemana #viewToggleBtnTable .semana-view-toggle-image { margin-right:-10px; }
-.ui-v2 #homeListPageSemana #viewToggleBtnList .semana-view-toggle-image { margin-left:-10px; }
+.ui-v2 #homeListPageSemana .semana-view-toggle-image { position:relative; display:inline-flex; width:32px; height:32px; flex:0 0 32px; z-index:0; opacity:.5; transform:scale(.92); filter:grayscale(100%); transition:transform .3s ease,filter .3s ease,opacity .3s ease; }
+.ui-v2 #homeListPageSemana #viewToggleBtnTable .semana-view-toggle-image { margin-right:-8px; }
+.ui-v2 #homeListPageSemana #viewToggleBtnList .semana-view-toggle-image { margin-left:-8px; }
 .ui-v2 #homeListPageSemana .semana-view-toggle-image img { display:block; width:100%; height:100%; border:0; border-radius:10px; outline:0; object-fit:cover; }
 .ui-v2 #homeListPageSemana .sub-header-view-toggle-btn.is-active .semana-view-toggle-image { z-index:10; opacity:1; transform:scale(1.08); filter:grayscale(0); }
 .ui-v2 #homeListPageSemana .semana-filter-controls .semana-week-nav { display:block; min-height:0; }

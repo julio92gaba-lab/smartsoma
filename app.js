@@ -4534,22 +4534,26 @@
       (function () {
         var btnList  = document.getElementById('viewToggleBtnList');
         var btnTable = document.getElementById('viewToggleBtnTable');
-        if (!btnList || !btnTable) return;
+        var toggle = document.getElementById('subHeaderViewToggleGroup');
+        if (!btnList || !btnTable || !toggle) return;
         function setActive (btn) {
           [btnList, btnTable].forEach(function (b) {
             var active = (b === btn);
             b.classList.toggle('is-active', active);
-            b.setAttribute('aria-pressed', active ? 'true' : 'false');
           });
+          var isList = btn === btnList;
+          toggle.setAttribute('aria-pressed', isList ? 'true' : 'false');
+          toggle.setAttribute('aria-label', isList ? 'Alternar para tabela' : 'Alternar para lista');
         }
-        btnList.addEventListener('click', function () {
-          setActive(btnList);
-          if (window.SemanaView) window.SemanaView.showList();
-        });
-        btnTable.addEventListener('click', function () {
-          setActive(btnTable);
-          if (window.SemanaView) window.SemanaView.showTable();
-        });
+        function toggleView () {
+          var next = btnList.classList.contains('is-active') ? btnTable : btnList;
+          setActive(next);
+          if (window.SemanaView) {
+            if (next === btnList) window.SemanaView.showList();
+            else window.SemanaView.showTable();
+          }
+        }
+        toggle.addEventListener('click', toggleView);
       })();
 
       // ---- Navegação entre seções (Ganhos / Resumo Financeiro / Detalhes
