@@ -832,39 +832,44 @@ body.ui-v2.theme-dark .amber .ui-metric-icon { background:#483e26; color:#f3ce80
 .ui-v2 #homeListPageSemana .semana-expenses-slot { order:6; }
 .ui-v2 #homeListPageSemana .semana-expenses-slot .semana-expenses-section { margin-top:0; }
 
-/* Painel unificado da Semana: mês acima; semana e modo de visualização abaixo. */
+/* Painel unificado da Semana: filtros à esquerda e alternador único à direita. */
 .ui-v2 #homeListPageSemana .semana-filter-controls {
-  gap:8px;
-  box-sizing:border-box;
-  min-height:106px;
-  align-content:start;
-}
-.ui-v2 #homeListPageSemana .semana-filter-controls .period-nav-row {
-  justify-content:start;
-  width:max-content;
-}
-.ui-v2 #homeListPageSemana .semana-filter-controls .period-label { margin:0; }
-.ui-v2 #homeListPageSemana .semana-filter-lower-row {
   display:grid;
-  grid-template-columns:minmax(0,1fr) 1px auto;
-  align-items:center;
-  min-height:48px;
+  grid-template-columns:minmax(0,1fr) 1px 112px;
+  gap:0;
+  box-sizing:border-box;
+  min-height:96px;
+  padding-block:8px;
+  align-items:stretch;
+}
+.ui-v2 #homeListPageSemana .semana-filter-fields {
+  display:grid;
+  grid-template-rows:1fr 1fr;
+  gap:4px;
+  min-width:0;
+  padding-right:10px;
+}
+.ui-v2 #homeListPageSemana .semana-filter-fields .period-nav-row {
+  grid-template-columns:34px minmax(0,1fr) 34px;
+  justify-content:stretch;
   width:100%;
 }
-.ui-v2 #homeListPageSemana .semana-filter-lower-row .semana-week-nav {
-  display:block;
-  min-width:0;
+.ui-v2 #homeListPageSemana .semana-filter-fields .period-label {
+  width:100%;
+  margin:0;
+  padding-inline:8px;
 }
-.ui-v2 #homeListPageSemana .semana-filter-lower-row .semana-week-picker { width:100%; }
-.ui-v2 #homeListPageSemana .semana-filter-lower-row .semana-week-picker-btn {
-  justify-content:flex-start;
-  min-height:42px;
-  padding:7px 8px;
-  text-align:left;
+.ui-v2 #homeListPageSemana .semana-filter-fields .semana-week-nav { display:block; min-width:0; }
+.ui-v2 #homeListPageSemana .semana-filter-fields .semana-week-picker { width:100%; }
+.ui-v2 #homeListPageSemana .semana-filter-fields .semana-week-picker-btn {
+  justify-content:center;
+  min-height:32px;
+  padding:3px 8px;
+  text-align:center;
 }
-.ui-v2 #homeListPageSemana .semana-filter-lower-row .semana-week-picker-btn > span {
+.ui-v2 #homeListPageSemana .semana-filter-fields .semana-week-picker-btn > span {
   flex:0 1 auto;
-  text-align:left;
+  text-align:center;
 }
 .ui-v2 #homeListPageSemana .semana-week-picker-num {
   color:var(--brand-green);
@@ -875,43 +880,63 @@ body.ui-v2.theme-dark .amber .ui-metric-icon { background:#483e26; color:#f3ce80
 .ui-v2 #homeListPageSemana .semana-filter-divider {
   align-self:stretch;
   width:1px;
-  margin:3px 10px;
+  margin:0;
   background:color-mix(in srgb,var(--ink) 16%,transparent);
 }
-.ui-v2 #homeListPageSemana .semana-filter-lower-row #subHeaderViewToggleGroup {
-  display:flex;
-  align-items:center;
-  justify-content:center;
+.ui-v2 #homeListPageSemana #subHeaderViewToggleGroup {
+  display:grid;
+  grid-template:28px 14px / 76px;
+  place-items:center;
   width:112px;
-  min-height:46px;
+  min-height:78px;
   margin:0;
   padding:0;
   border:0;
+  border-radius:0;
   background:transparent;
+  box-shadow:none;
+  outline:0;
+  cursor:pointer;
 }
-.ui-v2 #homeListPageSemana .semana-filter-lower-row .sub-header-view-toggle-btn {
+.ui-v2 #homeListPageSemana #subHeaderViewToggleGroup .sub-header-view-toggle-btn {
   display:grid;
-  grid-template-rows:27px auto;
   place-items:center;
-  width:52px;
-  min-height:44px;
+  grid-area:1 / 1;
+  width:30px;
+  min-height:30px;
   padding:0;
-  gap:1px;
+  border:0;
+  background:transparent;
+  opacity:1;
+  transition:transform .22s ease,opacity .22s ease;
 }
-.ui-v2 #homeListPageSemana .semana-filter-lower-row .semana-view-toggle-image {
-  width:25px;
-  height:25px;
-  flex-basis:25px;
+.ui-v2 #homeListPageSemana #subHeaderViewToggleGroup .semana-view-toggle-label { display:none; }
+.ui-v2 #homeListPageSemana #subHeaderViewToggleGroup .semana-view-toggle-image {
+  width:30px;
+  height:30px;
+  flex-basis:30px;
+  margin:0;
+  opacity:.4;
+  filter:grayscale(1);
+  transform:translateX(-10px) scale(.76);
 }
-.ui-v2 #homeListPageSemana .semana-filter-lower-row .semana-view-toggle-label { font-size:.61rem; }
-.ui-v2 #homeListPageSemana .semana-filter-lower-row .sub-header-view-toggle-btn.is-active .semana-view-toggle-image { transform:scale(1.12); }
-.ui-v2 #homeListPageSemana .semana-filter-controls.is-sticky { min-height:106px; }
+.ui-v2 #homeListPageSemana #subHeaderViewToggleGroup .sub-header-view-toggle-btn.is-active { z-index:1; }
+.ui-v2 #homeListPageSemana #subHeaderViewToggleGroup .sub-header-view-toggle-btn.is-active .semana-view-toggle-image {
+  opacity:1;
+  filter:grayscale(0);
+  transform:translateX(7px) scale(1);
+}
+.ui-v2 #homeListPageSemana .semana-view-toggle-active-label {
+  grid-area:2 / 1;
+  color:var(--ink);
+  font:.66rem/1 'Bricolage Grotesque',sans-serif;
+  font-weight:800;
+  text-align:center;
+}
+.ui-v2 #homeListPageSemana .semana-filter-controls.is-sticky { min-height:96px; }
 @media (max-width:760px) {
-  .ui-v2 #homeListPageSemana .semana-filter-controls { min-height:102px; }
-  .ui-v2 #homeListPageSemana .semana-filter-controls.is-sticky { min-height:102px; }
-  .ui-v2 #homeListPageSemana .semana-filter-lower-row { min-height:44px; }
-  .ui-v2 #homeListPageSemana .semana-filter-lower-row #subHeaderViewToggleGroup { width:102px; min-height:42px; }
-  .ui-v2 #homeListPageSemana .semana-filter-lower-row .sub-header-view-toggle-btn { width:48px; min-height:40px; }
-  .ui-v2 #homeListPageSemana .semana-filter-lower-row .semana-view-toggle-image { width:23px; height:23px; flex-basis:23px; }
-  .ui-v2 #homeListPageSemana .semana-filter-divider { margin-inline:7px; }
+  .ui-v2 #homeListPageSemana .semana-filter-controls { grid-template-columns:minmax(0,1fr) 1px 96px; min-height:92px; padding:7px 8px; }
+  .ui-v2 #homeListPageSemana .semana-filter-controls.is-sticky { min-height:92px; }
+  .ui-v2 #homeListPageSemana .semana-filter-fields { padding-right:8px; }
+  .ui-v2 #homeListPageSemana #subHeaderViewToggleGroup { width:96px; min-height:76px; }
 }

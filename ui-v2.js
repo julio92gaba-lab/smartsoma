@@ -161,11 +161,15 @@
     theme.id='uiThemeRow'; theme.innerHTML=svg('ajustes')+'<span data-ui-text="theme"></span>'; $('openTermosMenuBtn').before(theme);
     var viewControls=$('subHeaderViewToggleGroup');
     var filters=create('div','semana-filter-controls');
-    var weekModeRow=create('div','semana-filter-lower-row');
+    var filterFields=create('div','semana-filter-fields');
     var weekModeDivider=create('span','semana-filter-divider');
+    var viewModeLabel=create('span','semana-view-toggle-active-label');
     weekModeDivider.setAttribute('aria-hidden','true');
-    weekModeRow.append($('semanaWeekPicker').parentNode,weekModeDivider,viewControls);
-    filters.append($('semanaMonthPrev').parentNode,weekModeRow);
+    viewModeLabel.id='semanaViewToggleActiveLabel';
+    viewModeLabel.textContent='Lista';
+    filterFields.append($('semanaMonthPrev').parentNode,$('semanaWeekPicker').parentNode);
+    viewControls.append(viewModeLabel);
+    filters.append(filterFields,weekModeDivider,viewControls);
     $('semanaWeeksContainer').before(filters);
     var earningsTitle=$('semanaEarningsTitle'), metricSlot=$('semanaMetricSlot');
     if(earningsTitle&&metricSlot){
