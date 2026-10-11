@@ -537,7 +537,8 @@ body.ui-v2:is([data-ui-route="semana"],[data-ui-route="downloads"],[data-ui-rout
 .ui-v2 #homeListPageSemana .semana-despesas-detail-table td + td,
 .ui-v2 #homeListPageSemana .semana-despesas-detail-table th + th { padding-left:12px; }
 @media (max-width:760px) {
-  .ui-v2 #homeListPageSemana .semana-filter-controls { margin-inline:-8px; padding:8px; }
+  .ui-v2 #homeListPageSemana .semana-filter-controls { margin:28px -8px; padding:8px; transition:margin .24s ease,background-color .3s ease,box-shadow .3s ease,border-color .3s ease; }
+  .ui-v2 #homeListPageSemana .semana-filter-controls.is-sticky { margin:0 -8px; }
   .ui-v2 #homeListPageSemana .semana-filter-controls .period-label { padding:7px 14px; font-size:.7rem; }
   .ui-v2 #homeListPageSemana .semana-live-content { gap:14px; }
 }
