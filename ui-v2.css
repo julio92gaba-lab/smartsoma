@@ -810,3 +810,10 @@ body.ui-v2.theme-dark .amber .ui-metric-icon { background:#483e26; color:#f3ce80
 .ui-v2 #homeListPageSemana .semana-filter-controls .semana-week-picker-chevron { display:block; flex:0 0 18px; width:18px; height:18px; color:var(--muted); transition:transform .25s ease; }
 .ui-v2 #homeListPageSemana .semana-filter-controls .semana-week-picker-btn[aria-expanded="true"] .semana-week-picker-chevron { transform:rotate(180deg); }
 .ui-v2 #homeListPageSemana .semana-filter-controls .semana-week-picker-num { padding:0; background:transparent; color:inherit; }
+/* Ordem única dos blocos da Semana. */
+.ui-v2 #homeListPageSemana .semana-ganhos-title { order:3; margin:8px 0 0; color:var(--ink); font:700 1rem 'Bricolage Grotesque',sans-serif; letter-spacing:-.2px; }
+.ui-v2 #homeListPageSemana .semana-metric-slot { order:4; }
+.ui-v2 #homeListPageSemana .semana-weeks-container,
+.ui-v2 #homeListPageSemana .semana-list-placeholder { order:5; }
+.ui-v2 #homeListPageSemana .semana-expenses-slot { order:6; }
+.ui-v2 #homeListPageSemana .semana-expenses-slot .semana-expenses-section { margin-top:0; }

@@ -166,6 +166,11 @@
     var viewRow=create('div','semana-view-controls');
     viewRow.append(viewControls);
     filters.after(viewRow);
+    var earningsTitle=$('semanaEarningsTitle'), metricSlot=$('semanaMetricSlot');
+    if(earningsTitle&&metricSlot){
+      viewRow.after(earningsTitle);
+      earningsTitle.after(metricSlot);
+    }
     viewControls.hidden=false;
     var originalGo=HomeNav.goToSection;
     HomeNav.goToSection=function(key){ key=(key==='default'||key==='ganhos'||key==='despesas')?'resumo':key; if(key!=='semana')calendarWeekSelection=false; route=key; if($('uiSettingsPage'))$('uiSettingsPage').hidden=true; originalGo(key==='downloads'?'relatorio':key); syncHeader(); };

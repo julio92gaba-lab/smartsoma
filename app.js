@@ -3522,6 +3522,9 @@
       var nextBtn          = document.getElementById('semanaMonthNext');
       var weeksContainer   = document.getElementById('semanaWeeksContainer');
       var listPlaceholder  = document.getElementById('semanaListPlaceholder');
+      var metricSlot       = document.getElementById('semanaMetricSlot');
+      var expensesSlot     = document.getElementById('semanaExpensesSlot');
+      var earningsTitle    = document.getElementById('semanaEarningsTitle');
       if (!monthLabelEl || !prevBtn || !nextBtn || !weeksContainer) return;
 
       function pad2 (n) { return n < 10 ? '0' + n : String(n); }
@@ -3843,15 +3846,6 @@
         if (!listPlaceholder) return;
         listPlaceholder.innerHTML = '';
         if (!week) return;
-        if (window.matchMedia && window.matchMedia('(max-width: 760px)').matches) {
-          var activeBlock = document.getElementById('semanaWeekBlock-' + currentWeekIndex);
-          var activeSummary = activeBlock && activeBlock.querySelector('.semana-week-summary');
-          if (activeSummary) {
-            var summaryCopy = activeSummary.cloneNode(true);
-            summaryCopy.classList.add('semana-list-summary');
-            listPlaceholder.appendChild(summaryCopy);
-          }
-        }
         for (var i = 0; i < 7; i++) {
           var d = new Date(week.monday.getTime());
           d.setDate(week.monday.getDate() + i);
@@ -3876,6 +3870,7 @@
         var metricTabs = document.createElement('div');
         metricTabs.className = 'semana-metric-tabs';
         metricTabs.setAttribute('role', 'tablist');
+        metricTabs._weekBlock = block;
         [
           { key: 'financeiro', label: 'Financeiro' },
           { key: 'operacional', label: 'Operacional / KM' },
@@ -3891,11 +3886,11 @@
             activeTableMetric = metric.key;
             document.querySelectorAll('.semana-week-block').forEach(function (weekBlock) {
               weekBlock.dataset.metric = activeTableMetric;
-              weekBlock.querySelectorAll('.semana-metric-tab').forEach(function (button) {
-                var selected = button.dataset.metric === activeTableMetric;
-                button.classList.toggle('is-active', selected);
-                button.setAttribute('aria-selected', String(selected));
-              });
+            });
+            document.querySelectorAll('.semana-metric-tab').forEach(function (button) {
+              var selected = button.dataset.metric === activeTableMetric;
+              button.classList.toggle('is-active', selected);
+              button.setAttribute('aria-selected', String(selected));
             });
           });
           metricTabs.appendChild(tab);
@@ -4074,7 +4069,10 @@
         block.appendChild(scrollWrap);
 
         var detalhesCard = buildWeekExpensesDetailCard(week);
-        if (detalhesCard) block.appendChild(detalhesCard);
+        if (detalhesCard) {
+          detalhesCard._weekBlock = block;
+          block.appendChild(detalhesCard);
+        }
 
         return block;
       }
@@ -4163,6 +4161,32 @@
         summarySlot.appendChild(copy);
       }
 
+      function restoreExternalWeekParts () {
+        [metricSlot, expensesSlot].forEach(function (slot) {
+          if (!slot || !slot.firstElementChild) return;
+          var part = slot.firstElementChild;
+          if (part._weekBlock) part._weekBlock.appendChild(part);
+        });
+      }
+
+      function syncExternalWeekParts (block) {
+        restoreExternalWeekParts();
+        if (metricSlot) {
+          var metricTabs = block.querySelector('.semana-metric-tabs');
+          if (metricTabs) metricSlot.appendChild(metricTabs);
+        }
+        if (expensesSlot) {
+          var expenses = block.querySelector('.semana-expenses-section');
+          if (expenses) expensesSlot.appendChild(expenses);
+        }
+      }
+
+      function syncWeekContentMode () {
+        var isTable = currentWeekView === 'table';
+        if (earningsTitle) earningsTitle.hidden = !isTable;
+        if (metricSlot) metricSlot.hidden = !isTable;
+      }
+
       function syncWeekStepButtons () {
         if (pickerPrev) pickerPrev.disabled = currentWeekIndex <= 0;
         if (pickerNext) pickerNext.disabled = currentWeekIndex >= currentWeeks.length - 1;
@@ -4200,6 +4224,8 @@
 
         currentWeekIndex = idx;
         syncSummarySlot(block);
+        syncExternalWeekParts(block);
+        syncWeekContentMode();
         syncWeekStepButtons();
 
         if (animate === false) {
@@ -4365,6 +4391,7 @@
       window.SemanaView = {
         showList: function () {
           currentWeekView = 'list';
+          syncWeekContentMode();
           weeksContainer.hidden = true;
           if (listPlaceholder) {
             listPlaceholder.hidden = false;
@@ -4374,6 +4401,7 @@
         },
         showTable: function () {
           currentWeekView = 'table';
+          syncWeekContentMode();
           if (listPlaceholder) listPlaceholder.hidden = true;
           weeksContainer.hidden = false;
           // A tabela pode ter ficado oculta enquanto o modo lista estava
