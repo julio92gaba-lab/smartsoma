@@ -1,6 +1,6 @@
 /* SmartSoma — Service Worker */
 
-const CACHE_NAME = 'smartsoma-v7';
+const CACHE_NAME = 'smartsoma-v8';
 const NETWORK_TIMEOUT = 4000; /* ms: sem resposta da rede, usa a cache se existir */
 
 const ASSETS_TO_CACHE = [
@@ -21,7 +21,9 @@ const ASSETS_TO_CACHE = [
   '/01uber.png',
   '/02bolt.png',
   '/04despesas.png',
-  '/05distancia.png'
+  '/05distancia.png',
+  '/tabela.png',
+  '/lista.png'
 ];
 
 /* ── INSTALL: guarda os assets essenciais em cache ── */
