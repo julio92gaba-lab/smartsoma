@@ -196,6 +196,7 @@
     filters.append(filterFields,weekModeDivider,viewControls);
     $('semanaWeeksContainer').before(filters);
     var earningsTitle=$('semanaEarningsTitle'), metricSlot=$('semanaMetricSlot');
+    if(earningsTitle)earningsTitle.textContent=say('FATURAÇÃO','REVENUE');
     if(earningsTitle&&metricSlot){
       filters.after(earningsTitle);
       earningsTitle.after(metricSlot);
@@ -503,7 +504,7 @@
   }
   var entryMode='income',entryScreen='home',chosen=null,entryReturnFocus=null,restoreKmComponent=function(){},mountKmComponent=function(){};
   function setupEntry(){
-    var dialog=create('dialog','ui-entry-dialog','<form id="uiEntryForm"><div class="ui-panel-head"><h2 id="uiEntryTitle"></h2><button type="button" id="uiEntryClose" class="ui-icon-button" aria-label="Fechar">×</button></div><p id="uiEntryDate" class="ui-eyebrow"></p><div class="ui-entry-tabs" id="uiEntryTabs"><button type="button" id="uiEntryIncome"></button><button type="button" id="uiEntryExpense"></button><button type="button" id="uiEntryKm">KM</button></div><div id="uiEntryHomeContent"><div class="ui-platform-selector" id="uiPlatformSelector"><div id="uiPlatformChoices" class="ui-platform-choices"></div></div></div><div id="uiEntryFormContent" hidden><label id="uiEntryDescriptionLabel"><span id="uiDescriptionLabel"></span><input id="uiEntryDescription" maxlength="60"></label><label><span id="uiValueLabel"></span><div class="ui-entry-amount"><span>€</span><input id="uiEntryValue" inputmode="decimal" autocomplete="off" required aria-label="Valor" placeholder="0,00"></div></label><p id="uiEntryHint" class="ui-muted" aria-live="polite"></p><p id="uiEntryError" class="ui-error" role="alert"></p><button type="submit" id="uiEntrySave" class="ui-button"></button></div><div id="uiEntryKmContent" hidden></div></form>');
+    var dialog=create('dialog','ui-entry-dialog','<form id="uiEntryForm"><div class="ui-panel-head"><h2 id="uiEntryTitle"></h2><button type="button" id="uiEntryClose" class="ui-icon-button" aria-label="Fechar">×</button></div><p id="uiEntryDate" class="ui-eyebrow"></p><div class="ui-entry-tabs" id="uiEntryTabs"><button type="button" id="uiEntryIncome"></button><button type="button" id="uiEntryExpense"></button><button type="button" id="uiEntryKm">KM</button></div><div id="uiEntryHomeContent"><p id="uiPlatformHint" class="ui-platform-hint"></p><div class="ui-platform-selector" id="uiPlatformSelector"><div id="uiPlatformChoices" class="ui-platform-choices"></div></div></div><div id="uiEntryFormContent" hidden><label id="uiEntryDescriptionLabel"><span id="uiDescriptionLabel"></span><input id="uiEntryDescription" maxlength="60"></label><label><span id="uiValueLabel"></span><div class="ui-entry-amount"><span>€</span><input id="uiEntryValue" inputmode="decimal" autocomplete="off" required aria-label="Valor" placeholder="0,00"></div></label><p id="uiEntryHint" class="ui-muted" aria-live="polite"></p><p id="uiEntryError" class="ui-error" role="alert"></p><button type="submit" id="uiEntrySave" class="ui-button"></button></div><div id="uiEntryKmContent" hidden></div></form>');
     var backdrop=create('div','ui-entry-backdrop');dialog.id='uiEntryDialog';dialog.setAttribute('aria-labelledby','uiEntryTitle');document.body.append(backdrop,dialog);
     var distanceCard=$('distanciaModalCard'),kmContent=$('uiEntryKmContent');
     var kmNodes=distanceCard?['.distancia-mode-row','#distanciaModoHelperText','#distanciaTotalForm','#distanciaInicioFimForm','#distanciaSalvarBtn'].map(function(selector){return distanceCard.querySelector(selector);}):[];
@@ -554,6 +555,7 @@
   function renderEntry(){
     var income=entryMode==='income',km=entryMode==='km',home=entryScreen==='home',incomeForm=entryScreen==='income';
     $('uiEntryTitle').textContent=home?t('record'):incomeForm?say('Ganhos ','Earnings ')+chosen.nome:entryScreen==='expense'?say('Nova Despesa','New expense'):say('Registrar KM','Record KM');$('uiEntryDate').textContent=GanhosDate.formatLabel(GanhosDate.get());
+    $('uiPlatformHint').textContent=say('Selecione a plataforma','Select a platform');
     $('uiEntryIncome').textContent=say('Ganhos','Earnings');$('uiEntryExpense').textContent=t('despesas');
     $('uiEntryIncome').setAttribute('aria-pressed',String(income));$('uiEntryExpense').setAttribute('aria-pressed',String(entryMode==='expense'));$('uiEntryKm').setAttribute('aria-pressed',String(km));
     $('uiEntryTabs').hidden=!home;$('uiEntryHomeContent').hidden=!home;$('uiEntryFormContent').hidden=home||km;

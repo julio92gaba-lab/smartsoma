@@ -204,7 +204,7 @@
 "semana.tileDespesas": "Despesas",
 "semana.tileDistancia": "Distância",
 "semana.totalLiquido": "Total líquido da semana",
-"semana.despesasTitle": "Despesas da semana",
+"semana.despesasTitle": "Despesas",
 "semana.dth.dia": "Dia",
 "semana.dth.valor": "Valor",
 "semana.dth.desc": "Descrição",
@@ -629,7 +629,7 @@
 "semana.tileDespesas": "Expenses",
 "semana.tileDistancia": "Distance",
 "semana.totalLiquido": "Total net for the week",
-"semana.despesasTitle": "Expenses of the week",
+"semana.despesasTitle": "Expenses",
 "semana.dth.dia": "Day",
 "semana.dth.valor": "Amount",
 "semana.dth.desc": "Description",
@@ -3809,13 +3809,18 @@
         var liquidoDia = ganhosDia - despesasDia;
         var platforms = [{ nome: 'Uber', valor: badges.uber }, { nome: 'Bolt', valor: badges.bolt }]
           .concat(extraCols.map(function (p) { return { nome: p.nome, valor: badges.plat[p.id] || 0 }; }));
-        var principal = platforms.reduce(function (best, item) { return item.valor > best.valor ? item : best; }, { nome: '—', valor: 0 });
         var platformRows = platforms.filter(function (item) { return item.valor > 0; }).map(function (item) {
           return '<div class="semana-day-card-row is-plus"><span class="row-label">' + escHtml(item.nome) + '</span><span class="row-value">' + formatEuro(item.valor) + '</span></div>';
         }).join('') || '<div class="semana-day-card-row"><span class="row-label">Sem ganhos registados</span><span class="row-value">—</span></div>';
+        var expenseRows = expenseEntries.map(function (item) {
+          return '<div class="semana-day-card-row is-expense"><span class="row-label">' + escHtml(item.descricao) + '</span><span class="row-value">' + formatEuro(item.valor) + '</span></div>';
+        }).join('') || '<div class="semana-day-card-row"><span class="row-label">Sem despesas registadas</span><span class="row-value">—</span></div>';
+        var weekday = DIAS_FULL()[weekdayIndex] + (weekdayIndex < 5 ? '-feira' : '');
+        var longDate = I18N.t('fmt.dayMonth', { d: d.getDate(), m: MESES_MINUS()[d.getMonth()] });
 
         var card = document.createElement('article');
         card.className = 'semana-day-card';
+        card.classList.toggle('is-negative', liquidoDia < 0);
         if (d.getTime() === today.getTime()) card.classList.add('is-today');
 
         var header = document.createElement('button');
@@ -3823,7 +3828,7 @@
         header.className = 'semana-day-card-header';
         header.setAttribute('aria-expanded', 'false');
         header.innerHTML =
-          '<span class="semana-day-card-date-wrap"><strong class="semana-day-card-weekday">' + DIAS_ABBR()[weekdayIndex] + ' ' + d.getDate() + '/' + (d.getMonth() + 1) + '</strong><small>' + escHtml(principal.nome) + '</small></span>' +
+          '<span class="semana-day-card-date-wrap"><strong class="semana-day-card-weekday">' + weekday + '</strong><small>' + longDate + '</small></span>' +
           '<span class="semana-day-card-net"><small>Lucro líquido</small><strong>' + formatEuro(liquidoDia) + '</strong></span>' +
           '<svg class="semana-day-card-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>';
         card.appendChild(header);
@@ -3831,8 +3836,9 @@
         var details = document.createElement('div');
         details.className = 'semana-day-card-details';
         details.innerHTML =
-          '<div class="semana-day-card-metrics"><div><small>Ganhos brutos</small><strong>' + formatEuro(ganhosDia) + '</strong></div><div><small>Despesas do dia</small><strong class="is-expense">' + formatEuro(despesasDia) + '</strong></div><div><small>KM percorridos</small><strong>' + formatKm(badges.distancia) + '</strong></div><div><small>Horas trabalhadas</small><strong>—</strong></div></div>' +
-          '<div class="semana-day-card-platforms"><span>Por plataforma</span>' + platformRows + '</div>';
+          '<div class="semana-day-card-platforms"><span>Ganhos por plataforma</span>' + platformRows + '</div>' +
+          '<div class="semana-day-card-metrics"><div><small>Faturação bruta</small><strong>' + formatEuro(ganhosDia) + '</strong></div><div><small>Quilómetros percorridos</small><strong>' + formatKm(badges.distancia) + '</strong></div></div>' +
+          '<div class="semana-day-card-expenses"><span>Despesas do dia</span>' + expenseRows + '<div class="semana-day-card-expense-total"><span>Total</span><strong>' + formatEuro(despesasDia) + '</strong></div></div>';
         card.appendChild(details);
         header.addEventListener('click', function () {
           var expanded = card.classList.toggle('is-expanded');
@@ -3913,12 +3919,11 @@
             '<th class="semana-metric-financeiro">Ganhos brutos</th>' +
             '<th class="semana-metric-financeiro">' + I18N.t('semana.th.despesas') + '</th>' +
             '<th class="semana-metric-financeiro">' + I18N.t('semana.th.liquido') + '</th>' +
-            '<th class="semana-metric-operacional">' + I18N.t('semana.th.km') + '</th>' +
-            '<th class="semana-metric-operacional">Horas</th>' +
-            '<th class="semana-metric-operacional">Ganho/hora</th>' +
+            '<th class="semana-metric-operacional">Quilómetros</th>' +
+            '<th class="semana-metric-operacional">Valor / KM</th>' +
             '<th class="semana-metric-apps">' + I18N.t('semana.th.uber') + '</th>' +
             '<th class="semana-metric-apps">' + I18N.t('semana.th.bolt') + '</th>' +
-            '<th class="semana-metric-apps">Outros</th>' +
+            extraCols.map(function (platform) { return '<th class="semana-metric-apps">' + escHtml(platform.nome) + '</th>'; }).join('') +
           '</tr>';
         table.appendChild(thead);
 
@@ -3981,17 +3986,12 @@
           tdKm.textContent = formatKm(dayBadges.distancia);
           tr.appendChild(tdKm);
 
-          var tdHours = document.createElement('td');
-          tdHours.className = 'semana-metric-operacional';
-          tdHours.textContent = '—';
-          tr.appendChild(tdHours);
-
           var tdRate = document.createElement('td');
           tdRate.className = 'semana-metric-operacional';
-          tdRate.textContent = '—';
+          tdRate.textContent = dayBadges.distancia > 0 ? formatEuro(dayTotal / dayBadges.distancia) : '—';
           tr.appendChild(tdRate);
 
-          [dayBadges.uber, dayBadges.bolt, otherApps].forEach(function (value) {
+          [dayBadges.uber, dayBadges.bolt].concat(extraCols.map(function (platform) { return dayBadges.plat[platform.id] || 0; })).forEach(function (value) {
             var cell = document.createElement('td');
             cell.className = 'semana-metric-apps semana-cell-total';
             cell.textContent = formatEuro(value);

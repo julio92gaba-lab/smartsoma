@@ -41,7 +41,9 @@ test('weekly table keeps seven days and exposes the three metric groups', t => {
   const a = createApp(); t.after(a.close);
   const table = a.w.document.querySelector('.semana-table');
   assert.ok(table); assert.equal(table.querySelectorAll('tbody tr').length, 7);
-  assert.equal(table.querySelectorAll('thead th').length, 10);
+  assert.equal(table.querySelectorAll('thead th').length, 8);
+  assert.equal(table.textContent.includes('Horas'), false);
+  assert.equal(table.textContent.includes('Outros'), false);
 });
 
 test('language, theme and font controls stay available', t => {
