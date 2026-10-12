@@ -48,6 +48,21 @@ test('quick entry selects a past day with confirmation and keeps the current pag
   assert.deepEqual(a.errors,[]);
 });
 
+test('news keeps an unread notice and moves it to the local archive after reading', t => {
+  const a = setup(t);
+  assert.ok(a.el('uiNews'));
+  a.click('uiNews');
+  assert.ok(a.w.document.querySelector('.ui-news-backdrop.visible'));
+  assert.match(a.el('uiNewsContent').textContent,/assistente no trânsito/i);
+  a.click('uiNewsClose');
+  a.click('uiNewsPopupRead');
+  a.click('uiNewsClose');
+  a.click('uiNews'); a.click('uiNewsArchive');
+  assert.match(a.el('uiNewsContent').textContent,/assistente no trânsito/i);
+  assert.match(a.w.localStorage.getItem('smartsoma:news:archive'),/news1/);
+  assert.deepEqual(a.errors,[]);
+});
+
 test('custom platform creation, quick entry and confirmed deletion preserve earlier history', async t => {
   const a = setup(t); a.w.SmartSomaUI.go('ajustes'); a.click('openMultiplataformaBtn'); a.input('mpNovaInput','Entrega'); a.click('mpSalvarBtn');
   const p = a.w.SmartSomaReadModel.platforms()[0]; assert.equal(p.nome,'Entrega');

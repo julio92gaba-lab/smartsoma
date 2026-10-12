@@ -18,7 +18,8 @@
     plus: '<path d="M12 5v14M5 12h14"/>',
     arrow: '<path d="M5 12h14m-6-6 6 6-6 6"/>',
     profit: '<path d="M5 18 19 4M5 4h14v14"/>',
-    distance: '<path d="M7 3 3 21M17 3l4 18M12 3v3M12 10v4M12 18v3"/>'
+    distance: '<path d="M7 3 3 21M17 3l4 18M12 3v3M12 10v4M12 18v3"/>',
+    news: '<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/>'
   };
   var text = {
     pt: { resumo:'Visão geral', ganhos:'Ganhos diários', despesas:'Despesas', semana:'Detalhes da semana', relatorio:'Relatórios', downloads:'Downloads', ajustes:'Ajustes', hello:'Bom dia', afternoon:'Boa tarde', evening:'Boa noite', record:'Adicionar registo', calendar:'Escolher data', tag:'Para Estafetas e Motoristas de App.', ganhosNote:'Cada percurso conta. Regista os teus rendimentos e acompanha o dia.', despesasNote:'As tuas despesas, sem perder nenhum detalhe.', semanaNote:'Sete dias. Uma visão clara dos teus resultados.', relatorioNote:'Os teus resultados, organizados e prontos a guardar.', downloadsNote:'Os teus resultados, organizados e prontos a descarregar.', ajustesNote:'O SmartSoma, à tua medida.', theme:'Modo escuro', profile:'Editar perfil', help:'Ajuda e tutorial', normal:'Normal', newPlatform:'Nova plataforma', manage:'Gerir plataformas', addIncome:'Adicionar rendimento' },
@@ -54,7 +55,7 @@
     var locale = I18N.t('lang.code');
     var today=new Date();today.setHours(0,0,0,0);
     document.body.classList.remove('ui-showing-other-date');
-    $('uiHeaderDate').textContent = '';
+    $('uiHeaderDate').textContent = date.toLocaleDateString(locale,{weekday:'long',day:'numeric',month:'long'}).replace(/-feira\b/i,'');
     var name = $('sheetUsername').textContent.trim().split(' ')[0];
     var greeting = say('Olá','Hello');
     $('uiHeaderTitle').textContent = greeting + ', ' + name + '.';
@@ -153,7 +154,7 @@
       var n=button('',function(){go(key);},'ui-nav-item');
       n.dataset.uiRoute=key; n.innerHTML=svg(key)+'<span class="ui-nav-full" data-ui-text="'+key+'"></span><span class="ui-nav-short" aria-hidden="true"></span>'; nav.querySelector('nav').append(n);
     });
-    var header=create('header','ui-header','<div class="ui-header-personal"><button type="button" id="uiHeaderAvatar" class="ui-header-avatar"></button><div class="ui-header-copy"><p id="uiHeaderDate" class="ui-eyebrow"></p><h1 id="uiHeaderTitle"></h1></div></div><div class="ui-header-actions"><button type="button" id="uiAdd" class="ui-add">'+svg('plus')+'</button></div>');
+    var header=create('header','ui-header','<div class="ui-header-personal"><button type="button" id="uiHeaderAvatar" class="ui-header-avatar"></button><div class="ui-header-copy"><p id="uiHeaderDate" class="ui-eyebrow"></p><h1 id="uiHeaderTitle"></h1></div></div><div class="ui-header-actions"><button type="button" id="uiNews" class="ui-icon-button">'+svg('news')+'</button><button type="button" id="uiAdd" class="ui-add">'+svg('plus')+'</button></div>');
     $('appRoot').prepend(header);
     $('uiHeaderAvatar').addEventListener('click',function(){go('ajustes');});
     var headerAvatar=$('headerAvatarBtn');
@@ -162,6 +163,7 @@
       $(id).addEventListener('click',function(){window.openProfileSheetPublic();},true);
     });
     $('uiAdd').addEventListener('click',function(){window.closeProfileSheetPublic(); if(window.SmartSomaUI.openEntry) SmartSomaUI.openEntry(); else PlataformaModals.uber.open();});
+    $('uiNews').setAttribute('aria-label',say('Novidades','News'));
     $('homeListPageSemana').prepend(heading('semana'));
     $('homeListPageRelatorio').prepend(heading('downloads'));
     $('tamanhoOptionP').querySelector('.tamanho-option-letter').textContent='A';
@@ -209,6 +211,7 @@
     setupStickyWeekFilters();
     document.addEventListener('languageChanged',function(){translate();syncHeader();});
     setupPages();
+    setupNews();
     syncSidebarAccount();
     translate(); go('resumo');
     document.dispatchEvent(new CustomEvent('smartSomaUIReady'));
@@ -488,9 +491,43 @@
     tableRows($('uiOverviewExpenseRows'),dailyEntries);
     $('uiOverviewExpenseTotal').textContent=money(days.reduce(function(total,day){return total+day.expenses;},0));
   }
+  function setupNews(){
+    var notice=window.SmartSomaNewsNotice;
+    if(!notice||!notice.id||!notice.title||!notice.text)return;
+    var storageKey='smartsoma:news:archive';
+    var archive=[];
+    try { archive=JSON.parse(localStorage.getItem(storageKey)||'[]');if(!Array.isArray(archive))archive=[]; } catch(e) { archive=[]; }
+    var modal=create('div','ui-news-backdrop','<section class="ui-news-card" role="dialog" aria-modal="true" aria-labelledby="uiNewsTitle"><div class="ui-panel-head"><h2 id="uiNewsTitle"></h2><button type="button" id="uiNewsClose" class="ui-icon-button" aria-label="Fechar">×</button></div><div class="ui-news-divider"></div><div class="ui-news-tabs"><button type="button" id="uiNewsNew"></button><button type="button" id="uiNewsArchive"></button></div><div id="uiNewsContent" class="ui-news-content"></div></section>');
+    var popup=create('div','ui-news-popup','<strong id="uiNewsPopupTitle"></strong><p id="uiNewsPopupText"></p><div><button type="button" id="uiNewsPopupClose" class="ui-button ui-secondary"></button><button type="button" id="uiNewsPopupRead" class="ui-button"></button></div>');
+    var activeTab='new',markOnClose=false;
+    document.body.append(modal,popup);
+    function save(){try{localStorage.setItem(storageKey,JSON.stringify(archive));}catch(e){}}
+    function isArchived(id){return archive.some(function(item){return item.id===id;});}
+    function archiveNotice(){if(isArchived(notice.id))return;archive.unshift({id:notice.id,title:notice.title,text:notice.text,readAt:new Date().toISOString()});save();}
+    function newItems(){return isArchived(notice.id)?[]:[notice];}
+    function render(){
+      var items=activeTab==='new'?newItems():archive;
+      $('uiNewsNew').classList.toggle('is-active',activeTab==='new');$('uiNewsArchive').classList.toggle('is-active',activeTab==='archive');
+      $('uiNewsNew').textContent=say('Novas','New');$('uiNewsArchive').textContent=say('Arquivo','Archive');
+      $('uiNewsContent').replaceChildren();
+      if(!items.length){var empty=create('p','ui-news-empty');empty.textContent=activeTab==='new'?say('Não há novidades por ler.','There are no unread updates.'):say('O arquivo ainda está vazio.','The archive is empty.');$('uiNewsContent').append(empty);return;}
+      items.forEach(function(item){var article=create('article','ui-news-item'+(item.id===notice.id&&activeTab==='new'?' is-highlighted':''));var title=create('h3');var text=create('p');title.textContent=item.title;text.textContent=item.text;article.append(title,text);$('uiNewsContent').append(article);});
+    }
+    function open(tab,shouldArchiveOnClose){activeTab=tab||'new';markOnClose=!!shouldArchiveOnClose;render();modal.classList.add('visible');}
+    function close(){modal.classList.remove('visible');if(markOnClose){archiveNotice();markOnClose=false;}render();}
+    function closePopup(){popup.classList.remove('visible');}
+    $('uiNews').addEventListener('click',function(){open('new',false);});
+    $('uiNewsClose').addEventListener('click',close);modal.addEventListener('click',function(e){if(e.target===modal)close();});
+    $('uiNewsNew').addEventListener('click',function(){activeTab='new';render();});$('uiNewsArchive').addEventListener('click',function(){activeTab='archive';render();});
+    $('uiNewsPopupClose').addEventListener('click',closePopup);$('uiNewsPopupRead').addEventListener('click',function(){closePopup();open('new',true);});
+    $('uiNewsPopupTitle').textContent=say('Nova mensagem','New message');$('uiNewsPopupText').textContent=notice.title;
+    $('uiNewsPopupClose').textContent=say('Fechar','Close');$('uiNewsPopupRead').textContent=say('Ler','Read');
+    document.addEventListener('keydown',function(e){if(e.key==='Escape'){if(modal.classList.contains('visible'))close();else closePopup();}});
+    if(!isArchived(notice.id))window.setTimeout(function(){popup.classList.add('visible');},900);
+  }
   var entryMode='income',entryScreen='home',chosen=null,entryReturnFocus=null,restoreKmComponent=function(){},mountKmComponent=function(){};
   function setupEntry(){
-    var dialog=create('dialog','ui-entry-dialog','<form id="uiEntryForm"><div class="ui-panel-head"><h2 id="uiEntryTitle"></h2><button type="button" id="uiEntryClose" class="ui-icon-button" aria-label="Fechar">×</button></div><button type="button" id="uiEntryDate" class="ui-entry-date-selector" aria-haspopup="dialog"></button><div class="ui-entry-tabs" id="uiEntryTabs"><button type="button" id="uiEntryIncome"></button><button type="button" id="uiEntryExpense"></button><button type="button" id="uiEntryKm">KM</button></div><div id="uiEntryHomeContent"><p id="uiPlatformHint" class="ui-platform-hint"></p><div class="ui-platform-selector" id="uiPlatformSelector"><div id="uiPlatformChoices" class="ui-platform-choices"></div></div></div><div id="uiEntryFormContent" hidden><label id="uiEntryDescriptionLabel"><span id="uiDescriptionLabel"></span><input id="uiEntryDescription" maxlength="60"></label><label><span id="uiValueLabel"></span><div class="ui-entry-amount"><span>€</span><input id="uiEntryValue" inputmode="decimal" autocomplete="off" required aria-label="Valor" placeholder="0,00"></div></label><p id="uiEntryHint" class="ui-muted" aria-live="polite"></p><p id="uiEntryError" class="ui-error" role="alert"></p><button type="submit" id="uiEntrySave" class="ui-button"></button></div><div id="uiEntryKmContent" hidden></div></form>');
+    var dialog=create('dialog','ui-entry-dialog','<form id="uiEntryForm"><div class="ui-panel-head"><h2 id="uiEntryTitle"></h2><button type="button" id="uiEntryClose" class="ui-icon-button" aria-label="Fechar">×</button></div><p class="ui-entry-section-label">Data:</p><button type="button" id="uiEntryDate" class="ui-entry-date-selector" aria-haspopup="dialog"></button><p id="uiEntryTypeLabel" class="ui-entry-section-label">Tipo:</p><div class="ui-entry-tabs" id="uiEntryTabs"><button type="button" id="uiEntryIncome"></button><button type="button" id="uiEntryExpense"></button><button type="button" id="uiEntryKm">KM</button></div><div id="uiEntryHomeContent"><p id="uiPlatformHint" class="ui-platform-hint"></p><div class="ui-platform-selector" id="uiPlatformSelector"><div id="uiPlatformChoices" class="ui-platform-choices"></div></div></div><div id="uiEntryFormContent" hidden><label id="uiEntryDescriptionLabel"><span id="uiDescriptionLabel"></span><input id="uiEntryDescription" maxlength="60"></label><label><span id="uiValueLabel"></span><div class="ui-entry-amount"><span>€</span><input id="uiEntryValue" inputmode="decimal" autocomplete="off" required aria-label="Valor" placeholder="0,00"></div></label><p id="uiEntryHint" class="ui-muted" aria-live="polite"></p><p id="uiEntryError" class="ui-error" role="alert"></p><button type="submit" id="uiEntrySave" class="ui-button"></button></div><div id="uiEntryKmContent" hidden></div></form>');
     var backdrop=create('div','ui-entry-backdrop');dialog.id='uiEntryDialog';dialog.setAttribute('aria-labelledby','uiEntryTitle');document.body.append(backdrop,dialog);
     var retro=create('div','ui-entry-retro-backdrop','<section class="ui-entry-retro-card" role="dialog" aria-modal="true" aria-labelledby="uiEntryRetroTitle"><div class="ui-panel-head"><h2 id="uiEntryRetroTitle"></h2><button type="button" id="uiEntryRetroClose" class="ui-icon-button" aria-label="Fechar">×</button></div><p id="uiEntryRetroCopy"></p><div class="ui-entry-retro-actions"><button type="button" id="uiEntryRetroCancel" class="ui-button ui-secondary"></button><button type="button" id="uiEntryRetroConfirm" class="ui-button"></button></div></section>');
     var pendingEntry=null;document.body.append(retro);
@@ -571,10 +608,10 @@
     }else{title.classList.remove('ui-entry-title-with-icon');title.textContent=home?t('record'):entryScreen==='expense'?say('Nova Despesa','New expense'):say('Registrar KM','Record KM');}
     var selected=GanhosDate.get(),today=new Date();today.setHours(0,0,0,0);selected=new Date(selected);selected.setHours(0,0,0,0);
     $('uiEntryDate').innerHTML=svg('semana')+'<span>'+(selected.getTime()===today.getTime()?say('HOJE','TODAY'):GanhosDate.formatLabel(selected))+'</span>';
-    $('uiPlatformHint').textContent=say('Selecione a plataforma','Select a platform');
+    $('uiPlatformHint').textContent=say('Selecione a plataforma:','Select a platform:');
     $('uiEntryIncome').textContent=say('Ganhos','Earnings');$('uiEntryExpense').textContent=t('despesas');
     $('uiEntryIncome').setAttribute('aria-pressed',String(income));$('uiEntryExpense').setAttribute('aria-pressed',String(entryMode==='expense'));$('uiEntryKm').setAttribute('aria-pressed',String(km));
-    $('uiEntryTabs').hidden=!home;$('uiEntryHomeContent').hidden=!home;$('uiEntryFormContent').hidden=home||km;
+    $('uiEntryTypeLabel').hidden=!home;$('uiEntryTabs').hidden=!home;$('uiEntryHomeContent').hidden=!home;$('uiEntryFormContent').hidden=home||km;
     $('uiEntryClose').innerHTML=home?'×':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6"/></svg>';$('uiEntryClose').setAttribute('aria-label',home?say('Fechar','Close'):say('Voltar','Back'));
     if(km){mountKmComponent();return;}
     restoreKmComponent();

@@ -7644,80 +7644,18 @@
     })();
 
     /* ===================================================================
-       NOVIDADES DE VERSÃO
+       NOVIDADES GLOBAIS
 
-       Para publicar a próxima novidade, altere apenas id, title e text.
-       Cada id tem o seu próprio registo no user_data, por isso o aviso
-       aparece uma vez para cada utilizador em cada novidade publicada.
+       Para enviar uma nova mensagem a todos os utilizadores, altere SEMPRE
+       o id para um valor novo e depois title e text. A leitura é guardada
+       localmente por utilizador/dispositivo; mensagens antigas permanecem
+       no Arquivo e nunca são apagadas pela interface.
        =================================================================== */
-    (function () {
-      var NOTICE = {
-        id: 'news1',
-        title: '⚡ Spoiler: Seu novo assistente no trânsito!',
-        text: 'EM BREVE:: Um app integrado para calcular cada corrida em tempo real. Aguarde!'
-      };
-      var seenKey = 'releaseNotice:' + NOTICE.id;
-      var backdrop = document.getElementById('releaseNoticeBackdrop');
-      var title = document.getElementById('releaseNoticeTitle');
-      var text = document.getElementById('releaseNoticeText');
-      var confirmBtn = document.getElementById('releaseNoticeConfirmBtn');
-      var shown = false;
-
-      if (!backdrop || !title || !text || !confirmBtn) return;
-
-      // textContent impede que conteúdo de futuras novidades seja interpretado
-      // como HTML caso passe a vir de uma configuração externa.
-      title.textContent = NOTICE.title;
-      text.textContent = NOTICE.text;
-
-      function isEligible() {
-        return window.SmartSomaPro &&
-          window.SmartSomaPro.entitlementChecked === true &&
-          window.SmartSomaPro.isPro === true;
-      }
-
-      function closeAndRemember() {
-        if (!shown) return;
-        backdrop.classList.remove('visible');
-        backdrop.hidden = true;
-        shown = false;
-        try { window.cloudSet(seenKey, '1'); } catch (e) { /* a fila offline trata do reenvio */ }
-      }
-
-      function open() {
-        if (shown || !isEligible() || !window.cloudGet) return;
-        if (window.cloudGet(seenKey) === '1') return;
-        shown = true;
-        backdrop.hidden = false;
-        requestAnimationFrame(function () {
-          backdrop.classList.add('visible');
-        });
-      }
-
-      // app.js só é carregado após o cache; a subscrição, por sua vez, pode
-      // terminar a validação alguns instantes depois. Depois de pronta,
-      // aguardamos 5 s para não competir com o carregamento inicial da app.
-      // Se estiver sem rede, a novidade será apresentada numa próxima abertura.
-      var attempts = 0;
-      var openingScheduled = false;
-      function waitForEntitlement() {
-        if (isEligible()) {
-          if (!openingScheduled) {
-            openingScheduled = true;
-            window.setTimeout(open, 5000);
-          }
-          return;
-        }
-        attempts += 1;
-        if (attempts < 40) window.setTimeout(waitForEntitlement, 500);
-      }
-
-      confirmBtn.addEventListener('click', closeAndRemember);
-      document.addEventListener('keydown', function (event) {
-        if (shown && event.key === 'Escape') closeAndRemember();
-      });
-      waitForEntitlement();
-    })();
+    window.SmartSomaNewsNotice = {
+      id: 'news1',
+      title: '⚡ Spoiler: O teu novo assistente no trânsito!',
+      text: 'EM BREVE: Uma app integrada para calcular cada corrida em tempo real. Aguarda!'
+    };
 
     // A apresentação só inicia depois dos controlos reais e do cache estarem prontos.
     // Last DOM-ready listener: cloud-init replays these after hydration when
