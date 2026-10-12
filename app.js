@@ -2082,6 +2082,14 @@
 
       window.GanhosDate = {
         get: function () { return selectedDate; },
+        set: function (date) {
+          var next = new Date(date);
+          next.setHours(0, 0, 0, 0);
+          if (isNaN(next.getTime()) || isSameDay(next, selectedDate)) return;
+          selectedDate = next;
+          updateDateBtnLabel();
+          notifyDateChange();
+        },
         open: openCalendarModal,
         close: closeCalendarModal,
         formatLabel: formatDateLabelLower,

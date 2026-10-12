@@ -27,20 +27,24 @@ test('real cloud bootstrap hydrates before rendering and quick entry uses the ex
   assert.equal(a.w.localStorage.getItem('ss_q:isolated-test'),null);
 });
 
-test('calendar edits the selected day without changing today', async t => {
+test('quick entry selects a past day with confirmation and keeps the current page', async t => {
   const today = new Date(); const yesterday = new Date(today); yesterday.setDate(today.getDate()-1);
   const a = setup(t, { ['homeBadgeValores:'+dateKey(today)]:JSON.stringify({uber:75}) });
-  a.click('uiCalendar');
+  assert.equal(a.el('uiCalendar'),null);
+  a.click('uiAdd'); a.click('uiEntryDate');
   if (yesterday.getMonth() !== today.getMonth()) a.click('mmCalPrevBtn');
   [...a.el('mmCalendarDays').querySelectorAll('button')].find(b => b.textContent === String(yesterday.getDate())).click();
   assert.equal(dateKey(a.w.GanhosDate.get()), dateKey(yesterday));
-  a.click('uiAdd'); a.w.document.querySelector('[data-platform="uber"]').click();
+  a.w.document.querySelector('[data-platform="uber"]').click();
   a.input('uiEntryValue','42');
   a.el('uiEntryForm').dispatchEvent(new a.w.Event('submit',{bubbles:true,cancelable:true}));
+  assert.ok(a.el('uiEntryRetroBackdrop') || a.el('uiEntryRetroConfirm'));
+  assert.match(a.el('uiEntryRetroCopy').textContent,/data passada/i);
+  a.click('uiEntryRetroConfirm');
   await settle();
   assert.equal(JSON.parse(a.cache['homeBadgeValores:'+dateKey(yesterday)]).uber,42);
   assert.equal(JSON.parse(a.cache['homeBadgeValores:'+dateKey(today)]).uber,75);
-  assert.equal(a.w.document.body.dataset.uiRoute,'semana');
+  assert.equal(a.w.document.body.dataset.uiRoute,'resumo');
   assert.deepEqual(a.errors,[]);
 });
 

@@ -365,6 +365,15 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
 .ui-entry-backdrop { position:fixed; z-index:200; top:var(--ui-header); right:0; bottom:0; left:0; visibility:hidden; opacity:0; background:rgba(5,15,9,.55); backdrop-filter:blur(4px); transition:opacity .18s ease; }
 .ui-entry-backdrop.visible { visibility:visible; opacity:1; }
 .ui-entry-dialog { position:fixed; z-index:201; top:calc(var(--ui-header) + 24px); width:min(420px,calc(100vw - 48px)); max-height:calc(82dvh - var(--ui-header)); overflow-y:auto; background:var(--card-bg); color:var(--ink); border:2px solid #142015; border-radius:14px; padding:20px; box-shadow:6px 6px 0 var(--brand-green),0 24px 80px #0005; }
+.ui-entry-date-selector { display:inline-flex; align-items:center; gap:7px; margin-top:10px; padding:7px 10px; border:1px solid var(--card-line); border-radius:8px; background:var(--input-bg); color:var(--ink); font-size:.68rem; font-weight:800; letter-spacing:.7px; }
+.ui-entry-date-selector svg { width:15px; height:15px; }
+.ui-entry-title-with-icon { display:flex; align-items:center; gap:8px; }
+.ui-entry-title-icon { width:1em; height:1em; flex:none; object-fit:contain; }
+.ui-entry-retro-backdrop { position:fixed; z-index:220; inset:0; display:grid; place-items:center; padding:24px; visibility:hidden; opacity:0; background:rgba(5,15,9,.58); backdrop-filter:blur(4px); transition:opacity .18s ease,visibility .18s ease; }
+.ui-entry-retro-backdrop.visible { visibility:visible; opacity:1; }
+.ui-entry-retro-card { width:min(390px,100%); padding:20px; border:1px solid var(--card-line); border-radius:14px; background:var(--card-bg); color:var(--ink); box-shadow:0 24px 80px #0005; }
+.ui-entry-retro-card p { margin:14px 0 0; color:var(--muted); font-size:.88rem; line-height:1.5; }
+.ui-entry-retro-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:20px; }
 .ui-entry-dialog label { display:grid; gap:6px; margin-top:12px; font-size:.8rem; font-weight:600; }
 .ui-entry-dialog input { width:100%; min-width:0; border:1px solid var(--card-line); border-radius:8px; background:var(--input-bg); color:var(--ink); padding:12px; font-size:1rem; }
 .ui-entry-tabs { display:flex; gap:8px; margin:14px 0; }
@@ -1106,6 +1115,11 @@ body.ui-v2.theme-dark .amber .ui-metric-icon { background:#483e26; color:#f3ce80
 }
 .ui-v2 #homeListPageSemana .semana-day-card.is-expanded .semana-day-card-details > * { padding:0; }
 .ui-v2 #homeListPageSemana .semana-day-card-details > * + * { margin-top:12px; }
+/* O cabeçalho é sempre pessoal, independente da rota ou da data selecionada. */
+body.ui-v2 .ui-header .ui-header-personal { display:flex !important; align-items:center; gap:10px; min-width:0; }
+body.ui-v2 .ui-header .ui-header-avatar { display:grid !important; flex:0 0 50px; place-items:center; width:50px; height:50px; overflow:hidden; border:2px solid var(--lime); border-radius:50%; background:var(--teal); color:var(--paper); font-size:.8rem; font-weight:800; }
+body.ui-v2 .ui-header .ui-header-copy { display:block !important; min-width:0; }
+body.ui-v2 .ui-header #uiHeaderDate,body.ui-v2 .ui-header .ui-mobile-logo { display:none !important; }
 @media (max-width:760px) {
   .ui-v2 #homeListPageSemana .semana-ganhos-title { margin-top:0; }
   .ui-v2 #homeListPageSemana .semana-list-placeholder { padding:2px 0 8px; }

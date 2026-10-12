@@ -50,26 +50,17 @@
       if (n.dataset.uiRoute === selected) n.setAttribute('aria-current','page'); else n.removeAttribute('aria-current');
     });
     var now = new Date(), selectedDate = window.GanhosDate ? GanhosDate.get() : now;
-    // O calendário encaminha para a Semana; a Início mantém sempre o seu cabeçalho próprio.
-    var date = route === 'resumo' ? now : selectedDate;
+    var date = selectedDate;
     var locale = I18N.t('lang.code');
     var today=new Date();today.setHours(0,0,0,0);
-    var selectedDay=new Date(date);selectedDay.setHours(0,0,0,0);
-    var showingOtherDate=selectedDay.getTime()!==today.getTime();
-    document.body.classList.toggle('ui-showing-other-date',showingOtherDate);
-    var headerDate = date.toLocaleDateString(locale,{weekday:'long',day:'numeric',month:'long'}).replace(/-feira\b/i,'');
-    var mobileInternal = route !== 'resumo' && !inSettings && window.matchMedia('(max-width:760px)').matches;
-    var internalPage = route !== 'resumo' && !inSettings;
-    var calendarWeekHeader = route === 'semana' && calendarWeekSelection;
-    $('uiHeaderDate').textContent = calendarWeekHeader ? say('A mostrar dados de…','Showing data from…') : headerDate;
+    document.body.classList.remove('ui-showing-other-date');
+    $('uiHeaderDate').textContent = '';
     var name = $('sheetUsername').textContent.trim().split(' ')[0];
     var greeting = say('Olá','Hello');
-    var internalTitle = route === 'semana' ? say('Minha semana','My week') : t(route);
-    $('uiHeaderTitle').textContent = calendarWeekHeader ? calendarHeaderTitle(date) : (internalPage ? internalTitle : (inSettings ? (sheet && sheet.id !== 'sheetScreenDefault' ? $('sheetHandleTitle').textContent : t('ajustes')) : greeting + ', ' + name + '.'));
+    $('uiHeaderTitle').textContent = greeting + ', ' + name + '.';
     document.body.dataset.uiRoute = route;
     document.body.classList.toggle('ui-home', route === 'resumo' && !inSettings);
     document.querySelectorAll('.ui-selected-date').forEach(function(n){ n.textContent = date.toLocaleDateString(locale,{day:'numeric',month:'long',year:'numeric'}); });
-    $('uiCalendar').setAttribute('aria-label',t('calendar'));
     $('uiAdd').setAttribute('aria-label',t('record'));
     $('uiThemeRow').setAttribute('aria-pressed',String(document.body.classList.contains('theme-dark')));
   }
@@ -162,7 +153,7 @@
       var n=button('',function(){go(key);},'ui-nav-item');
       n.dataset.uiRoute=key; n.innerHTML=svg(key)+'<span class="ui-nav-full" data-ui-text="'+key+'"></span><span class="ui-nav-short" aria-hidden="true"></span>'; nav.querySelector('nav').append(n);
     });
-    var header=create('header','ui-header','<div class="ui-header-personal"><button type="button" id="uiHeaderAvatar" class="ui-header-avatar"></button><div class="ui-header-copy"><p id="uiHeaderDate" class="ui-eyebrow"></p><h1 id="uiHeaderTitle"></h1></div></div><div class="ui-mobile-logo"><img src="logo-home.png" alt="SmartSoma"><span data-ui-text="tag"></span></div><div class="ui-header-actions"><button type="button" id="uiCalendar" class="ui-icon-button">'+svg('semana')+'</button><button type="button" id="uiAdd" class="ui-add">'+svg('plus')+'</button></div>');
+    var header=create('header','ui-header','<div class="ui-header-personal"><button type="button" id="uiHeaderAvatar" class="ui-header-avatar"></button><div class="ui-header-copy"><p id="uiHeaderDate" class="ui-eyebrow"></p><h1 id="uiHeaderTitle"></h1></div></div><div class="ui-header-actions"><button type="button" id="uiAdd" class="ui-add">'+svg('plus')+'</button></div>');
     $('appRoot').prepend(header);
     $('uiHeaderAvatar').addEventListener('click',function(){go('ajustes');});
     var headerAvatar=$('headerAvatarBtn');
@@ -170,7 +161,6 @@
     ['openDadosPessoaisBtn','openDespesasFixasBtn','openMultiplataformaBtn','openIdiomaBtn','openTamanhoBtn','openAjudaBtn'].forEach(function(id){
       $(id).addEventListener('click',function(){window.openProfileSheetPublic();},true);
     });
-    $('uiCalendar').addEventListener('click',function(){window.closeProfileSheetPublic(); window.closeAllOverlays(); GanhosDate.open();});
     $('uiAdd').addEventListener('click',function(){window.closeProfileSheetPublic(); if(window.SmartSomaUI.openEntry) SmartSomaUI.openEntry(); else PlataformaModals.uber.open();});
     $('homeListPageSemana').prepend(heading('semana'));
     $('homeListPageRelatorio').prepend(heading('downloads'));
@@ -214,10 +204,6 @@
     observer.observe($('subStatusText'),{childList:true,subtree:true,characterData:true});
     observer.observe($('sheetProActiveBadge'),{attributes:true,attributeFilter:['style']});
     GanhosDate.onChange(syncHeader);
-    document.addEventListener('calendarDateSelected',function(){
-      calendarWeekSelection=true;
-      go('semana');
-    });
     window.addEventListener('resize',syncHeader);
     setupStickyPeriodControls();
     setupStickyWeekFilters();
@@ -504,8 +490,10 @@
   }
   var entryMode='income',entryScreen='home',chosen=null,entryReturnFocus=null,restoreKmComponent=function(){},mountKmComponent=function(){};
   function setupEntry(){
-    var dialog=create('dialog','ui-entry-dialog','<form id="uiEntryForm"><div class="ui-panel-head"><h2 id="uiEntryTitle"></h2><button type="button" id="uiEntryClose" class="ui-icon-button" aria-label="Fechar">×</button></div><p id="uiEntryDate" class="ui-eyebrow"></p><div class="ui-entry-tabs" id="uiEntryTabs"><button type="button" id="uiEntryIncome"></button><button type="button" id="uiEntryExpense"></button><button type="button" id="uiEntryKm">KM</button></div><div id="uiEntryHomeContent"><p id="uiPlatformHint" class="ui-platform-hint"></p><div class="ui-platform-selector" id="uiPlatformSelector"><div id="uiPlatformChoices" class="ui-platform-choices"></div></div></div><div id="uiEntryFormContent" hidden><label id="uiEntryDescriptionLabel"><span id="uiDescriptionLabel"></span><input id="uiEntryDescription" maxlength="60"></label><label><span id="uiValueLabel"></span><div class="ui-entry-amount"><span>€</span><input id="uiEntryValue" inputmode="decimal" autocomplete="off" required aria-label="Valor" placeholder="0,00"></div></label><p id="uiEntryHint" class="ui-muted" aria-live="polite"></p><p id="uiEntryError" class="ui-error" role="alert"></p><button type="submit" id="uiEntrySave" class="ui-button"></button></div><div id="uiEntryKmContent" hidden></div></form>');
+    var dialog=create('dialog','ui-entry-dialog','<form id="uiEntryForm"><div class="ui-panel-head"><h2 id="uiEntryTitle"></h2><button type="button" id="uiEntryClose" class="ui-icon-button" aria-label="Fechar">×</button></div><button type="button" id="uiEntryDate" class="ui-entry-date-selector" aria-haspopup="dialog"></button><div class="ui-entry-tabs" id="uiEntryTabs"><button type="button" id="uiEntryIncome"></button><button type="button" id="uiEntryExpense"></button><button type="button" id="uiEntryKm">KM</button></div><div id="uiEntryHomeContent"><p id="uiPlatformHint" class="ui-platform-hint"></p><div class="ui-platform-selector" id="uiPlatformSelector"><div id="uiPlatformChoices" class="ui-platform-choices"></div></div></div><div id="uiEntryFormContent" hidden><label id="uiEntryDescriptionLabel"><span id="uiDescriptionLabel"></span><input id="uiEntryDescription" maxlength="60"></label><label><span id="uiValueLabel"></span><div class="ui-entry-amount"><span>€</span><input id="uiEntryValue" inputmode="decimal" autocomplete="off" required aria-label="Valor" placeholder="0,00"></div></label><p id="uiEntryHint" class="ui-muted" aria-live="polite"></p><p id="uiEntryError" class="ui-error" role="alert"></p><button type="submit" id="uiEntrySave" class="ui-button"></button></div><div id="uiEntryKmContent" hidden></div></form>');
     var backdrop=create('div','ui-entry-backdrop');dialog.id='uiEntryDialog';dialog.setAttribute('aria-labelledby','uiEntryTitle');document.body.append(backdrop,dialog);
+    var retro=create('div','ui-entry-retro-backdrop','<section class="ui-entry-retro-card" role="dialog" aria-modal="true" aria-labelledby="uiEntryRetroTitle"><div class="ui-panel-head"><h2 id="uiEntryRetroTitle"></h2><button type="button" id="uiEntryRetroClose" class="ui-icon-button" aria-label="Fechar">×</button></div><p id="uiEntryRetroCopy"></p><div class="ui-entry-retro-actions"><button type="button" id="uiEntryRetroCancel" class="ui-button ui-secondary"></button><button type="button" id="uiEntryRetroConfirm" class="ui-button"></button></div></section>');
+    var pendingEntry=null;document.body.append(retro);
     var distanceCard=$('distanciaModalCard'),kmContent=$('uiEntryKmContent');
     var kmNodes=distanceCard?['.distancia-mode-row','#distanciaModoHelperText','#distanciaTotalForm','#distanciaInicioFimForm','#distanciaSalvarBtn'].map(function(selector){return distanceCard.querySelector(selector);}):[];
     restoreKmComponent=function(){
@@ -523,38 +511,66 @@
     $('uiEntryClose').addEventListener('click',function(){if(entryScreen==='home')dialog.close();else{entryMode='income';entryScreen='home';chosen=null;renderEntry();}});
     backdrop.addEventListener('click',function(){dialog.close();});
     dialog.addEventListener('close',function(){restoreKmComponent();backdrop.classList.remove('visible');if(entryReturnFocus)entryReturnFocus.focus();});
+    $('uiEntryDate').addEventListener('click',function(){GanhosDate.open();});
+    function closeRetro(){pendingEntry=null;retro.classList.remove('visible');}
+    $('uiEntryRetroClose').addEventListener('click',closeRetro);
+    $('uiEntryRetroCancel').addEventListener('click',closeRetro);
+    retro.addEventListener('click',function(e){if(e.target===retro)closeRetro();});
     $('uiEntryIncome').addEventListener('click',function(){entryMode='income';entryScreen='home';chosen=null;renderEntry();});
     $('uiEntryExpense').addEventListener('click',function(){entryMode='expense';entryScreen='expense';chosen=null;renderEntry();});
     $('uiEntryKm').addEventListener('click',function(){entryMode='km';entryScreen='km';chosen=null;renderEntry();});
     $('distanciaSalvarBtn').addEventListener('click',function(){if(entryMode==='km'){dialog.close();refreshData();}});
-    $('uiEntryForm').addEventListener('submit',function(e){
-      e.preventDefault();
-      var value=Number($('uiEntryValue').value.trim().replace(',','.'));
-      if(!Number.isFinite(value)||value<0||value>999.99||!$('uiEntryValue').value.trim()||(entryMode==='expense'&&value===0)){$('uiEntryError').textContent=say('Insere um valor válido até 999,99 €.','Enter a valid amount up to €999.99.');return;}
+    function commitEntry(value,desc){
       if(window.SmartSomaPro && !SmartSomaPro.isPro){dialog.close();if(window.abrirModalSubExpirada)abrirModalSubExpirada();return;}
       if(entryMode==='income'){
-        if(!chosen){$('uiEntryError').textContent=say('Seleciona uma plataforma.','Select a platform.');return;}
         if(chosen.id==='uber'||chosen.id==='bolt'){
           $(chosen.id+'ValorInput').value=String(value);$(chosen.id+'SalvarBtn').click();
         }else{HomeBadges.setPlat(chosen.id,value);}
       }else{
-        var desc=$('uiEntryDescription').value.trim();
-        if(!desc){$('uiEntryError').textContent=say('Adiciona uma descrição.','Add a description.');return;}
         $('despesasSemanaDescInput').value=desc;$('despesasSemanaValorInput').value=String(value);$('despesasSemanaSalvarBtn').click();
       }
       dialog.close();refreshData();
+    }
+    $('uiEntryRetroConfirm').addEventListener('click',function(){if(!pendingEntry)return;var entry=pendingEntry;closeRetro();commitEntry(entry.value,entry.desc);});
+    $('uiEntryForm').addEventListener('submit',function(e){
+      e.preventDefault();
+      var value=Number($('uiEntryValue').value.trim().replace(',','.'));
+      if(!Number.isFinite(value)||value<0||value>999.99||!$('uiEntryValue').value.trim()||(entryMode==='expense'&&value===0)){$('uiEntryError').textContent=say('Insere um valor válido até 999,99 €.','Enter a valid amount up to €999.99.');return;}
+      if(entryMode==='income'){
+        if(!chosen){$('uiEntryError').textContent=say('Seleciona uma plataforma.','Select a platform.');return;}
+      }else{
+        var desc=$('uiEntryDescription').value.trim();
+        if(!desc){$('uiEntryError').textContent=say('Adiciona uma descrição.','Add a description.');return;}
+      }
+      var selected=GanhosDate.get(),today=new Date();today.setHours(0,0,0,0);
+      if(selected.getTime()<today.getTime()){
+        pendingEntry={value:value,desc:entryMode==='expense'?desc:''};
+        $('uiEntryRetroTitle').textContent=say('Confirmar lançamento retroativo','Confirm backdated entry');
+        $('uiEntryRetroCopy').textContent=say('Atenção: Está a registar esta informação numa data passada ('+GanhosDate.formatLabel(selected)+'). Deseja confirmar o lançamento retroativo?','Attention: you are recording this information on a past date ('+GanhosDate.formatLabel(selected)+'). Do you want to confirm the backdated entry?');
+        $('uiEntryRetroCancel').textContent=say('Voltar','Back');$('uiEntryRetroConfirm').textContent=say('Confirmar','Confirm');retro.classList.add('visible');return;
+      }
+      commitEntry(value,entryMode==='expense'?desc:'');
     });
+    GanhosDate.onChange(function(){if(dialog.open)renderEntry();});
     SmartSomaUI.openEntry=openEntry;
   }
   function openEntry(mode){
     window.closeAllOverlays();window.closeProfileSheetPublic();entryReturnFocus=document.activeElement;
+    GanhosDate.set(new Date());
     entryMode=mode||'income';entryScreen=mode==='expense'?'expense':mode==='km'?'km':'home';chosen=null;$('uiEntryValue').value='';$('uiEntryDescription').value='';renderEntry();
     var entryDialog=$('uiEntryDialog');entryDialog.previousElementSibling.classList.add('visible');
     if(typeof entryDialog.show==='function')entryDialog.show();else entryDialog.showModal();
   }
   function renderEntry(){
     var income=entryMode==='income',km=entryMode==='km',home=entryScreen==='home',incomeForm=entryScreen==='income';
-    $('uiEntryTitle').textContent=home?t('record'):incomeForm?say('Ganhos ','Earnings ')+chosen.nome:entryScreen==='expense'?say('Nova Despesa','New expense'):say('Registrar KM','Record KM');$('uiEntryDate').textContent=GanhosDate.formatLabel(GanhosDate.get());
+    var title=$('uiEntryTitle');title.replaceChildren();
+    if(incomeForm&&chosen){
+      title.classList.add('ui-entry-title-with-icon');
+      if(chosen.img&&(chosen.id==='uber'||chosen.id==='bolt'||SmartSomaSecurity.isSafeImageUrl(chosen.img))){var image=create('img','ui-entry-title-icon');image.src=chosen.img;image.alt='';title.append(image);}
+      var titleText=create('span');titleText.textContent=say('Ganhos ','Earnings ')+chosen.nome;title.append(titleText);
+    }else{title.classList.remove('ui-entry-title-with-icon');title.textContent=home?t('record'):entryScreen==='expense'?say('Nova Despesa','New expense'):say('Registrar KM','Record KM');}
+    var selected=GanhosDate.get(),today=new Date();today.setHours(0,0,0,0);selected=new Date(selected);selected.setHours(0,0,0,0);
+    $('uiEntryDate').innerHTML=svg('semana')+'<span>'+(selected.getTime()===today.getTime()?say('HOJE','TODAY'):GanhosDate.formatLabel(selected))+'</span>';
     $('uiPlatformHint').textContent=say('Selecione a plataforma','Select a platform');
     $('uiEntryIncome').textContent=say('Ganhos','Earnings');$('uiEntryExpense').textContent=t('despesas');
     $('uiEntryIncome').setAttribute('aria-pressed',String(income));$('uiEntryExpense').setAttribute('aria-pressed',String(entryMode==='expense'));$('uiEntryKm').setAttribute('aria-pressed',String(km));
