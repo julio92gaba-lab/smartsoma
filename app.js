@@ -3946,7 +3946,7 @@
 
         var sumUber = 0, sumBolt = 0, sumExtras = 0, sumDespesas = 0, sumKm = 0, totalCells = [], bestRevenueDay = null;
         var meta = window.MetaSemanalRead && window.MetaSemanalRead.forDate(week.monday);
-        var activeDays = 0, elapsedDays = 0;
+        var activeDays = 0, earningsActiveDays = 0;
 
         for (var i = 0; i < 7; i++) {
           var d = new Date(week.monday.getTime());
@@ -3980,8 +3980,8 @@
 
           var dayLiquido = dayTotal - despesasDia;
           var dayGoalValue = meta && meta.config && meta.config.tipo === 'liquido' ? dayLiquido : dayTotal;
+          if (dayTotal > 0) earningsActiveDays++;
           if (d.getTime() <= today.getTime()) {
-            elapsedDays++;
             if (dayGoalValue > 0) activeDays++;
           }
           var otherApps = dayBadges.extras;
@@ -4077,7 +4077,7 @@
           '<div class="semana-goal-card-track" role="progressbar" aria-label="Progresso da meta semanal" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + progress + '"><i style="width:' + progress + '%"></i></div>' +
           '<div class="semana-goal-card-footer">' +
             '<span>Média diária: <strong>' + formatEuro(dailyAverage) + '</strong></span>' +
-            '<span>' + activeDays + ' de ' + elapsedDays + ' dias ativos</span>' +
+            '<span>' + earningsActiveDays + ' dias ativos</span>' +
           '</div>';
         summary.classList.toggle('is-negative-achieved', achieved < 0);
 
