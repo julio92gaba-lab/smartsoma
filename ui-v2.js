@@ -230,17 +230,19 @@
   function setupStickyWeekFilters(){
     var controls=document.querySelector('.semana-filter-controls'), header=document.querySelector('.ui-header');
     if(!controls||!header)return;
+    var frame=0;
     function update(){
+      frame=0;
       var visible=route==='semana'&&!$('homeListPageSemana').hidden;
       if(!visible){controls.classList.remove('is-sticky');return;}
       var top=controls.getBoundingClientRect().top,threshold=header.getBoundingClientRect().bottom;
-      if(!controls.classList.contains('is-sticky')&&top<=threshold)controls.classList.add('is-sticky');
-      else if(controls.classList.contains('is-sticky')&&top>threshold+12)controls.classList.remove('is-sticky');
+      controls.classList.toggle('is-sticky',top<=threshold+1);
     }
-    window.addEventListener('scroll',update,{passive:true});
-    window.addEventListener('resize',update,{passive:true});
-    document.addEventListener('semanaPageShown',function(){requestAnimationFrame(update);});
-    requestAnimationFrame(update);
+    function schedule(){if(!frame)frame=requestAnimationFrame(update);}
+    window.addEventListener('scroll',schedule,{passive:true});
+    window.addEventListener('resize',schedule,{passive:true});
+    document.addEventListener('semanaPageShown',schedule);
+    schedule();
   }
   function money(value) { return Number(value).toLocaleString(I18N.t('lang.code'),{style:'currency',currency:'EUR'}); }
   function syncSidebarAccount(){

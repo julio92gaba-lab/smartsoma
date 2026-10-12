@@ -40,6 +40,12 @@ test('header stylesheet never hides the avatar outside the overview',()=>{
   assert.match(css,/body\.ui-v2 \.ui-header \.ui-header-avatar\s*\{[^}]*display:grid !important;[^}]*visibility:visible !important;/);
 });
 
+test('week filters keep the same geometry while sticky',()=>{
+  const css=fs.readFileSync('ui-v2.css','utf8');
+  assert.match(css,/\.semana-filter-controls,\s*\.ui-v2 #homeListPageSemana \.semana-filter-controls\.is-sticky\s*\{[^}]*min-height:96px;[^}]*padding-top:5px;[^}]*padding-bottom:5px;[^}]*will-change:transform;/);
+  assert.doesNotMatch(css,/\.semana-filter-controls\.is-sticky\s*\{[^}]*padding-bottom:3px/);
+});
+
 test('home rhythm uses the weekly divergent chart and lists only variable expenses from the selected period',async t=>{
   const monday=new Date();monday.setHours(0,0,0,0);monday.setDate(monday.getDate()-(monday.getDay()+6)%7);
   const tuesday=new Date(monday);tuesday.setDate(tuesday.getDate()+1);

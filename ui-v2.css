@@ -1061,10 +1061,6 @@ body.ui-v2.theme-dark .amber .ui-metric-icon { background:#483e26; color:#f3ce80
   opacity:.38;
   transform:scale(.92);
 }
-.ui-v2 #homeListPageSemana .semana-filter-controls.is-sticky {
-  min-height:91px;
-  padding-bottom:3px;
-}
 .ui-v2 #homeListPageSemana .semana-filter-fields .semana-week-picker-btn {
   border-color:color-mix(in srgb,var(--brand-green) 45%,var(--card-line));
   background:color-mix(in srgb,var(--lime) 22%,var(--card-bg));
@@ -1074,7 +1070,6 @@ body.ui-v2.theme-dark .amber .ui-metric-icon { background:#483e26; color:#f3ce80
 }
 @media (max-width:760px) {
   .ui-v2 #homeListPageSemana .semana-filter-controls { grid-template-columns:minmax(0,1fr) 86px; column-gap:8px; min-height:92px; padding:7px 8px; }
-  .ui-v2 #homeListPageSemana .semana-filter-controls.is-sticky { min-height:90px; padding-bottom:3px; }
   .ui-v2 #homeListPageSemana .semana-filter-fields { padding-right:0; }
   .ui-v2 #homeListPageSemana #subHeaderViewToggleGroup { width:86px; min-height:80px; }
 }
@@ -1137,11 +1132,22 @@ body.ui-v2 .ui-header .ui-header-avatar { display:grid !important; visibility:vi
 body.ui-v2 .ui-header .ui-header-copy { display:block !important; min-width:0; }
 body.ui-v2 .ui-header #uiHeaderDate { display:inline-flex !important; align-items:center; width:max-content; min-height:25px; padding:0 7px; border:1px solid var(--card-line); border-radius:8px; background:color-mix(in srgb,var(--card-bg) 50%,transparent); color:var(--muted); font-size:.56rem; font-weight:700; line-height:1; letter-spacing:.45px; text-transform:uppercase; }
 body.ui-v2 .ui-header .ui-mobile-logo { display:none !important; }
-.ui-v2 #homeListPageSemana .semana-filter-controls:not(.is-sticky) { margin-top:4px; margin-bottom:4px; padding-top:5px; padding-bottom:5px; min-height:96px; }
+.ui-v2 #homeListPageSemana .semana-filter-controls,
+.ui-v2 #homeListPageSemana .semana-filter-controls.is-sticky {
+  box-sizing:border-box;
+  min-height:96px;
+  margin-top:4px;
+  margin-bottom:4px;
+  padding-top:5px;
+  padding-bottom:5px;
+  will-change:transform;
+  backface-visibility:hidden;
+}
 body.ui-v2.semana-table-view #homeListPageSemana .semana-ganhos-title { margin-top:0; margin-bottom:4px; }
 body.ui-v2.semana-table-view #homeListPageSemana .semana-expenses-slot .semana-expenses-section { margin-top:22px; }
 @media (max-width:760px) {
-  .ui-v2 #homeListPageSemana .semana-filter-controls:not(.is-sticky) { margin-top:4px; margin-bottom:4px; padding-top:5px; padding-bottom:5px; min-height:90px; }
+  .ui-v2 #homeListPageSemana .semana-filter-controls,
+  .ui-v2 #homeListPageSemana .semana-filter-controls.is-sticky { min-height:90px; }
   .ui-news-popup { right:16px; bottom:88px; }
 }
 @media (max-width:760px) {
