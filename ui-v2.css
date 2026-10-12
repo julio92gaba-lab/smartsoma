@@ -909,8 +909,8 @@ body.ui-v2.theme-dark .amber .ui-metric-icon { background:#483e26; color:#f3ce80
 .ui-v2 #homeListPageSemana .semana-expenses-largest { width:max-content; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; padding:5px 8px; border:1px solid color-mix(in srgb,#d16d59 28%,transparent); border-radius:999px; background:color-mix(in srgb,#d16d59 8%,transparent); color:#b95a48; font-size:.64rem; font-weight:800; }
 .ui-v2 #homeListPageSemana .semana-revenue-title { display:block; margin:0; }
 .ui-v2 #homeListPageSemana .semana-revenue-best { width:max-content; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; padding:5px 8px; border:1px solid color-mix(in srgb,var(--brand-green) 28%,transparent); border-radius:999px; background:color-mix(in srgb,var(--brand-green) 8%,transparent); color:var(--brand-green); font-size:.64rem; font-weight:800; }
-.ui-v2 #homeListPageSemana .semana-revenue-quick { display:grid; gap:6px; padding:12px 12px 0; }
-.ui-v2 #homeListPageSemana .semana-revenue-quick-row { display:flex; flex-wrap:wrap; gap:5px 12px; color:var(--muted); font-size:.7rem; }
+.ui-v2 #homeListPageSemana .semana-revenue-quick { display:grid; gap:10px; margin-bottom:12px; padding:14px 12px 18px; }
+.ui-v2 #homeListPageSemana .semana-revenue-quick-row { display:flex; flex-wrap:wrap; gap:8px 16px; color:var(--muted); font-size:.7rem; line-height:1.35; }
 .ui-v2 #homeListPageSemana .semana-revenue-quick-row > span { white-space:nowrap; }
 .ui-v2 #homeListPageSemana .semana-revenue-quick-row strong { color:var(--ink); font-weight:800; }
 @media (max-width:760px) {
@@ -1167,12 +1167,13 @@ body.ui-v2.semana-table-view #homeListPageSemana .semana-expenses-slot .semana-e
 
 /* Vidro partilhado pelo topo fixo e pelos filtros quando ancorados. */
 .ui-v2 .ui-header {
-  background:linear-gradient(180deg,color-mix(in srgb,var(--paper) 92%,transparent),color-mix(in srgb,var(--paper) 84%,transparent));
+  background:linear-gradient(180deg,rgba(231,237,222,.74),rgba(218,229,210,.67));
   border-bottom-color:color-mix(in srgb,var(--ink) 10%,transparent);
   box-shadow:0 5px 18px rgba(11,31,20,.08);
-  backdrop-filter:blur(18px);
-  -webkit-backdrop-filter:blur(18px);
+  backdrop-filter:blur(24px);
+  -webkit-backdrop-filter:blur(24px);
 }
+body.ui-v2.theme-dark .ui-header { background:linear-gradient(180deg,rgba(20,38,28,.76),rgba(14,29,20,.68)); }
 .ui-v2 .resumo-period-controls,
 .ui-v2 #homeListPageSemana .semana-filter-controls {
   background:var(--paper);
@@ -1182,9 +1183,11 @@ body.ui-v2.semana-table-view #homeListPageSemana .semana-expenses-slot .semana-e
 }
 .ui-v2 .resumo-period-controls.is-sticky,
 .ui-v2 #homeListPageSemana .semana-filter-controls.is-sticky {
-  background:linear-gradient(180deg,color-mix(in srgb,var(--paper) 92%,transparent),color-mix(in srgb,var(--paper) 84%,transparent));
+  background:linear-gradient(180deg,rgba(231,237,222,.74),rgba(218,229,210,.67));
   border-color:color-mix(in srgb,var(--ink) 10%,transparent);
   box-shadow:0 5px 18px rgba(11,31,20,.08),inset 0 -1px color-mix(in srgb,var(--ink) 7%,transparent);
-  backdrop-filter:blur(18px);
-  -webkit-backdrop-filter:blur(18px);
+  backdrop-filter:blur(24px);
+  -webkit-backdrop-filter:blur(24px);
 }
+body.ui-v2.theme-dark .resumo-period-controls.is-sticky,
+body.ui-v2.theme-dark #homeListPageSemana .semana-filter-controls.is-sticky { background:linear-gradient(180deg,rgba(20,38,28,.76),rgba(14,29,20,.68)); }
