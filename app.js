@@ -3564,6 +3564,12 @@
         return str + ' km';
       }
       function formatPlainNumber (v) { return Number(v || 0).toFixed(2).replace('.', ','); }
+      function formatWeekPeriodNumeric (monday) {
+        var sunday = new Date(monday.getTime());
+        sunday.setDate(monday.getDate() + 6);
+        return pad2(monday.getDate()) + '/' + pad2(monday.getMonth() + 1) + ' a ' +
+          pad2(sunday.getDate()) + '/' + pad2(sunday.getMonth() + 1);
+      }
 
       function loadDayBadges (d) {
         var badges = { uber: 0, bolt: 0, despesas: 0, distancia: 0 };
@@ -4048,9 +4054,15 @@
         var percent = meta && meta.config ? Math.max(0, meta.percent) : 0;
         var progress = Math.min(100, percent);
         var dailyAverage = activeDays ? achieved / activeDays : 0;
+        var weekSunday = new Date(week.monday.getTime());
+        weekSunday.setDate(week.monday.getDate() + 6);
+        var isCurrentWeek = today >= week.monday && today <= weekSunday;
+        var summaryTitle = isCurrentWeek
+          ? 'Meta da semana Atual'
+          : 'Meta da semana <small class="semana-goal-card-period">' + formatWeekPeriodNumeric(week.monday) + '</small>';
         summary.innerHTML =
           '<div class="semana-goal-card-head">' +
-            '<span>Meta da Semana</span>' +
+            '<span>' + summaryTitle + '</span>' +
             '<strong>' + (target ? percent + '%' : '—') + '</strong>' +
           '</div>' +
           '<div class="semana-goal-card-values">' +

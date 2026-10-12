@@ -580,6 +580,7 @@ body.ui-v2 #resumoPeriodControls .period-filter-row { background:transparent; }
   color:#f4f9ec;
   font:800 .86rem/1 'Bricolage Grotesque',sans-serif;
 }
+.ui-v2 #homeListPageSemana .semana-goal-card-period { margin-left:6px; color:#b9cfc0; font:700 .68rem/1 'DM Sans',sans-serif; }
 .ui-v2 #homeListPageSemana .semana-goal-card-head > strong {
   padding:6px 9px;
   border-radius:999px;
