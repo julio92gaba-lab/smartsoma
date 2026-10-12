@@ -124,11 +124,30 @@
     syncHeader();
     window.scrollTo({top:0,behavior:'instant'});
   }
+  function addModalCloseButtons(){
+    document.querySelectorAll('.mm-card,.modal-card,.lpm-card').forEach(function(card){
+      if(card.querySelector('.ui-modal-close'))return;
+      var close=button('×',function(e){
+        e.stopPropagation();
+        var backdrop=card.closest('.mm-backdrop,.modal-backdrop');
+        if(backdrop){
+          backdrop.click();
+          setTimeout(function(){if(backdrop.classList.contains('visible'))backdrop.classList.remove('visible');},0);
+          return;
+        }
+        var languageModal=card.closest('#langPopupModal');
+        if(languageModal)languageModal.classList.remove('is-open');
+      },'ui-icon-button ui-modal-close');
+      close.setAttribute('aria-label',say('Fechar','Close'));
+      card.append(close);
+    });
+  }
   function start() {
     if (started || !window.SmartSomaAppReady) return;
     started = true;
     document.body.classList.add('ui-v2');
     document.documentElement.classList.add('ui-v2');
+    addModalCloseButtons();
     var nav = create('aside', 'ui-sidebar', '<button type="button" class="ui-brand" aria-label="SmartSoma"><img src="logo.png" alt="SmartSoma"></button><p class="ui-brand-caption" data-ui-text="tag"></p><nav class="ui-navigation" aria-label="Menu principal"></nav><button type="button" class="ui-mobile-nav-brand" aria-label="Ir para Início"><img src="logopeq.png" alt="Smart Soma"></button><div class="ui-sidebar-footer"><button type="button" class="ui-subscription-card" id="uiSidebarSubscription"><span class="ui-subscription-dot"></span><span><strong id="uiSidebarSubscriptionTitle"></strong><small id="uiSidebarSubscriptionNote"></small></span><b id="uiSidebarSubscriptionAction"></b></button><button type="button" class="ui-sidebar-profile" id="uiSidebarProfile"><span class="ui-sidebar-avatar" id="uiSidebarAvatar"></span><span><strong id="uiSidebarName"></strong><small>Conta pessoal</small></span><b>›</b></button></div>');
     $('appRoot').prepend(nav);
     nav.querySelector('.ui-brand').addEventListener('click',function(){go('resumo');});

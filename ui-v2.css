@@ -165,6 +165,21 @@ body.ui-v2:has(.ui-entry-backdrop.visible) .ui-header,
 body.ui-v2.ui-settings-open .ui-header { pointer-events:none; }
 .ui-v2 .mm-card,.ui-v2 .modal-card { background:var(--card-bg); color:var(--ink); border:2px solid #142015; border-radius:14px; padding:26px; width:min(440px,calc(100vw - 48px)); max-height:82dvh; overflow-y:auto; box-shadow:6px 6px 0 var(--brand-green),0 24px 80px #0004; }
 .ui-v2 .mm-title,.ui-v2 .modal-title { color:var(--ink); font-size:1.45rem; }
+.ui-v2 .mm-card,.ui-v2 .modal-card { position:relative; }
+.ui-v2 .lpm-card { position:relative; }
+.ui-v2 .mm-title,.ui-v2 .modal-title { margin-right:42px; text-align:left; }
+.ui-v2 .lpm-title { margin-right:42px; text-align:left; }
+.ui-v2 .ui-modal-close {
+  position:absolute;
+  top:14px;
+  right:14px;
+  z-index:2;
+  width:32px;
+  height:32px;
+  padding:0;
+  border-radius:10px;
+  font:400 1.45rem/1 sans-serif;
+}
 .ui-v2 .mm-helper-text,.ui-v2 .mm-subtitle,.ui-v2 .dp-notice-text { font-size:.8rem; color:var(--muted); line-height:1.65; }
 .ui-v2 .mm-value-input-wrap,.ui-v2 .dp-input,.ui-v2 .despesa-desc-input,.ui-v2 .despesa-valor-input { background:var(--input-bg); border:1px solid var(--card-line); border-radius:8px; color:var(--ink); }
 .ui-v2 .mm-value-input-wrap { height:auto; padding:10px 14px; }
@@ -557,6 +572,7 @@ body.ui-v2:is([data-ui-route="semana"],[data-ui-route="downloads"],[data-ui-rout
   font:800 clamp(1.7rem,4vw,2.45rem)/1 'Bricolage Grotesque',sans-serif;
   letter-spacing:-1.2px;
 }
+.ui-v2 #homeListPageSemana .semana-goal-card.is-negative-achieved .semana-goal-card-values > strong { color:#ffaaa1; }
 .ui-v2 #homeListPageSemana .semana-goal-card-values > span { color:#b9cfc0; font-size:.78rem; font-weight:700; }
 .ui-v2 #homeListPageSemana .semana-goal-card-track {
   height:8px;

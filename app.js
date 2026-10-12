@@ -4035,6 +4035,7 @@
             '<span>Média diária: <strong>' + formatEuro(dailyAverage) + '</strong></span>' +
             '<span>' + activeDays + ' de ' + elapsedDays + ' dias ativos</span>' +
           '</div>';
+        summary.classList.toggle('is-negative-achieved', achieved < 0);
 
         block.appendChild(summary);
         block.appendChild(scrollWrap);
