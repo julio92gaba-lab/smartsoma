@@ -268,7 +268,7 @@
     document.querySelector('.home-list-inner').append(settingsPage);
     summary.prepend($('metaSlotList'));
     $('metaSlotList').after($('resumoPeriodControls'));
-    var dashboard=create('div','ui-dashboard-bottom','<section class="home-card ui-chart-panel"><div class="ui-panel-head"><div><p class="ui-eyebrow" id="uiChartEyebrow"></p><h2 id="uiChartTitle"></h2></div><button type="button" id="uiChartDetails" class="ui-text-button"></button></div><div id="uiChart"></div></section><section class="home-card ui-overview-expenses"><div class="ui-panel-head"><h2 id="uiOverviewExpensesTitle"></h2><button type="button" id="uiOverviewFixed" class="ui-text-button"></button></div><div id="uiOverviewFixedGroup" hidden><p class="ui-expense-section-label" id="uiOverviewFixedLabel"></p><div id="uiOverviewFixedRows"></div></div><p class="ui-expense-section-label" id="uiOverviewDailyLabel"></p><div id="uiOverviewExpenseRows"></div></section>');
+    var dashboard=create('div','ui-dashboard-bottom','<section class="home-card ui-chart-panel"><div class="ui-panel-head"><div><p class="ui-eyebrow" id="uiChartEyebrow"></p><h2 id="uiChartTitle"></h2></div><button type="button" id="uiChartDetails" class="ui-text-button"></button></div><div id="uiChart"></div></section><section class="home-card ui-overview-expenses"><div class="ui-panel-head"><h2 id="uiOverviewExpensesTitle"></h2><button type="button" id="uiOverviewFixed" class="ui-text-button"></button></div><div id="uiOverviewFixedGroup" hidden><p class="ui-expense-section-label" id="uiOverviewFixedLabel"></p><div id="uiOverviewFixedRows"></div></div><p class="ui-expense-section-label" id="uiOverviewDailyLabel"></p><div id="uiOverviewExpenseRows"></div><div class="ui-overview-expense-total"><span id="uiOverviewExpenseTotalLabel"></span><strong id="uiOverviewExpenseTotal"></strong></div></section>');
     summary.append(dashboard);
     $('uiChartDetails').addEventListener('click',function(){
       window.closeAllOverlays();window.closeProfileSheetPublic();
@@ -336,7 +336,7 @@
     $('uiChartEyebrow').textContent=period==='dia'?say('DIA EM MOVIMENTO','DAY IN MOTION'):period==='mes'?say('MÊS EM MOVIMENTO','MONTH IN MOTION'):say('SEMANA EM MOVIMENTO','WEEK IN MOTION');
     $('uiChartDetails').textContent=say('Ver semana completa →','View full week →');
     $('uiChartDetails').hidden=period!=='semana';
-    $('uiOverviewExpensesTitle').textContent=say('Despesas','Expenses');$('uiOverviewFixed').textContent=say('Configurar','Configure');$('uiOverviewFixedLabel').textContent=say('DESPESAS FIXAS','FIXED EXPENSES');$('uiOverviewDailyLabel').textContent=say('DESPESAS DO PERÍODO','PERIOD EXPENSES');
+    $('uiOverviewExpensesTitle').textContent=say('Despesas','Expenses');$('uiOverviewFixed').textContent=say('Configurar','Configure');$('uiOverviewFixedLabel').textContent=say('DESPESAS FIXAS','FIXED EXPENSES');$('uiOverviewDailyLabel').textContent=say('DESPESAS DO PERÍODO','PERIOD EXPENSES');$('uiOverviewExpenseTotalLabel').textContent=say('Total de despesas no período','Total expenses in period');
     var days=daysInPeriod();renderOverviewExpenses(days);
     if(period==='dia')renderDayChart(day);else if(period==='mes')renderMonthChart(days);else renderChart(daysInSelectedWeek());
     // Same calculations as the weekly table, including current fixed expenses.
@@ -480,6 +480,7 @@
       } catch(e) {}
     });
     tableRows($('uiOverviewExpenseRows'),dailyEntries);
+    $('uiOverviewExpenseTotal').textContent=money(days.reduce(function(total,day){return total+day.expenses;},0));
   }
   var entryMode='income',entryScreen='home',chosen=null,entryReturnFocus=null,restoreKmComponent=function(){},mountKmComponent=function(){};
   function setupEntry(){

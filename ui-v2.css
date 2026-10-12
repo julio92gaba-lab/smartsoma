@@ -340,6 +340,17 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
 .ui-overview-expense-row { display:flex; justify-content:space-between; align-items:baseline; gap:12px; padding:10px 0; border-bottom:1px solid var(--card-line); font-size:.83rem; }
 .ui-overview-expense-row span { font-weight:700; }
 .ui-overview-expense-row small { color:var(--muted); font-size:.7rem; text-align:right; }
+.ui-overview-expense-total {
+  display:grid;
+  justify-items:center;
+  gap:5px;
+  margin-top:14px;
+  padding-top:14px;
+  border-top:1px solid var(--card-line);
+  text-align:center;
+}
+.ui-overview-expense-total span { color:var(--muted); font-size:.68rem; font-weight:700; }
+.ui-overview-expense-total strong { color:var(--danger); font:800 1.15rem/1 'Bricolage Grotesque',sans-serif; }
 .ui-fixed-expense-row { color:var(--brand-green); }
 .ui-entry-backdrop { position:fixed; z-index:200; top:var(--ui-header); right:0; bottom:0; left:0; visibility:hidden; opacity:0; background:rgba(5,15,9,.55); backdrop-filter:blur(4px); transition:opacity .18s ease; }
 .ui-entry-backdrop.visible { visibility:visible; opacity:1; }
