@@ -3887,8 +3887,8 @@
         metricTabs._weekBlock = block;
         [
           { key: 'financeiro', label: 'Financeiro' },
-          { key: 'operacional', label: 'Operacional / KM' },
-          { key: 'apps', label: 'Resumo por App' }
+          { key: 'operacional', label: 'Operacional' },
+          { key: 'apps', label: 'Por App' }
         ].forEach(function (metric) {
           var tab = document.createElement('button');
           tab.type = 'button'; tab.className = 'semana-metric-tab';
@@ -3924,9 +3924,10 @@
         thead.innerHTML =
           '<tr>' +
             '<th class="semana-metric-all semana-cell-data">' + I18N.t('semana.th.data') + '</th>' +
-            '<th class="semana-metric-financeiro">Ganhos brutos</th>' +
+            '<th class="semana-metric-financeiro">Ganhos</th>' +
             '<th class="semana-metric-financeiro">' + I18N.t('semana.th.despesas') + '</th>' +
             '<th class="semana-metric-financeiro">' + I18N.t('semana.th.liquido') + '</th>' +
+            '<th class="semana-metric-operacional">Ganhos</th>' +
             '<th class="semana-metric-operacional">Quilómetros</th>' +
             '<th class="semana-metric-operacional">Valor / KM</th>' +
             '<th class="semana-metric-apps">' + I18N.t('semana.th.uber') + '</th>' +
@@ -3988,6 +3989,11 @@
           tdLiquido.textContent = formatEuro(dayLiquido);
           if (Math.round(dayLiquido * 100) >= 1) tdLiquido.classList.add('is-positive');
           tr.appendChild(tdLiquido);
+
+          var tdOperationalGross = document.createElement('td');
+          tdOperationalGross.className = 'semana-metric-operacional semana-cell-total';
+          tdOperationalGross.textContent = formatEuro(dayTotal);
+          tr.appendChild(tdOperationalGross);
 
           var tdKm = document.createElement('td');
           tdKm.className = 'semana-metric-operacional';
@@ -4163,7 +4169,7 @@
 
       function syncWeekContentMode () {
         var isTable = currentWeekView === 'table';
-        if (earningsTitle) earningsTitle.hidden = !isTable;
+        if (earningsTitle) earningsTitle.hidden = false;
         if (metricSlot) metricSlot.hidden = !isTable;
       }
 
