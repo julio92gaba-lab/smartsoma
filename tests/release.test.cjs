@@ -35,6 +35,7 @@ test('quick entry selects a past day with confirmation and keeps the current pag
   if (yesterday.getMonth() !== today.getMonth()) a.click('mmCalPrevBtn');
   [...a.el('mmCalendarDays').querySelectorAll('button')].find(b => b.textContent === String(yesterday.getDate())).click();
   assert.equal(dateKey(a.w.GanhosDate.get()), dateKey(yesterday));
+  assert.ok(a.el('uiEntryDate').classList.contains('is-past-date'));
   a.w.document.querySelector('[data-platform="uber"]').click();
   a.input('uiEntryValue','42');
   a.el('uiEntryForm').dispatchEvent(new a.w.Event('submit',{bubbles:true,cancelable:true}));

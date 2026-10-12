@@ -371,6 +371,7 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
 .ui-entry-section-label { margin:14px 0 6px; color:var(--muted); font-size:.72rem; font-weight:800; letter-spacing:.5px; }
 .ui-entry-section-label + .ui-entry-date-selector { margin-top:0; }
 .ui-entry-date-selector { display:inline-flex; align-items:center; gap:7px; margin-top:10px; padding:7px 10px; border:1px solid var(--card-line); border-radius:8px; background:var(--input-bg); color:var(--ink); font-size:.68rem; font-weight:800; letter-spacing:.7px; }
+.ui-entry-date-selector.is-past-date { border-color:color-mix(in srgb,var(--brand-green) 58%,var(--card-line)); background:color-mix(in srgb,#008050 20%,var(--input-bg)); color:var(--ink); }
 .ui-entry-date-selector svg { width:15px; height:15px; }
 .ui-entry-title-with-icon { display:flex; align-items:center; gap:8px; }
 .ui-entry-title-icon { width:1em; height:1em; flex:none; object-fit:contain; }

@@ -613,6 +613,7 @@
     }else{title.classList.remove('ui-entry-title-with-icon');title.textContent=home?t('record'):entryScreen==='expense'?say('Nova Despesa','New expense'):say('Registrar KM','Record KM');}
     var selected=GanhosDate.get(),today=new Date();today.setHours(0,0,0,0);selected=new Date(selected);selected.setHours(0,0,0,0);
     $('uiEntryDate').innerHTML=svg('semana')+'<span>'+(selected.getTime()===today.getTime()?say('HOJE','TODAY'):GanhosDate.formatLabel(selected))+'</span>';
+    $('uiEntryDate').classList.toggle('is-past-date',selected.getTime()<today.getTime());
     $('uiPlatformHint').textContent=say('Selecione a plataforma:','Select a platform:');
     $('uiEntryIncome').textContent=say('Ganhos','Earnings');$('uiEntryExpense').textContent=t('despesas');
     $('uiEntryIncome').setAttribute('aria-pressed',String(income));$('uiEntryExpense').setAttribute('aria-pressed',String(entryMode==='expense'));$('uiEntryKm').setAttribute('aria-pressed',String(km));
