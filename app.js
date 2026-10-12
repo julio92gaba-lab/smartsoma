@@ -3963,7 +3963,7 @@
           var dayTotal = dayBadges.uber + dayBadges.bolt + dayBadges.extras;
           if (!bestRevenueDay || dayTotal > bestRevenueDay.value) {
             bestRevenueDay = {
-              label: DIAS_ABBR()[i] + ' ' + pad2(d.getDate()) + '/' + pad2(d.getMonth() + 1),
+              date: new Date(d.getTime()),
               value: dayTotal
             };
           }
@@ -4033,10 +4033,15 @@
         scrollWrap.appendChild(tableWrap);
         var revenueFooter = document.createElement('footer');
         revenueFooter.className = 'semana-revenue-footer';
-        revenueFooter.innerHTML = '<span class="semana-revenue-best">Melhor da semana: ' +
-          (bestRevenueDay && bestRevenueDay.value > 0
-            ? bestRevenueDay.label + ' – ' + formatPlainNumber(bestRevenueDay.value)
-            : 'sem faturação') + '</span>';
+        var bestRevenueLabel = 'Sem faturação';
+        if (bestRevenueDay && bestRevenueDay.value > 0) {
+          var bestDate = bestRevenueDay.date;
+          bestRevenueLabel = capitalize(DIAS_FULL()[bestDate.getDay() === 0 ? 6 : bestDate.getDay() - 1]) + ', ' +
+            bestDate.getDate() + ' de ' + capitalize(MESES_MINUS()[bestDate.getMonth()]) + ' | € ' +
+            formatPlainNumber(bestRevenueDay.value);
+        }
+        revenueFooter.innerHTML = '<span class="semana-revenue-title">Melhor da semana</span>' +
+          '<span class="semana-revenue-best">' + bestRevenueLabel + '</span>';
         scrollWrap.appendChild(revenueFooter);
         block.appendChild(metricTabs);
 
