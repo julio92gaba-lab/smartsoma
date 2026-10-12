@@ -64,6 +64,16 @@ test('daily rhythm follows the global period navigation date',async t=>{
   a.el('uiChart').querySelectorAll('.ui-chart-tab')[1].click();assert.ok(a.el('uiChart').querySelector('.ui-day-donut-net'));assert.match(a.el('uiChart').textContent,/120.*15.*105/);assert.deepEqual(a.errors,[]);
 });
 
+test('weekly view choice is stored and survives section navigation',async t=>{
+  const a=setup(t);a.w.SmartSomaUI.go('semana');await settle();
+  a.click('subHeaderViewToggleGroup');
+  assert.equal(a.w.localStorage.getItem('smartsoma:semana-view'),'table');
+  assert.ok(a.w.document.body.classList.contains('semana-table-view'));
+  a.w.SmartSomaUI.go('resumo');a.w.SmartSomaUI.go('semana');await settle();
+  assert.ok(a.w.document.body.classList.contains('semana-table-view'));
+  assert.deepEqual(a.errors,[]);
+});
+
 test('quick entry opens a platform subpage and replaces its daily value',t=>{
   const a=setup(t);a.click('uiAdd');assert.equal(a.el('uiEntryDialog').open,true);
   assert.match(a.el('uiPlatformChoices').textContent,/Uber/);

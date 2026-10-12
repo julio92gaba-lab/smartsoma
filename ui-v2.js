@@ -232,7 +232,10 @@
     if(!controls||!header)return;
     function update(){
       var visible=route==='semana'&&!$('homeListPageSemana').hidden;
-      controls.classList.toggle('is-sticky',visible&&controls.getBoundingClientRect().top<=header.getBoundingClientRect().bottom+.5);
+      if(!visible){controls.classList.remove('is-sticky');return;}
+      var top=controls.getBoundingClientRect().top,threshold=header.getBoundingClientRect().bottom;
+      if(!controls.classList.contains('is-sticky')&&top<=threshold)controls.classList.add('is-sticky');
+      else if(controls.classList.contains('is-sticky')&&top>threshold+12)controls.classList.remove('is-sticky');
     }
     window.addEventListener('scroll',update,{passive:true});
     window.addEventListener('resize',update,{passive:true});

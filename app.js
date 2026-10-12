@@ -4371,6 +4371,7 @@
       window.SemanaView = {
         showList: function () {
           currentWeekView = 'list';
+          document.body.classList.remove('semana-table-view');
           syncWeekContentMode();
           weeksContainer.hidden = true;
           if (listPlaceholder) {
@@ -4381,6 +4382,7 @@
         },
         showTable: function () {
           currentWeekView = 'table';
+          document.body.classList.add('semana-table-view');
           syncWeekContentMode();
           if (listPlaceholder) listPlaceholder.hidden = true;
           weeksContainer.hidden = false;
@@ -4516,7 +4518,8 @@
         var btnTable = document.getElementById('viewToggleBtnTable');
         var toggle = document.getElementById('subHeaderViewToggleGroup');
         if (!btnList || !btnTable || !toggle) return;
-        function setActive (btn) {
+        var viewStorageKey = 'smartsoma:semana-view';
+        function setActive (btn, persist) {
           [btnList, btnTable].forEach(function (b) {
             var active = (b === btn);
             b.classList.toggle('is-active', active);
@@ -4528,16 +4531,25 @@
           if (inactiveLabel) inactiveLabel.textContent = isList ? 'Tabela' : 'Lista';
           toggle.setAttribute('aria-pressed', isList ? 'true' : 'false');
           toggle.setAttribute('aria-label', isList ? 'Alternar para tabela' : 'Alternar para lista');
+          if (persist) {
+            try { localStorage.setItem(viewStorageKey, isList ? 'list' : 'table'); } catch (e) {}
+          }
         }
-        function toggleView () {
-          var next = btnList.classList.contains('is-active') ? btnTable : btnList;
-          setActive(next);
+        function applyView (btn, persist) {
+          setActive(btn, persist);
           if (window.SemanaView) {
-            if (next === btnList) window.SemanaView.showList();
+            if (btn === btnList) window.SemanaView.showList();
             else window.SemanaView.showTable();
           }
         }
+        function toggleView () {
+          var next = btnList.classList.contains('is-active') ? btnTable : btnList;
+          applyView(next, true);
+        }
         toggle.addEventListener('click', toggleView);
+        var storedView = null;
+        try { storedView = localStorage.getItem(viewStorageKey); } catch (e) {}
+        applyView(storedView === 'table' ? btnTable : btnList, false);
       })();
 
       // ---- Navegação entre seções (Ganhos / Resumo Financeiro / Detalhes
