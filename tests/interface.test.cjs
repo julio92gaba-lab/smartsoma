@@ -1,5 +1,6 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
 const { createApp, dateKey } = require('./app-harness.cjs');
 const settle = () => new Promise(resolve => setTimeout(resolve, 180));
 function submit(a) { a.el('uiEntryForm').dispatchEvent(new a.w.Event('submit', { bubbles:true, cancelable:true })); }
@@ -27,8 +28,16 @@ test('UI keeps four navigation items, mobile brand and redirects retired routes 
     a.w.SmartSomaUI.go(route);await settle();
     assert.equal(a.w.document.body.dataset.uiRoute,route);
     assert.equal(a.w.document.querySelectorAll('.home-list-page:not([hidden])').length,1);
+    assert.equal(a.el('uiHeaderAvatar').hidden,false);
+    assert.ok(a.el('uiHeaderAvatar').querySelector('img'));
   }
   for(const route of ['ganhos','despesas']){a.w.SmartSomaUI.go(route);await settle();assert.equal(a.w.document.body.dataset.uiRoute,'resumo');}
+});
+
+test('header stylesheet never hides the avatar outside the overview',()=>{
+  const css=fs.readFileSync('ui-v2.css','utf8');
+  assert.doesNotMatch(css,/ui-header-avatar\s*\{\s*display\s*:\s*none/i);
+  assert.match(css,/body\.ui-v2 \.ui-header \.ui-header-avatar\s*\{[^}]*display:grid !important;[^}]*visibility:visible !important;/);
 });
 
 test('home rhythm uses the weekly divergent chart and lists only variable expenses from the selected period',async t=>{
