@@ -4028,8 +4028,17 @@
           tbody.appendChild(tr);
         }
 
+        var sumBruto = sumUber + sumBolt + sumExtras;
+        var sumLiquido = sumBruto - sumDespesas;
         table.appendChild(tbody);
         tableWrap.appendChild(table);
+        var quickSummary = document.createElement('section');
+        quickSummary.className = 'semana-revenue-quick';
+        quickSummary.innerHTML =
+          '<span class="semana-revenue-title">Resumo rápido</span>' +
+          '<div class="semana-revenue-quick-row"><span><strong>Bruto:</strong> ' + formatEuro(sumBruto) + '</span><span><strong>Despesas:</strong> ' + formatEuro(sumDespesas) + '</span></div>' +
+          '<div class="semana-revenue-quick-row"><span><strong>Líquido:</strong> ' + formatEuro(sumLiquido) + '</span><span><strong>Distância:</strong> ' + formatKm(sumKm) + '</span></div>';
+        scrollWrap.appendChild(quickSummary);
         scrollWrap.appendChild(tableWrap);
         var revenueFooter = document.createElement('footer');
         revenueFooter.className = 'semana-revenue-footer';
@@ -4045,8 +4054,6 @@
         scrollWrap.appendChild(revenueFooter);
         block.appendChild(metricTabs);
 
-        var sumBruto   = sumUber + sumBolt + sumExtras;
-        var sumLiquido = sumBruto - sumDespesas;
         var maxDayTotal = Math.max.apply(null, totalCells.map(function (item) { return item.value; }).concat([0]));
         totalCells.forEach(function (item) {
           item.el.style.setProperty('--semana-bar-size', (maxDayTotal ? Math.max(8, item.value / maxDayTotal * 100) : 8) + '%');
