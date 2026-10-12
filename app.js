@@ -3938,7 +3938,7 @@
 
         var tbody = document.createElement('tbody');
 
-        var sumUber = 0, sumBolt = 0, sumExtras = 0, sumDespesas = 0, sumKm = 0, totalCells = [];
+        var sumUber = 0, sumBolt = 0, sumExtras = 0, sumDespesas = 0, sumKm = 0, totalCells = [], bestRevenueDay = null;
         var meta = window.MetaSemanalRead && window.MetaSemanalRead.forDate(week.monday);
         var activeDays = 0, elapsedDays = 0;
 
@@ -3955,6 +3955,12 @@
           sumKm       += dayBadges.distancia;
 
           var dayTotal = dayBadges.uber + dayBadges.bolt + dayBadges.extras;
+          if (!bestRevenueDay || dayTotal > bestRevenueDay.value) {
+            bestRevenueDay = {
+              label: DIAS_ABBR()[i] + ' ' + pad2(d.getDate()) + '/' + pad2(d.getMonth() + 1),
+              value: dayTotal
+            };
+          }
 
           var tr = document.createElement('tr');
           tr.className = 'semana-table-row';
@@ -4019,6 +4025,13 @@
         table.appendChild(tbody);
         tableWrap.appendChild(table);
         scrollWrap.appendChild(tableWrap);
+        var revenueFooter = document.createElement('footer');
+        revenueFooter.className = 'semana-revenue-footer';
+        revenueFooter.innerHTML = '<span class="semana-revenue-best">Melhor da semana: ' +
+          (bestRevenueDay && bestRevenueDay.value > 0
+            ? bestRevenueDay.label + ' – ' + formatPlainNumber(bestRevenueDay.value)
+            : 'sem faturação') + '</span>';
+        scrollWrap.appendChild(revenueFooter);
         block.appendChild(metricTabs);
 
         var sumBruto   = sumUber + sumBolt + sumExtras;
