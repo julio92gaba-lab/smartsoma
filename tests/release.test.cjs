@@ -51,10 +51,14 @@ test('quick entry selects a past day with confirmation and keeps the current pag
 test('news keeps an unread notice and moves it to the local archive after reading', t => {
   const a = setup(t);
   assert.ok(a.el('uiNews'));
+  assert.equal(a.el('uiNewsBadge').hidden,false);
   a.click('uiNews');
   assert.ok(a.w.document.querySelector('.ui-news-backdrop.visible'));
+  assert.equal(a.el('uiNewsTitle').textContent,'Novidades');
   assert.match(a.el('uiNewsContent').textContent,/assistente no trânsito/i);
+  assert.match(a.el('uiNewsContent').textContent,/12\/10\/2026/);
   a.click('uiNewsClose');
+  assert.equal(a.el('uiNewsBadge').hidden,true);
   a.click('uiNewsPopupRead');
   a.click('uiNewsClose');
   a.click('uiNews'); a.click('uiNewsArchive');

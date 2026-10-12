@@ -7647,12 +7647,13 @@
        NOVIDADES GLOBAIS
 
        Para enviar uma nova mensagem a todos os utilizadores, altere SEMPRE
-       o id para um valor novo e depois title e text. A leitura é guardada
+       o id para um valor novo e depois sentAt, title e text. A leitura é guardada
        localmente por utilizador/dispositivo; mensagens antigas permanecem
        no Arquivo e nunca são apagadas pela interface.
        =================================================================== */
     window.SmartSomaNewsNotice = {
       id: 'news1',
+      sentAt: '2026-10-12',
       title: '⚡ Spoiler: O teu novo assistente no trânsito!',
       text: 'EM BREVE: Uma app integrada para calcular cada corrida em tempo real. Aguarda!'
     };
