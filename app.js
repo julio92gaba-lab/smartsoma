@@ -4598,8 +4598,13 @@
       // ao navegar pelo menu.
       var HOME_PAGE_FADE_MS = 140;
       var homePageTimer = null;
+      function resetNavigationScroll () {
+        if (listView) listView.scrollTop = 0;
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      }
       function showHomeListPage (section) {
         clearTimeout(homePageTimer);
+        resetNavigationScroll();
         var normalized = (section === 'default') ? 'ganhos' : section;
         var pages = PAGES_LIST;
         var nextEl = null;
@@ -4655,6 +4660,7 @@
       var slideBusy = false;
       function slideToSection (section, direction) {
         if (slideBusy) return;
+        resetNavigationScroll();
         var normalized = (section === 'default') ? 'ganhos' : section;
         var nextEl = null;
         PAGES_LIST.forEach(function (p) { if (p.key === normalized) nextEl = p.el; });
@@ -4717,6 +4723,7 @@
       }
 
       function fadeInSection (section) {
+        resetNavigationScroll();
         var normalized = (section === 'default') ? 'ganhos' : section;
         var nextEl = null;
         PAGES_LIST.forEach(function (p) { if (p.key === normalized) nextEl = p.el; });

@@ -77,9 +77,15 @@
     var months=['jan.','fev.','mar.','abr.','mai.','jun.','jul.','ago.','set.','out.','nov.','dez.'];
     return days[date.getDay()]+' | '+date.getDate()+' de '+months[date.getMonth()];
   }
+  function resetRouteScroll(){
+    var list=$('homeListView');
+    if(list)list.scrollTop=0;
+    window.scrollTo({top:0,left:0,behavior:'instant'});
+  }
   function go(key) {
     if (key === 'default' || key === 'ganhos' || key === 'despesas') key = 'resumo';
     if (key !== 'semana') calendarWeekSelection = false;
+    resetRouteScroll();
     window.closeAllOverlays();
     var settingsPage=$('uiSettingsPage');
     if (key === 'ajustes') {

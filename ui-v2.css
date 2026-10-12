@@ -902,10 +902,12 @@ body.ui-v2.theme-dark .amber .ui-metric-icon { background:#483e26; color:#f3ce80
 .ui-v2 #homeListPageSemana .semana-expense-value { color:#d16d59; font-weight:800; }
 .ui-v2 #homeListPageSemana .semana-expenses-footer,
 .ui-v2 #homeListPageSemana .semana-revenue-footer { display:grid; gap:8px; padding:12px; border-top:0; }
-.ui-v2 #homeListPageSemana .semana-expenses-total { display:flex; align-items:center; justify-content:space-between; color:var(--muted); font-size:.72rem; font-weight:700; }
+.ui-v2 #homeListPageSemana .semana-expenses-total,
+.ui-v2 #homeListPageSemana .semana-revenue-title { color:var(--muted); font-size:.72rem; font-weight:700; }
+.ui-v2 #homeListPageSemana .semana-expenses-total { display:flex; align-items:center; justify-content:space-between; }
 .ui-v2 #homeListPageSemana .semana-expenses-total strong { color:#d16d59; font-size:.9rem; }
 .ui-v2 #homeListPageSemana .semana-expenses-largest { width:max-content; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; padding:5px 8px; border:1px solid color-mix(in srgb,#d16d59 28%,transparent); border-radius:999px; background:color-mix(in srgb,#d16d59 8%,transparent); color:#b95a48; font-size:.64rem; font-weight:800; }
-.ui-v2 #homeListPageSemana .semana-revenue-title { margin:0; color:var(--ink); font:700 1rem 'Bricolage Grotesque',sans-serif; letter-spacing:-.2px; }
+.ui-v2 #homeListPageSemana .semana-revenue-title { display:block; margin:0; }
 .ui-v2 #homeListPageSemana .semana-revenue-best { width:max-content; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; padding:5px 8px; border:1px solid color-mix(in srgb,var(--brand-green) 28%,transparent); border-radius:999px; background:color-mix(in srgb,var(--brand-green) 8%,transparent); color:var(--brand-green); font-size:.64rem; font-weight:800; }
 @media (max-width:760px) {
   .ui-v2 #homeListPageSemana .semana-metric-tab { font-size:.58rem; padding-inline:4px; }
