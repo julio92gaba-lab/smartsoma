@@ -1336,3 +1336,59 @@ body.ui-v2.theme-dark #homeListPageSemana .semana-filter-controls.is-sticky { ba
     z-index:1;
   }
 }
+
+/* Início mobile: a visão é sempre da semana atual. */
+.ui-v2 #resumoPeriodControls .resumo-current-week-label { display:none; }
+@media (max-width:760px) {
+  .ui-v2 #resumoPeriodControls,
+  .ui-v2 #resumoPeriodControls.is-sticky {
+    justify-content:center;
+    min-height:58px;
+    padding:7px 12px;
+  }
+  .ui-v2 #resumoPeriodControls .period-filter-row,
+  .ui-v2 #resumoPeriodControls .period-nav-row { display:none; }
+  .ui-v2 #resumoPeriodControls .resumo-current-week-label {
+    display:grid;
+    width:100%;
+    justify-items:center;
+    gap:3px;
+    color:var(--ink);
+    text-align:center;
+  }
+  .ui-v2 #resumoPeriodControls .resumo-current-week-label strong {
+    font:800 .61rem/1 'Bricolage Grotesque',sans-serif;
+    letter-spacing:.09em;
+  }
+  .ui-v2 #resumoPeriodControls .resumo-current-week-label span {
+    color:var(--muted);
+    font:650 .7rem/1.1 'Bricolage Grotesque',sans-serif;
+    text-transform:lowercase;
+  }
+  .ui-v2 #resumoPeriodControls.is-sticky {
+    border-color:transparent color-mix(in srgb,var(--ink) 8%,transparent) color-mix(in srgb,var(--ink) 9%,transparent);
+    border-radius:0 0 14px 14px;
+  }
+
+  /* A curva fica fixa no topo; só a superfície verde inferior cresce. */
+  .ui-v2 #homeListPageSemana .semana-day-card {
+    background:color-mix(in srgb,#0f5a2e 10%,var(--card-bg));
+  }
+  body.ui-v2.theme-dark #homeListPageSemana .semana-day-card {
+    background:color-mix(in srgb,#34f5c5 14%,var(--card-bg));
+  }
+  .ui-v2 #homeListPageSemana .semana-day-card::before {
+    inset:0 0 auto;
+    height:120px;
+    background-size:100% 120px;
+    background-position:top center;
+  }
+  .ui-v2 #homeListPageSemana .semana-day-card.is-expanded .semana-day-card-details {
+    padding:48px 13px 15px;
+  }
+  .ui-v2 #homeListPageSemana .semana-day-card-details > * + * { margin-top:18px; }
+  .ui-v2 #homeListPageSemana .semana-day-card-metrics { gap:10px; }
+  .ui-v2 #homeListPageSemana .semana-day-card-metrics > div { padding:10px; }
+  .ui-v2 #homeListPageSemana .semana-day-card-expenses .is-expense .row-value { color:var(--ink); }
+  .ui-v2 #homeListPageSemana .semana-day-card-expense-total strong { color:#d16d59; }
+}

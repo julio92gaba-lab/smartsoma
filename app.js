@@ -3028,6 +3028,7 @@
 
       var periodChips   = document.querySelectorAll('.period-chip');
       var periodLabelEl = document.getElementById('periodLabel');
+      var currentWeekPeriodEl = document.getElementById('resumoCurrentWeekPeriod');
       var prevBtn       = document.getElementById('periodNavPrev');
       var nextBtn       = document.getElementById('periodNavNext');
 
@@ -3067,6 +3068,16 @@
         return range.monday.getDate() + ' ' + firstMonth + ' a ' + range.sunday.getDate() + ' ' + lastMonth;
       }
 
+      function formatCurrentWeekLabel () {
+        var range = getWeekRange(todayAtMidnight());
+        var firstMonth = MESES_MINUS()[range.monday.getMonth()];
+        var lastMonth = MESES_MINUS()[range.sunday.getMonth()];
+        if (range.monday.getMonth() === range.sunday.getMonth()) {
+          return range.monday.getDate() + ' a ' + range.sunday.getDate() + ' de ' + firstMonth;
+        }
+        return range.monday.getDate() + ' de ' + firstMonth + ' a ' + range.sunday.getDate() + ' de ' + lastMonth;
+      }
+
       function formatMesLabel (d) {
         return capitalize(MESES_MINUS()[d.getMonth()].slice(0, 3)) + ' ' + d.getFullYear();
       }
@@ -3078,6 +3089,7 @@
 
       function renderLabel () {
         var period = currentPeriod();
+        if (currentWeekPeriodEl) currentWeekPeriodEl.textContent = formatCurrentWeekLabel();
         if (period === 'dia')    periodLabelEl.textContent = formatDiaLabel(refDate);
         if (period === 'semana') periodLabelEl.textContent = formatSemanaLabel(refDate);
         if (period === 'mes')    periodLabelEl.textContent = formatMesLabel(refDate);
