@@ -1155,6 +1155,9 @@ body.ui-v2 .ui-header .ui-mobile-logo { display:none !important; }
 }
 body.ui-v2.semana-table-view #homeListPageSemana .semana-ganhos-title { margin-top:0; margin-bottom:4px; }
 body.ui-v2.semana-table-view #homeListPageSemana .semana-expenses-slot .semana-expenses-section { margin-top:22px; }
+/* Nas páginas secundárias, o título substitui a saudação e o avatar não é exibido. */
+body.ui-v2:not(.ui-home) .ui-header [id="uiHeaderAvatar"] { display:none !important; }
+body.ui-v2:not(.ui-home) .ui-header .ui-header-personal { gap:0; }
 @media (max-width:760px) {
   .ui-v2 #homeListPageSemana .semana-filter-controls,
   .ui-v2 #homeListPageSemana .semana-filter-controls.is-sticky { min-height:90px; }

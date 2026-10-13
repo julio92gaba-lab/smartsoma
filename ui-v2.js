@@ -51,17 +51,18 @@
       if (n.dataset.uiRoute === selected) n.setAttribute('aria-current','page'); else n.removeAttribute('aria-current');
     });
     var now = new Date(), selectedDate = window.GanhosDate ? GanhosDate.get() : now;
-    var date = selectedDate;
+    var date = now;
     var locale = I18N.t('lang.code');
     var today=new Date();today.setHours(0,0,0,0);
     document.body.classList.remove('ui-showing-other-date');
     $('uiHeaderDate').textContent = date.toLocaleDateString(locale,{weekday:'long',day:'numeric',month:'long'}).replace(/-feira\b/i,'');
+    var pageTitles = { semana:'Minha Semana', downloads:'Downloads', ajustes:'Ajustes' };
     var name = $('sheetUsername').textContent.trim().split(' ')[0];
     var greeting = say('Olá','Hello');
-    $('uiHeaderTitle').textContent = greeting + ', ' + name + '.';
+    $('uiHeaderTitle').textContent = pageTitles[selected] || (greeting + ', ' + name + '.');
     document.body.dataset.uiRoute = route;
     document.body.classList.toggle('ui-home', route === 'resumo' && !inSettings);
-    document.querySelectorAll('.ui-selected-date').forEach(function(n){ n.textContent = date.toLocaleDateString(locale,{day:'numeric',month:'long',year:'numeric'}); });
+    document.querySelectorAll('.ui-selected-date').forEach(function(n){ n.textContent = selectedDate.toLocaleDateString(locale,{day:'numeric',month:'long',year:'numeric'}); });
     $('uiAdd').setAttribute('aria-label',t('record'));
     $('uiThemeRow').setAttribute('aria-pressed',String(document.body.classList.contains('theme-dark')));
   }
