@@ -1296,9 +1296,40 @@ body.ui-v2.theme-dark #homeListPageSemana .semana-filter-controls.is-sticky { ba
     margin:2px 0 8px;
   }
   .ui-v2 #homeListPageSemana .semana-view-controls #subHeaderViewToggleGroup {
-    min-height:62px;
+    display:flex;
+    grid-template:none;
+    align-items:center;
+    width:auto;
+    min-height:52px;
+    gap:16px;
     margin:0 auto;
   }
+  .ui-v2 #homeListPageSemana .semana-view-controls #subHeaderViewToggleGroup .sub-header-view-toggle-btn {
+    position:static;
+    display:inline-flex;
+    grid-area:auto;
+    align-items:center;
+    width:auto;
+    min-height:44px;
+    gap:6px;
+    opacity:.38;
+  }
+  .ui-v2 #homeListPageSemana .semana-view-controls #subHeaderViewToggleGroup .sub-header-view-toggle-btn.is-active { opacity:1; }
+  .ui-v2 #homeListPageSemana .semana-view-controls #subHeaderViewToggleGroup .semana-view-toggle-image,
+  .ui-v2 #homeListPageSemana .semana-view-controls #subHeaderViewToggleGroup .sub-header-view-toggle-btn.is-active .semana-view-toggle-image {
+    width:32px;
+    height:32px;
+    margin:0;
+    transform:scale(.9);
+  }
+  .ui-v2 #homeListPageSemana .semana-view-controls #subHeaderViewToggleGroup .sub-header-view-toggle-btn.is-active .semana-view-toggle-image { transform:scale(1.05); }
+  .ui-v2 #homeListPageSemana .semana-view-controls #subHeaderViewToggleGroup .semana-view-toggle-label {
+    display:inline !important;
+    color:var(--ink);
+    font-size:.7rem;
+    opacity:1;
+  }
+  .ui-v2 #homeListPageSemana .semana-view-controls .semana-view-toggle-labels { display:none; }
   /* O conteúdo expandido fica acima do SVG curvo, que permanece inalterado. */
   .ui-v2 #homeListPageSemana .semana-day-card-details {
     position:relative;
