@@ -913,6 +913,7 @@ body.ui-v2.theme-dark .amber .ui-metric-icon { background:#483e26; color:#f3ce80
 .ui-v2 #homeListPageSemana .semana-revenue-quick-row { display:flex; flex-wrap:wrap; gap:8px 16px; color:var(--muted); font-size:.7rem; line-height:1.35; }
 .ui-v2 #homeListPageSemana .semana-revenue-quick-row > span { white-space:nowrap; }
 .ui-v2 #homeListPageSemana .semana-revenue-quick-row strong { color:var(--ink); font-weight:800; }
+.ui-v2 #homeListPageSemana .semana-table-scroll > .semana-metric-tabs { margin:0 12px 12px; }
 @media (max-width:760px) {
   .ui-v2 #homeListPageSemana .semana-metric-tab { font-size:.58rem; padding-inline:4px; }
   .ui-v2 #homeListPageSemana .semana-week-block .semana-table :is(th,td) { padding:12px 6px; font-size:.62rem; }

@@ -3037,24 +3037,21 @@
       }
 
       function formatDiaLabel (d) {
-        return I18N.t('fmt.dayMonth', { d: d.getDate(), m: capitalize(MESES_MINUS()[d.getMonth()]) });
+        return d.getDate() + ' ' + capitalize(MESES_MINUS()[d.getMonth()].slice(0, 3));
       }
 
       function formatSemanaLabel (d) {
         var range = getWeekRange(d);
+        var firstMonth = capitalize(MESES_MINUS()[range.monday.getMonth()].slice(0, 3));
+        var lastMonth = capitalize(MESES_MINUS()[range.sunday.getMonth()].slice(0, 3));
         if (range.monday.getMonth() === range.sunday.getMonth()) {
-          return I18N.t('fmt.rangeSameMonth', {
-            d1: range.monday.getDate(), d2: range.sunday.getDate(), m: MESES_MINUS()[range.monday.getMonth()]
-          });
+          return range.monday.getDate() + ' a ' + range.sunday.getDate() + ' ' + firstMonth;
         }
-        return I18N.t('fmt.rangeCrossMonth', {
-          d1: range.monday.getDate(), m1: MESES_MINUS()[range.monday.getMonth()],
-          d2: range.sunday.getDate(),  m2: MESES_MINUS()[range.sunday.getMonth()]
-        });
+        return range.monday.getDate() + ' ' + firstMonth + ' a ' + range.sunday.getDate() + ' ' + lastMonth;
       }
 
       function formatMesLabel (d) {
-        return I18N.t('fmt.monthYear', { m: capitalize(MESES_MINUS()[d.getMonth()]), y: d.getFullYear() });
+        return capitalize(MESES_MINUS()[d.getMonth()].slice(0, 3)) + ' ' + d.getFullYear();
       }
 
       function currentPeriod () {
@@ -4039,6 +4036,7 @@
           '<div class="semana-revenue-quick-row"><span><strong>Bruto:</strong> ' + formatEuro(sumBruto) + '</span><span><strong>Despesas:</strong> ' + formatEuro(sumDespesas) + '</span></div>' +
           '<div class="semana-revenue-quick-row"><span><strong>Líquido:</strong> ' + formatEuro(sumLiquido) + '</span><span><strong>Distância:</strong> ' + formatKm(sumKm) + '</span></div>';
         scrollWrap.appendChild(quickSummary);
+        scrollWrap.appendChild(metricTabs);
         scrollWrap.appendChild(tableWrap);
         var revenueFooter = document.createElement('footer');
         revenueFooter.className = 'semana-revenue-footer';
@@ -4052,8 +4050,6 @@
         revenueFooter.innerHTML = '<span class="semana-revenue-title">Melhor da semana</span>' +
           '<span class="semana-revenue-best">' + bestRevenueLabel + '</span>';
         scrollWrap.appendChild(revenueFooter);
-        block.appendChild(metricTabs);
-
         var maxDayTotal = Math.max.apply(null, totalCells.map(function (item) { return item.value; }).concat([0]));
         totalCells.forEach(function (item) {
           item.el.style.setProperty('--semana-bar-size', (maxDayTotal ? Math.max(8, item.value / maxDayTotal * 100) : 8) + '%');
