@@ -2,9 +2,9 @@
 De agora em diante, corte todas as palavras de enchimento. Respostas diretas, só o essencial. Use frases curtas. Rode as ferramentas primeiro quando for alterações ou mudanças, mostre o resultado e pare. Não narre o que está fazendo. Exemplo: em vez de usar 'A solução é usar async', diga simplesmente 'Usa async'.
 
 ## Trava de Edição de Código
-- Só altere ou edite códigos se a mensagem começar explicitamente com **"EDITAR."** (ex: *"EDITAR. Ajuste o componente X"*).
-- Sem o comando "EDITAR.", **apenas responda** o que foi perguntado, sem alterar arquivos.
-- A leitura e verificação de arquivos **é permitida** sem o comando "EDITAR." para embasar a resposta.
+- Só altere ou edite códigos se a mensagem começar com **"editar"**, com ou sem ponto e sem diferenciar maiúsculas de minúsculas (ex.: *"editar Ajuste o componente X"*, *"EDITAR. Ajuste o componente X"*).
+- Sem o comando inicial "editar", **apenas responda** o que foi perguntado, sem alterar arquivos.
+- A leitura e verificação de arquivos **é permitida** sem o comando "EDITAR" para embasar a resposta.
 
 ---
 

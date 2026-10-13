@@ -1234,6 +1234,7 @@ body.ui-v2.theme-dark #homeListPageSemana .semana-filter-controls.is-sticky { ba
   align-items:center;
   justify-content:center;
   width:100%;
+  min-width:0;
   min-height:34px;
   margin:0;
   padding:6px 10px;
@@ -1253,4 +1254,54 @@ body.ui-v2.theme-dark #homeListPageSemana .semana-filter-controls.is-sticky { ba
   .ui-v2 #resumoPeriodControls { gap:7px; padding-inline:8px; }
   .ui-v2 #resumoPeriodControls .period-chip { padding-inline:8px; font-size:.61rem; }
   .ui-v2 #resumoPeriodControls .period-label { padding-inline:6px; font-size:.67rem; }
+}
+
+@media (max-width:760px) {
+  /* Minha Semana: sticky realmente slim numa linha; alternador fica independente. */
+  .ui-v2 #homeListPageSemana .semana-filter-controls,
+  .ui-v2 #homeListPageSemana .semana-filter-controls.is-sticky {
+    display:block;
+    min-height:0;
+    margin-block:10px;
+    padding:7px 8px;
+  }
+  .ui-v2 #homeListPageSemana .semana-filter-fields {
+    display:grid;
+    grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);
+    grid-template-rows:38px;
+    align-items:center;
+    gap:7px;
+  }
+  .ui-v2 #homeListPageSemana .semana-filter-fields .period-nav-row {
+    grid-template-columns:30px minmax(0,1fr) 30px;
+    min-height:38px;
+  }
+  .ui-v2 #homeListPageSemana .semana-filter-fields .period-nav-btn {
+    width:30px;
+    height:32px;
+  }
+  .ui-v2 #homeListPageSemana .semana-filter-fields .period-label {
+    min-height:32px;
+    padding:5px 6px;
+    font-size:.66rem;
+  }
+  .ui-v2 #homeListPageSemana .semana-filter-fields .semana-week-picker-btn {
+    min-height:36px;
+    padding:5px 7px;
+    font-size:.66rem;
+  }
+  .ui-v2 #homeListPageSemana .semana-view-controls {
+    display:flex;
+    justify-content:center;
+    margin:2px 0 8px;
+  }
+  .ui-v2 #homeListPageSemana .semana-view-controls #subHeaderViewToggleGroup {
+    min-height:62px;
+    margin:0 auto;
+  }
+  /* O conteúdo expandido fica acima do SVG curvo, que permanece inalterado. */
+  .ui-v2 #homeListPageSemana .semana-day-card-details {
+    position:relative;
+    z-index:1;
+  }
 }

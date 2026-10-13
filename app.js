@@ -1958,6 +1958,7 @@
 
       var selectedDate = todayAtMidnight();
       var viewDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
+      var pickerConfig = null;
 
       var dateChangeListeners = [];
       function notifyDateChange () {
@@ -1993,7 +1994,7 @@
         var isCurrentMonth = (year === today.getFullYear() && month === today.getMonth());
 
         calMonthLbl.textContent = I18N.t('fmt.monthYear', { m: MESES()[month], y: year });
-        calNextBtn.disabled = isCurrentMonth;
+        calNextBtn.disabled = !pickerConfig && isCurrentMonth;
 
         // A linha "Hoje: ..." mostra sempre a data real de hoje, mesmo que
         // o calendário esteja navegado para outro mês/dia.
@@ -2020,15 +2021,22 @@
           btn.className = 'mm-cal-day';
           btn.textContent = day;
 
-          if (d.getTime() > today.getTime()) {
+          if (!pickerConfig && d.getTime() > today.getTime()) {
             btn.classList.add('is-future');
             btn.disabled = true;
           }
           if (isSameDay(d, today))         btn.classList.add('is-today');
-          if (isSameDay(d, selectedDate))  btn.classList.add('is-selected');
+          if (isSameDay(d, pickerConfig ? pickerConfig.date : selectedDate)) btn.classList.add('is-selected');
 
           (function (dCopy) {
             btn.addEventListener('click', function () {
+              if (pickerConfig) {
+                var onSelect = pickerConfig.onSelect;
+                pickerConfig = null;
+                closeCalendarModal();
+                onSelect(new Date(dCopy));
+                return;
+              }
               selectedDate = dCopy;
               updateDateBtnLabel();
               closeCalendarModal();
@@ -2042,7 +2050,8 @@
       }
 
       function openCalendarModal () {
-        viewDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
+        var initialDate = pickerConfig ? pickerConfig.date : selectedDate;
+        viewDate = new Date(initialDate.getFullYear(), initialDate.getMonth(), 1);
         renderCalendar();
         calBackdrop.classList.add('visible');
         subHeaderDateBtn.setAttribute('aria-expanded', 'true');
@@ -2051,6 +2060,7 @@
       function closeCalendarModal () {
         calBackdrop.classList.remove('visible');
         subHeaderDateBtn.setAttribute('aria-expanded', 'false');
+        pickerConfig = null;
       }
 
       calPrevBtn.addEventListener('click', function () {
@@ -2091,6 +2101,13 @@
           notifyDateChange();
         },
         open: openCalendarModal,
+        pick: function (date, onSelect) {
+          var initialDate = new Date(date);
+          initialDate.setHours(0, 0, 0, 0);
+          if (isNaN(initialDate.getTime()) || typeof onSelect !== 'function') return;
+          pickerConfig = { date: initialDate, onSelect: onSelect };
+          openCalendarModal();
+        },
         close: closeCalendarModal,
         formatLabel: formatDateLabelLower,
         onChange: function (fn) {
@@ -3111,7 +3128,13 @@
       prevBtn.addEventListener('click', function () { step(-1); });
       nextBtn.addEventListener('click', function () { step(1); });
       periodLabelEl.addEventListener('click', function () {
-        if (window.GanhosDate && typeof window.GanhosDate.open === 'function') window.GanhosDate.open();
+        if (!window.GanhosDate || typeof window.GanhosDate.pick !== 'function') return;
+        window.GanhosDate.pick(refDate, function (date) {
+          refDate = new Date(date);
+          refDate.setHours(0, 0, 0, 0);
+          refresh();
+          document.dispatchEvent(new CustomEvent('resumoPeriodChanged'));
+        });
       });
 
       periodChips.forEach(function (chip) {
@@ -3783,7 +3806,10 @@
       }
 
       function updateMonthLabel () {
-        monthLabelEl.textContent = I18N.t('fmt.monthYear', { m: capitalize(MESES_MINUS()[refMonth]), y: refYear });
+        var monthName = capitalize(MESES_MINUS()[refMonth]);
+        monthLabelEl.textContent = window.innerWidth <= 760
+          ? monthName.slice(0, 3) + ' ' + refYear
+          : I18N.t('fmt.monthYear', { m: monthName, y: refYear });
         nextBtn.disabled = isAtCurrentMonth();
       }
 

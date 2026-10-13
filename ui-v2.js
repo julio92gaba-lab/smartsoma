@@ -184,6 +184,7 @@
     var viewModeLabels=create('span','semana-view-toggle-labels');
     var viewModeLabel=create('span','semana-view-toggle-active-label');
     var viewModeInactiveLabel=create('span','semana-view-toggle-inactive-label');
+    var viewControlsRow=create('div','semana-view-controls');
     weekModeDivider.setAttribute('aria-hidden','true');
     viewModeLabel.id='semanaViewToggleActiveLabel';
     viewModeInactiveLabel.id='semanaViewToggleInactiveLabel';
@@ -192,12 +193,14 @@
     filterFields.append($('semanaMonthPrev').parentNode,$('semanaWeekPicker').parentNode);
     viewModeLabels.append(viewModeLabel,viewModeInactiveLabel);
     viewControls.append(viewModeLabels);
-    filters.append(filterFields,weekModeDivider,viewControls);
+    viewControlsRow.append(viewControls);
+    filters.append(filterFields,weekModeDivider);
     $('semanaWeeksContainer').before(filters);
     var earningsTitle=$('semanaEarningsTitle'), metricSlot=$('semanaMetricSlot');
     if(earningsTitle)earningsTitle.textContent=say('FATURAÇÃO','REVENUE');
     if(earningsTitle&&metricSlot){
-      filters.after(earningsTitle);
+      filters.after(viewControlsRow);
+      viewControlsRow.after(earningsTitle);
       earningsTitle.after(metricSlot);
     }
     viewControls.hidden=false;
@@ -323,7 +326,7 @@
     setupEntry(); setupSettings();
     var refreshQueued=false;
     function schedule(){if(refreshQueued)return;refreshQueued=true;queueMicrotask(function(){refreshQueued=false;refreshData();});}
-    ['homeBadgesSaved','plataformasChanged','despesasFixasChanged','metaSemanalConfigChanged','languageChanged','cloudCacheReady'].forEach(function(name){document.addEventListener(name,schedule);});
+    ['homeBadgesSaved','plataformasChanged','despesasFixasChanged','metaSemanalConfigChanged','languageChanged','cloudCacheReady','resumoPeriodChanged'].forEach(function(name){document.addEventListener(name,schedule);});
     GanhosDate.onChange(schedule);
     document.querySelectorAll('.period-chip,#periodNavPrev,#periodNavNext').forEach(function(n){n.addEventListener('click',schedule);});
     refreshData();
