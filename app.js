@@ -3110,6 +3110,9 @@
 
       prevBtn.addEventListener('click', function () { step(-1); });
       nextBtn.addEventListener('click', function () { step(1); });
+      periodLabelEl.addEventListener('click', function () {
+        if (window.GanhosDate && typeof window.GanhosDate.open === 'function') window.GanhosDate.open();
+      });
 
       periodChips.forEach(function (chip) {
         chip.addEventListener('click', function () {
@@ -4181,7 +4184,7 @@
       }
 
       function restoreExternalWeekParts () {
-        [metricSlot, expensesSlot].forEach(function (slot) {
+        [expensesSlot].forEach(function (slot) {
           if (!slot || !slot.firstElementChild) return;
           var part = slot.firstElementChild;
           if (part._weekBlock) part._weekBlock.appendChild(part);
@@ -4190,10 +4193,6 @@
 
       function syncExternalWeekParts (block) {
         restoreExternalWeekParts();
-        if (metricSlot) {
-          var metricTabs = block.querySelector('.semana-metric-tabs');
-          if (metricTabs) metricSlot.appendChild(metricTabs);
-        }
         if (expensesSlot) {
           var expenses = block.querySelector('.semana-expenses-section');
           if (expenses) expensesSlot.appendChild(expenses);
@@ -4201,9 +4200,8 @@
       }
 
       function syncWeekContentMode () {
-        var isTable = currentWeekView === 'table';
         if (earningsTitle) earningsTitle.hidden = false;
-        if (metricSlot) metricSlot.hidden = !isTable;
+        if (metricSlot) metricSlot.hidden = true;
       }
 
       function syncWeekStepButtons () {
