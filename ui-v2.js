@@ -720,7 +720,7 @@
       if(!event.target.closest('#langSaveBtn'))return;
       // O ecrã original regressa a Ganhos; volta pelo router visual para
       // manter o Início completo, incluindo o cartão de meta.
-      setTimeout(function(){go('resumo');refreshData();},0);
+      setTimeout(function(){go('resumo');refreshData();},240);
     },true);
     window.SmartSomaSettings={open:openSettingsSubpage,close:closeSettingsSubpage};
     var faqs=[
