@@ -110,19 +110,33 @@ test('weekly list cards keep a stable header, compact spacing and expand normall
   assert.match(css,/M0,38 C80,29 120,29 200,42 C280,55 320,55 400,41 L400,0 L0,0 Z/);
   assert.match(css,/\.semana-day-card-details\s*\{[^}]*grid-template-rows:0fr;[^}]*transition:grid-template-rows/);
   const monday=new Date();monday.setHours(0,0,0,0);monday.setDate(monday.getDate()-(monday.getDay()+6)%7);
-  const a=setup(t,{['homeBadgeValores:'+dateKey(monday)]:JSON.stringify({uber:100,bolt:50})});a.w.SmartSomaUI.start();a.w.SmartSomaUI.go('semana');await settle();
+  const a=setup(t,{
+    ['homeBadgeValores:'+dateKey(monday)]:JSON.stringify({uber:100,bolt:50}),
+    ['despesasDiarias:'+dateKey(monday)]:JSON.stringify({items:[{descricao:'Combustível',valor:20}]}),
+    despesasFixas:JSON.stringify({items:[{id:1,descricao:'Seguro',tipo:'euro',valor:30,desde:dateKey(monday)}]})
+  });a.w.SmartSomaUI.start();a.w.SmartSomaUI.go('semana');await settle();
   a.w.SemanaView.showList();
   const card=a.w.document.querySelector('.semana-day-card'),header=card.querySelector('.semana-day-card-header');
   assert.ok(card.querySelector('.semana-day-card-details-inner'));
   assert.deepEqual([...card.querySelectorAll('.semana-platform-icon img')].map(img=>img.getAttribute('src')),['01uber.png','02bolt.png']);
-  assert.equal(a.el('semanaEarningsSubtitle').textContent.trim(),'As despesas fixas são lançadas sempre à segunda-feira e apresentadas na tabela de despesas, não sendo visualizadas na secção de faturação.');
+  assert.equal(a.el('semanaEarningsTitle').hidden,false);
+  assert.equal(a.el('semanaEarningsSubtitle').textContent.trim(),'As despesas fixas aparecem apenas na tabela de despesas, e não na faturação.');
   assert.equal(card.querySelector('.semana-day-card-summary > span').textContent,'Resumo geral');
   assert.deepEqual([...card.querySelectorAll('.semana-day-card-metrics small')].map(el=>el.textContent),['Bruto','Despesas','Distância']);
   assert.equal(card.querySelectorAll('.semana-day-card-metrics > div').length,3);
   assert.doesNotMatch(card.querySelector('.semana-day-card-details-inner').textContent,/Lucro líquido/);
+  assert.match(card.querySelector('.semana-day-card-details-inner').textContent,/Combustível/);
+  assert.doesNotMatch(card.querySelector('.semana-day-card-details-inner').textContent,/Seguro|FIXA/);
+  assert.match(a.el('semanaExpensesSlot').textContent,/Combustível/);
+  assert.match(a.el('semanaExpensesSlot').textContent,/Seguro.*FIXA/);
   header.click();assert.equal(card.classList.contains('is-expanded'),true);assert.equal(header.getAttribute('aria-expanded'),'true');assert.equal(a.w.document.documentElement.classList.contains('semana-list-is-animating'),true);
   header.click();assert.equal(card.classList.contains('is-expanded'),false);assert.equal(header.getAttribute('aria-expanded'),'false');
   await new Promise(resolve=>setTimeout(resolve,380));assert.equal(a.w.document.documentElement.classList.contains('semana-list-is-animating'),false);
+  a.w.SemanaView.showTable();
+  const mondayDate=String(monday.getDate()).padStart(2,'0')+'/'+String(monday.getMonth()+1).padStart(2,'0');
+  const mondayRow=[...a.w.document.querySelectorAll('.semana-week-block tbody tr')].find(row=>row.querySelector('.semana-cell-date')?.textContent===mondayDate);
+  const mondayFinancial=[...mondayRow.querySelectorAll('.semana-metric-financeiro')].map(el=>el.textContent);
+  assert.deepEqual(mondayFinancial,['€ 150.00','€ 20.00','€ 130.00']);
   assert.deepEqual(a.errors,[]);
 });
 

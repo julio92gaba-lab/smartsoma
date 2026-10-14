@@ -3669,6 +3669,15 @@
         return [];
       }
 
+      // Despesas avulsas usadas exclusivamente na apresentação da
+      // faturação semanal. As despesas fixas continuam registadas e são
+      // acrescentadas apenas pela leitura completa da tabela de despesas.
+      function loadDayVariableExpenseEntries (d) {
+        return loadDayItems(d).map(function (item) {
+          return { descricao: item.descricao, valor: Number(item.valor) || 0 };
+        });
+      }
+
       function isMonday (d) { return d.getTime() === getMonday(d).getTime(); }
 
       function weekGrossSoFar (monday) {
@@ -3684,12 +3693,10 @@
 
       // Junta as despesas avulsas do dia com as despesas fixas semanais
       // (lançadas sempre na segunda-feira, e só a partir do dia em que
-      // esse lançamento já aconteceu), no formato "descrição + valor"
-      // usado no card do modo lista, na tabela e no detalhamento.
+      // esse lançamento já aconteceu). Esta leitura completa abastece a
+      // tabela dedicada de despesas e os cálculos gerais já existentes.
       function loadDayExpenseEntries (d) {
-        var entradas = loadDayItems(d).map(function (item) {
-          return { descricao: item.descricao, valor: Number(item.valor) || 0 };
-        });
+        var entradas = loadDayVariableExpenseEntries(d);
 
         if (isMonday(d) && d.getTime() <= today.getTime()) {
           var fixas = loadDespesasFixasAtivas(getMonday(d));
@@ -3859,7 +3866,7 @@
         var badges = loadDayBadges(d);
         var ganhosDia = badges.uber + badges.bolt + badges.extras;
         var extraCols = weekPlatCols(getMonday(d));
-        var expenseEntries = loadDayExpenseEntries(d);
+        var expenseEntries = loadDayVariableExpenseEntries(d);
         var despesasDia = sumExpenseEntries(expenseEntries);
         var liquidoDia = ganhosDia - despesasDia;
         var platforms = [
@@ -4015,7 +4022,7 @@
           var d = new Date(week.monday.getTime());
           d.setDate(week.monday.getDate() + i);
           var dayBadges = loadDayBadges(d);
-          var despesasDia = dayExpenseTotal(d);
+          var despesasDia = sumExpenseEntries(loadDayVariableExpenseEntries(d));
 
           sumUber     += dayBadges.uber;
           sumBolt     += dayBadges.bolt;
