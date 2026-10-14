@@ -1614,3 +1614,46 @@ body.ui-v2.theme-dark #homeListPageSemana .semana-filter-controls.is-sticky { ba
   .ui-v2 .semana-period-current-btn { width:100%; text-align:center; }
   .ui-v2 .semana-period-modal-footer .mm-save-btn { width:100%; }
 }
+
+/* Minha Semana: lista compacta, curva invertida e cabeçalho estável. */
+.ui-v2 #homeListPageSemana .semana-list-placeholder {
+  gap:8px;
+  padding-top:0;
+  overflow-anchor:none;
+}
+.ui-v2 #homeListPageSemana .semana-day-card {
+  margin-top:0;
+  padding:0;
+  background:var(--card-bg);
+}
+.ui-v2 #homeListPageSemana .semana-day-card::before {
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 120' preserveAspectRatio='none'><rect width='400' height='120' fill='%23FFFFFF'/><path d='M0,55 C80,42 120,42 200,60 C280,78 320,78 400,58 L400,0 L0,0 Z' fill='%230F5A2E' fill-opacity='0.10'/></svg>");
+}
+body.ui-v2.theme-dark #homeListPageSemana .semana-day-card {
+  background:var(--card-bg);
+}
+body.ui-v2.theme-dark #homeListPageSemana .semana-day-card::before {
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 120' preserveAspectRatio='none'><rect width='400' height='120' fill='%2316212E'/><path d='M0,55 C80,42 120,42 200,60 C280,78 320,78 400,58 L400,0 L0,0 Z' fill='%2334F5C5' fill-opacity='0.14'/></svg>");
+}
+.ui-v2 #homeListPageSemana .semana-day-card .semana-day-card-header,
+.ui-v2 #homeListPageSemana .semana-day-card:not(.is-expanded) .semana-day-card-header {
+  box-sizing:border-box;
+  height:68px;
+  min-height:68px;
+  margin:0;
+  padding:10px 14px;
+}
+.ui-v2 #homeListPageSemana .semana-day-card-details {
+  transition:max-height .3s ease,opacity .2s ease,padding .3s ease;
+}
+.ui-v2 #homeListPageSemana .semana-day-card.is-expanded .semana-day-card-details {
+  padding:40px 14px 16px;
+}
+.ui-v2 #homeListPageSemana .semana-day-card-details > * + * { margin-top:14px; }
+.ui-v2 #homeListPageSemana .semana-day-card-platforms,
+.ui-v2 #homeListPageSemana .semana-day-card-expenses {
+  gap:8px;
+  padding-top:12px;
+}
+.ui-v2 #homeListPageSemana .semana-day-card-metrics { gap:8px; }
+.ui-v2 #homeListPageSemana .semana-day-card-metrics > div { padding:10px; }

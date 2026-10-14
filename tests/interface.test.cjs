@@ -101,6 +101,20 @@ test('weekly view choice is stored and survives section navigation',async t=>{
   assert.deepEqual(a.errors,[]);
 });
 
+test('weekly list cards keep a stable header, compact spacing and expand normally',async t=>{
+  const css=fs.readFileSync('ui-v2.css','utf8');
+  assert.match(css,/\.semana-list-placeholder\s*\{[^}]*gap:8px;[^}]*padding-top:0;[^}]*overflow-anchor:none;/);
+  assert.match(css,/\.semana-day-card\s*\{[^}]*margin-top:0;[^}]*padding:0;[^}]*background:var\(--card-bg\);/);
+  assert.match(css,/\.semana-day-card:not\(\.is-expanded\) \.semana-day-card-header\s*\{[^}]*height:68px;[^}]*min-height:68px;/);
+  assert.match(css,/M0,55 C80,42 120,42 200,60 C280,78 320,78 400,58 L400,0 L0,0 Z/);
+  const a=setup(t);a.w.SmartSomaUI.start();a.w.SmartSomaUI.go('semana');await settle();
+  a.w.SemanaView.showList();
+  const card=a.w.document.querySelector('.semana-day-card'),header=card.querySelector('.semana-day-card-header');
+  header.click();assert.equal(card.classList.contains('is-expanded'),true);assert.equal(header.getAttribute('aria-expanded'),'true');
+  header.click();assert.equal(card.classList.contains('is-expanded'),false);assert.equal(header.getAttribute('aria-expanded'),'false');
+  assert.deepEqual(a.errors,[]);
+});
+
 test('week period modal keeps selection pending until filter confirmation',async t=>{
   const a=setup(t);a.w.SmartSomaUI.start();a.w.SmartSomaUI.go('semana');await settle();
   const filters=a.w.document.querySelector('.semana-filter-controls');
