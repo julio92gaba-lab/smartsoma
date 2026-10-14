@@ -567,9 +567,28 @@
                         </div>
                         <div class="home-list-page" id="homeListPageRelatorio" hidden>
                             <div class="download-page">
+                                <section class="ss-driver-card" aria-labelledby="ssDriverTitle">
+                                    <div class="ss-driver-watermark" aria-hidden="true">
+                                        <svg viewBox="0 0 240 160" focusable="false"><path d="M30 104h15l17-40h92l29 40h20c8 0 14 6 14 14v8h-18a22 22 0 0 1-43 0H93a22 22 0 0 1-43 0H30Z"/><circle cx="72" cy="126" r="16"/><circle cx="178" cy="126" r="16"/><path d="M76 64 91 42h45l22 22"/></svg>
+                                    </div>
+                                    <div class="ss-driver-topline">
+                                        <span class="ss-driver-tag" data-i18n="relatorio.driver.tag">EM BREVE</span>
+                                        <span class="ss-driver-product">SS DRIVER</span>
+                                    </div>
+                                    <div class="ss-driver-grid">
+                                        <div>
+                                            <h2 id="ssDriverTitle" data-i18n="relatorio.driver.title">Cada viagem, uma decisão melhor.</h2>
+                                            <p data-i18n="relatorio.driver.copy">O SS Driver será a tua calculadora de viagens. Define a tua meta e vê, antes de aceitar, se cada corrida aproxima o teu objetivo.</p>
+                                        </div>
+                                        <div class="ss-driver-note">
+                                            <strong data-i18n="relatorio.driver.noteTitle">Calculadora de viagens</strong>
+                                            <span data-i18n="relatorio.driver.noteCopy">Feita para motoristas TVDE.</span>
+                                        </div>
+                                    </div>
+                                </section>
+
                                 <section class="download-overview" aria-labelledby="downloadPageTitle">
                                     <div class="download-overview-main">
-                                        <span class="download-kicker">SMARTSOMA</span>
                                         <h2 class="legal-title" id="downloadPageTitle" data-i18n="relatorio.pageTitle">Relatório mensal</h2>
                                         <p class="ajuda-intro-text" data-i18n="relatorio.intro">O relatório reúne os detalhes diários do mês escolhido, todos juntos em um único PDF. Selecione o mês desejado no filtro abaixo.</p>
 
@@ -648,6 +667,18 @@
                                         <span data-i18n="relatorio.download">Baixar PDF</span>
                                     </button>
                                 </aside>
+                                </section>
+
+                                <section class="report-archive" aria-labelledby="reportArchiveTitle">
+                                    <div class="report-archive-heading">
+                                        <div>
+                                            <span class="download-kicker" data-i18n="relatorio.archive.kicker">ARQUIVO</span>
+                                            <h2 id="reportArchiveTitle" data-i18n="relatorio.archive.title">Relatórios anteriores</h2>
+                                        </div>
+                                        <p data-i18n="relatorio.archive.copy">Os meses com registos ficam disponíveis aqui para gerar novamente.</p>
+                                    </div>
+                                    <div class="report-archive-list" id="relatorioArchiveList" aria-live="polite"></div>
+                                    <p class="report-archive-empty" id="relatorioArchiveEmpty" data-i18n="relatorio.archive.empty">Ainda não há meses com dados para arquivar.</p>
                                 </section>
                             </div>
                         </div>

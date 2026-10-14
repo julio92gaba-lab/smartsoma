@@ -223,6 +223,16 @@
 "relatorio.title": "Download Relatório",
 "relatorio.pageTitle": "Relatório mensal",
 "relatorio.intro": "O relatório reúne os detalhes diários do mês escolhido, todos juntos em um único PDF. Selecione o mês desejado no filtro abaixo.",
+"relatorio.driver.tag": "EM BREVE",
+"relatorio.driver.title": "Cada viagem, uma decisão melhor.",
+"relatorio.driver.copy": "O SS Driver será a tua calculadora de viagens. Define a tua meta e vê, antes de aceitar, se cada corrida aproxima o teu objetivo.",
+"relatorio.driver.noteTitle": "Calculadora de viagens",
+"relatorio.driver.noteCopy": "Feita para motoristas TVDE.",
+"relatorio.archive.kicker": "ARQUIVO",
+"relatorio.archive.title": "Relatórios anteriores",
+"relatorio.archive.copy": "Os meses com registos ficam disponíveis aqui para gerar novamente.",
+"relatorio.archive.empty": "Ainda não há meses com dados para arquivar.",
+"relatorio.archive.generate": "Gerar PDF",
 "relatorio.download": "Baixar PDF",
 "relatorio.preview.kicker": "PRÉ-VISUALIZAÇÃO",
 "relatorio.preview.title": "O que será incluído",
@@ -659,6 +669,16 @@
 "relatorio.title": "Download Report",
 "relatorio.pageTitle": "Monthly report",
 "relatorio.intro": "The report gathers the daily details of the chosen month, all together in a single PDF. Select the month you want in the filter below.",
+"relatorio.driver.tag": "COMING SOON",
+"relatorio.driver.title": "Every trip, a better decision.",
+"relatorio.driver.copy": "SS Driver will be your trip calculator. Set your goal and see, before you accept, whether each trip moves you closer to it.",
+"relatorio.driver.noteTitle": "Trip calculator",
+"relatorio.driver.noteCopy": "Built for TVDE drivers.",
+"relatorio.archive.kicker": "ARCHIVE",
+"relatorio.archive.title": "Previous reports",
+"relatorio.archive.copy": "Months with entries remain available here to generate again.",
+"relatorio.archive.empty": "There are no months with data to archive yet.",
+"relatorio.archive.generate": "Generate PDF",
 "relatorio.download": "Download PDF",
 "relatorio.preview.kicker": "PREVIEW",
 "relatorio.preview.title": "What will be included",
@@ -6996,6 +7016,8 @@
       var nextBtn       = document.getElementById('relatorioPageMonthNext');
       var downloadBtn   = document.getElementById('relatorioPageDownloadBtn');
       var downloadLabel = downloadBtn ? downloadBtn.querySelector('[data-i18n="relatorio.download"]') : null;
+      var archiveList   = document.getElementById('relatorioArchiveList');
+      var archiveEmpty  = document.getElementById('relatorioArchiveEmpty');
       if (!monthLabelEl || !window.I18N) return;
 
       var hoje = new Date();
@@ -7568,26 +7590,78 @@
         doc.save(nomeFicheiro);
       }
 
+      function mesTemDados (year, month) {
+        var lastDay = new Date(year, month + 1, 0).getDate();
+        for (var day = 1; day <= lastDay; day++) {
+          var date = new Date(year, month, day);
+          var badges = loadDayBadgesPdf(date);
+          var hasBadge = badges.uber || badges.bolt || badges.despesas || badges.distancia || platSum(badges.plat);
+          if (hasBadge || loadDayItemsPdf(date).length) return true;
+        }
+        return false;
+      }
+
+      function mesesArquivaveis () {
+        var months = {};
+        var cache = window._cloudCache || {};
+        Object.keys(cache).forEach(function (key) {
+          var match = /^(?:homeBadgeValores|despesasDiarias):(\d{4})-(\d{2})-\d{2}$/.exec(key);
+          if (match) months[match[1] + '-' + match[2]] = true;
+        });
+        return Object.keys(months).map(function (key) {
+          var bits = key.split('-');
+          return { year:Number(bits[0]), month:Number(bits[1]) - 1 };
+        }).filter(function (item) { return mesTemDados(item.year, item.month); }).sort(function (a, b) {
+          return (b.year * 12 + b.month) - (a.year * 12 + a.month);
+        });
+      }
+
+      function gerarPdf (year, month, button, label, restoreKey) {
+        if (button.disabled) return;
+        button.disabled = true;
+        label.textContent = I18N.t('relatorio.pdf.aGerar');
+        carregarLibsPdf()
+          .then(function () { return new Promise(function (resolve) { setTimeout(resolve, 30); }); })
+          .then(function () {
+            gerarRelatorioPdf(year, month);
+            renderArchive();
+          })
+          .catch(function (err) {
+            console.error('Erro ao gerar PDF:', err);
+            alert(I18N.t('relatorio.pdf.erro'));
+          })
+          .then(function () {
+            button.disabled = false;
+            label.textContent = I18N.t(restoreKey);
+          });
+      }
+
+      function renderArchive () {
+        if (!archiveList || !archiveEmpty) return;
+        archiveList.replaceChildren();
+        var months = mesesArquivaveis();
+        archiveEmpty.hidden = months.length > 0;
+        months.forEach(function (item) {
+          var button = document.createElement('button');
+          var monthName = I18N.capitalize(I18N.list('months.full')[item.month]);
+          button.type = 'button';
+          button.className = 'report-archive-item';
+          button.innerHTML = '<span class="report-archive-file" aria-hidden="true">PDF</span><span class="report-archive-name"><strong>' + monthName + ' ' + item.year + '</strong><small>PDF</small></span><span class="report-archive-action">' + I18N.t('relatorio.archive.generate') + '</span>';
+          button.addEventListener('click', function () {
+            var label = button.querySelector('.report-archive-action');
+            gerarPdf(item.year, item.month, button, label, 'relatorio.archive.generate');
+          });
+          archiveList.appendChild(button);
+        });
+      }
+
+      renderArchive();
+      document.addEventListener('cloudCacheReady', renderArchive);
+      document.addEventListener('languageChanged', renderArchive);
+
       if (downloadBtn) {
         downloadBtn.addEventListener('click', function () {
-          if (downloadBtn.disabled) return;
-          downloadBtn.disabled = true;
-          if (downloadLabel) downloadLabel.textContent = I18N.t('relatorio.pdf.aGerar');
-          carregarLibsPdf()
-            .then(function () {
-              // Um pequeno adiamento dá tempo à interface de mostrar o
-              // estado "A gerar..." antes do trabalho pesado começar.
-              return new Promise(function (resolve) { setTimeout(resolve, 30); });
-            })
-            .then(function () { gerarRelatorioPdf(relYear, relMonth); })
-            .catch(function (err) {
-              console.error('Erro ao gerar PDF:', err);
-              alert(I18N.t('relatorio.pdf.erro'));
-            })
-            .then(function () {
-              downloadBtn.disabled = false;
-              if (downloadLabel) downloadLabel.textContent = I18N.t('relatorio.download');
-            });
+          gerarPdf(relYear, relMonth, downloadBtn, downloadLabel, 'relatorio.download');
         });
       }
     })();
