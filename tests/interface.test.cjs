@@ -46,6 +46,17 @@ test('week filters keep the same geometry while sticky',()=>{
   assert.doesNotMatch(css,/\.semana-filter-controls\.is-sticky\s*\{[^}]*padding-bottom:3px/);
 });
 
+test('modal overlays stay below the fixed header and weekly toggle icons remain compact',()=>{
+  const css=fs.readFileSync('ui-v2.css','utf8');
+  assert.match(css,/\.ui-v2 \.mm-backdrop,\.ui-v2 \.modal-backdrop\s*\{[^}]*top:var\(--ui-header\) !important;[^}]*align-items:flex-start !important;[^}]*overflow-y:auto;/);
+  for(const selector of ['#langPopupModal','.ui-entry-retro-backdrop','.ui-news-backdrop']){
+    const escaped=selector.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+    assert.match(css,new RegExp(escaped+'\\s*\\{[^}]*top:var\\(--ui-header\\)'));
+  }
+  assert.match(css,/#semanaPeriodModalBackdrop\s*\{[^}]*align-items:flex-start;/);
+  assert.match(css,/#subHeaderViewToggleGroup \.semana-view-toggle-image\s*\{[^}]*width:24px;[^}]*height:24px;/);
+});
+
 test('home rhythm uses the weekly divergent chart and lists only variable expenses from the selected period',async t=>{
   const monday=new Date();monday.setHours(0,0,0,0);monday.setDate(monday.getDate()-(monday.getDay()+6)%7);
   const tuesday=new Date(monday);tuesday.setDate(tuesday.getDate()+1);

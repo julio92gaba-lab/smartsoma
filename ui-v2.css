@@ -160,7 +160,7 @@ html.ui-v2.theme-dark, body.ui-v2.theme-dark {
 .ui-v2.ui-sheet-page .sheet-screens { background:var(--paper); }
 .ui-v2.ui-sheet-page .sheet-screen { transform:none; transition:none; }
 .ui-v2.ui-sheet-page .sheet-screen::before,.ui-v2.ui-sheet-page .sheet-screen::after { display:none; }
-.ui-v2 .mm-backdrop,.ui-v2 .modal-backdrop { top:var(--ui-header) !important; height:auto !important; backdrop-filter:blur(4px); background:rgba(5,15,9,.55); padding:24px; }
+.ui-v2 .mm-backdrop,.ui-v2 .modal-backdrop { top:var(--ui-header) !important; height:auto !important; align-items:flex-start !important; justify-content:center !important; overflow-y:auto; backdrop-filter:blur(4px); background:rgba(5,15,9,.55); padding:24px; }
 .ui-v2 #calendarModalBackdrop { z-index:210; }
 body.ui-v2:has(.mm-backdrop.visible) .ui-header,
 body.ui-v2:has(.modal-backdrop.visible) .ui-header,
@@ -191,7 +191,7 @@ body.ui-v2.theme-dark .meta-tipo-btn.active,
 body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#142617; border-color:#183421; }
 .ui-v2 .mm-subtitle-date,.ui-v2 .cancelar-sub-note { color:var(--muted); opacity:1; }
 .ui-v2 .tut-btn-primary { background:var(--lime); color:#142617; }
-.ui-v2 #langPopupModal { display:none; position:fixed; inset:0; z-index:500; padding:24px; align-items:center; justify-content:center; background:rgba(5,15,9,.6); backdrop-filter:blur(4px); }
+.ui-v2 #langPopupModal { display:none; position:fixed; top:var(--ui-header); right:0; bottom:0; left:0; z-index:500; padding:24px; align-items:flex-start; justify-content:center; overflow-y:auto; background:rgba(5,15,9,.6); backdrop-filter:blur(4px); }
 .ui-v2 #langPopupModal.is-open { display:flex; }
 .ui-v2 .lpm-card { width:min(420px,100%); border:1px solid var(--card-line); border-radius:18px; padding:26px; background:var(--card-bg); color:var(--ink); }
 .ui-v2 .lpm-title { font:700 1.4rem 'Bricolage Grotesque',sans-serif; margin:0 0 20px; }
@@ -375,14 +375,14 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
 .ui-entry-date-selector svg { width:15px; height:15px; }
 .ui-entry-title-with-icon { display:flex; align-items:center; gap:8px; }
 .ui-entry-title-icon { width:1em; height:1em; flex:none; object-fit:contain; }
-.ui-entry-retro-backdrop { position:fixed; z-index:220; inset:0; display:grid; place-items:center; padding:24px; visibility:hidden; opacity:0; background:rgba(5,15,9,.58); backdrop-filter:blur(4px); transition:opacity .18s ease,visibility .18s ease; }
+.ui-entry-retro-backdrop { position:fixed; z-index:220; top:var(--ui-header); right:0; bottom:0; left:0; display:grid; place-items:start center; padding:24px; overflow-y:auto; visibility:hidden; opacity:0; background:rgba(5,15,9,.58); backdrop-filter:blur(4px); transition:opacity .18s ease,visibility .18s ease; }
 .ui-entry-retro-backdrop.visible { visibility:visible; opacity:1; }
 .ui-entry-retro-card { width:min(390px,100%); padding:20px; border:1px solid var(--card-line); border-radius:14px; background:var(--card-bg); color:var(--ink); box-shadow:0 24px 80px #0005; }
 .ui-entry-retro-card p { margin:14px 0 0; color:var(--muted); font-size:.88rem; line-height:1.5; }
 .ui-entry-retro-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:20px; }
-.ui-news-backdrop { position:fixed; z-index:220; inset:0; display:grid; place-items:center; padding:24px; visibility:hidden; opacity:0; background:rgba(5,15,9,.55); backdrop-filter:blur(4px); transition:opacity .18s ease,visibility .18s ease; }
+.ui-news-backdrop { position:fixed; z-index:220; top:var(--ui-header); right:0; bottom:0; left:0; display:grid; place-items:start center; padding:24px; overflow-y:auto; visibility:hidden; opacity:0; background:rgba(5,15,9,.55); backdrop-filter:blur(4px); transition:opacity .18s ease,visibility .18s ease; }
 .ui-news-backdrop.visible { visibility:visible; opacity:1; }
-.ui-news-card { width:min(440px,100%); max-height:min(620px,calc(100dvh - 48px)); overflow:auto; padding:20px; border:1px solid var(--card-line); border-radius:14px; background:color-mix(in srgb,var(--card-bg) 90%,transparent); color:var(--ink); box-shadow:0 24px 80px #0005; }
+.ui-news-card { width:min(440px,100%); max-height:min(620px,calc(100dvh - var(--ui-header) - 48px)); overflow:auto; padding:20px; border:1px solid var(--card-line); border-radius:14px; background:color-mix(in srgb,var(--card-bg) 90%,transparent); color:var(--ink); box-shadow:0 24px 80px #0005; }
 .ui-news-divider { height:1px; margin:14px 0; background:color-mix(in srgb,var(--card-line) 72%,transparent); }
 .ui-news-tabs { display:flex; gap:8px; padding:4px; border:1px solid var(--card-line); border-radius:10px; background:var(--input-bg); }
 .ui-news-tabs button { flex:1; padding:8px; border:0; border-radius:7px; background:transparent; color:var(--muted); font-size:.78rem; font-weight:800; }
@@ -1513,8 +1513,8 @@ body.ui-v2.theme-dark #homeListPageSemana .semana-filter-controls.is-sticky { ba
 }
 .ui-v2 #homeListPageSemana .semana-view-controls #subHeaderViewToggleGroup .semana-view-toggle-label { display:none !important; }
 .ui-v2 #homeListPageSemana .semana-view-controls #subHeaderViewToggleGroup .semana-view-toggle-image {
-  width:30px;
-  height:30px;
+  width:24px;
+  height:24px;
   margin:0;
   opacity:.38;
   filter:grayscale(1);
@@ -1529,7 +1529,7 @@ body.ui-v2.theme-dark #homeListPageSemana .semana-filter-controls.is-sticky { ba
 }
 
 /* Modal de seleção semanal com confirmação explícita. */
-.ui-v2 #semanaPeriodModalBackdrop { z-index:230; align-items:center; }
+.ui-v2 #semanaPeriodModalBackdrop { z-index:230; align-items:flex-start; }
 .ui-v2 .semana-period-modal-card { display:grid; gap:16px; width:min(420px,calc(100vw - 48px)); }
 .ui-v2 .semana-period-modal-helper { margin:-8px 42px 0 0; color:var(--muted); font-size:.75rem; line-height:1.45; }
 .ui-v2 .semana-period-month-nav {
