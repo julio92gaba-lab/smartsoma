@@ -106,10 +106,15 @@ test('weekly list cards keep a stable header, compact spacing and expand normall
   assert.match(css,/\.semana-list-placeholder\s*\{[^}]*gap:8px;[^}]*padding-top:0;[^}]*overflow-anchor:none;/);
   assert.match(css,/\.semana-day-card\s*\{[^}]*margin-top:0;[^}]*padding:0;[^}]*background:var\(--card-bg\);/);
   assert.match(css,/\.semana-day-card:not\(\.is-expanded\) \.semana-day-card-header\s*\{[^}]*height:68px;[^}]*min-height:68px;/);
-  assert.match(css,/M0,55 C80,42 120,42 200,60 C280,78 320,78 400,58 L400,0 L0,0 Z/);
-  const a=setup(t);a.w.SmartSomaUI.start();a.w.SmartSomaUI.go('semana');await settle();
+  assert.match(css,/M0,38 C80,29 120,29 200,42 C280,55 320,55 400,41 L400,0 L0,0 Z/);
+  assert.match(css,/\.semana-day-card-details\s*\{[^}]*grid-template-rows:0fr;[^}]*transition:grid-template-rows/);
+  const monday=new Date();monday.setHours(0,0,0,0);monday.setDate(monday.getDate()-(monday.getDay()+6)%7);
+  const a=setup(t,{['homeBadgeValores:'+dateKey(monday)]:JSON.stringify({uber:100,bolt:50})});a.w.SmartSomaUI.start();a.w.SmartSomaUI.go('semana');await settle();
   a.w.SemanaView.showList();
   const card=a.w.document.querySelector('.semana-day-card'),header=card.querySelector('.semana-day-card-header');
+  assert.ok(card.querySelector('.semana-day-card-details-inner'));
+  assert.deepEqual([...card.querySelectorAll('.semana-platform-icon img')].map(img=>img.getAttribute('src')),['01uber.png','02bolt.png']);
+  assert.equal(card.querySelectorAll('.semana-day-card-metrics > div').length,4);
   header.click();assert.equal(card.classList.contains('is-expanded'),true);assert.equal(header.getAttribute('aria-expanded'),'true');
   header.click();assert.equal(card.classList.contains('is-expanded'),false);assert.equal(header.getAttribute('aria-expanded'),'false');
   assert.deepEqual(a.errors,[]);

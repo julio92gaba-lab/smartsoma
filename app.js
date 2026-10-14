@@ -3860,10 +3860,18 @@
         var expenseEntries = loadDayExpenseEntries(d);
         var despesasDia = sumExpenseEntries(expenseEntries);
         var liquidoDia = ganhosDia - despesasDia;
-        var platforms = [{ nome: 'Uber', valor: badges.uber }, { nome: 'Bolt', valor: badges.bolt }]
-          .concat(extraCols.map(function (p) { return { nome: p.nome, valor: badges.plat[p.id] || 0 }; }));
+        var platforms = [
+          { id: 'uber', nome: 'Uber', img: '01uber.png', valor: badges.uber },
+          { id: 'bolt', nome: 'Bolt', img: '02bolt.png', valor: badges.bolt }
+        ].concat(extraCols.map(function (p) {
+          return { id: p.id, nome: p.nome, img: p.img || '', valor: badges.plat[p.id] || 0 };
+        }));
         var platformRows = platforms.filter(function (item) { return item.valor > 0; }).map(function (item) {
-          return '<div class="semana-day-card-row is-plus"><span class="row-label">' + escHtml(item.nome) + '</span><span class="row-value">' + formatEuro(item.valor) + '</span></div>';
+          var safeImage = item.img && (item.id === 'uber' || item.id === 'bolt' || window.SmartSomaSecurity.isSafeImageUrl(item.img));
+          var avatar = safeImage
+            ? '<span class="semana-platform-icon"><img src="' + escHtml(item.img) + '" alt=""></span>'
+            : '<span class="semana-platform-icon is-fallback">' + escHtml(String(item.nome).trim().slice(0, 2).toUpperCase()) + '</span>';
+          return '<div class="semana-day-card-row is-plus"><span class="row-label">' + avatar + '<span>' + escHtml(item.nome) + '</span></span><span class="row-value">' + formatEuro(item.valor) + '</span></div>';
         }).join('') || '<div class="semana-day-card-row"><span class="row-label">Sem ganhos registados</span><span class="row-value">—</span></div>';
         var expenseRows = expenseEntries.map(function (item) {
           return '<div class="semana-day-card-row is-expense"><span class="row-label">' + escHtml(item.descricao) + '</span><span class="row-value">' + formatEuro(item.valor) + '</span></div>';
@@ -3889,9 +3897,16 @@
         var details = document.createElement('div');
         details.className = 'semana-day-card-details';
         details.innerHTML =
-          '<div class="semana-day-card-platforms"><span>Ganhos por plataforma</span>' + platformRows + '</div>' +
-          '<div class="semana-day-card-metrics"><div><small>Faturação bruta</small><strong>' + formatEuro(ganhosDia) + '</strong></div><div><small>Quilómetros percorridos</small><strong>' + formatKm(badges.distancia) + '</strong></div></div>' +
-          '<div class="semana-day-card-expenses"><span>Despesas do dia</span>' + expenseRows + '<div class="semana-day-card-expense-total"><span>Total</span><strong>' + formatEuro(despesasDia) + '</strong></div></div>';
+          '<div class="semana-day-card-details-inner">' +
+            '<div class="semana-day-card-platforms"><span>Ganhos por plataforma</span>' + platformRows + '</div>' +
+            '<div class="semana-day-card-metrics">' +
+              '<div class="is-gross"><small>Faturação bruta</small><strong>' + formatEuro(ganhosDia) + '</strong></div>' +
+              '<div class="is-expense-summary"><small>Despesas</small><strong>' + formatEuro(despesasDia) + '</strong></div>' +
+              '<div class="is-net"><small>Lucro líquido</small><strong>' + formatEuro(liquidoDia) + '</strong></div>' +
+              '<div class="is-distance"><small>Quilómetros</small><strong>' + formatKm(badges.distancia) + '</strong></div>' +
+            '</div>' +
+            '<div class="semana-day-card-expenses"><span>Despesas do dia</span>' + expenseRows + '<div class="semana-day-card-expense-total"><span>Total</span><strong>' + formatEuro(despesasDia) + '</strong></div></div>' +
+          '</div>';
         card.appendChild(details);
         header.addEventListener('click', function () {
           var expanded = card.classList.toggle('is-expanded');

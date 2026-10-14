@@ -1627,13 +1627,13 @@ body.ui-v2.theme-dark #homeListPageSemana .semana-filter-controls.is-sticky { ba
   background:var(--card-bg);
 }
 .ui-v2 #homeListPageSemana .semana-day-card::before {
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 120' preserveAspectRatio='none'><rect width='400' height='120' fill='%23FFFFFF'/><path d='M0,55 C80,42 120,42 200,60 C280,78 320,78 400,58 L400,0 L0,0 Z' fill='%230F5A2E' fill-opacity='0.10'/></svg>");
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 120' preserveAspectRatio='none'><rect width='400' height='120' fill='%23FFFFFF'/><path d='M0,38 C80,29 120,29 200,42 C280,55 320,55 400,41 L400,0 L0,0 Z' fill='%230F5A2E' fill-opacity='0.10'/></svg>");
 }
 body.ui-v2.theme-dark #homeListPageSemana .semana-day-card {
   background:var(--card-bg);
 }
 body.ui-v2.theme-dark #homeListPageSemana .semana-day-card::before {
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 120' preserveAspectRatio='none'><rect width='400' height='120' fill='%2316212E'/><path d='M0,55 C80,42 120,42 200,60 C280,78 320,78 400,58 L400,0 L0,0 Z' fill='%2334F5C5' fill-opacity='0.14'/></svg>");
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 120' preserveAspectRatio='none'><rect width='400' height='120' fill='%2316212E'/><path d='M0,38 C80,29 120,29 200,42 C280,55 320,55 400,41 L400,0 L0,0 Z' fill='%2334F5C5' fill-opacity='0.14'/></svg>");
 }
 .ui-v2 #homeListPageSemana .semana-day-card .semana-day-card-header,
 .ui-v2 #homeListPageSemana .semana-day-card:not(.is-expanded) .semana-day-card-header {
@@ -1644,16 +1644,89 @@ body.ui-v2.theme-dark #homeListPageSemana .semana-day-card::before {
   padding:10px 14px;
 }
 .ui-v2 #homeListPageSemana .semana-day-card-details {
-  transition:max-height .3s ease,opacity .2s ease,padding .3s ease;
+  display:grid;
+  grid-template-rows:0fr;
+  max-height:none;
+  padding:0;
+  overflow:hidden;
+  opacity:1;
+  transition:grid-template-rows .28s cubic-bezier(.22,.8,.32,1);
+  will-change:grid-template-rows;
 }
 .ui-v2 #homeListPageSemana .semana-day-card.is-expanded .semana-day-card-details {
-  padding:40px 14px 16px;
+  grid-template-rows:1fr;
+  max-height:none;
+  padding:0;
 }
-.ui-v2 #homeListPageSemana .semana-day-card-details > * + * { margin-top:14px; }
+.ui-v2 #homeListPageSemana .semana-day-card-details-inner {
+  min-height:0;
+  overflow:hidden;
+  padding:0 14px;
+  opacity:0;
+  transform:translateY(-3px);
+  transition:padding .28s cubic-bezier(.22,.8,.32,1),opacity .16s ease,transform .28s ease;
+}
+.ui-v2 #homeListPageSemana .semana-day-card.is-expanded .semana-day-card-details-inner {
+  padding:16px 14px;
+  opacity:1;
+  transform:translateY(0);
+}
+.ui-v2 #homeListPageSemana .semana-day-card-details-inner > * + * { margin-top:14px; }
 .ui-v2 #homeListPageSemana .semana-day-card-platforms,
 .ui-v2 #homeListPageSemana .semana-day-card-expenses {
   gap:8px;
   padding-top:12px;
 }
+.ui-v2 #homeListPageSemana .semana-day-card-platforms { padding-top:0; border-top:0; }
+.ui-v2 #homeListPageSemana .semana-day-card-platforms > span,
+.ui-v2 #homeListPageSemana .semana-day-card-expenses > span {
+  color:var(--muted);
+  font-size:.62rem;
+  font-weight:800;
+  letter-spacing:.055em;
+  text-transform:uppercase;
+}
+.ui-v2 #homeListPageSemana .semana-day-card-platforms .semana-day-card-row {
+  min-height:34px;
+  padding:3px 0;
+  align-items:center;
+}
+.ui-v2 #homeListPageSemana .semana-day-card-platforms .semana-day-card-row + .semana-day-card-row {
+  border-top:1px solid color-mix(in srgb,var(--card-line) 55%,transparent);
+}
+.ui-v2 #homeListPageSemana .semana-day-card-row .row-label { align-items:center; gap:8px; min-width:0; }
+.ui-v2 #homeListPageSemana .semana-platform-icon {
+  display:grid;
+  place-items:center;
+  width:28px;
+  height:28px;
+  flex:0 0 28px;
+  overflow:hidden;
+  border:1px solid color-mix(in srgb,var(--card-line) 75%,transparent);
+  border-radius:8px;
+  background:var(--input-bg);
+  color:var(--brand-green);
+  font-size:.54rem;
+  font-weight:850;
+}
+.ui-v2 #homeListPageSemana .semana-platform-icon img { display:block; width:100%; height:100%; object-fit:cover; }
 .ui-v2 #homeListPageSemana .semana-day-card-metrics { gap:8px; }
-.ui-v2 #homeListPageSemana .semana-day-card-metrics > div { padding:10px; }
+.ui-v2 #homeListPageSemana .semana-day-card-metrics > div { min-height:58px; padding:10px; }
+.ui-v2 #homeListPageSemana .semana-day-card-metrics .is-gross strong { color:var(--ink); }
+.ui-v2 #homeListPageSemana .semana-day-card-metrics .is-expense-summary strong { color:#bf5b49; }
+.ui-v2 #homeListPageSemana .semana-day-card-metrics .is-net {
+  border-color:color-mix(in srgb,var(--brand-green) 28%,var(--card-line));
+  background:color-mix(in srgb,var(--lime) 10%,var(--input-bg));
+}
+.ui-v2 #homeListPageSemana .semana-day-card-metrics .is-net strong { color:var(--brand-green); }
+.ui-v2 #homeListPageSemana .semana-day-card.is-negative .semana-day-card-metrics .is-net {
+  border-color:color-mix(in srgb,#d16d59 28%,var(--card-line));
+  background:color-mix(in srgb,#d16d59 8%,var(--input-bg));
+}
+.ui-v2 #homeListPageSemana .semana-day-card.is-negative .semana-day-card-metrics .is-net strong { color:#bf5b49; }
+.ui-v2 #homeListPageSemana .semana-day-card-expenses .semana-day-card-row { padding-block:3px; }
+.ui-v2 #homeListPageSemana .semana-day-card-expense-total { margin-top:2px; padding-top:10px; }
+@media (prefers-reduced-motion:reduce) {
+  .ui-v2 #homeListPageSemana .semana-day-card-details,
+  .ui-v2 #homeListPageSemana .semana-day-card-details-inner { transition:none; }
+}
