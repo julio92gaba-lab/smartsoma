@@ -1217,6 +1217,17 @@ body.ui-v2.theme-dark #homeListPageRelatorio .relatorio-period-controls { backgr
 .ui-v2 #homeListPageRelatorio .relatorio-period-controls .period-label { min-width:0; padding:8px 12px; color:var(--ink); font:800 .76rem/1 'Bricolage Grotesque',sans-serif; text-align:center; }
 .ui-v2 #homeListPageRelatorio .relatorio-period-controls .period-nav-btn { width:32px; height:32px; border-color:transparent; border-radius:9px; background:color-mix(in srgb,var(--input-bg) 72%,transparent); color:var(--ink); }
 .ui-v2 #homeListPageRelatorio .relatorio-period-controls .period-nav-btn:hover { background:var(--lime); color:#183021; }
+.ui-v2 #homeListPageRelatorio .download-content-preview { padding:24px; border:1px solid color-mix(in srgb,var(--ink) 12%,transparent); border-radius:18px; background:linear-gradient(135deg,color-mix(in srgb,var(--card-bg) 76%,transparent),color-mix(in srgb,var(--input-bg) 54%,transparent)); box-shadow:0 12px 30px rgba(11,31,20,.06); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); }
+.ui-v2 #homeListPageRelatorio .download-section-heading { display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:18px; text-align:left; }
+.ui-v2 #homeListPageRelatorio .download-section-heading .download-kicker { margin:0 0 5px; }
+.ui-v2 #homeListPageRelatorio .download-section-heading h3 { margin:0; color:var(--ink); font:700 1.15rem/1.1 'Bricolage Grotesque',sans-serif; letter-spacing:-.35px; }
+.ui-v2 #homeListPageRelatorio .download-ready-dot { display:inline-flex; align-items:center; gap:6px; flex:0 0 auto; color:var(--muted); font-size:.68rem; font-weight:700; white-space:nowrap; }
+.ui-v2 #homeListPageRelatorio .download-ready-dot i { width:7px; height:7px; border-radius:50%; background:var(--brand-green-light); box-shadow:0 0 0 4px color-mix(in srgb,var(--brand-green-light) 13%,transparent); }
+.ui-v2 #homeListPageRelatorio .download-preview-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+.ui-v2 #homeListPageRelatorio .download-preview-card { display:flex; align-items:flex-start; gap:10px; min-height:112px; padding:14px; border:1px solid color-mix(in srgb,var(--ink) 10%,transparent); border-radius:13px; background:color-mix(in srgb,var(--card-bg) 62%,transparent); text-align:left; }
+.ui-v2 #homeListPageRelatorio .download-preview-icon { display:grid; place-items:center; flex:0 0 30px; width:30px; height:30px; border-radius:9px; background:color-mix(in srgb,var(--brand-green) 12%,transparent); color:var(--brand-green); font-size:.6rem; font-weight:800; }
+.ui-v2 #homeListPageRelatorio .download-preview-card strong { display:block; color:var(--ink); font-size:.75rem; line-height:1.2; }
+.ui-v2 #homeListPageRelatorio .download-preview-card p { margin:6px 0 0; color:var(--muted); font-size:.68rem; line-height:1.45; }
 .ui-v2 #homeListPageRelatorio .ui-download-action { grid-template-columns:minmax(0,1fr) auto; align-items:center; max-width:none; margin:0; padding:18px 20px; border-radius:16px; background:linear-gradient(135deg,color-mix(in srgb,var(--card-bg) 78%,transparent),color-mix(in srgb,var(--input-bg) 58%,transparent)); }
 .ui-v2 #homeListPageRelatorio .download-format { display:flex; align-items:center; gap:11px; color:var(--ink); font-size:.8rem; font-weight:700; text-align:left; }
 .ui-v2 #homeListPageRelatorio .download-format-icon { display:grid; place-items:center; width:40px; height:40px; border:1px solid color-mix(in srgb,var(--brand-green) 30%,var(--card-line)); border-radius:11px; background:color-mix(in srgb,var(--brand-green) 12%,transparent); color:var(--brand-green); font-size:.62rem; font-weight:800; letter-spacing:.5px; }
@@ -1229,6 +1240,10 @@ body.ui-v2.theme-dark #homeListPageRelatorio .relatorio-period-controls { backgr
   .ui-v2 #homeListPageRelatorio .relatorio-illustration { width:124px; height:124px; margin-inline:auto; }
   .ui-v2 #homeListPageRelatorio .relatorio-period-controls { min-height:54px; margin-inline:-4px; padding:7px 8px; border-radius:12px; }
   .ui-v2 #homeListPageRelatorio .relatorio-period-controls .period-nav-row { grid-template-columns:34px minmax(0,1fr) 34px; width:100%; }
+  .ui-v2 #homeListPageRelatorio .download-content-preview { padding:18px; border-radius:14px; }
+  .ui-v2 #homeListPageRelatorio .download-section-heading { align-items:flex-start; flex-direction:column; gap:8px; margin-bottom:14px; }
+  .ui-v2 #homeListPageRelatorio .download-preview-grid { grid-template-columns:1fr; gap:8px; }
+  .ui-v2 #homeListPageRelatorio .download-preview-card { min-height:0; padding:13px; }
   .ui-v2 #homeListPageRelatorio .ui-download-action { grid-template-columns:1fr; gap:14px; padding:16px; border-radius:14px; }
   .ui-v2 #relatorioPageDownloadBtn { width:100%; min-height:46px; }
 }

@@ -596,7 +596,7 @@
                                     </div>
                                 </section>
 
-                                <div class="relatorio-period-controls" aria-label="Selecionar período do relatório">
+                                <div class="relatorio-period-controls">
                                     <div class="period-nav-row">
                                         <button type="button" class="period-nav-btn" id="relatorioPageMonthPrev" data-i18n-aria="semana.prevMesAria" aria-label="Mês anterior">
                                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -612,10 +612,43 @@
                                     </div>
                                 </div>
 
-                                <section class="ui-download-action" aria-label="Exportar relatório em PDF">
+                                <section class="download-content-preview" aria-labelledby="downloadPreviewTitle">
+                                    <div class="download-section-heading">
+                                        <div>
+                                            <span class="download-kicker" data-i18n="relatorio.preview.kicker">PRÉ-VISUALIZAÇÃO</span>
+                                            <h3 id="downloadPreviewTitle" data-i18n="relatorio.preview.title">O que será incluído</h3>
+                                        </div>
+                                        <span class="download-ready-dot"><i></i><span data-i18n="relatorio.preview.ready">Pronto para gerar</span></span>
+                                    </div>
+                                    <div class="download-preview-grid">
+                                        <article class="download-preview-card">
+                                            <span class="download-preview-icon" aria-hidden="true">01</span>
+                                            <div>
+                                                <strong data-i18n="relatorio.preview.summary">Resumo financeiro</strong>
+                                                <p data-i18n="relatorio.preview.summaryText">Totais mensais de ganhos, despesas e resultado líquido.</p>
+                                            </div>
+                                        </article>
+                                        <article class="download-preview-card">
+                                            <span class="download-preview-icon" aria-hidden="true">02</span>
+                                            <div>
+                                                <strong data-i18n="relatorio.preview.platforms">Por plataforma</strong>
+                                                <p data-i18n="relatorio.preview.platformsText">Ganhos organizados por Uber, Bolt e plataformas adicionais.</p>
+                                            </div>
+                                        </article>
+                                        <article class="download-preview-card">
+                                            <span class="download-preview-icon" aria-hidden="true">03</span>
+                                            <div>
+                                                <strong data-i18n="relatorio.preview.days">Detalhe diário</strong>
+                                                <p data-i18n="relatorio.preview.daysText">Registos, quilometragem, despesas e resumo semanal.</p>
+                                            </div>
+                                        </article>
+                                    </div>
+                                </section>
+
+                                <section class="ui-download-action">
                                     <div class="download-format">
                                         <span class="download-format-icon" aria-hidden="true">PDF</span>
-                                        <span aria-hidden="true">PDF</span>
+                                        <span data-i18n="relatorio.preview.pdf">Relatório mensal completo</span>
                                     </div>
                                     <button type="button" class="dp-save-btn has-icon" id="relatorioPageDownloadBtn">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
