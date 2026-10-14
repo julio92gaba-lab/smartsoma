@@ -716,6 +716,12 @@
       var label=target.querySelector('span:not(.sheet-action-value)')||target;
       openSettingsSubpage(settingRoutes[target.id],target.id==='sheetAvatar'?say('Editar perfil','Edit profile'):label.textContent.trim());
     },true);
+    document.addEventListener('click',function(event){
+      if(!event.target.closest('#langSaveBtn'))return;
+      // O ecrã original regressa a Ganhos; volta pelo router visual para
+      // manter o Início completo, incluindo o cartão de meta.
+      setTimeout(function(){go('resumo');refreshData();},0);
+    },true);
     window.SmartSomaSettings={open:openSettingsSubpage,close:closeSettingsSubpage};
     var faqs=[
       ['Como registar os meus ganhos?','Escolhe a data no calendário e toca em +. Em Ganhos, seleciona o ícone da plataforma, insere o total do dia e guarda. Uber, Bolt e as tuas plataformas ficam separadas.','How do I record earnings?','Choose a date in the calendar and tap +. Under Earnings, select a platform, enter its daily total and save. Each platform is recorded separately.'],
