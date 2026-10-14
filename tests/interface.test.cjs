@@ -103,7 +103,8 @@ test('weekly view choice is stored and survives section navigation',async t=>{
 
 test('weekly list cards keep a stable header, compact spacing and expand normally',async t=>{
   const css=fs.readFileSync('ui-v2.css','utf8');
-  assert.match(css,/\.semana-list-placeholder\s*\{[^}]*gap:8px;[^}]*padding-top:0;[^}]*overflow-anchor:none;/);
+  assert.match(css,/\.semana-list-placeholder\s*\{[^}]*gap:8px;[^}]*padding-top:0;/);
+  assert.doesNotMatch(css,/\.semana-list-placeholder\s*\{[^}]*overflow-anchor:none;/);
   assert.match(css,/\.semana-day-card\s*\{[^}]*margin-top:0;[^}]*padding:0;[^}]*background:var\(--card-bg\);/);
   assert.match(css,/\.semana-day-card:not\(\.is-expanded\) \.semana-day-card-header\s*\{[^}]*height:68px;[^}]*min-height:68px;/);
   assert.match(css,/M0,38 C80,29 120,29 200,42 C280,55 320,55 400,41 L400,0 L0,0 Z/);
