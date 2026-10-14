@@ -172,7 +172,6 @@
     $('uiAdd').addEventListener('click',function(){window.closeProfileSheetPublic(); if(window.SmartSomaUI.openEntry) SmartSomaUI.openEntry(); else PlataformaModals.uber.open();});
     $('uiNews').setAttribute('aria-label',say('Novidades','News'));
     $('homeListPageSemana').prepend(heading('semana'));
-    $('homeListPageRelatorio').prepend(heading('downloads'));
     $('tamanhoOptionP').querySelector('.tamanho-option-letter').textContent='A';
     $('tamanhoOptionG').querySelector('.tamanho-option-letter').textContent='A';
     var theme=button('',function(){$('btnToggleTheme').click();syncHeader();},'sheet-action-btn');
