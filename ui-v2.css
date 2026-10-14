@@ -1395,3 +1395,220 @@ body.ui-v2.theme-dark #homeListPageSemana .semana-filter-controls.is-sticky { ba
   .ui-v2 #homeListPageSemana .semana-day-card-expenses .is-expense .row-value { color:var(--ink); }
   .ui-v2 #homeListPageSemana .semana-day-card-expense-total strong { color:#d16d59; }
 }
+
+/* Minha Semana: período e modo de visualização na mesma barra sticky. */
+.ui-v2 #homeListPageSemana .semana-filter-controls,
+.ui-v2 #homeListPageSemana .semana-filter-controls.is-sticky {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;
+  gap:8px;
+  min-height:0;
+  padding:7px 8px;
+}
+.ui-v2 #homeListPageSemana .semana-filter-fields { display:block; min-width:0; }
+.ui-v2 #homeListPageSemana .semana-filter-fields > .period-nav-row,
+.ui-v2 #homeListPageSemana .semana-filter-divider { display:none; }
+.ui-v2 #homeListPageSemana .semana-filter-fields .semana-week-nav { display:block; min-width:0; }
+.ui-v2 #homeListPageSemana .semana-filter-fields .semana-week-nav > .period-nav-btn { display:none; }
+.ui-v2 #homeListPageSemana .semana-filter-fields .semana-week-picker { width:100%; }
+.ui-v2 #homeListPageSemana .semana-filter-fields .semana-week-picker-btn {
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  width:100%;
+  min-height:40px;
+  gap:7px;
+  padding:6px 9px;
+  overflow:hidden;
+  border:1px solid color-mix(in srgb,var(--brand-green) 40%,var(--card-line));
+  border-radius:10px;
+  background:color-mix(in srgb,var(--lime) 16%,var(--card-bg));
+  color:var(--ink);
+  box-shadow:none;
+}
+.ui-v2 #homeListPageSemana .semana-filter-fields .semana-week-picker-calendar {
+  width:17px;
+  height:17px;
+  flex:0 0 17px;
+  color:var(--brand-green);
+}
+.ui-v2 #homeListPageSemana .semana-filter-fields .semana-week-picker-btn > span {
+  display:flex;
+  flex:1 1 auto;
+  align-items:baseline;
+  justify-content:flex-start;
+  min-width:0;
+  gap:5px;
+  overflow:hidden;
+  text-align:left;
+  white-space:nowrap;
+}
+.ui-v2 #homeListPageSemana .semana-filter-fields .semana-week-picker-num,
+.ui-v2 #homeListPageSemana .semana-filter-fields .semana-week-picker-period {
+  overflow:hidden;
+  color:var(--ink);
+  font-size:.67rem;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.ui-v2 #homeListPageSemana .semana-filter-fields .semana-week-picker-num { flex:0 0 auto; font-weight:850; }
+.ui-v2 #homeListPageSemana .semana-filter-fields .semana-week-picker-period { flex:1 1 auto; color:var(--muted); font-weight:700; }
+.ui-v2 #homeListPageSemana .semana-filter-fields .semana-week-picker-chevron {
+  display:block;
+  width:16px;
+  height:16px;
+  flex:0 0 16px;
+  color:var(--brand-green);
+  transition:transform .25s ease;
+}
+.ui-v2 #homeListPageSemana .semana-filter-fields .semana-week-picker-btn[aria-expanded="true"] .semana-week-picker-chevron { transform:rotate(180deg); }
+.ui-v2 #homeListPageSemana .semana-week-picker-panel { display:none !important; }
+.ui-v2 #homeListPageSemana .semana-view-controls {
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  margin:0;
+}
+.ui-v2 #homeListPageSemana .semana-view-controls #subHeaderViewToggleGroup {
+  display:grid;
+  grid-template:1fr / minmax(42px,auto) 38px;
+  align-items:center;
+  width:96px;
+  min-height:40px;
+  gap:2px;
+  margin:0;
+  padding:2px 0;
+  border:0;
+  background:transparent;
+}
+.ui-v2 #homeListPageSemana .semana-view-controls .semana-view-toggle-labels {
+  grid-area:1 / 1;
+  display:grid;
+  justify-items:end;
+  gap:3px;
+  min-width:0;
+}
+.ui-v2 #homeListPageSemana .semana-view-controls .semana-view-toggle-active-label,
+.ui-v2 #homeListPageSemana .semana-view-controls .semana-view-toggle-inactive-label {
+  color:var(--ink);
+  font:.64rem/1 'Bricolage Grotesque',sans-serif;
+  font-weight:800;
+  white-space:nowrap;
+  transition:opacity .25s ease,transform .25s ease;
+}
+.ui-v2 #homeListPageSemana .semana-view-controls .semana-view-toggle-active-label { opacity:1; }
+.ui-v2 #homeListPageSemana .semana-view-controls .semana-view-toggle-inactive-label { opacity:.38; transform:scale(.92); }
+.ui-v2 #homeListPageSemana .semana-view-controls #subHeaderViewToggleGroup .sub-header-view-toggle-btn {
+  position:relative;
+  grid-area:1 / 2;
+  display:grid;
+  place-items:center;
+  width:34px;
+  min-height:34px;
+  padding:0;
+  border:0;
+  background:transparent;
+  opacity:1;
+}
+.ui-v2 #homeListPageSemana .semana-view-controls #subHeaderViewToggleGroup .semana-view-toggle-label { display:none !important; }
+.ui-v2 #homeListPageSemana .semana-view-controls #subHeaderViewToggleGroup .semana-view-toggle-image {
+  width:30px;
+  height:30px;
+  margin:0;
+  opacity:.38;
+  filter:grayscale(1);
+  transform:translateX(-5px) scale(.78);
+  transition:opacity .25s ease,filter .25s ease,transform .25s ease;
+}
+.ui-v2 #homeListPageSemana .semana-view-controls #subHeaderViewToggleGroup .sub-header-view-toggle-btn.is-active { z-index:2; }
+.ui-v2 #homeListPageSemana .semana-view-controls #subHeaderViewToggleGroup .sub-header-view-toggle-btn.is-active .semana-view-toggle-image {
+  opacity:1;
+  filter:grayscale(0);
+  transform:translateX(4px) scale(1.04);
+}
+
+/* Modal de seleção semanal com confirmação explícita. */
+.ui-v2 #semanaPeriodModalBackdrop { z-index:230; align-items:center; }
+.ui-v2 .semana-period-modal-card { display:grid; gap:16px; width:min(420px,calc(100vw - 48px)); }
+.ui-v2 .semana-period-modal-helper { margin:-8px 42px 0 0; color:var(--muted); font-size:.75rem; line-height:1.45; }
+.ui-v2 .semana-period-month-nav {
+  display:grid;
+  grid-template-columns:38px minmax(0,1fr) 38px;
+  align-items:center;
+  gap:8px;
+  padding:5px;
+  border:1px solid var(--card-line);
+  border-radius:11px;
+  background:var(--input-bg);
+}
+.ui-v2 .semana-period-month-nav button {
+  display:grid;
+  place-items:center;
+  width:34px;
+  height:34px;
+  padding:0;
+  border:1px solid var(--card-line);
+  border-radius:8px;
+  background:var(--card-bg);
+  color:var(--ink);
+}
+.ui-v2 .semana-period-month-nav button svg { width:17px; height:17px; }
+.ui-v2 .semana-period-month-nav strong { color:var(--ink); font-size:.82rem; text-align:center; text-transform:capitalize; }
+.ui-v2 .semana-period-week-list { display:grid; gap:7px; max-height:42dvh; overflow-y:auto; }
+.ui-v2 .semana-period-week-option {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  width:100%;
+  min-height:44px;
+  gap:10px;
+  padding:9px 11px;
+  border:1px solid var(--card-line);
+  border-radius:9px;
+  background:var(--card-bg);
+  color:var(--ink);
+  font:750 .76rem/1.2 'Bricolage Grotesque',sans-serif;
+  text-align:left;
+  transition:border-color .18s ease,background-color .18s ease,transform .18s ease;
+}
+.ui-v2 .semana-period-week-option small { color:var(--muted); font:inherit; font-weight:650; }
+.ui-v2 .semana-period-week-option strong {
+  flex:0 0 auto;
+  padding:4px 7px;
+  border-radius:999px;
+  background:color-mix(in srgb,var(--lime) 22%,var(--card-bg));
+  color:var(--brand-green);
+  font-size:.6rem;
+  text-transform:uppercase;
+}
+.ui-v2 .semana-period-week-option.is-current { font-weight:850; }
+.ui-v2 .semana-period-week-option.is-selected {
+  border-color:var(--brand-green);
+  background:color-mix(in srgb,var(--lime) 16%,var(--card-bg));
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--brand-green) 22%,transparent);
+}
+.ui-v2 .semana-period-week-option:active { transform:scale(.985); }
+.ui-v2 .semana-period-modal-footer { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.ui-v2 .semana-period-current-btn {
+  min-height:40px;
+  padding:7px 4px;
+  border:0;
+  background:transparent;
+  color:var(--brand-green);
+  font-size:.69rem;
+  font-weight:800;
+  text-align:left;
+}
+.ui-v2 .semana-period-modal-footer .mm-save-btn { min-width:104px; padding-inline:18px; }
+@media (max-width:380px) {
+  .ui-v2 #homeListPageSemana .semana-filter-controls,
+  .ui-v2 #homeListPageSemana .semana-filter-controls.is-sticky { gap:5px; padding-inline:6px; }
+  .ui-v2 #homeListPageSemana .semana-view-controls #subHeaderViewToggleGroup { width:86px; }
+  .ui-v2 #homeListPageSemana .semana-filter-fields .semana-week-picker-btn { gap:5px; padding-inline:7px; }
+  .ui-v2 #homeListPageSemana .semana-filter-fields .semana-week-picker-num,
+  .ui-v2 #homeListPageSemana .semana-filter-fields .semana-week-picker-period { font-size:.62rem; }
+  .ui-v2 .semana-period-modal-footer { align-items:stretch; flex-direction:column; }
+  .ui-v2 .semana-period-current-btn { width:100%; text-align:center; }
+  .ui-v2 .semana-period-modal-footer .mm-save-btn { width:100%; }
+}

@@ -194,13 +194,12 @@
     viewModeLabels.append(viewModeLabel,viewModeInactiveLabel);
     viewControls.append(viewModeLabels);
     viewControlsRow.append(viewControls);
-    filters.append(filterFields,weekModeDivider);
+    filters.append(filterFields,weekModeDivider,viewControlsRow);
     $('semanaWeeksContainer').before(filters);
     var earningsTitle=$('semanaEarningsTitle'), metricSlot=$('semanaMetricSlot');
     if(earningsTitle)earningsTitle.textContent=say('FATURAÇÃO','REVENUE');
     if(earningsTitle&&metricSlot){
-      filters.after(viewControlsRow);
-      viewControlsRow.after(earningsTitle);
+      filters.after(earningsTitle);
       earningsTitle.after(metricSlot);
     }
     viewControls.hidden=false;

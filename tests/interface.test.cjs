@@ -89,6 +89,26 @@ test('weekly view choice is stored and survives section navigation',async t=>{
   assert.deepEqual(a.errors,[]);
 });
 
+test('week period modal keeps selection pending until filter confirmation',async t=>{
+  const a=setup(t);a.w.SmartSomaUI.start();a.w.SmartSomaUI.go('semana');await settle();
+  const filters=a.w.document.querySelector('.semana-filter-controls');
+  assert.ok(filters.contains(a.el('subHeaderViewToggleGroup')));
+  const labelBefore=a.el('semanaWeekPickerLabel').textContent;
+  a.click('semanaWeekPickerBtn');
+  assert.equal(a.el('semanaPeriodModalBackdrop').classList.contains('visible'),true);
+  const options=[...a.w.document.querySelectorAll('.semana-period-week-option')];
+  assert.ok(options.length>=4);
+  assert.ok(options.some(option=>option.classList.contains('is-current')));
+  const selectedIndex=options.findIndex(option=>option.classList.contains('is-selected'));
+  options[(selectedIndex+1)%options.length].click();
+  assert.equal(a.el('semanaPeriodModalBackdrop').classList.contains('visible'),true);
+  assert.equal(a.el('semanaWeekPickerLabel').textContent,labelBefore);
+  a.click('semanaPeriodFilterBtn');await settle();
+  assert.equal(a.el('semanaPeriodModalBackdrop').classList.contains('visible'),false);
+  assert.notEqual(a.el('semanaWeekPickerLabel').textContent,labelBefore);
+  assert.deepEqual(a.errors,[]);
+});
+
 test('quick entry opens a platform subpage and replaces its daily value',t=>{
   const a=setup(t);a.click('uiAdd');assert.equal(a.el('uiEntryDialog').open,true);
   assert.match(a.el('uiPlatformChoices').textContent,/Uber/);

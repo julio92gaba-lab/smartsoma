@@ -3776,22 +3776,23 @@
       // mesmo mês  -> "14 a 20 de set."
       // meses diferentes -> "31 de ago. à 6 de set."
       function formatWeekPickerPeriod (monday, sunday) {
-        if (monday.getMonth() === sunday.getMonth()) {
-          return I18N.t('fmt.rangeSameMonthDot', { d1: monday.getDate(), d2: sunday.getDate(), m: MESES_ABBR()[monday.getMonth()] });
+        function monthShort (date) {
+          var value = MESES_ABBR()[date.getMonth()].replace(/\.$/, '');
+          return value.charAt(0).toUpperCase() + value.slice(1);
         }
-        return I18N.t('fmt.rangeCrossMonthDot2', {
-          d1: monday.getDate(), m1: MESES_ABBR()[monday.getMonth()],
-          d2: sunday.getDate(), m2: MESES_ABBR()[sunday.getMonth()]
-        });
+        if (monday.getMonth() === sunday.getMonth()) {
+          return monday.getDate() + ' a ' + sunday.getDate() + ' ' + monthShort(sunday);
+        }
+        return monday.getDate() + ' ' + monthShort(monday) + ' a ' + sunday.getDate() + ' ' + monthShort(sunday);
       }
 
       // Rótulo (em HTML) usado no botão/opções de seleção de semana, com o
       // período em destaque: <span class="semana-week-picker-num">SEMANA 1</span>
       // <span class="semana-week-picker-period">14 a 20 de set.</span>
       function formatWeekPickerLabelHTML (weekIndex, monday, sunday) {
-        return '<span class="semana-week-picker-num">' + I18N.t('semana.weekNum', { n: weekIndex + 1 }) + '</span>' +
-               '<span class="semana-week-picker-sep"> - </span>' +
-               '<span class="semana-week-picker-period">' + formatWeekPickerPeriod(monday, sunday) + '</span>';
+        var prefix = I18N.getLang() === 'en' ? 'Week' : 'Sem.';
+        return '<span class="semana-week-picker-num">' + prefix + ' ' + (weekIndex + 1) + '</span>' +
+               '<span class="semana-week-picker-period">(' + formatWeekPickerPeriod(monday, sunday) + ')</span>';
       }
 
       // Devolve o mês (e ano) ao qual a semana de hoje pertence pela
@@ -4208,8 +4209,18 @@
       var pickerPanel = document.getElementById('semanaWeekPickerPanel');
       var pickerPrev  = document.getElementById('semanaWeekPrev');
       var pickerNext  = document.getElementById('semanaWeekNext');
+      var periodModal = document.getElementById('semanaPeriodModalBackdrop');
+      var periodMonthPrev = document.getElementById('semanaPeriodMonthPrev');
+      var periodMonthNext = document.getElementById('semanaPeriodMonthNext');
+      var periodMonthLabel = document.getElementById('semanaPeriodMonthLabel');
+      var periodWeekList = document.getElementById('semanaPeriodWeekList');
+      var periodCurrentBtn = document.getElementById('semanaPeriodCurrentBtn');
+      var periodFilterBtn = document.getElementById('semanaPeriodFilterBtn');
       var summarySlot = document.getElementById('semanaSummarySlot');
       var currentWeeks = [];
+      var modalYear = refYear;
+      var modalMonth = refMonth;
+      var pendingWeekSelection = null;
 
       function syncSummarySlot (block) {
         if (!summarySlot) return;
@@ -4248,15 +4259,69 @@
       }
 
       function closeWeekPicker () {
-        if (!pickerPanel || pickerPanel.hidden) return;
-        pickerPanel.hidden = true;
+        if (pickerPanel) pickerPanel.hidden = true;
+        if (periodModal) periodModal.classList.remove('visible');
         if (pickerBtn) pickerBtn.setAttribute('aria-expanded', 'false');
       }
 
       function openWeekPicker () {
-        if (!pickerPanel) return;
-        pickerPanel.hidden = false;
+        modalYear = refYear;
+        modalMonth = refMonth;
+        pendingWeekSelection = currentWeeks[currentWeekIndex] ? {
+          year: refYear,
+          month: refMonth,
+          index: currentWeekIndex,
+          monday: new Date(currentWeeks[currentWeekIndex].monday.getTime())
+        } : null;
+        renderPeriodModal();
+        if (periodModal) periodModal.classList.add('visible');
         if (pickerBtn) pickerBtn.setAttribute('aria-expanded', 'true');
+      }
+
+      function sameCalendarDay (a, b) {
+        return !!a && !!b && a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+      }
+
+      function modalWeekPeriod (week) {
+        var first = new Date(modalYear, modalMonth, 1);
+        var last = new Date(modalYear, modalMonth + 1, 0);
+        var start = week.monday < first ? first : week.monday;
+        var end = week.sunday > last ? last : week.sunday;
+        var month = MESES_ABBR()[modalMonth].replace(/\.$/, '');
+        month = month.charAt(0).toUpperCase() + month.slice(1);
+        return start.getDate() + ' a ' + end.getDate() + ' ' + month;
+      }
+
+      function renderPeriodModal () {
+        if (!periodWeekList || !periodMonthLabel) return;
+        periodMonthLabel.textContent = capitalize(MESES_MINUS()[modalMonth]) + ' de ' + modalYear;
+        periodWeekList.innerHTML = '';
+        var weeks = computeWeeksForMonth(modalYear, modalMonth);
+        var currentMonday = getMonday(todayAtMidnight());
+        weeks.forEach(function (week, idx) {
+          var option = document.createElement('button');
+          var isCurrent = sameCalendarDay(week.monday, currentMonday);
+          var isSelected = pendingWeekSelection && sameCalendarDay(week.monday, pendingWeekSelection.monday);
+          option.type = 'button';
+          option.className = 'semana-period-week-option';
+          option.classList.toggle('is-current', isCurrent);
+          option.classList.toggle('is-selected', isSelected);
+          option.setAttribute('role', 'option');
+          option.setAttribute('aria-selected', String(!!isSelected));
+          option.innerHTML = '<span>Semana ' + (idx + 1) + ' <small>(' + modalWeekPeriod(week) + ')</small></span>' +
+            (isCurrent ? '<strong>Atual</strong>' : '');
+          option.addEventListener('click', function () {
+            pendingWeekSelection = {
+              year: modalYear,
+              month: modalMonth,
+              index: idx,
+              monday: new Date(week.monday.getTime())
+            };
+            renderPeriodModal();
+          });
+          periodWeekList.appendChild(option);
+        });
+        if (periodFilterBtn) periodFilterBtn.disabled = !pendingWeekSelection;
       }
 
       // Mostra uma semana por vez: a semana ativa desliza para dentro da
@@ -4327,23 +4392,15 @@
       }
 
       function buildWeekPicker (weeks) {
-        if (!pickerPanel) return;
-        pickerPanel.innerHTML = '';
-        weeks.forEach(function (week, idx) {
-          var opt = document.createElement('button');
-          opt.type = 'button';
-          opt.className = 'semana-week-picker-option';
-          opt.innerHTML = formatWeekPickerLabelHTML(idx, week.monday, week.sunday);
-          opt.addEventListener('click', function () {
-            setActiveWeek(idx, true);
-          });
-          pickerPanel.appendChild(opt);
-        });
+        if (pickerPanel) {
+          pickerPanel.innerHTML = '';
+          pickerPanel.hidden = true;
+        }
       }
 
       if (pickerBtn) {
         pickerBtn.addEventListener('click', function () {
-          if (pickerPanel && pickerPanel.hidden) openWeekPicker();
+          if (!periodModal || !periodModal.classList.contains('visible')) openWeekPicker();
           else closeWeekPicker();
         });
       }
@@ -4353,10 +4410,46 @@
       if (pickerNext) pickerNext.addEventListener('click', function () {
         if (currentWeekIndex < currentWeeks.length - 1) setActiveWeek(currentWeekIndex + 1, true);
       });
-      document.addEventListener('click', function (e) {
-        if (!pickerPanel || pickerPanel.hidden) return;
-        if (pickerBtn && (pickerBtn.contains(e.target) || pickerPanel.contains(e.target))) return;
+      if (periodMonthPrev) periodMonthPrev.addEventListener('click', function () {
+        modalMonth -= 1;
+        if (modalMonth < 0) { modalMonth = 11; modalYear -= 1; }
+        pendingWeekSelection = null;
+        renderPeriodModal();
+      });
+      if (periodMonthNext) periodMonthNext.addEventListener('click', function () {
+        modalMonth += 1;
+        if (modalMonth > 11) { modalMonth = 0; modalYear += 1; }
+        pendingWeekSelection = null;
+        renderPeriodModal();
+      });
+      if (periodCurrentBtn) periodCurrentBtn.addEventListener('click', function () {
+        var current = currentWeekMonth();
+        modalYear = current.year;
+        modalMonth = current.month;
+        var weeks = computeWeeksForMonth(modalYear, modalMonth);
+        var currentMonday = getMonday(todayAtMidnight());
+        var idx = weeks.findIndex(function (week) { return sameCalendarDay(week.monday, currentMonday); });
+        pendingWeekSelection = idx >= 0 ? {
+          year: modalYear,
+          month: modalMonth,
+          index: idx,
+          monday: new Date(weeks[idx].monday.getTime())
+        } : null;
+        renderPeriodModal();
+      });
+      if (periodFilterBtn) periodFilterBtn.addEventListener('click', function () {
+        if (!pendingWeekSelection) return;
+        refYear = pendingWeekSelection.year;
+        refMonth = pendingWeekSelection.month;
+        currentWeekIndex = pendingWeekSelection.index;
+        renderMonth();
         closeWeekPicker();
+      });
+      if (periodModal) periodModal.addEventListener('click', function (e) {
+        if (e.target === periodModal) closeWeekPicker();
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && periodModal && periodModal.classList.contains('visible')) closeWeekPicker();
       });
 
       function renderMonth () {
