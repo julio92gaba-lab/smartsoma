@@ -55,6 +55,7 @@ test('modal overlays stay below the fixed header and weekly toggle icons remain 
   }
   assert.match(css,/#semanaPeriodModalBackdrop\s*\{[^}]*align-items:flex-start;/);
   assert.match(css,/#subHeaderViewToggleGroup \.semana-view-toggle-image\s*\{[^}]*width:24px;[^}]*height:24px;/);
+  assert.match(css,/\.sub-header-view-toggle-btn\.is-active \.semana-view-toggle-image\s*\{[^}]*width:24px;[^}]*height:24px;/);
 });
 
 test('home rhythm uses the weekly divergent chart and lists only variable expenses from the selected period',async t=>{

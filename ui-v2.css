@@ -1523,6 +1523,8 @@ body.ui-v2.theme-dark #homeListPageSemana .semana-filter-controls.is-sticky { ba
 }
 .ui-v2 #homeListPageSemana .semana-view-controls #subHeaderViewToggleGroup .sub-header-view-toggle-btn.is-active { z-index:2; }
 .ui-v2 #homeListPageSemana .semana-view-controls #subHeaderViewToggleGroup .sub-header-view-toggle-btn.is-active .semana-view-toggle-image {
+  width:24px;
+  height:24px;
   opacity:1;
   filter:grayscale(0);
   transform:translateX(4px) scale(1.04);
