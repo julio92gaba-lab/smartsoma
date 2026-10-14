@@ -166,9 +166,6 @@
     $('uiHeaderAvatar').addEventListener('click',function(){go('ajustes');});
     var headerAvatar=$('headerAvatarBtn');
     if(headerAvatar)headerAvatar.addEventListener('click',function(e){e.preventDefault();e.stopImmediatePropagation();go('ajustes');},true);
-    ['openDadosPessoaisBtn','openDespesasFixasBtn','openMultiplataformaBtn','openIdiomaBtn','openTamanhoBtn','openAjudaBtn'].forEach(function(id){
-      $(id).addEventListener('click',function(){window.openProfileSheetPublic();},true);
-    });
     $('uiAdd').addEventListener('click',function(){window.closeProfileSheetPublic(); if(window.SmartSomaUI.openEntry) SmartSomaUI.openEntry(); else PlataformaModals.uber.open();});
     $('uiNews').setAttribute('aria-label',say('Novidades','News'));
     $('homeListPageSemana').prepend(heading('semana'));
@@ -283,7 +280,7 @@
     // Reposition existing elements, retaining their IDs, listeners and references.
     var summary=$('resumoLiveContent');
     var settingsPage=create('section','home-list-page');
-    settingsPage.id='uiSettingsPage';settingsPage.hidden=true;settingsPage.append(heading('ajustes'));
+    settingsPage.id='uiSettingsPage';settingsPage.hidden=true;
     var settingsContent=$('sheetScreenDefault').querySelector('.sheet-content');
     settingsPage.append(settingsContent);
     $('sheetScreenDefault').append(create('div','sheet-content ui-settings-placeholder'));
@@ -673,6 +670,47 @@
     var help=$('sheetScreenAjuda').querySelector('.sheet-content');
     help.innerHTML='<section class="ui-help-hero"><p class="ui-eyebrow">SMARTSOMA</p><h2 id="uiHelpTitle"></h2><a href="mailto:contacto@smartsoma.pt">contacto@smartsoma.pt</a><p>Lisboa, Portugal</p><button id="uiTutorialStart" type="button" class="ui-button">Tutorial →</button></section><section class="home-card ui-faq"><h2 id="uiFaqTitle"></h2><div id="uiFaqItems"></div></section>';
     $('uiTutorialStart').addEventListener('click',function(){$('openTutorialBtn').click();});
+
+    /* Subpáginas de Ajustes: reaproveitam os ecrãs e a lógica existente,
+       mas deixam de abrir o painel/modal legado. */
+    var settingsPage=$('uiSettingsPage');
+    var subpage=create('section','ui-settings-subpage');
+    var subpageHead=create('div','ui-settings-subpage-head');
+    var back=button('',function(){closeSettingsSubpage();},'ui-settings-back');
+    back.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg><span></span>';
+    var subpageTitle=create('h2','');
+    var subpageBody=create('div','ui-settings-subpage-body');
+    subpageHead.append(back,subpageTitle);subpage.append(subpageHead,subpageBody);subpage.hidden=true;settingsPage.append(subpage);
+    var activeContent=null,activeScreen=null;
+    function closeSettingsSubpage(){
+      if(activeContent&&activeScreen){activeScreen.append(activeContent);activeScreen.hidden=true;activeScreen.classList.remove('is-active');}
+      activeContent=null;activeScreen=null;subpageBody.replaceChildren();subpage.hidden=true;settings.hidden=false;window.scrollTo({top:0,behavior:'instant'});
+    }
+    function openSettingsSubpage(screenId,title){
+      var screen=$(screenId),content=screen&&screen.querySelector('.sheet-content');
+      if(!content)return;
+      if(activeContent&&activeContent!==content)closeSettingsSubpage();
+      if(screenId==='sheetScreenIdioma'&&window.IdiomaScreen)window.IdiomaScreen.prepare();
+      if(screenId==='sheetScreenTamanho'&&window.TamanhoScreen)window.TamanhoScreen.prepare();
+      activeContent=content;activeScreen=screen;screen.hidden=true;screen.classList.remove('is-active');
+      subpageTitle.textContent=title;back.querySelector('span').textContent=say('Voltar para Ajustes','Back to Settings');
+      subpageBody.replaceChildren(content);settings.hidden=true;subpage.hidden=false;window.closeProfileSheetPublic();window.scrollTo({top:0,behavior:'instant'});
+    }
+    var settingRoutes={
+      openDadosPessoaisBtn:'sheetScreenDadosPessoais',openDespesasFixasBtn:'sheetScreenDespesasFixas',
+      openMultiplataformaBtn:'sheetScreenMultiplataforma',openIdiomaBtn:'sheetScreenIdioma',
+      openTamanhoBtn:'sheetScreenTamanho',openAjudaBtn:'sheetScreenAjuda',
+      openApagarDadosBtn:'sheetScreenApagarDados',sheetAvatar:'sheetScreenDadosPessoais',
+      dpChangePasswordBtn:'sheetScreenPasswordChange'
+    };
+    document.addEventListener('click',function(event){
+      var target=event.target.closest('[id]');if(!target||!settingRoutes[target.id])return;
+      if(!settingsPage.contains(target)&&target.id!=='dpChangePasswordBtn')return;
+      event.preventDefault();event.stopImmediatePropagation();
+      var label=target.querySelector('span:not(.sheet-action-value)')||target;
+      openSettingsSubpage(settingRoutes[target.id],target.id==='sheetAvatar'?say('Editar perfil','Edit profile'):label.textContent.trim());
+    },true);
+    window.SmartSomaSettings={open:openSettingsSubpage,close:closeSettingsSubpage};
     var faqs=[
       ['Como registar os meus ganhos?','Escolhe a data no calendário e toca em +. Em Ganhos, seleciona o ícone da plataforma, insere o total do dia e guarda. Uber, Bolt e as tuas plataformas ficam separadas.','How do I record earnings?','Choose a date in the calendar and tap +. Under Earnings, select a platform, enter its daily total and save. Each platform is recorded separately.'],
       ['Posso corrigir um valor já guardado?','Sim. Abre a plataforma na página Ganhos diários ou seleciona-a no registo rápido. O valor guardado aparece no campo. Guardar substitui esse total; não soma uma segunda entrada.','Can I correct an amount?','Yes. Open the platform in Daily earnings or select it in the quick entry. Saving replaces that day’s total rather than adding a second entry.'],

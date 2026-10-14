@@ -222,13 +222,33 @@ test('settings keeps account flows, two font sizes, legal link and complete FAQ'
   const a=setup(t);a.w.SmartSomaUI.go('ajustes');a.click('openDadosPessoaisBtn');await settle();
   assert.ok(a.el('dpNomeInput'));assert.ok(a.el('dpEmailInput'));assert.ok(a.el('dpChangePasswordBtn'));assert.ok(a.el('dpUploadPhotoBtn'));
   assert.equal(a.el('uiSettingsPage').hidden,false);
-  assert.ok(a.el('profileSheet').classList.contains('open'));
+  assert.equal(a.el('profileSheet').classList.contains('open'),false);
+  assert.equal(a.el('uiSettingsPage').querySelector('.ui-settings-subpage').hidden,false);
   assert.equal(a.el('openTermosMenuBtn').href,'https://smartsoma.pt/legal');
   assert.equal(a.w.document.querySelectorAll('.tamanho-option').length,2);
   assert.match(a.el('tamanhoOptionP').textContent,/Normal/);
   assert.equal(a.w.document.querySelectorAll('#uiFaqItems details').length,11);
   a.w.I18N.setLang('en');await settle();assert.match(a.el('uiFaqTitle').textContent,/Frequently/);
   a.click('uiThemeRow');assert.ok(a.w.document.body.classList.contains('theme-dark'));assert.deepEqual(a.errors,[]);
+});
+
+test('settings menu opens internal pages and returns without the legacy sheet',t=>{
+  const a=setup(t);a.w.SmartSomaUI.go('ajustes');
+  const routes=[
+    ['openDadosPessoaisBtn','sheetScreenDadosPessoais'],['openDespesasFixasBtn','sheetScreenDespesasFixas'],
+    ['openMultiplataformaBtn','sheetScreenMultiplataforma'],['openIdiomaBtn','sheetScreenIdioma'],
+    ['openTamanhoBtn','sheetScreenTamanho'],['openAjudaBtn','sheetScreenAjuda'],['openApagarDadosBtn','sheetScreenApagarDados']
+  ];
+  routes.forEach(([buttonId])=>{
+    a.click(buttonId);
+    const page=a.el('uiSettingsPage'),subpage=page.querySelector('.ui-settings-subpage');
+    assert.equal(subpage.hidden,false);assert.equal(a.el('profileSheet').classList.contains('open'),false);
+    assert.ok(subpage.querySelector('.sheet-content'));
+    assert.notEqual(subpage.querySelector('h2').textContent.trim(),'');
+    subpage.querySelector('.ui-settings-back').click();
+    assert.equal(subpage.hidden,true);
+  });
+  assert.deepEqual(a.errors,[]);
 });
 
 test('quick entry blocks writes for inactive subscriptions',t=>{

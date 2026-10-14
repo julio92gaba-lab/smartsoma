@@ -150,7 +150,7 @@ test('fixed expense creation and deletion require confirmation and refresh displ
   a.w.document.querySelector('[data-period="semana"]').click();await settle();
   assert.equal(a.el('summaryDespesasValue').textContent,'€25.00');
   assert.equal(a.el('summaryLiquidoValue').textContent,'€-25.00');
-  a.w.document.querySelector('#sheetScreenDespesasFixas .despesa-delete-btn').click();
+  a.w.document.querySelector('.ui-settings-subpage .despesa-delete-btn').click();
   assert.ok(a.el('despesaConfirmBackdrop').classList.contains('visible'));
   assert.ok(!JSON.parse(a.cache.despesasFixas).items[0].ate);
   a.click('despesaConfirmDeleteBtn');await settle();
