@@ -3859,6 +3859,23 @@
 
       var listCardAnimationTimer = 0;
 
+      function setExpandedListCard (card, expand) {
+        if (!listPlaceholder) return;
+        listPlaceholder.querySelectorAll('.semana-day-card').forEach(function (item) {
+          var isSelected = item === card && expand;
+          item.classList.toggle('is-expanded', isSelected);
+          item.classList.toggle('is-muted', expand && item !== card);
+          var itemHeader = item.querySelector('.semana-day-card-header');
+          if (itemHeader) itemHeader.setAttribute('aria-expanded', String(isSelected));
+        });
+        listPlaceholder.classList.toggle('has-expanded-card', expand);
+        document.documentElement.classList.add('semana-list-is-animating');
+        window.clearTimeout(listCardAnimationTimer);
+        listCardAnimationTimer = window.setTimeout(function () {
+          document.documentElement.classList.remove('semana-list-is-animating');
+        }, 360);
+      }
+
       // ---- Modo lista: um card por dia da semana, abaixo do filtro de
       // semana. Por enquanto mostra só o dia da semana; os detalhes de
       // cada dia serão adicionados depois.
@@ -3919,14 +3936,13 @@
             '<div class="semana-day-card-expenses"><span>Despesas do dia</span>' + expenseRows + '<div class="semana-day-card-expense-total"><span>Total</span><strong>' + formatEuro(despesasDia) + '</strong></div></div>' +
           '</div>';
         card.appendChild(details);
-        header.addEventListener('click', function () {
-          document.documentElement.classList.add('semana-list-is-animating');
-          window.clearTimeout(listCardAnimationTimer);
-          var expanded = card.classList.toggle('is-expanded');
-          header.setAttribute('aria-expanded', String(expanded));
-          listCardAnimationTimer = window.setTimeout(function () {
-            document.documentElement.classList.remove('semana-list-is-animating');
-          }, 360);
+        header.addEventListener('click', function (event) {
+          event.stopPropagation();
+          setExpandedListCard(card, !card.classList.contains('is-expanded'));
+        });
+        card.addEventListener('click', function (event) {
+          if (event.target.closest('button, a, input, select, textarea, label')) return;
+          setExpandedListCard(card, !card.classList.contains('is-expanded'));
         });
 
         return card;
@@ -3942,6 +3958,12 @@
           var card = buildDayCard(d, i);
           listPlaceholder.appendChild(card);
         }
+      }
+
+      if (listPlaceholder) {
+        listPlaceholder.addEventListener('click', function (event) {
+          if (!event.target.closest('.semana-day-card')) setExpandedListCard(null, false);
+        });
       }
 
       // A altura de cada card no modo lista fica travada na altura da
@@ -4004,8 +4026,8 @@
             '<th class="semana-metric-financeiro">' + I18N.t('semana.th.despesas') + '</th>' +
             '<th class="semana-metric-financeiro">' + I18N.t('semana.th.liquido') + '</th>' +
             '<th class="semana-metric-operacional">Ganhos</th>' +
-            '<th class="semana-metric-operacional">Quilómetros</th>' +
-            '<th class="semana-metric-operacional">Valor / KM</th>' +
+            '<th class="semana-metric-operacional">KM</th>' +
+            '<th class="semana-metric-operacional">€ / KM</th>' +
             '<th class="semana-metric-apps">' + I18N.t('semana.th.uber') + '</th>' +
             '<th class="semana-metric-apps">' + I18N.t('semana.th.bolt') + '</th>' +
             extraCols.map(function (platform) { return '<th class="semana-metric-apps">' + escHtml(platform.nome) + '</th>'; }).join('') +
@@ -4215,7 +4237,7 @@
           tdDesc.textContent = linha.entry.descricao;
           var tdValor = document.createElement('td');
           tdValor.className = 'semana-expense-value';
-          tdValor.textContent = formatPlainNumber(linha.entry.valor);
+          tdValor.textContent = formatEuro(linha.entry.valor);
           tr.appendChild(tdDia);
           tr.appendChild(tdDesc);
           tr.appendChild(tdValor);
@@ -4227,8 +4249,8 @@
         card.appendChild(scrollWrap);
         var footer = document.createElement('footer');
         footer.className = 'semana-expenses-footer';
-        footer.innerHTML = '<div class="semana-expenses-total"><span>Total da semana</span><strong>' + formatPlainNumber(total) + '</strong></div>' +
-          (maior ? '<span class="semana-expenses-largest">Maior gasto: ' + escHtml(maior.descricao) + ' - ' + formatPlainNumber(maior.valor) + '</span>' : '');
+        footer.innerHTML = '<div class="semana-expenses-total"><span>Total da semana</span><strong>' + formatEuro(total) + '</strong></div>' +
+          (maior ? '<span class="semana-expenses-largest">Maior gasto: ' + escHtml(maior.descricao) + ' - ' + formatEuro(maior.valor) + '</span>' : '');
         card.appendChild(footer);
         section.appendChild(card);
 

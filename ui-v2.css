@@ -1628,7 +1628,9 @@ html.semana-list-is-animating body { overflow-anchor:none; }
   margin-top:0;
   padding:0;
   background:var(--card-bg);
+  transition:opacity .2s ease;
 }
+.ui-v2 #homeListPageSemana .semana-day-card.is-muted { opacity:.35; }
 .ui-v2 #homeListPageSemana .semana-day-card::before {
   background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 120' preserveAspectRatio='none'><rect width='400' height='120' fill='%23FFFFFF'/><path d='M0,38 C80,29 120,29 200,42 C280,55 320,55 400,41 L400,0 L0,0 Z' fill='%230F5A2E' fill-opacity='0.10'/></svg>");
 }

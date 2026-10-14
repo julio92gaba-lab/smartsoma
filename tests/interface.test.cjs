@@ -129,14 +129,20 @@ test('weekly list cards keep a stable header, compact spacing and expand normall
   assert.doesNotMatch(card.querySelector('.semana-day-card-details-inner').textContent,/Seguro|FIXA/);
   assert.match(a.el('semanaExpensesSlot').textContent,/Combustível/);
   assert.match(a.el('semanaExpensesSlot').textContent,/Seguro.*FIXA/);
+  const cards=[...a.w.document.querySelectorAll('.semana-day-card')],secondCard=cards[1];
   header.click();assert.equal(card.classList.contains('is-expanded'),true);assert.equal(header.getAttribute('aria-expanded'),'true');assert.equal(a.w.document.documentElement.classList.contains('semana-list-is-animating'),true);
-  header.click();assert.equal(card.classList.contains('is-expanded'),false);assert.equal(header.getAttribute('aria-expanded'),'false');
+  assert.ok(cards.slice(1).every(item=>item.classList.contains('is-muted')));
+  secondCard.click();assert.equal(card.classList.contains('is-expanded'),false);assert.equal(secondCard.classList.contains('is-expanded'),true);assert.equal(secondCard.classList.contains('is-muted'),false);
+  a.w.document.querySelector('.semana-list-placeholder').dispatchEvent(new a.w.MouseEvent('click',{bubbles:true}));
+  assert.ok(cards.every(item=>!item.classList.contains('is-expanded')&&!item.classList.contains('is-muted')));
   await new Promise(resolve=>setTimeout(resolve,380));assert.equal(a.w.document.documentElement.classList.contains('semana-list-is-animating'),false);
   a.w.SemanaView.showTable();
   const mondayDate=String(monday.getDate()).padStart(2,'0')+'/'+String(monday.getMonth()+1).padStart(2,'0');
   const mondayRow=[...a.w.document.querySelectorAll('.semana-week-block tbody tr')].find(row=>row.querySelector('.semana-cell-date')?.textContent===mondayDate);
   const mondayFinancial=[...mondayRow.querySelectorAll('.semana-metric-financeiro')].map(el=>el.textContent);
   assert.deepEqual(mondayFinancial,['€ 150.00','€ 20.00','€ 130.00']);
+  assert.match(a.w.document.querySelector('.semana-metric-tabs').parentElement.querySelector('thead').textContent,/Ganhos.*KM.*€ \/ KM/);
+  assert.match(a.el('semanaExpensesSlot').textContent,/€ 20.00.*€ 50.00/);
   assert.deepEqual(a.errors,[]);
 });
 
