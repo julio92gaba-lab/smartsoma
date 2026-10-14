@@ -480,7 +480,7 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
   html.ui-v2,body.ui-v2 { --sidebar:0px; --ui-header:calc(82px + env(safe-area-inset-top,0px)); }
   .ui-sidebar { top:auto; width:100%; height:calc(72px + env(safe-area-inset-bottom,0px)); bottom:0; padding:8px 6px calc(8px + env(safe-area-inset-bottom,0px)); border:0; border-top:1px solid #2d3b30; }
   .ui-brand,.ui-brand-caption,.ui-sidebar-footer { display:none; }
-  .ui-navigation { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); height:100%; gap:0; }
+  .ui-navigation { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); height:100%; column-gap:4px; row-gap:0; }
   .ui-nav-item { grid-column:auto; min-width:0; display:flex; flex-direction:column; justify-content:center; gap:5px; padding:5px 2px; border:0; border-radius:8px; }
   .ui-nav-item[data-ui-route="semana"] { margin-right:16px; }
   .ui-nav-item[data-ui-route="downloads"] { grid-column:4; margin-left:16px; }
