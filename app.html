@@ -566,11 +566,19 @@
                             </div>
                         </div>
                         <div class="home-list-page" id="homeListPageRelatorio" hidden>
-                            <div class="home-card">
-                                <h2 class="legal-title" data-i18n="relatorio.title">Download Relatório</h2>
-                                <p class="ajuda-intro-text is-centered" data-i18n="relatorio.intro">O relatório reúne os detalhes diários do mês escolhido, todos juntos em um único PDF. Selecione o mês desejado no filtro abaixo.</p>
-
-                                <div class="relatorio-illustration" aria-hidden="true">
+                            <div class="download-page">
+                                <section class="download-hero" aria-labelledby="downloadPageTitle">
+                                    <div class="download-hero-copy">
+                                        <span class="download-kicker">SMARTSOMA</span>
+                                        <h2 class="legal-title" id="downloadPageTitle" data-i18n="relatorio.title">Download Relatório</h2>
+                                        <p class="ajuda-intro-text" data-i18n="relatorio.intro">O relatório reúne os detalhes diários do mês escolhido, todos juntos em um único PDF. Selecione o mês desejado no filtro abaixo.</p>
+                                        <div class="relatorio-highlights">
+                                            <span class="relatorio-highlight-pill" data-i18n="relatorio.highlight.dia">Detalhe por dia</span>
+                                            <span class="relatorio-highlight-pill" data-i18n="relatorio.highlight.semana">Resumo semanal</span>
+                                            <span class="relatorio-highlight-pill" data-i18n="relatorio.highlight.despesas">Despesas detalhadas</span>
+                                        </div>
+                                    </div>
+                                    <div class="relatorio-illustration" aria-hidden="true">
                                     <svg viewBox="0 0 120 120">
                                         <rect class="relatorio-ill-page" x="22" y="10" width="64" height="88" rx="7"/>
                                         <path class="relatorio-ill-fold" d="M70 10 L86 26 L70 26 Z"/>
@@ -585,36 +593,39 @@
                                         <polyline class="relatorio-ill-arrow" points="75 83 82 90 89 83" fill="none" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
                                         <line class="relatorio-ill-arrow" x1="73" y1="96" x2="91" y2="96" stroke-width="3.4" stroke-linecap="round"/>
                                     </svg>
-                                </div>
-                                <div class="relatorio-highlights">
-                                    <span class="relatorio-highlight-pill" data-i18n="relatorio.highlight.dia">Detalhe por dia</span>
-                                    <span class="relatorio-highlight-pill" data-i18n="relatorio.highlight.semana">Resumo semanal</span>
-                                    <span class="relatorio-highlight-pill" data-i18n="relatorio.highlight.despesas">Despesas detalhadas</span>
+                                    </div>
+                                </section>
+
+                                <div class="relatorio-period-controls" aria-label="Selecionar período do relatório">
+                                    <div class="period-nav-row">
+                                        <button type="button" class="period-nav-btn" id="relatorioPageMonthPrev" data-i18n-aria="semana.prevMesAria" aria-label="Mês anterior">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <polyline points="15 18 9 12 15 6"/>
+                                            </svg>
+                                        </button>
+                                        <div class="period-label" id="relatorioPageMonthLabel">setembro de 2026</div>
+                                        <button type="button" class="period-nav-btn" id="relatorioPageMonthNext" data-i18n-aria="semana.nextMesAria" aria-label="Próximo mês">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <polyline points="9 18 15 12 9 6"/>
+                                            </svg>
+                                        </button>
+                                    </div>
                                 </div>
 
-                                <div class="ui-download-action">
-                                <div class="period-nav-row">
-                                    <button type="button" class="period-nav-btn" id="relatorioPageMonthPrev" data-i18n-aria="semana.prevMesAria" aria-label="Mês anterior">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <polyline points="15 18 9 12 15 6"/>
+                                <section class="ui-download-action" aria-label="Exportar relatório em PDF">
+                                    <div class="download-format">
+                                        <span class="download-format-icon" aria-hidden="true">PDF</span>
+                                        <span aria-hidden="true">PDF</span>
+                                    </div>
+                                    <button type="button" class="dp-save-btn has-icon" id="relatorioPageDownloadBtn">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M12 3v11.5"/>
+                                            <polyline points="7.5 10.5 12 15 16.5 10.5"/>
+                                            <line x1="5" y1="19.5" x2="19" y2="19.5"/>
                                         </svg>
+                                        <span data-i18n="relatorio.download">Baixar PDF</span>
                                     </button>
-                                    <div class="period-label" id="relatorioPageMonthLabel">setembro de 2026</div>
-                                    <button type="button" class="period-nav-btn" id="relatorioPageMonthNext" data-i18n-aria="semana.nextMesAria" aria-label="Próximo mês">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <polyline points="9 18 15 12 9 6"/>
-                                        </svg>
-                                    </button>
-                                </div>
-                                <button type="button" class="dp-save-btn has-icon" id="relatorioPageDownloadBtn">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M12 3v11.5"/>
-                                        <polyline points="7.5 10.5 12 15 16.5 10.5"/>
-                                        <line x1="5" y1="19.5" x2="19" y2="19.5"/>
-                                    </svg>
-                                    <span data-i18n="relatorio.download">Baixar PDF</span>
-                                </button>
-                                </div>
+                                </section>
                             </div>
                         </div>
                     </div>

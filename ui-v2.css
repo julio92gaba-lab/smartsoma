@@ -1198,6 +1198,41 @@ body.ui-v2.theme-dark .ui-header { background:linear-gradient(180deg,rgba(20,38,
 body.ui-v2.theme-dark .resumo-period-controls.is-sticky,
 body.ui-v2.theme-dark #homeListPageSemana .semana-filter-controls.is-sticky { background:linear-gradient(180deg,rgba(20,38,28,.76),rgba(14,29,20,.68)); }
 
+/* Downloads: composição em vidro, com período sempre acessível. */
+.ui-v2 #homeListPageRelatorio .download-page { display:grid; gap:16px; max-width:900px; margin-inline:auto; }
+.ui-v2 #homeListPageRelatorio .download-hero,
+.ui-v2 #homeListPageRelatorio .ui-download-action { border:1px solid color-mix(in srgb,var(--ink) 12%,transparent); box-shadow:0 14px 34px rgba(11,31,20,.08); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); }
+.ui-v2 #homeListPageRelatorio .download-hero { position:relative; display:grid; grid-template-columns:minmax(0,1fr) 170px; align-items:center; gap:30px; overflow:hidden; padding:32px; border-radius:20px; background:linear-gradient(135deg,color-mix(in srgb,var(--card-bg) 82%,transparent),color-mix(in srgb,var(--input-bg) 68%,transparent)); text-align:left; }
+.ui-v2 #homeListPageRelatorio .download-hero::after { content:''; position:absolute; right:-70px; bottom:-100px; width:250px; height:250px; border-radius:50%; background:radial-gradient(circle,rgba(212,245,60,.22),transparent 66%); pointer-events:none; }
+.ui-v2 #homeListPageRelatorio .download-hero-copy { position:relative; z-index:1; }
+.ui-v2 #homeListPageRelatorio .download-kicker { display:block; margin-bottom:9px; color:var(--brand-green); font-size:.63rem; font-weight:800; letter-spacing:1.3px; }
+.ui-v2 #homeListPageRelatorio .legal-title { font:700 clamp(1.7rem,3vw,2.2rem)/1.05 'Bricolage Grotesque',sans-serif; letter-spacing:-.8px; }
+.ui-v2 #homeListPageRelatorio .ajuda-intro-text { max-width:520px; margin:12px 0 0; color:var(--muted); text-align:left; }
+.ui-v2 #homeListPageRelatorio .relatorio-highlights { justify-content:flex-start; margin:20px 0 0; }
+.ui-v2 #homeListPageRelatorio .relatorio-highlight-pill { padding:7px 10px; background:color-mix(in srgb,var(--card-bg) 68%,transparent); backdrop-filter:blur(10px); }
+.ui-v2 #homeListPageRelatorio .relatorio-illustration { position:relative; z-index:1; width:160px; height:160px; margin:0; border-color:color-mix(in srgb,var(--brand-green) 24%,var(--card-line)); border-radius:20px; background:color-mix(in srgb,var(--card-bg) 58%,transparent); box-shadow:inset 0 1px rgba(255,255,255,.42); }
+.ui-v2 #homeListPageRelatorio .relatorio-period-controls { position:sticky; top:var(--ui-header); z-index:30; display:flex; align-items:center; justify-content:center; min-height:58px; margin:0 -12px; padding:8px 12px; border:1px solid color-mix(in srgb,var(--ink) 10%,transparent); border-radius:14px; background:linear-gradient(180deg,rgba(231,237,222,.74),rgba(218,229,210,.67)); box-shadow:0 5px 18px rgba(11,31,20,.08),inset 0 -1px color-mix(in srgb,var(--ink) 7%,transparent); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); }
+body.ui-v2.theme-dark #homeListPageRelatorio .relatorio-period-controls { background:linear-gradient(180deg,rgba(20,38,28,.76),rgba(14,29,20,.68)); }
+.ui-v2 #homeListPageRelatorio .relatorio-period-controls .period-nav-row { display:grid; grid-template-columns:36px minmax(190px,auto) 36px; align-items:center; gap:8px; width:auto; margin:0; padding:4px; border-color:color-mix(in srgb,var(--ink) 12%,transparent); border-radius:12px; background:color-mix(in srgb,var(--card-bg) 62%,transparent); }
+.ui-v2 #homeListPageRelatorio .relatorio-period-controls .period-label { min-width:0; padding:8px 12px; color:var(--ink); font:800 .76rem/1 'Bricolage Grotesque',sans-serif; text-align:center; }
+.ui-v2 #homeListPageRelatorio .relatorio-period-controls .period-nav-btn { width:32px; height:32px; border-color:transparent; border-radius:9px; background:color-mix(in srgb,var(--input-bg) 72%,transparent); color:var(--ink); }
+.ui-v2 #homeListPageRelatorio .relatorio-period-controls .period-nav-btn:hover { background:var(--lime); color:#183021; }
+.ui-v2 #homeListPageRelatorio .ui-download-action { grid-template-columns:minmax(0,1fr) auto; align-items:center; max-width:none; margin:0; padding:18px 20px; border-radius:16px; background:linear-gradient(135deg,color-mix(in srgb,var(--card-bg) 78%,transparent),color-mix(in srgb,var(--input-bg) 58%,transparent)); }
+.ui-v2 #homeListPageRelatorio .download-format { display:flex; align-items:center; gap:11px; color:var(--ink); font-size:.8rem; font-weight:700; text-align:left; }
+.ui-v2 #homeListPageRelatorio .download-format-icon { display:grid; place-items:center; width:40px; height:40px; border:1px solid color-mix(in srgb,var(--brand-green) 30%,var(--card-line)); border-radius:11px; background:color-mix(in srgb,var(--brand-green) 12%,transparent); color:var(--brand-green); font-size:.62rem; font-weight:800; letter-spacing:.5px; }
+.ui-v2 #relatorioPageDownloadBtn { width:auto; min-width:168px; margin:0; padding-inline:18px; border-radius:10px; box-shadow:2px 3px 0 #172a17; }
+.ui-v2 #relatorioPageDownloadBtn:hover { filter:brightness(1.03); transform:translate(-1px,-1px); }
+.ui-v2 #relatorioPageDownloadBtn:active { box-shadow:none; transform:translate(1px,2px) scale(.98); }
+@media (max-width:760px) {
+  .ui-v2 #homeListPageRelatorio .download-page { gap:12px; }
+  .ui-v2 #homeListPageRelatorio .download-hero { grid-template-columns:1fr; gap:20px; padding:22px; border-radius:16px; }
+  .ui-v2 #homeListPageRelatorio .relatorio-illustration { width:124px; height:124px; margin-inline:auto; }
+  .ui-v2 #homeListPageRelatorio .relatorio-period-controls { min-height:54px; margin-inline:-4px; padding:7px 8px; border-radius:12px; }
+  .ui-v2 #homeListPageRelatorio .relatorio-period-controls .period-nav-row { grid-template-columns:34px minmax(0,1fr) 34px; width:100%; }
+  .ui-v2 #homeListPageRelatorio .ui-download-action { grid-template-columns:1fr; gap:14px; padding:16px; border-radius:14px; }
+  .ui-v2 #relatorioPageDownloadBtn { width:100%; min-height:46px; }
+}
+
 /* Início: barra de período compacta, com o calendário no seletor à direita. */
 .ui-v2 #resumoPeriodControls {
   display:flex;
