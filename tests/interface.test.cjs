@@ -93,6 +93,8 @@ test('daily rhythm follows the global period navigation date',async t=>{
 
 test('weekly view choice is stored and survives section navigation',async t=>{
   const a=setup(t);a.w.SmartSomaUI.go('semana');await settle();
+  const weekContent=a.el('semanaLiveContent');
+  assert.ok([...weekContent.children].indexOf(a.w.document.querySelector('.semana-filter-controls')) < [...weekContent.children].indexOf(a.el('semanaEarningsTitle').parentElement));
   a.click('subHeaderViewToggleGroup');
   assert.equal(a.w.localStorage.getItem('smartsoma:semana-view'),'table');
   assert.ok(a.w.document.body.classList.contains('semana-table-view'));
