@@ -1788,6 +1788,53 @@ body.ui-v2.theme-dark #homeListPageRelatorio .relatorio-period-controls { backgr
   .ui-v2 .semana-period-modal-footer .mm-save-btn { width:100%; }
 }
 
+/* Tema escuro: paleta própria, com superfícies profundas e contraste estável. */
+html.ui-v2.theme-dark,body.ui-v2.theme-dark {
+  --paper:#0a120f;
+  --ink:#edf5ef;
+  --ink-rgb:237,245,239;
+  --card-bg:#132019;
+  --input-bg:#1a2a21;
+  --card-line:#2b4034;
+  --brand-green:#72d6a1;
+  --brand-green-light:#a0ebbd;
+  --coral:#72d6a1;
+  --coral-deep:#4ebf82;
+  --amber:#d8ee62;
+  --mint:#d8ee62;
+  --teal:#102d20;
+  --danger:#ff9b8b;
+  --muted:#afc0b4;
+  --lime:#d8ee62;
+  color-scheme:dark;
+}
+body.ui-v2.theme-dark { background:var(--paper); color:var(--ink); }
+body.ui-v2.theme-dark .ui-sidebar { background:#07100c; border-color:#1d3025; color:var(--ink); }
+body.ui-v2.theme-dark .ui-nav-item { color:#b7c8bd; }
+body.ui-v2.theme-dark .ui-nav-item:hover { background:#17291e; color:var(--ink); }
+body.ui-v2.theme-dark .ui-header,
+body.ui-v2.theme-dark .resumo-period-controls.is-sticky,
+body.ui-v2.theme-dark #homeListPageSemana .semana-filter-controls.is-sticky { background:linear-gradient(180deg,#0d1812ee,#0a120fe8); border-color:#223429; }
+body.ui-v2.theme-dark :is(.home-card,.ui-metric,.ui-dashboard-bottom,.ui-settings-group,.sheet-actions,.ui-settings-subpage-body,.semana-table-wrap,.semana-despesas-detail-card) { background:var(--card-bg); border-color:var(--card-line); }
+body.ui-v2.theme-dark :is(.ui-metric-icon,.ganhos-hero-icon,.semana-period-month-nav,.semana-day-card-metrics>div,.despesa-card) { background:var(--input-bg); border-color:var(--card-line); }
+body.ui-v2.theme-dark :is(.ui-page-intro,.sheet-profile-row,#uiSettingsPage .sheet-profile-row,#homeListPageRelatorio .ui-download-action,.ss-driver-card,.meta-semanal-card,#metaSemanalCard,.semana-week-summary,.ui-help-hero) { background:linear-gradient(135deg,#123b29,#0d251a); border-color:#28543c; color:#f3faef; }
+body.ui-v2.theme-dark :is(.sheet-email,.sheet-subinfo,.meta-semanal-period,.semana-summary-liquido-label,.ui-help-hero p,.download-format) { color:#c4d7c9; }
+body.ui-v2.theme-dark #homeListPageSemana .semana-day-card { background:#14241c; border-color:#2b4034; }
+body.ui-v2.theme-dark #homeListPageSemana .semana-day-card::before { background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 120' preserveAspectRatio='none'><rect width='400' height='120' fill='%2314241C'/><path d='M0,38 C80,29 120,29 200,42 C280,55 320,55 400,41 L400,0 L0,0 Z' fill='%2372D6A1' fill-opacity='0.17'/></svg>"); }
+body.ui-v2.theme-dark #homeListPageSemana .semana-day-card-date { color:#b7c8bd; }
+body.ui-v2.theme-dark #homeListPageSemana .semana-day-card-row { color:#d6e2d9; }
+body.ui-v2.theme-dark #homeListPageSemana .semana-day-card-row .row-value { color:#f2f8f3; }
+body.ui-v2.theme-dark #homeListPageSemana .semana-day-card-badge-ganhos { background:#203529; color:#f2f8f3; }
+body.ui-v2.theme-dark #homeListPageSemana .semana-day-card-badge-liquido { background:#1c4b35; border-color:#39755a; color:#9fe4b8; }
+body.ui-v2.theme-dark :is(.mm-card,.modal-card,.lpm-card,.profile-sheet,.semana-period-modal-card) { background:#132019; color:var(--ink); border-color:#365343; box-shadow:0 24px 70px #000a; }
+body.ui-v2.theme-dark :is(.period-chip,.period-nav-btn,.period-label,.semana-week-picker-btn,.semana-period-week-option,.semana-period-month-nav button,.ui-settings-back,.sheet-action-btn,.ui-secondary) { background:var(--input-bg); color:var(--ink); border-color:var(--card-line); }
+body.ui-v2.theme-dark :is(.period-chip.selected,.ui-nav-item.is-active,.mm-save-btn,.dp-save-btn,.lpm-save-btn,.ui-button) { background:var(--lime); color:#132116; border-color:#a9c53c; }
+body.ui-v2.theme-dark :is(.ui-settings-subpage-head h2,.sheet-action-btn,.sheet-action-value,.semana-week-picker-num,.semana-week-picker-period,.download-feature-title,.ui-record-row strong) { color:var(--ink); }
+body.ui-v2.theme-dark .ui-metric-icon { background:#1d3829; color:#9fe4b8; }
+body.ui-v2.theme-dark .purple .ui-metric-icon { background:#302943; color:#c9b8ff; }
+body.ui-v2.theme-dark .coral .ui-metric-icon { background:#442d29; color:#ffb8a9; }
+body.ui-v2.theme-dark .amber .ui-metric-icon { background:#40391e; color:#f1d777; }
+
 /* Minha Semana: lista compacta, curva invertida e cabeçalho estável. */
 html.semana-list-is-animating,
 html.semana-list-is-animating body { overflow-anchor:none; }
@@ -1907,3 +1954,6 @@ body.ui-v2.theme-dark #homeListPageSemana .semana-day-card::before {
   .ui-v2 #homeListPageSemana .semana-day-card-details,
   .ui-v2 #homeListPageSemana .semana-day-card-details-inner { transition:none; }
 }
+
+body.ui-v2.theme-dark #homeListPageSemana .semana-day-card { background:#14241c; border-color:#2b4034; }
+body.ui-v2.theme-dark #homeListPageSemana .semana-day-card::before { background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 120' preserveAspectRatio='none'><rect width='400' height='120' fill='%2314241C'/><path d='M0,38 C80,29 120,29 200,42 C280,55 320,55 400,41 L400,0 L0,0 Z' fill='%2372D6A1' fill-opacity='0.17'/></svg>"); }

@@ -307,7 +307,7 @@
 "tamanho.popupTexto": "Escolha para aumentar ou diminuir a fonte e os elementos em todo o app.",
 "tamanho.concluir": "Concluído",
 "sheet.tutorial": "Tutorial",
-"sheet.ajuda": "Ajuda e tutorial",
+"sheet.ajuda": "Ajuda e FAQ",
 "sheet.termosPrivacidade": "Termos e Privacidade",
 "sheet.apagarDados": "Apagar dados",
 "apagar.aviso": "A eliminação dos dados é permanente e irreversível. São apagados apenas os valores inseridos e os cálculos das tabelas. A sua conta de utilizador permanece ativa.",
@@ -753,7 +753,7 @@
 "tamanho.popupTexto": "Choose to make the font and elements bigger or smaller across the whole app.",
 "tamanho.concluir": "Done",
 "sheet.tutorial": "Tutorial",
-"sheet.ajuda": "Help and tutorial",
+"sheet.ajuda": "Help and FAQ",
 "sheet.termosPrivacidade": "Terms and Privacy",
 "sheet.apagarDados": "Delete data",
 "apagar.aviso": "Data deletion is permanent and irreversible. Only inserted values and table calculations are deleted. Your user account remains active.",
@@ -6863,6 +6863,16 @@
       /* --- Init --- */
       carregar();
       renderTiles();
+      window.Multiplataformas = {
+        prepare: function () {
+          carregar();
+          renderLista();
+          novaInput.value = '';
+          novaImgData = null;
+          if (novaThumb) novaThumb.innerHTML = IMG_SVG;
+          if (fileInput) fileInput.value = '';
+        }
+      };
     })();
 
 

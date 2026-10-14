@@ -22,8 +22,8 @@
     news: '<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/>'
   };
   var text = {
-    pt: { resumo:'Visão geral', ganhos:'Ganhos diários', despesas:'Despesas', semana:'Detalhes da semana', relatorio:'Relatórios', downloads:'Downloads', ajustes:'Ajustes', hello:'Bom dia', afternoon:'Boa tarde', evening:'Boa noite', record:'Adicionar registo', calendar:'Escolher data', tag:'Para Estafetas e Motoristas de App.', ganhosNote:'Cada percurso conta. Regista os teus rendimentos e acompanha o dia.', despesasNote:'As tuas despesas, sem perder nenhum detalhe.', semanaNote:'Sete dias. Uma visão clara dos teus resultados.', relatorioNote:'Os teus resultados, organizados e prontos a guardar.', downloadsNote:'Os teus resultados, organizados e prontos a descarregar.', ajustesNote:'O SmartSoma, à tua medida.', theme:'Modo escuro', profile:'Editar perfil', help:'Ajuda e tutorial', normal:'Normal', newPlatform:'Nova plataforma', manage:'Gerir plataformas', addIncome:'Adicionar rendimento' },
-    en: { resumo:'Overview', ganhos:'Daily earnings', despesas:'Expenses', semana:'Weekly details', relatorio:'Reports', downloads:'Downloads', ajustes:'Settings', hello:'Good morning', afternoon:'Good afternoon', evening:'Good evening', record:'Add entry', calendar:'Choose date', tag:'For couriers and app drivers.', ganhosNote:'Every journey counts. Record your earnings and track your day.', despesasNote:'Your expenses, without missing a detail.', semanaNote:'Sete days. A clear view of your results.', relatorioNote:'Your results, organised and ready to save.', downloadsNote:'Your results, organised and ready to download.', ajustesNote:'SmartSoma, your way.', theme:'Dark mode', profile:'Edit profile', help:'Help and tutorial', normal:'Normal', newPlatform:'New platform', manage:'Manage platforms', addIncome:'Add earnings' }
+    pt: { resumo:'Visão geral', ganhos:'Ganhos diários', despesas:'Despesas', semana:'Detalhes da semana', relatorio:'Relatórios', downloads:'Downloads', ajustes:'Ajustes', hello:'Bom dia', afternoon:'Boa tarde', evening:'Boa noite', record:'Adicionar registo', calendar:'Escolher data', tag:'Para Estafetas e Motoristas de App.', ganhosNote:'Cada percurso conta. Regista os teus rendimentos e acompanha o dia.', despesasNote:'As tuas despesas, sem perder nenhum detalhe.', semanaNote:'Sete dias. Uma visão clara dos teus resultados.', relatorioNote:'Os teus resultados, organizados e prontos a guardar.', downloadsNote:'Os teus resultados, organizados e prontos a descarregar.', ajustesNote:'O SmartSoma, à tua medida.', theme:'Modo escuro', profile:'Editar perfil', help:'Ajuda e FAQ', normal:'Normal', newPlatform:'Nova plataforma', manage:'Gerir plataformas', addIncome:'Adicionar rendimento' },
+    en: { resumo:'Overview', ganhos:'Daily earnings', despesas:'Expenses', semana:'Weekly details', relatorio:'Reports', downloads:'Downloads', ajustes:'Settings', hello:'Good morning', afternoon:'Good afternoon', evening:'Good evening', record:'Add entry', calendar:'Choose date', tag:'For couriers and app drivers.', ganhosNote:'Every journey counts. Record your earnings and track your day.', despesasNote:'Your expenses, without missing a detail.', semanaNote:'Sete days. A clear view of your results.', relatorioNote:'Your results, organised and ready to save.', downloadsNote:'Your results, organised and ready to download.', ajustesNote:'SmartSoma, your way.', theme:'Dark mode', profile:'Edit profile', help:'Help and FAQ', normal:'Normal', newPlatform:'New platform', manage:'Manage platforms', addIncome:'Add earnings' }
   };
   function t(key) { return (text[window.I18N && I18N.getLang()] || text.pt)[key] || key; }
   function svg(key) { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (icons[key] || icons.arrow) + '</svg>'; }
@@ -85,6 +85,7 @@
   }
   function go(key) {
     if (key === 'default' || key === 'ganhos' || key === 'despesas') key = 'resumo';
+    if (window.SmartSomaSettings) window.SmartSomaSettings.close();
     if (key !== 'semana') calendarWeekSelection = false;
     resetRouteScroll();
     window.closeAllOverlays();
@@ -214,7 +215,11 @@
     window.addEventListener('resize',syncHeader);
     setupStickyPeriodControls();
     setupStickyWeekFilters();
-    document.addEventListener('languageChanged',function(){translate();syncHeader();});
+    document.addEventListener('languageChanged',function(){
+      translate();syncHeader();
+      requestAnimationFrame(refreshData);
+      setTimeout(refreshData,160);
+    });
     setupPages();
     setupNews();
     syncSidebarAccount();
@@ -692,6 +697,7 @@
       if(activeContent&&activeContent!==content)closeSettingsSubpage();
       if(screenId==='sheetScreenIdioma'&&window.IdiomaScreen)window.IdiomaScreen.prepare();
       if(screenId==='sheetScreenTamanho'&&window.TamanhoScreen)window.TamanhoScreen.prepare();
+      if(screenId==='sheetScreenMultiplataforma'&&window.Multiplataformas)window.Multiplataformas.prepare();
       activeContent=content;activeScreen=screen;screen.hidden=true;screen.classList.remove('is-active');
       subpageTitle.textContent=title;back.querySelector('span').textContent=say('Voltar para Ajustes','Back to Settings');
       subpageBody.replaceChildren(content);settings.hidden=true;subpage.hidden=false;window.closeProfileSheetPublic();window.scrollTo({top:0,behavior:'instant'});
