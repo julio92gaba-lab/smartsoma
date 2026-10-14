@@ -152,7 +152,13 @@
     $('appRoot').prepend(nav);
     nav.querySelector('.ui-brand').addEventListener('click',function(){go('resumo');});
     nav.querySelector('.ui-mobile-nav-brand').addEventListener('click',function(){go('resumo');});
-    $('uiSidebarProfile').addEventListener('click',function(){go('ajustes');});
+    function openSettingsProfile(){
+      go('ajustes');
+      setTimeout(function(){
+        if(window.SmartSomaSettings)window.SmartSomaSettings.open('sheetScreenDadosPessoais',say('Editar perfil','Edit profile'));
+      },180);
+    }
+    $('uiSidebarProfile').addEventListener('click',openSettingsProfile);
     $('uiSidebarSubscription').addEventListener('click',function(){
       var manage=$('gerirSubscricaoBtn');
       if(manage&&getComputedStyle(manage).display!=='none'){manage.click();return;}
@@ -164,9 +170,9 @@
     });
     var header=create('header','ui-header','<div class="ui-header-personal"><button type="button" id="uiHeaderAvatar" class="ui-header-avatar"></button><div class="ui-header-copy"><p id="uiHeaderDate" class="ui-eyebrow"></p><h1 id="uiHeaderTitle"></h1></div></div><div class="ui-header-actions"><button type="button" id="uiNews" class="ui-icon-button">'+svg('news')+'<span id="uiNewsBadge" class="ui-news-badge" hidden></span></button><button type="button" id="uiAdd" class="ui-add">'+svg('plus')+'</button></div>');
     $('appRoot').prepend(header);
-    $('uiHeaderAvatar').addEventListener('click',function(){go('ajustes');});
+    $('uiHeaderAvatar').addEventListener('click',openSettingsProfile);
     var headerAvatar=$('headerAvatarBtn');
-    if(headerAvatar)headerAvatar.addEventListener('click',function(e){e.preventDefault();e.stopImmediatePropagation();go('ajustes');},true);
+    if(headerAvatar)headerAvatar.addEventListener('click',function(e){e.preventDefault();e.stopImmediatePropagation();openSettingsProfile();},true);
     $('uiAdd').addEventListener('click',function(){window.closeProfileSheetPublic(); if(window.SmartSomaUI.openEntry) SmartSomaUI.openEntry(); else PlataformaModals.uber.open();});
     $('uiNews').setAttribute('aria-label',say('Novidades','News'));
     $('homeListPageSemana').prepend(heading('semana'));

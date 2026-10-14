@@ -1821,6 +1821,98 @@ body.ui-v2.theme-dark :is(.ui-page-intro,.sheet-profile-row,#uiSettingsPage .she
 body.ui-v2.theme-dark :is(.sheet-email,.sheet-subinfo,.meta-semanal-period,.semana-summary-liquido-label,.ui-help-hero p,.download-format) { color:#c4d7c9; }
 body.ui-v2.theme-dark #homeListPageSemana .semana-day-card { background:#14241c; border-color:#2b4034; }
 body.ui-v2.theme-dark #homeListPageSemana .semana-day-card::before { background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 120' preserveAspectRatio='none'><rect width='400' height='120' fill='%2314241C'/><path d='M0,38 C80,29 120,29 200,42 C280,55 320,55 400,41 L400,0 L0,0 Z' fill='%2372D6A1' fill-opacity='0.17'/></svg>"); }
+
+/* Ajustes › Perfil: hierarquia compacta e centrada. */
+.ui-v2 #uiSettingsPage .sheet-profile-row {
+  display:grid;
+  grid-template-columns:1fr;
+  justify-items:center;
+  gap:7px;
+  padding:24px 22px 18px;
+  text-align:center;
+}
+.ui-v2 #uiSettingsPage .sheet-avatar { width:86px; height:86px; border-width:2px; box-shadow:0 0 0 6px #d4f53c1c; }
+.ui-v2 #uiSettingsPage .sheet-profile-info { display:grid; justify-items:center; gap:2px; }
+.ui-v2 #uiSettingsPage .sheet-username { font-size:1.35rem; line-height:1.15; }
+.ui-v2 #uiSettingsPage .sheet-email { max-width:100%; font-size:.76rem; }
+.ui-v2 #uiSettingsPage #openDadosPessoaisBtn {
+  min-height:32px;
+  margin-top:4px;
+  padding:6px 11px;
+  border:1px solid #ffffff3d;
+  border-radius:999px;
+  background:#ffffff10;
+  box-shadow:none;
+  color:#f4f9ec;
+  font-size:.69rem;
+  font-weight:750;
+}
+.ui-v2 #uiSettingsPage #openDadosPessoaisBtn:hover { background:#ffffff1c; border-color:#d4f53c99; }
+.ui-v2 #uiSettingsPage #sheetProActiveBadge { margin-top:8px; padding:8px 12px; border-radius:9px; font-size:.73rem; }
+.ui-v2 #uiSettingsPage .ui-settings-columns { gap:10px; margin:10px 0; }
+.ui-v2 #uiSettingsPage .ui-settings-group,
+.ui-v2 #uiSettingsPage .sheet-actions:not(.ui-settings-group) { padding:7px 10px; border-radius:13px; }
+.ui-v2 #uiSettingsPage .ui-settings-group::before,
+.ui-v2 #uiSettingsPage .sheet-actions:not(.ui-settings-group)::before { padding:3px 5px 5px; }
+.ui-v2 #uiSettingsPage .sheet-action-btn { min-height:46px; padding-block:10px; }
+
+.ui-v2 .ui-settings-subpage-body .sheet-page-content:has(#dpNomeInput) {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  gap:12px;
+  align-items:start;
+}
+.ui-v2 .ui-settings-subpage-body .sheet-page-content:has(#dpNomeInput) .dp-photo-row {
+  grid-column:1/-1;
+  display:grid;
+  justify-items:center;
+  gap:10px;
+  margin:0 0 4px;
+  padding:18px;
+  border:1px solid var(--card-line);
+  border-radius:14px;
+  background:linear-gradient(135deg,color-mix(in srgb,var(--brand-green) 12%,var(--input-bg)),var(--input-bg));
+}
+.ui-v2 .ui-settings-subpage-body .sheet-page-content:has(#dpNomeInput) .dp-photo-thumb { width:82px; height:82px; }
+.ui-v2 .ui-settings-subpage-body .sheet-page-content:has(#dpNomeInput) .dp-upload-btn {
+  min-height:32px;
+  padding:6px 11px;
+  border:1px solid var(--card-line);
+  border-radius:999px;
+  background:var(--card-bg);
+  color:var(--ink);
+  font-size:.7rem;
+  font-weight:750;
+}
+.ui-v2 .ui-settings-subpage-body .sheet-page-content:has(#dpNomeInput) .dp-field-row,
+.ui-v2 .ui-settings-subpage-body .sheet-page-content:has(#dpNomeInput) .dp-field-full { width:auto; margin:0; }
+.ui-v2 .ui-settings-subpage-body .sheet-page-content:has(#dpNomeInput) .dp-field-full,
+.ui-v2 .ui-settings-subpage-body .sheet-page-content:has(#dpNomeInput) .sheet-divider,
+.ui-v2 .ui-settings-subpage-body .sheet-page-content:has(#dpNomeInput) #dpSaveBtn,
+.ui-v2 .ui-settings-subpage-body .sheet-page-content:has(#dpNomeInput) #dpChangePasswordBtn,
+.ui-v2 .ui-settings-subpage-body .sheet-page-content:has(#dpNomeInput) #cancelarSubscricaoSection,
+.ui-v2 .ui-settings-subpage-body .sheet-page-content:has(#dpNomeInput) #btnEliminarConta,
+.ui-v2 .ui-settings-subpage-body .sheet-page-content:has(#dpNomeInput) > .cancelar-sub-note { grid-column:1/-1; }
+.ui-v2 .ui-settings-subpage-body .sheet-page-content:has(#dpNomeInput) .dp-field { gap:6px; }
+.ui-v2 .ui-settings-subpage-body .sheet-page-content:has(#dpNomeInput) .dp-field-label { font-size:.68rem; font-weight:800; letter-spacing:.04em; text-transform:uppercase; }
+.ui-v2 .ui-settings-subpage-body .sheet-page-content:has(#dpNomeInput) .dp-input,
+.ui-v2 .ui-settings-subpage-body .sheet-page-content:has(#dpNomeInput) .dp-date-btn { min-height:44px; border-radius:10px; }
+.ui-v2 .ui-settings-subpage-body .sheet-page-content:has(#dpNomeInput) .sheet-divider { margin:2px 0; opacity:.55; }
+.ui-v2 .ui-settings-subpage-body .sheet-page-content:has(#dpNomeInput) .dp-save-btn { min-height:42px; border-radius:10px; }
+.ui-v2 .ui-settings-subpage-body .sheet-page-content:has(#dpNomeInput) #cancelarSubscricaoSection {
+  padding:15px;
+  border:1px solid var(--card-line);
+  border-radius:13px;
+  background:var(--input-bg);
+}
+.ui-v2 .ui-settings-subpage-body .sheet-page-content:has(#dpNomeInput) #cancelarSubscricaoSection .sheet-divider { display:none; }
+.ui-v2 .ui-settings-subpage-body .sheet-page-content:has(#dpNomeInput) #btnEliminarConta { background:transparent; color:var(--danger); border-color:color-mix(in srgb,var(--danger) 55%,var(--card-line)); }
+.ui-v2 .ui-settings-subpage-body .sheet-page-content:has(#dpNomeInput) > .cancelar-sub-note { margin:0; text-align:center; }
+@media (max-width:620px) {
+  .ui-v2 #uiSettingsPage .sheet-profile-row { padding:22px 18px 16px; }
+  .ui-v2 #uiSettingsPage .sheet-avatar { width:78px; height:78px; }
+  .ui-v2 .ui-settings-subpage-body .sheet-page-content:has(#dpNomeInput) { grid-template-columns:1fr; gap:10px; }
+}
 body.ui-v2.theme-dark #homeListPageSemana .semana-day-card-date { color:#b7c8bd; }
 body.ui-v2.theme-dark #homeListPageSemana .semana-day-card-row { color:#d6e2d9; }
 body.ui-v2.theme-dark #homeListPageSemana .semana-day-card-row .row-value { color:#f2f8f3; }
