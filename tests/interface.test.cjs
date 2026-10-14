@@ -115,7 +115,11 @@ test('weekly list cards keep a stable header, compact spacing and expand normall
   const card=a.w.document.querySelector('.semana-day-card'),header=card.querySelector('.semana-day-card-header');
   assert.ok(card.querySelector('.semana-day-card-details-inner'));
   assert.deepEqual([...card.querySelectorAll('.semana-platform-icon img')].map(img=>img.getAttribute('src')),['01uber.png','02bolt.png']);
-  assert.equal(card.querySelectorAll('.semana-day-card-metrics > div').length,4);
+  assert.equal(a.el('semanaEarningsSubtitle').textContent.trim(),'As despesas fixas são lançadas sempre à segunda-feira e apresentadas na tabela de despesas, não sendo visualizadas na secção de faturação.');
+  assert.equal(card.querySelector('.semana-day-card-summary > span').textContent,'Resumo geral');
+  assert.deepEqual([...card.querySelectorAll('.semana-day-card-metrics small')].map(el=>el.textContent),['Bruto','Despesas','Distância']);
+  assert.equal(card.querySelectorAll('.semana-day-card-metrics > div').length,3);
+  assert.doesNotMatch(card.querySelector('.semana-day-card-details-inner').textContent,/Lucro líquido/);
   header.click();assert.equal(card.classList.contains('is-expanded'),true);assert.equal(header.getAttribute('aria-expanded'),'true');assert.equal(a.w.document.documentElement.classList.contains('semana-list-is-animating'),true);
   header.click();assert.equal(card.classList.contains('is-expanded'),false);assert.equal(header.getAttribute('aria-expanded'),'false');
   await new Promise(resolve=>setTimeout(resolve,380));assert.equal(a.w.document.documentElement.classList.contains('semana-list-is-animating'),false);

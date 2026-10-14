@@ -3901,11 +3901,13 @@
         details.innerHTML =
           '<div class="semana-day-card-details-inner">' +
             '<div class="semana-day-card-platforms"><span>Ganhos por plataforma</span>' + platformRows + '</div>' +
-            '<div class="semana-day-card-metrics">' +
-              '<div class="is-gross"><small>Faturação bruta</small><strong>' + formatEuro(ganhosDia) + '</strong></div>' +
-              '<div class="is-expense-summary"><small>Despesas</small><strong>' + formatEuro(despesasDia) + '</strong></div>' +
-              '<div class="is-net"><small>Lucro líquido</small><strong>' + formatEuro(liquidoDia) + '</strong></div>' +
-              '<div class="is-distance"><small>Quilómetros</small><strong>' + formatKm(badges.distancia) + '</strong></div>' +
+            '<div class="semana-day-card-summary">' +
+              '<span>Resumo geral</span>' +
+              '<div class="semana-day-card-metrics">' +
+                '<div class="is-gross"><small>Bruto</small><strong>' + formatEuro(ganhosDia) + '</strong></div>' +
+                '<div class="is-expense-summary"><small>Despesas</small><strong>' + formatEuro(despesasDia) + '</strong></div>' +
+                '<div class="is-distance"><small>Distância</small><strong>' + formatKm(badges.distancia) + '</strong></div>' +
+              '</div>' +
             '</div>' +
             '<div class="semana-day-card-expenses"><span>Despesas do dia</span>' + expenseRows + '<div class="semana-day-card-expense-total"><span>Total</span><strong>' + formatEuro(despesasDia) + '</strong></div></div>' +
           '</div>';
