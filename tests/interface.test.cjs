@@ -116,8 +116,9 @@ test('weekly list cards keep a stable header, compact spacing and expand normall
   assert.ok(card.querySelector('.semana-day-card-details-inner'));
   assert.deepEqual([...card.querySelectorAll('.semana-platform-icon img')].map(img=>img.getAttribute('src')),['01uber.png','02bolt.png']);
   assert.equal(card.querySelectorAll('.semana-day-card-metrics > div').length,4);
-  header.click();assert.equal(card.classList.contains('is-expanded'),true);assert.equal(header.getAttribute('aria-expanded'),'true');
+  header.click();assert.equal(card.classList.contains('is-expanded'),true);assert.equal(header.getAttribute('aria-expanded'),'true');assert.equal(a.w.document.documentElement.classList.contains('semana-list-is-animating'),true);
   header.click();assert.equal(card.classList.contains('is-expanded'),false);assert.equal(header.getAttribute('aria-expanded'),'false');
+  await new Promise(resolve=>setTimeout(resolve,380));assert.equal(a.w.document.documentElement.classList.contains('semana-list-is-animating'),false);
   assert.deepEqual(a.errors,[]);
 });
 

@@ -3850,6 +3850,8 @@
         return platVisibleFor(dateKeyFor(monday), dateKeyFor(sunday), lista);
       }
 
+      var listCardAnimationTimer = 0;
+
       // ---- Modo lista: um card por dia da semana, abaixo do filtro de
       // semana. Por enquanto mostra só o dia da semana; os detalhes de
       // cada dia serão adicionados depois.
@@ -3909,8 +3911,13 @@
           '</div>';
         card.appendChild(details);
         header.addEventListener('click', function () {
+          document.documentElement.classList.add('semana-list-is-animating');
+          window.clearTimeout(listCardAnimationTimer);
           var expanded = card.classList.toggle('is-expanded');
           header.setAttribute('aria-expanded', String(expanded));
+          listCardAnimationTimer = window.setTimeout(function () {
+            document.documentElement.classList.remove('semana-list-is-animating');
+          }, 360);
         });
 
         return card;

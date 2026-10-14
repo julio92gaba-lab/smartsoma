@@ -1616,6 +1616,8 @@ body.ui-v2.theme-dark #homeListPageSemana .semana-filter-controls.is-sticky { ba
 }
 
 /* Minha Semana: lista compacta, curva invertida e cabeçalho estável. */
+html.semana-list-is-animating,
+html.semana-list-is-animating body { overflow-anchor:none; }
 .ui-v2 #homeListPageSemana .semana-list-placeholder {
   gap:8px;
   padding-top:0;
