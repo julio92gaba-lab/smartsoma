@@ -303,7 +303,7 @@
     $('uiChartDetails').addEventListener('click',function(){
       go('semana');
     });
-    $('uiOverviewFixed').addEventListener('click',openFixedExpensesModal);
+    $('uiOverviewFixed').addEventListener('click',openFixedExpensesPage);
     var goal=create('div','ui-goal-progress','<div class="ui-goal-watermark" aria-hidden="true"><svg viewBox="0 0 240 240" focusable="false"><text x="120" y="178" text-anchor="middle">$</text></svg></div><div class="ui-goal-topline"><span class="ui-goal-tag" id="uiGoalTag"></span><button type="button" id="uiGoalEdit" class="ui-goal-edit"></button><span id="uiGoalPeriod"></span></div><div class="ui-goal-grid"><div class="ui-goal-copy"><h2 id="uiGoalTitle"></h2><p id="uiGoalCopy"></p><div class="ui-goal-actions" hidden><button type="button" id="uiGoalGross"></button><button type="button" id="uiGoalNet"></button></div></div><div class="ui-goal-number"><span id="uiGoalProgressLabel"></span><strong id="uiGoalPercent"></strong><small id="uiGoalAmounts"></small><small id="uiGoalType"></small></div></div><div class="ui-progress-wrap"><div class="ui-progress-track" id="uiGoalTrack" role="progressbar" aria-valuemin="0" aria-valuemax="100"><div id="uiGoalFill"></div></div><div id="uiGoalDays" class="ui-goal-days"></div></div>');
     $('metaSemanalCard').append(goal);
     $('uiGoalEdit').addEventListener('click',function(){
@@ -469,31 +469,11 @@
     var max=Math.max.apply(null,weeks.map(function(week){return week.gross;}).concat([0])),chart=create('div','ui-month-chart');weeks.forEach(function(week,index){var bar=create('div','ui-month-bar'),fill=create('i'),label=create('span');fill.style.height=(max?Math.max(4,week.gross/max*100):4)+'%';fill.title=money(week.gross);label.textContent=say('Semana ','Week ')+(index+1);bar.append(fill,label);chart.append(bar);});
     var best=weeks.reduce(function(result,week,index){return week.gross>result.gross?{gross:week.gross,index:index}:result;},{gross:0,index:0}),highlight=create('p','ui-rhythm-highlight');highlight.textContent=best.gross>0?'⭐ '+say('Melhor semana: Semana ','Best week: Week ')+(best.index+1)+say(' foi a tua mais lucrativa: ',' was your most profitable: ')+money(best.gross):say('Ainda não há ganhos registados neste mês.','No earnings recorded this month yet.');target.replaceChildren(chart,highlight);
   }
-  function openFixedExpensesModal(){
-    var screen=$('sheetScreenDespesasFixas'),content=screen&&screen.querySelector('.sheet-content');
-    if(!content)return;
-    var backdrop=$('uiFixedExpensesModalBackdrop');
-    if(!backdrop){
-      backdrop=create('div','mm-backdrop ui-fixed-expenses-modal-backdrop');backdrop.id='uiFixedExpensesModalBackdrop';
-      var card=create('div','mm-card ui-fixed-expenses-modal-card');card.setAttribute('role','dialog');card.setAttribute('aria-modal','true');card.setAttribute('aria-labelledby','uiFixedExpensesModalTitle');
-      var head=create('div','ui-fixed-expenses-modal-head','<h3 class="mm-title" id="uiFixedExpensesModalTitle"></h3><button type="button" class="ui-icon-button" aria-label="Fechar">×</button>');
-      head.querySelector('button').addEventListener('click',closeFixedExpensesModal);card.append(head);backdrop.append(card);document.body.append(backdrop);
-      backdrop.addEventListener('click',function(e){if(e.target===backdrop)closeFixedExpensesModal();});
-      document.addEventListener('keydown',function(e){if(e.key==='Escape'&&backdrop.classList.contains('visible'))closeFixedExpensesModal();});
-    }
-    window.closeAllOverlays();document.dispatchEvent(new CustomEvent('fixedExpensesFormReset'));
-    var card=backdrop.querySelector('.ui-fixed-expenses-modal-card');card.append(content);screen.hidden=true;
-    backdrop.querySelector('h3').textContent=say('Despesas fixas','Fixed expenses');
-    backdrop._returnFocus=document.activeElement;backdrop.classList.add('visible');
-    requestAnimationFrame(function(){var input=content.querySelector('input');if(input)input.focus();});
-  }
-  function closeFixedExpensesModal(){
-    var backdrop=$('uiFixedExpensesModalBackdrop'),screen=$('sheetScreenDespesasFixas');
-    if(!backdrop||!backdrop.classList.contains('visible')||!screen)return;
-    document.dispatchEvent(new CustomEvent('fixedExpensesFormReset'));
-    var content=backdrop.querySelector('.sheet-content');if(content)screen.append(content);
-    backdrop.classList.remove('visible');
-    if(backdrop._returnFocus&&typeof backdrop._returnFocus.focus==='function')backdrop._returnFocus.focus();
+  function openFixedExpensesPage(){
+    if(window.SmartSomaUI)window.SmartSomaUI.go('ajustes');
+    window.setTimeout(function(){
+      if(window.SmartSomaSettings)window.SmartSomaSettings.open('sheetScreenDespesasFixas',say('Despesas fixas','Fixed expenses'));
+    },160);
   }
   function renderOverviewExpenses(days){
     var fixedSource=$('despesaFixaLembreteEl');
@@ -663,10 +643,11 @@
     ['openDespesasFixasBtn','openMultiplataformaBtn'].forEach(function(id){management.append($(id));});
     ['openIdiomaBtn','openTamanhoBtn','openAjudaBtn'].forEach(function(id){preferences.append($(id));});
     columns.append(management,preferences);
-    settings.querySelector('.sheet-profile-row').append($('openDadosPessoaisBtn'));
-    $('sheetProActiveBadge').after(columns);
-    // The tutorial remains the original guided flow; its launcher is now on Help.
-    $('openTutorialBtn').hidden=true;
+    var profileCard=settings.querySelector('.sheet-profile-row');
+    profileCard.append($('sheetProActiveBadge'),$('openDadosPessoaisBtn'));
+    var profileImage=profileCard.querySelector('.sheet-avatar img');
+    if(profileImage){profileCard.style.setProperty('--profile-photo','url("'+profileImage.src.replace(/"/g,'\\"')+'")');profileCard.classList.add('has-profile-photo');}
+    profileCard.after(columns);
     settings.querySelectorAll('.sheet-actions').forEach(function(n){if(!n.children.length)n.remove();else if(Array.from(n.children).every(function(c){return c.hidden;}))n.hidden=true;});
     var support=$('openApagarDadosBtn').closest('.sheet-actions');
     if(support) support.dataset.title=say('Conta e suporte','Account and support');
@@ -679,8 +660,7 @@
     document.addEventListener('fixedExpenseSaved',resetFixedForm);
     var helper=$('sheetScreenDespesasFixas').querySelector('.mm-helper-text');helper.removeAttribute('data-i18n');
     var help=$('sheetScreenAjuda').querySelector('.sheet-content');
-    help.innerHTML='<section class="ui-help-hero"><p class="ui-eyebrow">SMARTSOMA</p><h2 id="uiHelpTitle"></h2><a href="mailto:contacto@smartsoma.pt">contacto@smartsoma.pt</a><p>Lisboa, Portugal</p><button id="uiTutorialStart" type="button" class="ui-button">Tutorial →</button></section><section class="home-card ui-faq"><h2 id="uiFaqTitle"></h2><div id="uiFaqItems"></div></section>';
-    $('uiTutorialStart').addEventListener('click',function(){$('openTutorialBtn').click();});
+    help.innerHTML='<section class="ui-help-hero"><p class="ui-eyebrow">SMARTSOMA</p><h2 id="uiHelpTitle"></h2><a href="mailto:contacto@smartsoma.pt">contacto@smartsoma.pt</a><p>Lisboa, Portugal</p></section><section class="home-card ui-faq"><h2 id="uiFaqTitle"></h2><div id="uiFaqItems"></div></section>';
 
     /* Subpáginas de Ajustes: reaproveitam os ecrãs e a lógica existente,
        mas deixam de abrir o painel/modal legado. */
@@ -729,6 +709,14 @@
       setTimeout(function(){go('resumo');refreshData();},240);
     },true);
     window.SmartSomaSettings={open:openSettingsSubpage,close:closeSettingsSubpage};
+
+    var previousScroll=0;
+    $('homeListView').addEventListener('scroll',function(){
+      var next=this.scrollTop;
+      if(Math.abs(next-previousScroll)<8)return;
+      document.body.classList.toggle('ui-mobile-nav-hidden',next>previousScroll&&next>24);
+      previousScroll=next;
+    },{passive:true});
     var faqs=[
       ['Como registar os meus ganhos?','Escolhe a data no calendário e toca em +. Em Ganhos, seleciona o ícone da plataforma, insere o total do dia e guarda. Uber, Bolt e as tuas plataformas ficam separadas.','How do I record earnings?','Choose a date in the calendar and tap +. Under Earnings, select a platform, enter its daily total and save. Each platform is recorded separately.'],
       ['Posso corrigir um valor já guardado?','Sim. Abre a plataforma na página Ganhos diários ou seleciona-a no registo rápido. O valor guardado aparece no campo. Guardar substitui esse total; não soma uma segunda entrada.','Can I correct an amount?','Yes. Open the platform in Daily earnings or select it in the quick entry. Saving replaces that day’s total rather than adding a second entry.'],

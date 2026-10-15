@@ -94,10 +94,10 @@
 
     <!-- PWA -->
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#000000">
+    <meta name="theme-color" content="#F3F8FA">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="SmartSoma">
     <link rel="apple-touch-icon" href="icon-192.png">
 
@@ -842,14 +842,6 @@
                                 <span class="lang-name" id="tamanhoCurrentLabel">Pequeno</span>
                             </span>
                         </button>
-                        <button type="button" class="sheet-action-btn" id="openTutorialBtn">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="12" cy="12" r="9"/>
-                                <path d="M9.5 9.3c.3-1 1.2-1.7 2.5-1.7 1.5 0 2.6.9 2.6 2.1 0 1-.6 1.5-1.6 2.1-.9.5-1.3.9-1.3 1.8"/>
-                                <circle cx="12" cy="16.3" r="0.9" fill="currentColor" stroke="none"/>
-                            </svg>
-                            <span data-i18n="sheet.tutorial">Tutorial</span>
-                        </button>
                         <button type="button" class="sheet-action-btn" id="openAjudaBtn">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                                 <circle cx="12" cy="12" r="9"/>
@@ -893,51 +885,31 @@
             <div class="sheet-screen" id="sheetScreenDadosPessoais" hidden>
                 <div class="sheet-content sheet-page-content">
 
-                    <!-- Foto de perfil -->
-                    <div class="dp-photo-row">
-                        <div class="dp-photo-thumb" id="dpPhotoThumb"></div>
-                        <button type="button" class="dp-upload-btn" id="dpUploadPhotoBtn" data-i18n="dp.upload">Carregar imagem..</button>
-                    </div>
-
-                    <!-- Nome -->
-                    <div class="dp-field-row dp-field-row-single">
-                        <label class="dp-field">
-                            <span class="dp-field-label" data-i18n="dp.nome">Nome</span>
-                            <input type="text" class="dp-input" id="dpNomeInput" data-i18n-ph="dp.nomePh" placeholder="Seu nome" maxlength="60">
-                        </label>
-                    </div>
-
-                    <!-- Email -->
-                    <div class="dp-field-row dp-field-row-single">
-                        <div class="dp-field">
-                            <span class="dp-field-label" id="dpEmailLabel" data-i18n="dp.email">Email</span>
-                            <input type="email" class="dp-input dp-input-readonly" id="dpEmailInput" value="" readonly aria-readonly="true" aria-labelledby="dpEmailLabel" tabindex="-1" autocomplete="off">
+                    <section class="profile-edit-card">
+                        <div class="dp-photo-row">
+                            <div class="dp-photo-thumb" id="dpPhotoThumb"></div>
+                            <button type="button" class="dp-upload-btn" id="dpUploadPhotoBtn" data-i18n="dp.upload">Carregar imagem..</button>
                         </div>
-                    </div>
+                    </section>
 
-                    <!-- Data de início -->
-                    <label class="dp-field dp-field-full">
-                        <span class="dp-field-label" data-i18n="dp.desdeQuando">Desde quando trabalha com apps?</span>
-                        <button type="button" class="dp-date-btn" id="dpDriverSinceBtn">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="3.5" y="5" width="17" height="16" rx="2.5"/>
-                                <line x1="3.5" y1="10" x2="20.5" y2="10"/>
-                                <line x1="8" y1="3" x2="8" y2="6.6"/>
-                                <line x1="16" y1="3" x2="16" y2="6.6"/>
-                            </svg>
-                            <span id="dpDriverSinceLabel" data-i18n="dp.selecionarData">Selecionar data</span>
-                        </button>
-                    </label>
+                    <section class="profile-edit-card">
+                        <div class="dp-field-row dp-field-row-single">
+                            <label class="dp-field">
+                                <span class="dp-field-label" data-i18n="dp.nome">Nome</span>
+                                <input type="text" class="dp-input" id="dpNomeInput" data-i18n-ph="dp.nomePh" placeholder="Seu nome" maxlength="60">
+                            </label>
+                        </div>
+                        <div class="dp-field-row dp-field-row-single">
+                            <div class="dp-field">
+                                <span class="dp-field-label" id="dpEmailLabel" data-i18n="dp.email">Email</span>
+                                <input type="email" class="dp-input dp-input-readonly" id="dpEmailInput" value="" readonly aria-readonly="true" aria-labelledby="dpEmailLabel" tabindex="-1" autocomplete="off">
+                            </div>
+                        </div>
+                        <button type="button" class="dp-save-btn" id="dpSaveBtn" data-i18n="dp.atualizarDados">Atualizar Dados Pessoais</button>
+                        <button type="button" class="dp-save-btn dp-save-btn-secondary" id="dpChangePasswordBtn" data-i18n="dp.atualizarPassword" hidden>Atualizar Password</button>
+                    </section>
 
-                    <div class="sheet-divider"></div>
-
-                    <!-- Guardar -->
-                    <button type="button" class="dp-save-btn" id="dpSaveBtn" data-i18n="dp.atualizarDados">Atualizar Dados Pessoais</button>
-                    <button type="button" class="dp-save-btn dp-save-btn-secondary" id="dpChangePasswordBtn" data-i18n="dp.atualizarPassword" hidden>Atualizar Password</button>
-
-                    <!-- Subscrição (só visível se activa) -->
-                    <div id="cancelarSubscricaoSection" style="display:none">
-                        <div class="sheet-divider" style="margin-top:1.5rem"></div>
+                    <section class="profile-edit-card" id="cancelarSubscricaoSection" style="display:none">
                         <p style="font-size:.68rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;text-align:center;opacity:.5;color:var(--ink);margin:0 0 .75rem;">Subscrição</p>
                         <div class="cancelar-sub-info">
                             <span class="cancelar-sub-badge" id="subSectionBadge">ACTIVO</span>
@@ -947,15 +919,15 @@
                             Gerir subscrição
                         </a>
                         <p class="cancelar-sub-note" id="subSectionNote">Altera o plano, o cartão ou cancela no portal do Creem.</p>
-                    </div>
+                    </section>
 
-                    <!-- Zona de perigo -->
-                    <div class="sheet-divider" style="margin-top:1.5rem"></div>
-                    <p style="font-size:.68rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;text-align:center;opacity:.5;color:var(--ink);margin:0 0 .75rem;">Zona de perigo</p>
-                    <button type="button" class="dp-save-btn dp-save-btn-danger" id="btnEliminarConta">
-                        Eliminar conta
-                    </button>
-                    <p class="cancelar-sub-note">Apaga permanentemente a conta e todos os dados guardados no SmartSoma.</p>
+                    <section class="profile-edit-card profile-edit-card-danger">
+                        <p style="font-size:.68rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;text-align:center;opacity:.5;color:var(--ink);margin:0 0 .75rem;">Zona de perigo</p>
+                        <button type="button" class="dp-save-btn dp-save-btn-danger" id="btnEliminarConta">
+                            Eliminar conta
+                        </button>
+                        <p class="cancelar-sub-note">Apaga permanentemente a conta e todos os dados guardados no SmartSoma.</p>
+                    </section>
 
                 </div>
             </div>
@@ -1111,19 +1083,6 @@
                     <button type="button" class="dp-save-btn" id="pwdChangeConcluirBtn" data-i18n="pwdChange.concluir">Concluir</button>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <div class="modal-backdrop" id="driverSinceModalBackdrop">
-        <div class="modal-card mm-wheel-card" role="dialog" aria-modal="true" aria-labelledby="driverSinceModalTitle" id="driverSinceModalCard">
-            <h3 class="modal-title" id="driverSinceModalTitle" data-i18n="wheel.title">Desde quando é motorista?</h3>
-            <div class="mm-wheel-picker">
-                <div class="mm-wheel-highlight" aria-hidden="true"></div>
-                <div class="mm-wheel-col" id="wheelDayCol"></div>
-                <div class="mm-wheel-col" id="wheelMonthCol"></div>
-                <div class="mm-wheel-col" id="wheelYearCol"></div>
-            </div>
-            <button type="button" class="dp-save-btn mm-wheel-save-btn" id="wheelSaveBtn" data-i18n="app.save">Salvar</button>
         </div>
     </div>
 
@@ -1467,45 +1426,6 @@
         <div class="mm-secondary-action">
             <button type="button" class="mm-text-link" id="subExpiradaSairBtn">Sair da conta</button>
         </div>
-    </div>
-</div>
-
-<div class="mm-backdrop" id="tutorialStartBackdrop">
-    <div class="mm-card" role="dialog" aria-modal="true" aria-labelledby="tutorialStartTitle" id="tutorialStartCard">
-        <h3 class="mm-title" id="tutorialStartTitle" data-i18n="tut.popup.title">Tutorial</h3>
-        <p class="mm-helper-text" data-i18n="tut.popup.text">Quer ver uma visita guiada pela aplicação? Leva menos de um minuto e pode sair quando quiser.</p>
-        <button type="button" class="mm-save-btn" id="tutorialStartBtn" data-i18n="tut.popup.start">Iniciar</button>
-        <div class="mm-secondary-action">
-            <button type="button" class="mm-text-link" id="tutorialLaterBtn" data-i18n="tut.popup.later">Agora não</button>
-        </div>
-    </div>
-</div>
-
-<div class="tut-overlay" id="tutorialOverlay" hidden>
-    <div class="tut-spot" id="tutorialSpot"></div>
-    <div class="tut-balloon" id="tutorialBalloon" role="dialog" aria-modal="true" aria-live="polite">
-        <span class="tut-arrow" id="tutorialArrow" aria-hidden="true"></span>
-        <button type="button" class="tut-close" id="tutorialCloseBtn" data-i18n-aria="tut.closeAria" aria-label="Fechar tutorial">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-            </svg>
-        </button>
-        <p class="tut-title" id="tutorialTitle"></p>
-        <p class="tut-text" id="tutorialText"></p>
-        <div class="tut-actions">
-            <button type="button" class="tut-btn tut-btn-ghost" id="tutorialBackBtn"></button>
-            <span class="tut-counter" id="tutorialCounter"></span>
-            <button type="button" class="tut-btn tut-btn-primary" id="tutorialNextBtn"></button>
-        </div>
-    </div>
-</div>
-
-<div class="mm-backdrop" id="tutorialEndBackdrop">
-    <div class="mm-card" role="dialog" aria-modal="true" aria-labelledby="tutorialEndTitle" id="tutorialEndCard">
-        <h3 class="mm-title" id="tutorialEndTitle" data-i18n="tut.end.title">Fim do tutorial</h3>
-        <p class="mm-helper-text" data-i18n="tut.end.text">Pode voltar a vê-lo sempre que quiser, através do menu Ajustes.</p>
-        <p class="tut-end-highlight" data-i18n="tut.end.highlight">Bons ganhos!</p>
-        <button type="button" class="mm-save-btn" id="tutorialEndCloseBtn" data-i18n="tut.end.fechar">Fechar</button>
     </div>
 </div>
 

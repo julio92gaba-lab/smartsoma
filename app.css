@@ -2706,6 +2706,8 @@
           gap:0;
         }
         #sheetScreenDadosPessoais .sheet-divider{ margin:0 0 0.5rem; }
+        .profile-edit-card{ width:100%; margin:0 0 0.875rem; padding:0.875rem; border:1px solid var(--card-line); border-radius:0.875rem; background:var(--card-bg); box-shadow:0 0.25rem 0.875rem rgba(12,19,26,0.05); }
+        .profile-edit-card .dp-photo-row{ margin:0; }
         .dp-field-row{
           display:flex;
           gap:0.4062rem;
@@ -3733,6 +3735,22 @@ html, body{ overscroll-behavior-y:none; }
         }
         .apagar-dados-confirmar{ margin-top:1rem; }
         .apagar-dados-confirmar:disabled{ opacity:.45; cursor:default; }
+        #apagarConfirmOkBtn.is-loading{
+          display:inline-flex;
+          align-items:center;
+          justify-content:center;
+          gap:0.5rem;
+        }
+        #apagarConfirmOkBtn.is-loading::before{
+          content:"";
+          width:0.875rem;
+          height:0.875rem;
+          border:2px solid currentColor;
+          border-right-color:transparent;
+          border-radius:50%;
+          animation:apagarDadosSpin .7s linear infinite;
+        }
+        @keyframes apagarDadosSpin{ to{ transform:rotate(360deg); } }
         .mp-confirm-aviso{
           margin:0.5rem 0 0.25rem;
           padding:0.5rem 0.625rem;

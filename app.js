@@ -306,7 +306,6 @@
 "tamanho.popupTitle": "Tamanho da fonte",
 "tamanho.popupTexto": "Escolha para aumentar ou diminuir a fonte e os elementos em todo o app.",
 "tamanho.concluir": "Concluído",
-"sheet.tutorial": "Tutorial",
 "sheet.ajuda": "Ajuda e FAQ",
 "sheet.termosPrivacidade": "Termos e Privacidade",
 "sheet.apagarDados": "Apagar dados",
@@ -450,45 +449,7 @@
 "meta.histGanho": "Ganho no período:",
 "meta.histAcima": "Você ultrapassou a meta, atingindo {p}% dela.",
 "meta.histAbaixo": "Você atingiu {p}% da meta até então.",
-"tut.popup.title": "Tutorial",
-"tut.popup.text": "Quer ver uma visita guiada pela aplicação? Leva menos de um minuto e pode sair quando quiser.",
-"tut.popup.start": "Iniciar",
-"tut.popup.later": "Agora não",
-"tut.next": "Seguinte",
-"tut.back": "Voltar",
-"tut.finish": "Concluir",
-"tut.closeAria": "Fechar tutorial",
-"tut.counter": "{a} de {b}",
-"tut.s1.title": "Data do registo",
-"tut.s1.text": "Tudo o que inserir fica guardado no dia escolhido aqui. Toque para registar num dia anterior.",
-"tut.s2.title": "Os seus rendimentos",
-"tut.s2.text": "Registe quanto recebeu nas plataformas. Se já tiver lançado um valor nesse dia, carregue novamente para poder corrigir.",
-"tut.s2b.title": "Outras plataformas",
-"tut.s2b.text": "Trabalha noutras plataformas além da Uber e da Bolt? Em Gerir plataformas, adicione um nome e uma imagem. Depois selecione a plataforma no registo de ganhos. Também encontra esta lista em Ajustes › Multiplataforma.",
-"tut.s3.title": "Despesas do dia",
-"tut.s3.text": "Gastos avulsos: combustível, refeições, portagens. Pode inserir quantos quiser e apagar depois.",
-"tut.s4.title": "Distância percorrida",
-"tut.s4.text": "Dois modos: «Km Total» para inserir só o total do dia, ou «Início e Fim» para inserir o km do painel de manhã e o final à noite — nós fazemos a conta.",
-"tut.s5.title": "Meta semanal",
-"tut.s5.text": "Defina quanto quer ganhar na semana, em bruto ou em líquido, e acompanhe aqui a percentagem já concluída.",
-"tut.s6.title": "Menu de páginas",
-"tut.s6.text": "Use este menu para navegar entre a visão geral, os ganhos, as despesas, os detalhes da semana, os relatórios e os ajustes. No telemóvel, o menu fica na parte inferior.",
-"tut.s7.title": "Navegar entre páginas",
-"tut.s7.text": "Este botão leva-o ao Resumo Financeiro. Vamos espreitar.",
-"tut.s8.title": "Escolher o período",
-"tut.s8.text": "Veja os totais por Dia, Semana ou Mês e use as setas para consultar períodos anteriores.",
-"tut.s9.title": "Os seus números",
-"tut.s9.text": "O anel mostra o progresso da meta da semana. Bruto e Líquido trocam de lugar conforme o tipo de meta que definiu.",
-"tut.s10.title": "Semana a semana",
-"tut.s10.text": "Escolha o mês e a semana que quer consultar. Uma semana pertence ao mês onde tem mais dias.",
-"tut.s11.title": "Tabela ou lista",
-"tut.s11.text": "Alterne entre a tabela da semana e um card por dia, onde consegue ver as despesas de cada dia em detalhe.",
-"tut.s12.title": "Despesas fixas",
-"tut.s12.text": "Gastos que se repetem todas as semanas (aluguer do carro, comissão da plataforma). Em euros ou em % do bruto — neste caso o valor cresce sozinho conforme lança ganhos. É lançado sempre à segunda-feira.",
-"tut.end.title": "Fim do tutorial",
-"tut.end.text": "Pode voltar a vê-lo sempre que quiser, através do menu Ajustes.",
-"tut.end.highlight": "Bons ganhos!",
-"tut.end.fechar": "Fechar"
+"meta.histAbaixo": "Você atingiu {p}% da meta até então."
 },
 "en": {
 "lang.code": "en",
@@ -752,7 +713,6 @@
 "tamanho.popupTitle": "Font size",
 "tamanho.popupTexto": "Choose to make the font and elements bigger or smaller across the whole app.",
 "tamanho.concluir": "Done",
-"sheet.tutorial": "Tutorial",
 "sheet.ajuda": "Help and FAQ",
 "sheet.termosPrivacidade": "Terms and Privacy",
 "sheet.apagarDados": "Delete data",
@@ -896,45 +856,7 @@
 "meta.histGanho": "Earned in the period:",
 "meta.histAcima": "You went past the goal, reaching {p}% of it.",
 "meta.histAbaixo": "You reached {p}% of the goal so far.",
-"tut.popup.title": "Tutorial",
-"tut.popup.text": "Would you like a guided tour of the app? It takes less than a minute and you can leave whenever you want.",
-"tut.popup.start": "Start",
-"tut.popup.later": "Not now",
-"tut.next": "Next",
-"tut.back": "Back",
-"tut.finish": "Finish",
-"tut.closeAria": "Close tutorial",
-"tut.counter": "{a} of {b}",
-"tut.s1.title": "Entry date",
-"tut.s1.text": "Everything you enter is saved under the day chosen here. Tap to log an entry on a previous day.",
-"tut.s2.title": "Your earnings",
-"tut.s2.text": "Log how much you made on the platforms. If you've already entered an amount for that day, tap again to make a correction.",
-"tut.s2b.title": "Other platforms",
-"tut.s2b.text": "Do you work on platforms other than Uber and Bolt? In Manage platforms, add a name and image, then select that platform when recording earnings. This list is also available under Settings › Multi-platform.",
-"tut.s3.title": "Expenses of the day",
-"tut.s3.text": "One-off costs: fuel, meals, tolls. Enter as many as you like and delete them later.",
-"tut.s4.title": "Distance travelled",
-"tut.s4.text": "Two modes: \"Total Km\" to enter just the day's total, or \"Start and End\" to enter the odometer in the morning and again at night — we do the maths.",
-"tut.s5.title": "Weekly goal",
-"tut.s5.text": "Set how much you want to earn this week, gross or net, and follow the percentage completed right here.",
-"tut.s6.title": "Page menu",
-"tut.s6.text": "Use this menu to navigate between the overview, earnings, expenses, weekly details, reports and settings. On mobile, the menu is at the bottom.",
-"tut.s7.title": "Moving between pages",
-"tut.s7.text": "This button takes you to the Financial Summary. Let's have a look.",
-"tut.s8.title": "Choosing the period",
-"tut.s8.text": "See totals by Day, Week or Month and use the arrows to look at earlier periods.",
-"tut.s9.title": "Your numbers",
-"tut.s9.text": "The ring shows how far along the week's goal is. Gross and Net swap places depending on the type of goal you set.",
-"tut.s10.title": "Week by week",
-"tut.s10.text": "Pick the month and the week you want to review. A week belongs to the month holding most of its days.",
-"tut.s11.title": "Table or list",
-"tut.s11.text": "Switch between the week's table and one card per day, where you can see each day's expenses in detail.",
-"tut.s12.title": "Fixed expenses",
-"tut.s12.text": "Costs that repeat every week (car rental, platform fee). In euros or as a % of the gross — in that case the amount grows on its own as you log earnings. It is always posted on Monday.",
-"tut.end.title": "Tutorial complete",
-"tut.end.text": "You can watch it again anytime from the Settings menu.",
-"tut.end.highlight": "Happy earning!",
-"tut.end.fechar": "Close"
+"meta.histAbaixo": "You reached {p}% of the goal so far."
 }
 };
 
@@ -5195,10 +5117,8 @@
     var PHOTO_VIEW_UI_READY = !!(photoViewBackdrop && photoViewCloseBtn &&
       photoViewStage && photoViewImage && photoViewPlaceholder && photoViewChangeBtn);
 
-    var DP_UI_READY = !!(sheetScreenDadosPessoais && dpNomeInput &&
-      dpDriverSinceBtn && dpDriverSinceLabel && dpPhotoThumb &&
-      dpUploadPhotoBtn && dpSaveBtn && driverSinceModalBackdrop && driverSinceModalCard &&
-      wheelDayCol && wheelMonthCol && wheelYearCol && wheelSaveBtn);
+    var DP_UI_READY = !!(sheetScreenDadosPessoais && dpNomeInput && dpPhotoThumb &&
+      dpUploadPhotoBtn && dpSaveBtn);
 
     function updateSheetScreenScrollFade (el) {
       if (!el) return;
@@ -5223,6 +5143,11 @@
         sheetAvatar.appendChild(avatar);
       }
       sheetAvatar.classList.toggle('has-photo', !!state.photo);
+      var profileHero = document.querySelector('#uiSettingsPage .sheet-profile-row');
+      if (profileHero) {
+        profileHero.style.setProperty('--profile-photo', safePhoto ? 'url("' + safePhoto.replace(/"/g, '\\"') + '")' : 'none');
+        profileHero.classList.toggle('has-profile-photo', !!safePhoto);
+      }
       if (dpPhotoThumb) {
         dpPhotoThumb.innerHTML = safePhoto ? '' : AVATAR_PLACEHOLDER;
         if (safePhoto) {
@@ -5486,9 +5411,6 @@
         }
       }
       if (dpChangePasswordBtn) dpChangePasswordBtn.hidden = IS_GOOGLE;
-      dpDriverSinceLabel.textContent = state.driverSince
-        ? formatDpDate(new Date(state.driverSince))
-        : I18N.t('dp.selecionarData');
     }
 
     function formatDpDate (d) {
@@ -5777,14 +5699,14 @@
         if (PROFILE_UI_READY && fileInput) fileInput.click();
       });
 
-      dpDriverSinceBtn.addEventListener('click', openDriverSinceModal);
+      if (dpDriverSinceBtn) dpDriverSinceBtn.addEventListener('click', openDriverSinceModal);
 
-      driverSinceModalBackdrop.addEventListener('click', function (e) {
+      if (driverSinceModalBackdrop) driverSinceModalBackdrop.addEventListener('click', function (e) {
         if (e.target === driverSinceModalBackdrop) closeDriverSinceModal();
       });
-      driverSinceModalCard.addEventListener('click', function (e) { e.stopPropagation(); });
+      if (driverSinceModalCard) driverSinceModalCard.addEventListener('click', function (e) { e.stopPropagation(); });
 
-      [wheelDayCol, wheelMonthCol, wheelYearCol].forEach(function (col) {
+      [wheelDayCol, wheelMonthCol, wheelYearCol].filter(Boolean).forEach(function (col) {
         var scrollTimer = null;
         col.addEventListener('scroll', function () {
           clearTimeout(scrollTimer);
@@ -5792,7 +5714,7 @@
         });
       });
 
-      wheelSaveBtn.addEventListener('click', function () {
+      if (wheelSaveBtn) wheelSaveBtn.addEventListener('click', function () {
         var dayIdx = updateWheelSelection(wheelDayCol);
         var monthIdx = updateWheelSelection(wheelMonthCol);
         var yearIdx = updateWheelSelection(wheelYearCol);
@@ -5802,7 +5724,7 @@
         var picked = new Date(year, month, Math.min(day, new Date(year, month + 1, 0).getDate()));
         picked.setHours(0, 0, 0, 0);
         state.driverSince = picked.toISOString();
-        dpDriverSinceLabel.textContent = formatDpDate(picked);
+        if (dpDriverSinceLabel) dpDriverSinceLabel.textContent = formatDpDate(picked);
         closeDriverSinceModal();
       });
 
@@ -6001,8 +5923,7 @@
       window.PasswordChangeModal = { open: open, close: close };
     })();
 
-    // Usados pelo ecrã "Idioma" e pelo tutorial guiado para abrir/fechar
-    // o painel de Ajustes a partir de fora deste bloco.
+    // Usado pelo ecrã "Idioma" para abrir/fechar o painel de Ajustes.
     window.closeProfileSheetPublic = closeProfileSheet;
     window.openProfileSheetPublic = openProfileSheet;
     window.openSheetScreenPublic = openSheetScreen;
@@ -6042,12 +5963,6 @@
 
       window.addEventListener('popstate', function () {
 
-        if (window.TutorialGuiado && window.TutorialGuiado.isRunning()) {
-          window.TutorialGuiado.close();
-          cancelExitArm();
-          return;
-        }
-
         var quickNavOverlay = document.getElementById('screenOverlay');
         if (quickNavOverlay && quickNavOverlay.classList.contains('is-active')) {
           if (window.QuickNavMenu) window.QuickNavMenu.close();
@@ -6077,13 +5992,6 @@
 
         if (PHOTO_VIEW_UI_READY && isVisible(photoViewBackdrop, 'visible')) {
           closePhotoView();
-          cancelExitArm();
-          return;
-        }
-
-        var tutorialEndBackdropEl = document.getElementById('tutorialEndBackdrop');
-        if (isVisible(tutorialEndBackdropEl, 'visible')) {
-          tutorialEndBackdropEl.classList.remove('visible');
           cancelExitArm();
           return;
         }
@@ -6989,6 +6897,8 @@
         if (!selecionado || apagando) return;
         apagando = true;
         okBtn.disabled = true;
+        okBtn.classList.add('is-loading');
+        if (cancelBtn) cancelBtn.disabled = true;
         okBtn.textContent = I18N.t('apagar.aguarde');
         var promessas = keysFor(selecionado).map(function (k) { return window.cloudRemove(k); });
         Promise.all(promessas).then(function () {
@@ -6998,6 +6908,8 @@
         }).catch(function () {
           apagando = false;
           okBtn.disabled = false;
+          okBtn.classList.remove('is-loading');
+          if (cancelBtn) cancelBtn.disabled = false;
           okBtn.textContent = I18N.t('apagar.btn');
           closeConfirm();
         });
