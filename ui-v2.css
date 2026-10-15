@@ -2366,7 +2366,7 @@ html.ui-v2,body.ui-v2 { --app-chrome:#0b1710; --app-chrome-line:#27392b; }
   color:#eef4ec;
   font-family:'Bricolage Grotesque','Inter',sans-serif;
 }
-.ui-v2 .ui-header #uiHeaderDate {
+body.ui-v2 .ui-header #uiHeaderDate {
   border-color:#334036;
   background:#17211b;
   color:#c8d8cb;
