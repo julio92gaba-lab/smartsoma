@@ -477,7 +477,7 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
 @media (min-width:1100px) { .ui-v2 .semana-list-placeholder { grid-template-columns:repeat(2,1fr); } }
 @media (max-width:1100px) and (min-width:761px) { html.ui-v2,body.ui-v2 { --sidebar:200px; } .ui-nav-item { font-size:.75rem; padding:12px 8px; } .ui-v2 .dash-cluster { grid-template-columns:1fr; } }
 @media (max-width:760px) {
-  html.ui-v2,body.ui-v2 { --sidebar:0px; --ui-header:calc(82px + env(safe-area-inset-top,0px)); }
+  html.ui-v2,body.ui-v2 { --sidebar:0px; --ui-header:82px; }
   .ui-sidebar { top:auto; width:100%; height:calc(72px + env(safe-area-inset-bottom,0px)); bottom:0; padding:8px 6px calc(8px + env(safe-area-inset-bottom,0px)); border:0; border-top:1px solid #2d3b30; }
   .ui-brand,.ui-brand-caption,.ui-sidebar-footer { display:none; }
   .ui-navigation { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); height:100%; column-gap:4px; row-gap:0; }
@@ -1899,7 +1899,7 @@ body.ui-v2.theme-dark #homeListPageSemana .semana-day-card::before { background-
   .ui-header {
     height:var(--ui-header);
     min-height:var(--ui-header);
-    padding-top:calc(16px + env(safe-area-inset-top,0px));
+    padding-top:16px;
   }
   .ui-sidebar { padding-inline:4px; }
   .ui-navigation { grid-template-columns:repeat(5,minmax(0,1fr)); column-gap:0; }
@@ -2250,4 +2250,61 @@ body.ui-v2.theme-dark #homeListPageSemana .semana-day-card::before { background-
   .ui-v2 #uiSettingsPage .sheet-avatar { width:60px; height:60px; }
   .ui-v2 #uiSettingsPage #openDadosPessoaisBtn { grid-column:3; grid-row:1 / span 2; justify-self:end; width:auto; }
   .ui-v2 #uiSettingsPage #sheetProActiveBadge { grid-column:2; grid-row:2; }
+}
+
+/* Ajustes: card de perfil com hierarquia centrada e imagem mais visível. */
+.ui-v2 #uiSettingsPage .sheet-profile-row {
+  grid-template-columns:1fr;
+  grid-template-rows:auto auto auto;
+  justify-items:center;
+  align-content:center;
+  gap:10px;
+  min-height:258px;
+  padding:28px 22px 20px;
+  text-align:center;
+}
+.ui-v2 #uiSettingsPage .sheet-profile-row.has-profile-photo::after { background:rgba(5,24,14,.48); }
+.ui-v2 #uiSettingsPage .sheet-avatar {
+  grid-column:1;
+  grid-row:1;
+  width:106px;
+  height:106px;
+  border-width:2px;
+  box-shadow:0 0 0 6px #d4f53c22;
+}
+.ui-v2 #uiSettingsPage .sheet-profile-info {
+  grid-column:1;
+  grid-row:2;
+  display:grid;
+  justify-items:center;
+  width:min(100%,270px);
+  padding-bottom:12px;
+  border-bottom:1px solid rgba(255,255,255,.34);
+  text-align:center;
+}
+.ui-v2 #uiSettingsPage .sheet-username { font-size:1.35rem; }
+.ui-v2 #uiSettingsPage .sheet-email { color:rgba(237,242,239,.9); }
+.ui-v2 #uiSettingsPage #sheetProActiveBadge {
+  grid-column:1;
+  grid-row:3;
+  justify-self:center;
+  align-self:center;
+  margin:0;
+}
+.ui-v2 #uiSettingsPage #openDadosPessoaisBtn {
+  position:absolute;
+  top:16px;
+  right:16px;
+  z-index:3;
+  display:inline-flex;
+  grid-column:auto;
+  grid-row:auto;
+  min-height:34px;
+  padding:7px 10px;
+}
+.ui-v2 #uiSettingsPage #openDadosPessoaisBtn svg { width:16px; height:16px; }
+@media (max-width:760px) {
+  .ui-v2 #uiSettingsPage .sheet-profile-row { min-height:250px; padding:26px 18px 18px; }
+  .ui-v2 #uiSettingsPage .sheet-avatar { width:98px; height:98px; }
+  .ui-v2 #uiSettingsPage #openDadosPessoaisBtn { top:14px; right:14px; }
 }

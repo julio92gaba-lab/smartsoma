@@ -633,7 +633,7 @@
     if(income&&chosen&&Number($('uiEntryValue').value)>0)$('uiEntryHint').textContent=say('Já existe um registo. Guardar substitui o total deste dia.','An entry exists. Saving replaces this day’s total.');
   }
   function setupSettings(){
-    var profileLabel=$('openDadosPessoaisBtn').querySelector('span');profileLabel.removeAttribute('data-i18n');profileLabel.dataset.uiText='profile';
+    var profileLabel=$('openDadosPessoaisBtn').querySelector('span');profileLabel.removeAttribute('data-i18n');profileLabel.removeAttribute('data-ui-text');profileLabel.textContent='Editar';
     var helpLabel=$('openAjudaBtn').querySelector('span');helpLabel.removeAttribute('data-i18n');helpLabel.dataset.uiText='help';
     var settings=$('uiSettingsPage').querySelector('.sheet-content');
     var columns=create('div','ui-settings-columns');
