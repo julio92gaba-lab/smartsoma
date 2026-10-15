@@ -7,7 +7,7 @@
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#F3F8FA",
-  "theme_color": "#F3F8FA",
+  "theme_color": "transparent",
   "related_applications": [
     { "platform": "webapp", "url": "/manifest.json" }
   ],
