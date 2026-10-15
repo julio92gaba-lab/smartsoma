@@ -1822,9 +1822,174 @@ body.ui-v2.theme-dark :is(.sheet-email,.sheet-subinfo,.meta-semanal-period,.sema
 body.ui-v2.theme-dark #homeListPageSemana .semana-day-card { background:#14241c; border-color:#2b4034; }
 body.ui-v2.theme-dark #homeListPageSemana .semana-day-card::before { background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 120' preserveAspectRatio='none'><rect width='400' height='120' fill='%2314241C'/><path d='M0,38 C80,29 120,29 200,42 C280,55 320,55 400,41 L400,0 L0,0 Z' fill='%2372D6A1' fill-opacity='0.17'/></svg>"); }
 
+/* Perfil: imagem na camada de fundo e ações em grelha estável. */
+.ui-v2 #uiSettingsPage .sheet-profile-row.has-profile-photo { background:transparent; }
+.ui-v2 #uiSettingsPage .sheet-profile-row.has-profile-photo::before {
+  z-index:0;
+  inset:-18px;
+  width:auto;
+  height:auto;
+  border-radius:0;
+  background:var(--profile-photo) center/cover no-repeat;
+  filter:blur(13px);
+  transform:scale(1.08);
+  opacity:1;
+}
+.ui-v2 #uiSettingsPage .sheet-profile-row.has-profile-photo::after {
+  z-index:1;
+  background:rgba(5,24,14,.7);
+}
+.ui-v2 #uiSettingsPage .sheet-profile-row > * { position:relative; z-index:2; }
+.ui-v2 #uiSettingsPage .sheet-profile-row {
+  grid-template-columns:78px minmax(0,1fr) auto;
+  justify-items:stretch;
+  align-items:center;
+  gap:14px;
+  padding:20px;
+  text-align:left;
+}
+.ui-v2 #uiSettingsPage .sheet-avatar {
+  grid-column:1;
+  grid-row:1 / span 2;
+  width:72px;
+  height:72px;
+}
+.ui-v2 #uiSettingsPage .sheet-profile-info {
+  grid-column:2;
+  grid-row:1;
+  justify-items:start;
+  text-align:left;
+}
+.ui-v2 #uiSettingsPage #sheetProActiveBadge {
+  grid-column:2;
+  grid-row:2;
+  justify-self:start;
+  align-self:start;
+  margin:0;
+}
+.ui-v2 #uiSettingsPage #openDadosPessoaisBtn {
+  grid-column:3;
+  grid-row:1 / span 2;
+  width:auto;
+  margin:0;
+  justify-self:end;
+  align-self:center;
+}
 @media (max-width:760px) {
-  .ui-sidebar { transition:transform .22s ease; }
-  body.ui-mobile-nav-hidden .ui-sidebar { transform:translateY(100%); }
+  .ui-v2 #uiSettingsPage .sheet-profile-row {
+    grid-template-columns:64px minmax(0,1fr) auto;
+    gap:12px;
+    padding:18px;
+  }
+  .ui-v2 #uiSettingsPage .sheet-avatar { width:60px; height:60px; }
+  .ui-v2 #uiSettingsPage #openDadosPessoaisBtn {
+    grid-column:3;
+    grid-row:1 / span 2;
+    justify-self:end;
+    width:auto;
+  }
+  .ui-v2 #uiSettingsPage #sheetProActiveBadge {
+    grid-column:2;
+    grid-row:2;
+  }
+}
+
+/* Correções finais: status bar edge-to-edge, navegação e perfil. */
+@media (max-width:760px) {
+  .ui-header {
+    height:var(--ui-header);
+    min-height:var(--ui-header);
+    padding-top:calc(16px + env(safe-area-inset-top,0px));
+  }
+  .ui-sidebar { padding-inline:4px; }
+  .ui-navigation { grid-template-columns:repeat(5,minmax(0,1fr)); column-gap:0; }
+  .ui-nav-item {
+    grid-column:auto !important;
+    width:100%;
+    min-width:0;
+    margin:0 !important;
+    padding:5px 2px;
+  }
+  .ui-nav-item[data-ui-route="resumo"] { grid-column:1 !important; }
+  .ui-nav-item[data-ui-route="semana"] { grid-column:2 !important; }
+  .ui-nav-item[data-ui-route="downloads"] { grid-column:4 !important; }
+  .ui-nav-item[data-ui-route="ajustes"] { grid-column:5 !important; }
+}
+
+.ui-v2 #uiSettingsPage .sheet-profile-row.has-profile-photo { background:transparent; }
+.ui-v2 #uiSettingsPage .sheet-profile-row.has-profile-photo::before {
+  z-index:0;
+  inset:-18px;
+  width:auto;
+  height:auto;
+  border-radius:0;
+  background:var(--profile-photo) center/cover no-repeat;
+  filter:blur(13px);
+  transform:scale(1.08);
+  opacity:1;
+}
+.ui-v2 #uiSettingsPage .sheet-profile-row.has-profile-photo::after {
+  z-index:1;
+  background:rgba(5,24,14,.7);
+}
+.ui-v2 #uiSettingsPage .sheet-profile-row > * { position:relative; z-index:2; }
+.ui-v2 #uiSettingsPage .sheet-profile-row {
+  grid-template-columns:78px minmax(0,1fr) auto;
+  justify-items:stretch;
+  align-items:center;
+  gap:14px;
+  padding:20px;
+  text-align:left;
+}
+.ui-v2 #uiSettingsPage .sheet-avatar {
+  grid-column:1;
+  grid-row:1 / span 2;
+  width:72px;
+  height:72px;
+}
+.ui-v2 #uiSettingsPage .sheet-profile-info {
+  grid-column:2;
+  grid-row:1;
+  justify-items:start;
+  text-align:left;
+}
+.ui-v2 #uiSettingsPage #sheetProActiveBadge {
+  grid-column:2;
+  grid-row:2;
+  justify-self:start;
+  align-self:start;
+  margin:0;
+}
+.ui-v2 #uiSettingsPage #openDadosPessoaisBtn {
+  grid-column:3;
+  grid-row:1 / span 2;
+  width:auto;
+  margin:0;
+  justify-self:end;
+  align-self:center;
+}
+@media (max-width:760px) {
+  .ui-v2 #uiSettingsPage .sheet-profile-row {
+    grid-template-columns:64px minmax(0,1fr) auto;
+    gap:12px;
+    padding:18px;
+  }
+  .ui-v2 #uiSettingsPage .sheet-avatar { width:60px; height:60px; }
+  .ui-v2 #uiSettingsPage #openDadosPessoaisBtn {
+    grid-column:3;
+    grid-row:1 / span 2;
+    justify-self:end;
+    width:auto;
+  }
+  .ui-v2 #uiSettingsPage #sheetProActiveBadge {
+    grid-column:2;
+    grid-row:2;
+  }
+}
+
+@media (max-width:760px) {
+  .ui-sidebar { transition:transform .22s ease; will-change:transform; }
+  body.ui-mobile-nav-hidden .ui-sidebar { transform:translate3d(0,calc(100% + env(safe-area-inset-bottom,0px)),0); }
 }
 
 .ui-v2 #uiSettingsPage .sheet-profile-row { --profile-photo:none; }
@@ -2069,3 +2234,20 @@ body.ui-v2.theme-dark #homeListPageSemana .semana-day-card::before {
 
 body.ui-v2.theme-dark #homeListPageSemana .semana-day-card { background:#14241c; border-color:#2b4034; }
 body.ui-v2.theme-dark #homeListPageSemana .semana-day-card::before { background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 120' preserveAspectRatio='none'><rect width='400' height='120' fill='%2314241C'/><path d='M0,38 C80,29 120,29 200,42 C280,55 320,55 400,41 L400,0 L0,0 Z' fill='%2372D6A1' fill-opacity='0.17'/></svg>"); }
+
+/* A última camada do card de perfil deve ficar sobre os estilos legados. */
+.ui-v2 #uiSettingsPage .sheet-profile-row.has-profile-photo { background:transparent; }
+.ui-v2 #uiSettingsPage .sheet-profile-row.has-profile-photo::before { z-index:0; inset:-18px; width:auto; height:auto; border-radius:0; background:var(--profile-photo) center/cover no-repeat; filter:blur(13px); transform:scale(1.08); opacity:1; }
+.ui-v2 #uiSettingsPage .sheet-profile-row.has-profile-photo::after { z-index:1; background:rgba(5,24,14,.7); }
+.ui-v2 #uiSettingsPage .sheet-profile-row > * { position:relative; z-index:2; }
+.ui-v2 #uiSettingsPage .sheet-profile-row { grid-template-columns:78px minmax(0,1fr) auto; justify-items:stretch; align-items:center; gap:14px; padding:20px; text-align:left; }
+.ui-v2 #uiSettingsPage .sheet-avatar { grid-column:1; grid-row:1 / span 2; width:72px; height:72px; }
+.ui-v2 #uiSettingsPage .sheet-profile-info { grid-column:2; grid-row:1; justify-items:start; text-align:left; }
+.ui-v2 #uiSettingsPage #sheetProActiveBadge { grid-column:2; grid-row:2; justify-self:start; align-self:start; margin:0; }
+.ui-v2 #uiSettingsPage #openDadosPessoaisBtn { grid-column:3; grid-row:1 / span 2; width:auto; margin:0; justify-self:end; align-self:center; }
+@media (max-width:760px) {
+  .ui-v2 #uiSettingsPage .sheet-profile-row { grid-template-columns:64px minmax(0,1fr) auto; gap:12px; padding:18px; }
+  .ui-v2 #uiSettingsPage .sheet-avatar { width:60px; height:60px; }
+  .ui-v2 #uiSettingsPage #openDadosPessoaisBtn { grid-column:3; grid-row:1 / span 2; justify-self:end; width:auto; }
+  .ui-v2 #uiSettingsPage #sheetProActiveBadge { grid-column:2; grid-row:2; }
+}

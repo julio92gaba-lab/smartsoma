@@ -85,6 +85,7 @@
   }
   function go(key) {
     if (key === 'default' || key === 'ganhos' || key === 'despesas') key = 'resumo';
+    document.body.classList.remove('ui-mobile-nav-hidden');
     if (window.SmartSomaSettings) window.SmartSomaSettings.close();
     if (key !== 'semana') calendarWeekSelection = false;
     resetRouteScroll();
@@ -711,12 +712,15 @@
     window.SmartSomaSettings={open:openSettingsSubpage,close:closeSettingsSubpage};
 
     var previousScroll=0;
-    $('homeListView').addEventListener('scroll',function(){
-      var next=this.scrollTop;
-      if(Math.abs(next-previousScroll)<8)return;
-      document.body.classList.toggle('ui-mobile-nav-hidden',next>previousScroll&&next>24);
+    function syncMobileNavigation(scrollTop){
+      var next=Number(scrollTop)||0;
+      if(Math.abs(next-previousScroll)<4)return;
+      document.body.classList.toggle('ui-mobile-nav-hidden',next>previousScroll&&next>20);
       previousScroll=next;
-    },{passive:true});
+    }
+    var homeListView=$('homeListView');
+    if(homeListView)homeListView.addEventListener('scroll',function(){syncMobileNavigation(homeListView.scrollTop);},{passive:true});
+    window.addEventListener('scroll',function(){syncMobileNavigation(window.scrollY||document.documentElement.scrollTop);},{passive:true});
     var faqs=[
       ['Como registar os meus ganhos?','Escolhe a data no calendário e toca em +. Em Ganhos, seleciona o ícone da plataforma, insere o total do dia e guarda. Uber, Bolt e as tuas plataformas ficam separadas.','How do I record earnings?','Choose a date in the calendar and tap +. Under Earnings, select a platform, enter its daily total and save. Each platform is recorded separately.'],
       ['Posso corrigir um valor já guardado?','Sim. Abre a plataforma na página Ganhos diários ou seleciona-a no registo rápido. O valor guardado aparece no campo. Guardar substitui esse total; não soma uma segunda entrada.','Can I correct an amount?','Yes. Open the platform in Daily earnings or select it in the quick entry. Saving replaces that day’s total rather than adding a second entry.'],

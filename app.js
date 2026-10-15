@@ -4167,8 +4167,6 @@
             linhas.push({ dia: DIAS_ABBR()[i] + ' ' + pad2(d.getDate()) + '/' + pad2(d.getMonth() + 1), entry: entry });
           });
         }
-        if (!linhas.length) return null;
-
         var section = document.createElement('section');
         section.className = 'semana-expenses-section';
 

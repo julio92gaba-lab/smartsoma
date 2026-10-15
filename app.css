@@ -43,9 +43,9 @@
         }
         @supports (padding:env(safe-area-inset-top)){
           :root{
-            --safe-top:    env(safe-area-inset-top, 0px);
+            --safe-top:    0px;
             --safe-bottom: env(safe-area-inset-bottom, 0px);
-            --header-h:    calc(var(--header-top-h) + var(--safe-top));
+            --header-h:    var(--header-top-h);
           }
         }
         /* Tema escuro: alterna as variáveis de cor globais. A maioria dos
