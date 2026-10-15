@@ -2336,6 +2336,10 @@ body.ui-v2.theme-dark #homeListPageSemana .semana-day-card::before { background-
   opacity:.78;
 }
 .ui-v2 #uiSettingsPage .sheet-profile-row.has-profile-photo::after { background:rgba(5,24,14,.12); }
+.ui-v2 #uiSettingsPage .sheet-profile-row.has-profile-photo::before {
+  filter:blur(7px);
+  transform:scale(1.04);
+}
 .ui-v2 #uiSettingsPage #sheetProActiveBadge {
   width:max-content;
   margin-inline:auto;

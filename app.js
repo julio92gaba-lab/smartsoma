@@ -5685,7 +5685,19 @@
 
         ctx.drawImage(cropImage, drawX, drawY, drawW, drawH);
 
-        state.photo = canvas.toDataURL('image/jpeg', 0.85);
+        // O limite do perfil também é aplicado à foto Google. Com imagens mais
+        // detalhadas, JPEG a 85% podia ultrapassá-lo e ser descartado no render.
+        var encodedPhoto = '';
+        for (var quality = 0.85; quality >= 0.45; quality -= 0.1) {
+          encodedPhoto = canvas.toDataURL('image/jpeg', quality);
+          if (window.SmartSomaSecurity.isSafeImageUrl(encodedPhoto)) break;
+        }
+        if (!window.SmartSomaSecurity.isSafeImageUrl(encodedPhoto)) {
+          alert('Não foi possível preparar esta foto. Tente usar outra imagem.');
+          return;
+        }
+
+        state.photo = encodedPhoto;
         renderAvatar();
         saveProfileToStorage();
         closePhotoModal();
