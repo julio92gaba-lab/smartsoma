@@ -2308,3 +2308,30 @@ body.ui-v2.theme-dark #homeListPageSemana .semana-day-card::before { background-
   .ui-v2 #uiSettingsPage .sheet-avatar { width:98px; height:98px; }
   .ui-v2 #uiSettingsPage #openDadosPessoaisBtn { top:14px; right:14px; }
 }
+
+/* Editar perfil: cada secção é o seu próprio card, sem moldura externa. */
+.ui-v2 .ui-settings-subpage-body:has(#dpNomeInput) {
+  padding:0;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+  backdrop-filter:none;
+  -webkit-backdrop-filter:none;
+}
+.ui-v2 .ui-settings-subpage-body .sheet-page-content:has(#dpNomeInput) {
+  gap:14px;
+}
+.ui-v2 .ui-settings-subpage-body .sheet-page-content:has(#dpNomeInput) .dp-photo-row {
+  margin:0;
+}
+.ui-v2 #uiSettingsPage #sheetProActiveBadge {
+  display:inline-flex;
+  justify-content:center;
+  text-align:center;
+}
+.ui-v2 #uiSettingsPage #subStatusText { text-align:center; }
+.ui-v2 #uiSettingsPage .sheet-email {
+  color:rgba(237,242,239,.78);
+  opacity:.78;
+}
