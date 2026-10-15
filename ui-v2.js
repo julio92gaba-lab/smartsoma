@@ -646,8 +646,14 @@
     columns.append(management,preferences);
     var profileCard=settings.querySelector('.sheet-profile-row');
     profileCard.append($('sheetProActiveBadge'),$('openDadosPessoaisBtn'));
-    var profileImage=profileCard.querySelector('.sheet-avatar img');
-    if(profileImage){profileCard.style.setProperty('--profile-photo','url("'+profileImage.src.replace(/"/g,'\\"')+'")');profileCard.classList.add('has-profile-photo');}
+    function syncProfileBackground(){
+      var profileImage=profileCard.querySelector('.sheet-avatar img');
+      var source=profileImage&&(profileImage.currentSrc||profileImage.src);
+      profileCard.style.setProperty('--profile-photo',source?'url("'+source.replace(/"/g,'\\"')+'")':'none');
+      profileCard.classList.toggle('has-profile-photo',!!source);
+    }
+    syncProfileBackground();
+    new MutationObserver(syncProfileBackground).observe($('sheetAvatar'),{childList:true,subtree:true,attributes:true,attributeFilter:['src']});
     profileCard.after(columns);
     settings.querySelectorAll('.sheet-actions').forEach(function(n){if(!n.children.length)n.remove();else if(Array.from(n.children).every(function(c){return c.hidden;}))n.hidden=true;});
     var support=$('openApagarDadosBtn').closest('.sheet-actions');

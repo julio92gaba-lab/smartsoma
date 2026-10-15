@@ -2335,3 +2335,11 @@ body.ui-v2.theme-dark #homeListPageSemana .semana-day-card::before { background-
   color:rgba(237,242,239,.78);
   opacity:.78;
 }
+.ui-v2 #uiSettingsPage .sheet-profile-row.has-profile-photo::after { background:rgba(5,24,14,.12); }
+.ui-v2 #uiSettingsPage #sheetProActiveBadge {
+  width:max-content;
+  margin-inline:auto;
+}
+.ui-v2 .ui-settings-subpage-body .sheet-page-content:has(#dpNomeInput) .dp-field-row-single:has(#dpNomeInput) {
+  margin-bottom:16px;
+}
