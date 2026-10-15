@@ -1,6 +1,6 @@
 /* SmartSoma — Service Worker */
 
-const CACHE_NAME = 'smartsoma-v8';
+const CACHE_NAME = 'smartsoma-v9';
 const NETWORK_TIMEOUT = 4000; /* ms: sem resposta da rede, usa a cache se existir */
 
 const ASSETS_TO_CACHE = [

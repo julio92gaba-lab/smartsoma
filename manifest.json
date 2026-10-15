@@ -6,8 +6,8 @@
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#F3F8FA",
-  "theme_color": "#F3F8FA",
+  "background_color": "#0B1710",
+  "theme_color": "#0B1710",
   "related_applications": [
     { "platform": "webapp", "url": "/manifest.json" }
   ],

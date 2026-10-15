@@ -2347,3 +2347,32 @@ body.ui-v2.theme-dark #homeListPageSemana .semana-day-card::before { background-
 .ui-v2 .ui-settings-subpage-body .sheet-page-content:has(#dpNomeInput) .dp-field-row-single:has(#dpNomeInput) {
   margin-bottom:16px;
 }
+
+/* Cromado comum: cabeçalho, status bar PWA, menu móvel e filtros ancorados. */
+html.ui-v2,body.ui-v2 { --app-chrome:#0b1710; --app-chrome-line:#27392b; }
+.ui-sidebar { background:var(--app-chrome); }
+.ui-header {
+  background:var(--app-chrome);
+  border-bottom-color:var(--app-chrome-line);
+  color:#eef4ec;
+}
+.ui-header :is(h1,.ui-eyebrow) { color:#eef4ec; }
+.ui-header .ui-eyebrow { color:#9cab9d; }
+.ui-header .ui-icon-button {
+  border-color:#334036;
+  background:#17211b;
+  color:#eef4ec;
+}
+.ui-header .ui-news-badge { border-color:var(--app-chrome); }
+.ui-v2 .resumo-period-controls.is-sticky,
+.ui-v2 #homeListPageSemana .semana-filter-controls.is-sticky {
+  background:var(--app-chrome);
+  border-color:var(--app-chrome-line);
+  box-shadow:0 4px 14px rgba(0,0,0,.18);
+}
+.ui-v2 #homeListPageSemana .semana-filter-controls.is-sticky .period-nav-btn,
+.ui-v2 #homeListPageSemana .semana-filter-controls.is-sticky .semana-week-picker-btn { color:#eef4ec; }
+.ui-v2 #uiSettingsPage .sheet-profile-row.has-profile-photo::before {
+  filter:blur(4px);
+  transform:scale(1.025);
+}

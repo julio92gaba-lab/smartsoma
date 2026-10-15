@@ -5005,6 +5005,24 @@
     };
 
     var PROFILE_STORAGE_KEY = 'mydocs.profile';
+    // A coluna user_data aceita no máximo 400 KB. Reservamos uma margem para
+    // os restantes campos do perfil e para caracteres UTF-8 no JSON.
+    var PROFILE_STORAGE_SAFE_LIMIT = 390000;
+
+    function serialiseProfile (photo) {
+      return JSON.stringify({
+        name: state.name,
+        photo: photo,
+        vehicle: state.vehicle,
+        vehicleYear: state.vehicleYear,
+        driverSince: state.driverSince
+      });
+    }
+
+    function canPersistProfilePhoto (photo) {
+      return window.SmartSomaSecurity.isSafeImageUrl(photo) &&
+        serialiseProfile(photo).length <= PROFILE_STORAGE_SAFE_LIMIT;
+    }
 
     function loadProfileFromStorage () {
       var hasSavedName = false;
@@ -5034,14 +5052,13 @@
 
     function saveProfileToStorage () {
       try {
-        cloudSet(PROFILE_STORAGE_KEY, JSON.stringify({
-          name: state.name,
-          photo: state.photo,
-          vehicle: state.vehicle,
-          vehicleYear: state.vehicleYear,
-          driverSince: state.driverSince
-        }));
-      } catch (e) {
+        var profileValue = serialiseProfile(state.photo);
+        if (profileValue.length > PROFILE_STORAGE_SAFE_LIMIT) {
+          return Promise.reject(new Error('Dados de perfil demasiado grandes para sincronizar.'));
+        }
+        return cloudSet(PROFILE_STORAGE_KEY, profileValue);
+      } catch (error) {
+        return Promise.reject(error);
       }
     }
 
@@ -5685,21 +5702,26 @@
 
         ctx.drawImage(cropImage, drawX, drawY, drawW, drawH);
 
-        // O limite do perfil também é aplicado à foto Google. Com imagens mais
-        // detalhadas, JPEG a 85% podia ultrapassá-lo e ser descartado no render.
+        // A imagem e o JSON completo do perfil precisam caber na mesma célula.
+        // Antes a foto podia ser válida isoladamente e falhar ao sincronizar.
         var encodedPhoto = '';
         for (var quality = 0.85; quality >= 0.45; quality -= 0.1) {
           encodedPhoto = canvas.toDataURL('image/jpeg', quality);
-          if (window.SmartSomaSecurity.isSafeImageUrl(encodedPhoto)) break;
+          if (canPersistProfilePhoto(encodedPhoto)) break;
         }
-        if (!window.SmartSomaSecurity.isSafeImageUrl(encodedPhoto)) {
+        if (!canPersistProfilePhoto(encodedPhoto)) {
           alert('Não foi possível preparar esta foto. Tente usar outra imagem.');
           return;
         }
 
+        var previousPhoto = state.photo;
         state.photo = encodedPhoto;
         renderAvatar();
-        saveProfileToStorage();
+        saveProfileToStorage().catch(function () {
+          state.photo = previousPhoto;
+          renderAvatar();
+          alert('Não foi possível guardar a foto. Tente novamente.');
+        });
         closePhotoModal();
       });
     }
