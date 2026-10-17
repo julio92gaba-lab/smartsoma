@@ -25,17 +25,19 @@ for (const file of files) {
   fs.copyFileSync(path.join(root, file), target);
 }
 // A apresentação Android replica a imagem e a cor da tela nativa, sem alterar o site.
-const nativeSplash = '<style>html,body{background:#0E5830}#splash{position:fixed;inset:0;z-index:9999;background:#0E5830}</style>';
+const nativeSplash = '<style>html,body{background:#0E5830}#splash{position:fixed;inset:0;z-index:9999;background:#0E5830}#subExpiradaBackdrop .sub-expired-plans,#subExpiradaBackdrop .cancelar-sub-note{display:none!important}</style>';
 const nativeApp = fs.readFileSync(path.join(root, 'app.html'), 'utf8')
   .replace('<head>', '<head>' + nativeSplash)
   .replace('<script src="ui-v2.js?v=17" defer></script>', '<link rel="stylesheet" href="native-splash.css">\n    <script src="ui-v2.js?v=17" defer></script>')
   .replace('<div id="splash">', '<div id="splash">\n    <img class="native-splash-symbol" src="native-splash-icon.png" alt="">')
-  .replace('</body>', '<script src="native-startup.js"></script>\n</body>');
-if (!nativeApp.includes('native-splash.css') || !nativeApp.includes('native-splash-icon.png')) {
-  throw new Error('Não foi possível preparar a tela de abertura Android.');
+  .replace('</body>', '<script src="native-billing-ui.js"></script>\n<script src="native-startup.js"></script>\n</body>');
+if (!nativeApp.includes('native-splash.css') || !nativeApp.includes('native-splash-icon.png') ||
+    !nativeApp.includes('src="native-billing-ui.js"')) {
+  throw new Error('Não foi possível preparar a interface Android.');
 }
 fs.copyFileSync(path.join(root, 'scripts', 'native-splash.css'), path.join(output, 'native-splash.css'));
 fs.copyFileSync(path.join(root, 'scripts', 'native-startup.js'), path.join(output, 'native-startup.js'));
+fs.copyFileSync(path.join(root, 'scripts', 'native-billing-ui.js'), path.join(output, 'native-billing-ui.js'));
 fs.copyFileSync(path.join(root, 'android', 'app', 'src', 'main', 'res', 'drawable-nodpi', 'smartsoma_splash_icon.png'), path.join(output, 'native-splash-icon.png'));
 fs.writeFileSync(path.join(output, 'app.html'), nativeApp);
 // O arranque nativo abre a aplicação, não a página de apresentação do website.
