@@ -14,8 +14,13 @@
        funções evitam enviar conteúdo inválido e impedem XSS no cliente. */
     window.SmartSomaSecurity = (function () {
       var MAX_TEXT_LENGTH = 60;
-      var MAX_IMAGE_BYTES = 5 * 1024 * 1024;
-      var ALLOWED_IMAGE_TYPES = { 'image/jpeg': true, 'image/png': true, 'image/webp': true };
+      var ALLOWED_IMAGE_TYPES = {
+        'image/jpeg': true,
+        'image/png': true,
+        'image/webp': true,
+        'image/heic': true,
+        'image/heif': true
+      };
 
       function cleanText(value, maxLength) {
         return String(value || '').replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, maxLength || MAX_TEXT_LENGTH);
@@ -29,12 +34,17 @@
         return typeof value === 'string' && (value.indexOf('data:image/jpeg;base64,') === 0 || /^https:\/\//i.test(value)) && value.length <= 400000;
       }
       async function validateImageFile(file) {
-        if (!file || !ALLOWED_IMAGE_TYPES[file.type] || file.size < 1 || file.size > MAX_IMAGE_BYTES) return false;
-        var bytes = new Uint8Array(await file.slice(0, 12).arrayBuffer());
+        if (!file || file.size < 1) return false;
+        var bytes = new Uint8Array(await file.slice(0, 16).arrayBuffer());
         var jpeg = bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff;
         var png = bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4e && bytes[3] === 0x47;
         var webp = bytes[0] === 0x52 && bytes[1] === 0x49 && bytes[2] === 0x46 && bytes[3] === 0x46 && bytes[8] === 0x57 && bytes[9] === 0x45 && bytes[10] === 0x42 && bytes[11] === 0x50;
-        return jpeg || png || webp;
+        var brand = String.fromCharCode.apply(null, Array.from(bytes.slice(8, 12))).toLowerCase();
+        var heic = bytes[4] === 0x66 && bytes[5] === 0x74 && bytes[6] === 0x79 && bytes[7] === 0x70 &&
+          ['heic', 'heix', 'hevc', 'hevx', 'heim', 'heis', 'mif1', 'msf1'].indexOf(brand) !== -1;
+        var extension = String(file.name || '').split('.').pop().toLowerCase();
+        var declaredType = ALLOWED_IMAGE_TYPES[String(file.type || '').toLowerCase()];
+        return !!((jpeg || png || webp || heic) && (declaredType || ['jpg', 'jpeg', 'png', 'webp', 'heic', 'heif'].indexOf(extension) !== -1));
       }
       return { cleanText: cleanText, escapeHtml: escapeHtml, isSafeImageUrl: isSafeImageUrl, validateImageFile: validateImageFile };
     })();
@@ -5019,11 +5029,6 @@
       });
     }
 
-    function canPersistProfilePhoto (photo) {
-      return window.SmartSomaSecurity.isSafeImageUrl(photo) &&
-        serialiseProfile(photo).length <= PROFILE_STORAGE_SAFE_LIMIT;
-    }
-
     function loadProfileFromStorage () {
       var hasSavedName = false;
       var hasSavedPhoto = false;
@@ -5621,21 +5626,49 @@
       });
       photoModalCard.addEventListener('click', function (e) { e.stopPropagation(); });
 
+      var cropSourceUrl = '';
+
+      function releaseCropSource () {
+        if (cropSourceUrl) URL.revokeObjectURL(cropSourceUrl);
+        cropSourceUrl = '';
+      }
+
+      async function imageBlobForCrop (file) {
+        var extension = String(file.name || '').split('.').pop().toLowerCase();
+        var isHeic = file.type === 'image/heic' || file.type === 'image/heif' || extension === 'heic' || extension === 'heif';
+        if (!isHeic) return file;
+        if (typeof window.heic2any !== 'function') throw new Error('Conversor HEIC indisponível.');
+        var converted = await window.heic2any({ blob: file, toType: 'image/jpeg', quality: 0.92 });
+        return Array.isArray(converted) ? converted[0] : converted;
+      }
+
       fileInput.addEventListener('change', async function (e) {
         var file = e.target.files && e.target.files[0];
         if (!file) return;
         if (!(await window.SmartSomaSecurity.validateImageFile(file))) {
           fileInput.value = '';
-          alert('Selecione uma imagem JPEG, PNG ou WebP válida, com até 5 MB.');
+          alert('Selecione uma imagem JPEG, PNG, WebP ou HEIC válida.');
           return;
         }
-        var reader = new FileReader();
-        reader.onload = function (ev) {
-          cropImage.onload = initCrop;
-          cropImage.src = ev.target.result;
-          openPhotoModal();
-        };
-        reader.readAsDataURL(file);
+        try {
+          var sourceBlob = await imageBlobForCrop(file);
+          releaseCropSource();
+          cropSourceUrl = URL.createObjectURL(sourceBlob);
+          cropImage.onload = function () {
+            initCrop();
+            openPhotoModal();
+          };
+          cropImage.onerror = function () {
+            releaseCropSource();
+            alert('Não foi possível abrir esta imagem.');
+          };
+          cropImage.src = cropSourceUrl;
+        } catch (error) {
+          console.error('Falha ao preparar a imagem de perfil:', error);
+          alert('Não foi possível preparar esta imagem.');
+        } finally {
+          fileInput.value = '';
+        }
       });
 
       zoomRange.addEventListener('input', function () {
@@ -5678,9 +5711,9 @@
         closePhotoModal();
       });
 
-      cropApplyBtn.addEventListener('click', function () {
+      cropApplyBtn.addEventListener('click', async function () {
         if (!cropState) return;
-        var outputSize = 400;
+        var outputSize = 512;
         var canvas = document.createElement('canvas');
         canvas.width = outputSize;
         canvas.height = outputSize;
@@ -5702,27 +5735,33 @@
 
         ctx.drawImage(cropImage, drawX, drawY, drawW, drawH);
 
-        // A imagem e o JSON completo do perfil precisam caber na mesma célula.
-        // Antes a foto podia ser válida isoladamente e falhar ao sincronizar.
-        var encodedPhoto = '';
-        for (var quality = 0.85; quality >= 0.45; quality -= 0.1) {
-          encodedPhoto = canvas.toDataURL('image/jpeg', quality);
-          if (canPersistProfilePhoto(encodedPhoto)) break;
-        }
-        if (!canPersistProfilePhoto(encodedPhoto)) {
-          alert('Não foi possível preparar esta foto. Tente usar outra imagem.');
-          return;
-        }
-
         var previousPhoto = state.photo;
-        state.photo = encodedPhoto;
-        renderAvatar();
-        saveProfileToStorage().catch(function () {
+        cropApplyBtn.disabled = true;
+        cropApplyBtn.setAttribute('aria-busy', 'true');
+        try {
+          var avatarBlob = await new Promise(function (resolve, reject) {
+            canvas.toBlob(function (blob) {
+              if (blob) resolve(blob);
+              else reject(new Error('Falha ao gerar o avatar.'));
+            }, 'image/jpeg', 0.9);
+          });
+          if (!window.SmartSomaAvatarStorage || typeof window.SmartSomaAvatarStorage.upload !== 'function') {
+            throw new Error('Armazenamento de avatar indisponível.');
+          }
+          state.photo = await window.SmartSomaAvatarStorage.upload(avatarBlob);
+          renderAvatar();
+          await saveProfileToStorage();
+          closePhotoModal();
+        } catch (error) {
+          console.error('Falha ao guardar a foto de perfil:', error);
           state.photo = previousPhoto;
           renderAvatar();
           alert('Não foi possível guardar a foto. Tente novamente.');
-        });
-        closePhotoModal();
+        } finally {
+          cropApplyBtn.disabled = false;
+          cropApplyBtn.removeAttribute('aria-busy');
+          releaseCropSource();
+        }
       });
     }
 

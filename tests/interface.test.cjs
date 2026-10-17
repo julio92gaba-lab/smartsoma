@@ -46,6 +46,30 @@ test('week filters keep the same geometry while sticky',()=>{
   assert.doesNotMatch(css,/\.semana-filter-controls\.is-sticky\s*\{[^}]*padding-bottom:3px/);
 });
 
+test('fixed chrome has readable text and avatars use Supabase Storage',()=>{
+  const css=fs.readFileSync('ui-v2.css','utf8');
+  const app=fs.readFileSync('app.js','utf8');
+  const cloud=fs.readFileSync('cloud-init.js','utf8');
+  const html=fs.readFileSync('app.html','utf8');
+  const migration=fs.readFileSync('supabase/migrations/20261017043604_add_avatar_storage.sql','utf8');
+  assert.match(css,/\.ui-v2 \.ui-header\s*\{[^}]*background:var\(--app-chrome\);[^}]*backdrop-filter:none;/);
+  assert.match(css,/\.resumo-period-controls\.is-sticky[^}]*resumo-current-week-label[^}]*\{[^}]*color:#eef4ec;/);
+  assert.match(css,/\.semana-filter-controls\.is-sticky[^}]*semana-view-toggle-active-label[^}]*\{[^}]*color:#eef4ec;/);
+  assert.match(css,/\.semana-week-picker-num,[^{]*\{[^}]*background:#fff;[^}]*color:#183021;/);
+  assert.match(html,/accept="[^"]*\.heic[^"]*image\/heif/);
+  assert.match(html,/<script src="heic2any\.min\.js"><\/script>/);
+  assert.match(app,/'image\/heic': true/);
+  assert.doesNotMatch(app,/MAX_IMAGE_BYTES/);
+  assert.match(app,/window\.heic2any\(\{ blob: file, toType: 'image\/jpeg'/);
+  assert.match(app,/SmartSomaAvatarStorage\.upload\(avatarBlob\)/);
+  assert.match(cloud,/sb\.storage\.from\('avatars'\)\.upload\(objectPath, blob,[\s\S]*upsert: true/);
+  assert.match(cloud,/getPublicUrl\(objectPath\)/);
+  assert.match(migration,/INSERT INTO storage\.buckets \(id, name, public, file_size_limit, allowed_mime_types\)/);
+  assert.match(migration,/VALUES \([\s\S]*'avatars',[\s\S]*true,[\s\S]*NULL/);
+  assert.match(migration,/FOR INSERT TO authenticated[\s\S]*storage\.foldername\(name\)/);
+  assert.match(migration,/FOR UPDATE TO authenticated[\s\S]*owner_id = \(SELECT auth\.uid\(\)\)::text/);
+});
+
 test('modal overlays stay below the fixed header and weekly toggle icons remain compact',()=>{
   const css=fs.readFileSync('ui-v2.css','utf8');
   assert.match(css,/\.ui-v2 \.mm-backdrop,\.ui-v2 \.modal-backdrop\s*\{[^}]*top:var\(--ui-header\) !important;[^}]*align-items:flex-start !important;[^}]*overflow-y:auto;/);

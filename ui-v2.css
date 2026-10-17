@@ -2387,6 +2387,17 @@ body.ui-v2 .ui-header #uiHeaderDate {
 }
 .ui-v2 #homeListPageSemana .semana-filter-controls.is-sticky .period-nav-btn,
 .ui-v2 #homeListPageSemana .semana-filter-controls.is-sticky .semana-week-picker-btn { color:#eef4ec; }
+.ui-v2 .resumo-period-controls.is-sticky :is(.resumo-current-week-label,.resumo-current-week-label strong,.resumo-current-week-label span) {
+  color:#eef4ec;
+}
+.ui-v2 #homeListPageSemana .semana-filter-controls.is-sticky :is(.semana-view-toggle-active-label,.semana-view-toggle-inactive-label) {
+  color:#eef4ec;
+}
+.ui-v2 #homeListPageSemana .semana-filter-fields .semana-week-picker-num,
+body.ui-v2.theme-dark #homeListPageSemana .semana-filter-fields .semana-week-picker-num {
+  background:#fff;
+  color:#183021;
+}
 .ui-v2 #uiSettingsPage .sheet-profile-row.has-profile-photo::before {
   filter:blur(4px);
   transform:scale(1.025);

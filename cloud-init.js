@@ -274,6 +274,26 @@
     return (value && value.data && value.data.session) || null;
   }
 
+  window.SmartSomaAvatarStorage = {
+    upload: async function uploadAvatar(blob) {
+      var session = await getValidSession();
+      if (!session || !session.user || !blob) throw new Error('Sessão inválida para guardar o avatar.');
+
+      var objectPath = session.user.id + '/avatar.jpg';
+      var result = await sb.storage.from('avatars').upload(objectPath, blob, {
+        cacheControl: '3600',
+        contentType: 'image/jpeg',
+        upsert: true
+      });
+      if (result.error) throw result.error;
+
+      var publicResult = sb.storage.from('avatars').getPublicUrl(objectPath);
+      var publicUrl = publicResult && publicResult.data && publicResult.data.publicUrl;
+      if (!publicUrl) throw new Error('O Supabase não devolveu a URL pública do avatar.');
+      return publicUrl + '?v=' + Date.now();
+    }
+  };
+
   // ── Envio da fila para o Supabase ─────────────────────────────────
   async function sendItem(item) {
     try {
