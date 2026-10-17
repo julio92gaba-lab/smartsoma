@@ -238,7 +238,8 @@ public class NativeBillingPlugin extends Plugin {
     public void getOwnedSubscriptions(PluginCall call) {
         withBilling(call, session -> {
             QueryPurchasesParams params = QueryPurchasesParams.newBuilder()
-                .setProductType(BillingClient.ProductType.SUBS).build();
+                .setProductType(BillingClient.ProductType.SUBS)
+                .includeSuspendedSubscriptions(true).build();
             session.client.queryPurchasesAsync(params, (result, purchases) -> {
                 if (result.getResponseCode() != BillingClient.BillingResponseCode.OK) {
                     session.reject("Não foi possível consultar as compras");
@@ -253,6 +254,7 @@ public class NativeBillingPlugin extends Plugin {
                     entry.put("purchaseToken", purchase.getPurchaseToken());
                     entry.put("purchaseState", purchase.getPurchaseState());
                     entry.put("acknowledged", purchase.isAcknowledged());
+                    entry.put("suspended", purchase.isSuspended());
                     entries.put(entry);
                 }
                 JSObject data = new JSObject();

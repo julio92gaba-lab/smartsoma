@@ -11,6 +11,8 @@ test('Android billing purchases are hard-disabled and not wired to checkout', ()
   assert.match(activity, /registerPlugin\(NativeBillingPlugin\.class\)/);
   assert.match(source, /queryProductDetailsAsync/);
   assert.match(source, /queryPurchasesAsync/);
+  assert.match(source, /includeSuspendedSubscriptions\(true\)/);
+  assert.match(source, /entry\.put\("suspended", purchase\.isSuspended\(\)\)/);
   assert.match(source, /private static final boolean PURCHASES_ENABLED = false/);
   assert.match(source, /if \(!PURCHASES_ENABLED\)[\s\S]*?return;[\s\S]*?launchBillingFlow/);
   assert.match(source, /setObfuscatedAccountId\(accountId\)/);
