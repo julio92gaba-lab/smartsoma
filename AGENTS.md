@@ -1,26 +1,40 @@
-# Estilo de Resposta e Concisão
-De agora em diante, corte todas as palavras de enchimento. Respostas diretas, só o essencial. Use frases curtas. Rode as ferramentas primeiro quando for alterações ou mudanças, mostre o resultado e pare. Não narre o que está fazendo. Exemplo: em vez de usar 'A solução é usar async', diga simplesmente 'Usa async'.
+# Diretrizes Gerais de Desenvolvimento com IA
 
-## Trava de Edição de Código
-- Só altere ou edite códigos se a mensagem começar com **"editar"**, com ou sem ponto e sem diferenciar maiúsculas de minúsculas (ex.: *"editar Ajuste o componente X"*, *"EDITAR. Ajuste o componente X"*).
-- Sem o comando inicial "editar", **apenas responda** o que foi perguntado, sem alterar arquivos.
-- A leitura e verificação de arquivos **é permitida** sem o comando "EDITAR" para embasar a resposta.
+## 1. Comunicação e Uso Economico de Tokens
+- **Respostas Ultraconcisas:** Sem saudações, desculpas ou explicações desnecessárias. Vá direto ao ponto.
+- **Sem Narração de Passos:** Não descreva o que está prestes a fazer (ex.: "Vou ler o arquivo e depois..."). Execute e mostre apenas o resultado final.
+- **Formato Diálogo Mínimo:** Se a solução for direta, envie apenas o código ou a alteração sem introduções nem conclusões extensas.
+- **Perguntas Agrupadas:** Se faltar informação ou houver ambiguidade, faça **todas as perguntas necessárias de uma só vez** em uma lista concisa. Nunca em mensagens picadas.
 
 ---
 
-# SmartSoma — Regras Permanentes
+## 2. Protocolo de Leitura e Edição de Código (Economia de Contexto e Prevenção de Regressão)
+- **Modo Somente Leitura por Padrão:** Por padrão, responda apenas perguntas ou analise o código.
+- **Trava de Edição:** Só aplique edições em arquivos se o comando do usuário contiver explicitamente a palavra **"editar"** (case-insensitive).
+- **Edição Cirúrgica:** Nunca reescreva um arquivo inteiro se puder alterar apenas a função ou bloco relevante.
+- **Sempre Verifique Antes de Editar:** Leia o arquivo relevante e os arquivos dependentes afetados **antes** de propor alterações para evitar quebrar componentes existentes.
+- **Zero Suposições sobre APIs:** Não invente métodos, bibliotecas ou dependências que não existam no projeto. Caso queira usar um pacote novo, confirme a instalação previamente.
 
-## 1. Arquitetura e Preservação
-- **Não alterar** autenticação, integração Supabase, regras de cálculo e lógica de persistência existentes, a menos que explicitamente solicitado.
-- **Não remover** o mockup sob nenhuma hipótese.
-- Faça alterações cirúrgicas; evite reescrever arquivos inteiros sem necessidade.
+---
 
-## 2. Comunicação e Clareza
-- Se uma solicitação estiver ambígua ou incompleta, pergunte em **uma única mensagem** todas as informações necessárias.
-- Se um erro persistir por 2 tentativas, pare e peça orientação.
-- antes de cada resposta e de cada alteração, informe de forma sucinta se um **teste para a alteração** é necessário e dê sua opinião rápida.
+## 3. Workflow de Execução e Redução de Retrabalho
+1. **Verificação de Regras do Projeto:** Antes de iniciar, respeite a arquitetura e padrões existentes (tipagem, estilização, convenções de pastas).
+2. **Resolução de Erros Repetitivos (Limite de 2 Tentativas):**
+   - Se uma correção falhar por 2 vezes seguidas no mesmo erro, **PARE imediatamente**.
+   - Emita um relatório curto (máx. 3 linhas) com o erro exato, o que foi tentado e peça orientação do usuário. Não insista em tentar novamente a mesma abordagem.
+3. **Preservação de Código Existente:** Nunca remova mockups, lógicas de autenticação ou chaves sem autorização explícita.
 
-## 3. Workflow e Git
-- **Validação visual:** Só acione o navegador se solicitado explicitamente.
-- **Commits:** Use Conventional Commits (`feat:`, `fix:`, `style:`) mas em português.
-- **Entrega:** Após aprovação, edição, ou alteração, confirme se foi feito tudo, se não foi, diga se ocorreu algum problema, faça commit, push para `main` e publique no final.
+---
+
+## 4. Confirmação de Sucesso e Validação de Qualidade
+- **Verificação de Compilação/Tipagem:** Após qualquer alteração, rode o linter ou checagem de tipos (ex.: `npm run lint`, `tsc --noEmit`) antes de declarar conclusão.
+- **Feedback de Finalização:** Toda resposta de edição concluída deve fechar obrigatoriamente com um status curto contendo:
+  - `[STATUS]` Feito | Falhou
+  - `[ALTERAÇÕES]` Lista curta de arquivos modificados
+  - `[PRÓXIMO PASSO]` Ação recomendada (ex.: "Testar botão X no frontend" ou "Criar commit")
+
+---
+
+## 5. Padrão de Git e Publicação
+- **Commits Mínimos e Atômicos:** Mensagens usando Conventional Commits em português (ex.: `feat: adiciona botão de exportação`, `fix: corrige cálculo de soma`).
+- **Deploy/Push:** Só realize `git push` ou acione rotinas de deploy se explicitamente ordenado pelo usuário.
