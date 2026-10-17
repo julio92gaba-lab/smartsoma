@@ -1,0 +1,8 @@
+{
+  "appId": "pt.smartsoma.app",
+  "appName": "SmartSoma",
+  "webDir": "capacitor-web",
+  "plugins": {
+    "SystemBars": { "style": "DARK" }
+  }
+}

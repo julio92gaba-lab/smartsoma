@@ -6016,8 +6016,12 @@
         var appRoot = document.getElementById('appRoot');
         if (appRoot) appRoot.classList.add('visible');
         if (splash) {
+          splash.addEventListener('transitionend', function (event) {
+            if (event.target === splash && event.propertyName === 'opacity') splash.remove();
+          });
           splash.classList.add('fade-out');
-          setTimeout(function () { splash.remove(); }, 400);
+          // A classe pode ser adiada pelo tempo mínimo do splash em app.html.
+          setTimeout(function () { splash.remove(); }, 3500);
         }
       }
 
@@ -7492,7 +7496,12 @@
         }
 
         var nomeFicheiro = 'smartsoma-relatorio-' + pad2(month + 1) + '-' + year + '.pdf';
-        doc.save(nomeFicheiro);
+        if (window.Capacitor && window.Capacitor.isNativePlatform() && window.Capacitor.getPlatform() === 'android') {
+          var nativeDownloads = window.Capacitor.Plugins.NativeDownloads;
+          if (!nativeDownloads) throw new Error('Transferência de PDF indisponível no Android.');
+          return nativeDownloads.savePdf({ filename: nomeFicheiro, base64: doc.output('datauristring').split(',')[1] });
+        }
+        return doc.save(nomeFicheiro);
       }
 
       function mesTemDados (year, month) {
@@ -7528,8 +7537,7 @@
         carregarLibsPdf()
           .then(function () { return new Promise(function (resolve) { setTimeout(resolve, 30); }); })
           .then(function () {
-            gerarRelatorioPdf(year, month);
-            renderArchive();
+            return Promise.resolve(gerarRelatorioPdf(year, month)).then(renderArchive);
           })
           .catch(function (err) {
             console.error('Erro ao gerar PDF:', err);

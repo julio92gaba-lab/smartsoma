@@ -8,3 +8,7 @@ supabase/
 *.zip
 .env*
 launch-checklist.md
+capacitor-web/
+capacitor.config.json
+scripts/
+android/

@@ -6,6 +6,50 @@ const settle = () => new Promise(resolve => setTimeout(resolve, 180));
 function submit(a) { a.el('uiEntryForm').dispatchEvent(new a.w.Event('submit', { bubbles:true, cancelable:true })); }
 function setup(t,seed={}) { const a=createApp(seed,{ui:true}); t.after(a.close);return a; }
 
+test('Android back returns through settings and visited pages to home',t=>{
+  const a=setup(t);
+  a.w.SmartSomaUI.go('semana');
+  a.w.SmartSomaUI.go('ajustes');
+  a.click('openAjudaBtn');
+  assert.ok(a.w.document.querySelector('.ui-settings-subpage:not([hidden]) #uiFaqItems'));
+  assert.equal(a.w.SmartSomaUI.back(),true);
+  assert.equal(a.w.document.querySelector('.ui-settings-subpage').hidden,true);
+  assert.equal(a.w.SmartSomaUI.back(),true);
+  assert.equal(a.w.document.body.dataset.uiRoute,'semana');
+  assert.equal(a.w.SmartSomaUI.back(),true);
+  assert.equal(a.w.document.body.dataset.uiRoute,'resumo');
+  assert.equal(a.w.SmartSomaUI.back(),false);
+});
+
+test('mobile navigation returns 1.5 seconds after actual scrolling',async t=>{
+  const a=setup(t);
+  const list=a.el('homeListView');
+  list.scrollTop=80;
+  list.dispatchEvent(new a.w.Event('scroll'));
+  assert.equal(a.w.document.body.classList.contains('ui-mobile-nav-hidden'),true);
+  await new Promise(resolve=>setTimeout(resolve,1600));
+  assert.equal(a.w.document.body.classList.contains('ui-mobile-nav-hidden'),false);
+  list.dispatchEvent(new a.w.Event('scroll'));
+  assert.equal(a.w.document.body.classList.contains('ui-mobile-nav-hidden'),false);
+});
+
+test('scrolling up immediately reveals navigation and scrolling down still hides it',t=>{
+  const a=setup(t),list=a.el('homeListView');
+  list.scrollTop=100;list.dispatchEvent(new a.w.Event('scroll'));
+  assert.equal(a.w.document.body.classList.contains('ui-mobile-nav-hidden'),true);
+  list.scrollTop=80;list.dispatchEvent(new a.w.Event('scroll'));
+  assert.equal(a.w.document.body.classList.contains('ui-mobile-nav-hidden'),false);
+  list.scrollTop=120;list.dispatchEvent(new a.w.Event('scroll'));
+  assert.equal(a.w.document.body.classList.contains('ui-mobile-nav-hidden'),true);
+});
+
+test('header and central logo account for device safe areas',()=>{
+  const css=fs.readFileSync('ui-v2.css','utf8');
+  assert.match(css,/--ui-header:calc\(82px \+ var\(--ui-safe-top\)\)/);
+  assert.match(css,/padding-top:calc\(16px \+ var\(--ui-safe-top\)\)/);
+  assert.match(css,/\.ui-mobile-nav-brand \{[^}]*top:calc\(50% - var\(--ui-safe-bottom\) \/ 2\)/);
+});
+
 test('UI keeps four navigation items, mobile brand and redirects retired routes to overview',async t=>{
   const a=setup(t);a.w.SmartSomaUI.start();await settle();
   assert.equal(a.w.document.querySelectorAll('.ui-nav-item').length,4);
@@ -43,12 +87,13 @@ test('mobile home callout precedes the goal and translates with the app',t=>{
   const callout=a.w.document.querySelector('.ui-home-callout');
   assert.equal(callout.nextElementSibling,a.el('metaSlotList'));
   assert.equal(callout.querySelector('p').textContent,'Pensado para quem trabalha com TVDE e entregas por app.');
-  assert.equal(callout.querySelector('img').getAttribute('src'),'car.png');
+  assert.equal(callout.querySelector('img').getAttribute('src'),'car.png?v=2');
   assert.equal(callout.querySelector('img').getAttribute('alt'),'');
   assert.equal(callout.querySelector('svg'),null);
   const css=fs.readFileSync('ui-v2.css','utf8');
-  assert.match(css,/\.ui-home-callout img\s*\{[^}]*left:0;[^}]*max-height:76px;[^}]*opacity:/);
-  assert.match(css,/\.ui-home-callout p\s*\{[^}]*margin:0 0 0 auto;[^}]*text-align:right;/);
+  assert.match(css,/\.ui-v2 \.ui-home-callout\s*\{[^}]*grid-template-columns:minmax\(0,1fr\) minmax\(0,1fr\)/);
+  assert.match(css,/\.ui-home-callout img\s*\{[^}]*max-height:76px;[^}]*opacity:/);
+  assert.match(css,/\.ui-home-callout p\s*\{[^}]*text-align:right;/);
   a.w.I18N.setLang('en');
   assert.equal(callout.querySelector('p').textContent,'Made for ride-hailing and app delivery workers.');
 });
@@ -78,7 +123,7 @@ test('fixed chrome has readable text and avatars use Supabase Storage',()=>{
   assert.match(css,/#resumoPeriodControls\.is-sticky #resumoCurrentWeekLabel > span\s*\{\s*color:#c8d8cb;/);
   assert.match(css,/\.semana-filter-fields \.semana-week-picker-btn,[^{]*\{[^}]*background:#fff;[^}]*color:#183021;/);
   assert.match(css,/\.semana-week-picker-num,[^{]*\{[^}]*background:#fff;[^}]*color:#183021;/);
-  assert.match(html,/ui-v2\.css\?v=19/);
+  assert.match(html,/ui-v2\.css\?v=20/);
   assert.match(html,/accept="[^"]*\.heic[^"]*image\/heif/);
   assert.match(html,/<script src="heic2any\.min\.js\?v=12"><\/script>/);
   assert.match(app,/'image\/heic': true/);

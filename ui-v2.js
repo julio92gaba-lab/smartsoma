@@ -4,6 +4,8 @@
   'use strict';
   var started = false;
   var route = 'resumo';
+  var routeHistory = ['resumo'];
+  var returning = false;
   var calendarWeekSelection = false;
   var $ = function (id) { return document.getElementById(id); };
   var icons = {
@@ -86,6 +88,7 @@
   }
   function go(key) {
     if (key === 'default' || key === 'ganhos' || key === 'despesas') key = 'resumo';
+    if (!returning && routeHistory[routeHistory.length - 1] !== key) routeHistory.push(key);
     document.body.classList.remove('ui-mobile-nav-hidden');
     if (window.SmartSomaSettings) window.SmartSomaSettings.close();
     if (key !== 'semana') calendarWeekSelection = false;
@@ -153,6 +156,7 @@
     if(headerAvatar)headerAvatar.addEventListener('click',function(e){e.preventDefault();e.stopImmediatePropagation();openSettingsProfile();},true);
     $('uiAdd').addEventListener('click',function(){window.closeProfileSheetPublic(); if(window.SmartSomaUI.openEntry) SmartSomaUI.openEntry(); else PlataformaModals.uber.open();});
     $('uiNews').setAttribute('aria-label',say('Novidades','News'));
+    if(window.Capacitor&&window.Capacitor.isNativePlatform()) $('openTermosMenuBtn').target='_self';
     $('homeListPageSemana').prepend(heading('semana'));
     $('tamanhoOptionP').querySelector('.tamanho-option-letter').textContent='A';
     $('tamanhoOptionG').querySelector('.tamanho-option-letter').textContent='A';
@@ -185,7 +189,7 @@
     }
     viewControls.hidden=false;
     var originalGo=HomeNav.goToSection;
-    HomeNav.goToSection=function(key){ key=(key==='default'||key==='ganhos'||key==='despesas')?'resumo':key; if(key!=='semana')calendarWeekSelection=false; route=key; if($('uiSettingsPage'))$('uiSettingsPage').hidden=true; originalGo(key==='downloads'?'relatorio':key); syncHeader(); };
+    HomeNav.goToSection=function(key){ key=(key==='default'||key==='ganhos'||key==='despesas')?'resumo':key; if(!returning&&routeHistory[routeHistory.length-1]!==key)routeHistory.push(key); if(key!=='semana')calendarWeekSelection=false; route=key; if($('uiSettingsPage'))$('uiSettingsPage').hidden=true; originalGo(key==='downloads'?'relatorio':key); syncHeader(); };
     // These original buttons call the private navigation function, so keep the shell in sync too.
     $('btnVerMeuResumo').addEventListener('click',function(){route='resumo';syncHeader();});
     var observer=new MutationObserver(function(){syncHeader();syncSidebarAccount();});
@@ -268,7 +272,7 @@
     $('sheetScreenDefault').append(create('div','sheet-content ui-settings-placeholder'));
     document.querySelector('.home-list-inner').append(settingsPage);
     summary.prepend($('metaSlotList'));
-    var callout=create('div','ui-home-callout','<img src="car.png" alt="" aria-hidden="true"><p data-ui-text="homeCallout"></p>');
+    var callout=create('div','ui-home-callout','<img src="car.png?v=2" alt="" aria-hidden="true"><p data-ui-text="homeCallout"></p>');
     $('metaSlotList').before(callout);
     $('metaSlotList').after($('resumoPeriodControls'));
     var dashboard=create('div','ui-dashboard-bottom','<section class="home-card ui-chart-panel"><div class="ui-panel-head"><div><p class="ui-eyebrow" id="uiChartEyebrow"></p><h2 id="uiChartTitle"></h2></div><button type="button" id="uiChartDetails" class="ui-text-button"></button></div><div id="uiChart"></div></section><section class="home-card ui-overview-expenses"><div class="ui-panel-head"><h2 id="uiOverviewExpensesTitle"></h2><button type="button" id="uiOverviewFixed" class="ui-text-button"></button></div><div id="uiOverviewFixedGroup" hidden><p class="ui-expense-section-label" id="uiOverviewFixedLabel"></p><div id="uiOverviewFixedRows"></div></div><p class="ui-expense-section-label" id="uiOverviewDailyLabel"></p><div id="uiOverviewExpenseRows"></div><div class="ui-overview-expense-total"><span id="uiOverviewExpenseTotalLabel"></span><strong id="uiOverviewExpenseTotal"></strong></div></section>');
@@ -661,15 +665,17 @@
     var subpageTitle=create('h2','');
     var subpageBody=create('div','ui-settings-subpage-body');
     subpageHead.append(back,subpageTitle);subpage.append(subpageHead,subpageBody);subpage.hidden=true;settingsPage.append(subpage);
-    var activeContent=null,activeScreen=null;
-    function closeSettingsSubpage(){
+    var activeContent=null,activeScreen=null,settingsHistory=[];
+    function closeSettingsSubpage(preserveHistory){
       if(activeContent&&activeScreen){activeScreen.append(activeContent);activeScreen.hidden=true;activeScreen.classList.remove('is-active');}
       activeContent=null;activeScreen=null;subpageBody.replaceChildren();subpage.hidden=true;settings.hidden=false;window.scrollTo({top:0,behavior:'instant'});
+      if(!preserveHistory)settingsHistory=[];
     }
-    function openSettingsSubpage(screenId,title){
+    function openSettingsSubpage(screenId,title,restoring){
       var screen=$(screenId),content=screen&&screen.querySelector('.sheet-content');
       if(!content)return;
-      if(activeContent&&activeContent!==content)closeSettingsSubpage();
+      if(activeContent&&activeContent!==content)closeSettingsSubpage(true);
+      if(!restoring&&(!settingsHistory.length||settingsHistory[settingsHistory.length-1].id!==screenId))settingsHistory.push({id:screenId,title:title});
       if(screenId==='sheetScreenIdioma'&&window.IdiomaScreen)window.IdiomaScreen.prepare();
       if(screenId==='sheetScreenTamanho'&&window.TamanhoScreen)window.TamanhoScreen.prepare();
       if(screenId==='sheetScreenMultiplataforma'&&window.Multiplataformas)window.Multiplataformas.prepare();
@@ -697,14 +703,26 @@
       // manter o Início completo, incluindo o cartão de meta.
       queueMicrotask(function(){go('resumo');refreshData();});
     },true);
-    window.SmartSomaSettings={open:openSettingsSubpage,close:closeSettingsSubpage};
+    function backSettingsSubpage(){
+      if(!activeContent)return false;
+      settingsHistory.pop();
+      if(settingsHistory.length){var previous=settingsHistory[settingsHistory.length-1];openSettingsSubpage(previous.id,previous.title,true);}
+      else closeSettingsSubpage();
+      return true;
+    }
+    window.SmartSomaSettings={open:openSettingsSubpage,close:closeSettingsSubpage,back:backSettingsSubpage};
 
-    var previousScroll=0;
+    var previousScroll=0,navTimer;
     function syncMobileNavigation(scrollTop){
       var next=Number(scrollTop)||0;
       if(Math.abs(next-previousScroll)<4)return;
-      document.body.classList.toggle('ui-mobile-nav-hidden',next>previousScroll&&next>20);
+      var scrollingDown=next>previousScroll;
       previousScroll=next;
+      if(document.querySelector('dialog[open],.mm-backdrop.visible,.modal-backdrop.visible,.ui-news-backdrop.visible,.ui-entry-retro-backdrop.visible'))return;
+      clearTimeout(navTimer);
+      if(!scrollingDown){document.body.classList.remove('ui-mobile-nav-hidden');return;}
+      document.body.classList.add('ui-mobile-nav-hidden');
+      navTimer=setTimeout(function(){document.body.classList.remove('ui-mobile-nav-hidden');},1500);
     }
     var homeListView=$('homeListView');
     if(homeListView)homeListView.addEventListener('scroll',function(){syncMobileNavigation(homeListView.scrollTop);},{passive:true});
@@ -724,7 +742,21 @@
     function navLabels(){var labels=say(['Início','Semana','Downloads','Ajustes'],['Home','Week','Downloads','Settings']);document.querySelectorAll('.ui-nav-short').forEach(function(n,i){n.textContent=labels[i];});}
     labels();navLabels();document.addEventListener('languageChanged',function(){labels();navLabels();});
   }
-  window.SmartSomaUI={start:start,go:go,t:t,svg:svg,create:create,button:button,translate:translate,syncHeader:syncHeader,refreshSidebar:syncSidebarAccount};
+  function nativeBack(){
+    var retro=document.querySelector('.ui-entry-retro-backdrop.visible');
+    if(retro){$('uiEntryRetroCancel').click();return true;}
+    var news=document.querySelector('.ui-news-backdrop.visible');
+    if(news){$('uiNewsClose').click();return true;}
+    var dialog=document.querySelector('dialog[open]');
+    if(dialog){var close=dialog.querySelector('#uiEntryClose,.ui-modal-close');if(close)close.click();else dialog.close();return true;}
+    var overlay=document.querySelector('.mm-backdrop.visible,.modal-backdrop.visible');
+    if(overlay){overlay.click();return true;}
+    if(window.SmartSomaSettings&&window.SmartSomaSettings.back())return true;
+    if(routeHistory.length>1){routeHistory.pop();returning=true;try{go(routeHistory[routeHistory.length-1]);}finally{returning=false;}return true;}
+    if(route!=='resumo'){returning=true;try{go('resumo');}finally{returning=false;}return true;}
+    return false;
+  }
+  window.SmartSomaUI={start:start,go:go,back:nativeBack,t:t,svg:svg,create:create,button:button,translate:translate,syncHeader:syncHeader,refreshSidebar:syncSidebarAccount};
   document.addEventListener('smartSomaAppReady',function(){setTimeout(start,0);});
   if (window.SmartSomaAppReady) start();
 })();

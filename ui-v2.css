@@ -22,10 +22,10 @@ html.ui-v2.theme-dark, body.ui-v2.theme-dark {
 .ui-v2 [hidden] { display:none !important; }
 .ui-home-callout { display:none; }
 @media all {
-  .ui-v2 .ui-home-callout { position:relative; display:flex; align-items:center; min-height:76px; margin:0 0 12px; }
-  .ui-home-callout img { position:absolute; left:0; top:50%; width:52%; max-width:165px; max-height:76px; object-fit:contain; object-position:left center; opacity:.55; transform:translateY(-50%); }
+  .ui-v2 .ui-home-callout { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); align-items:center; gap:10px; min-height:76px; margin:0 0 12px; }
+  .ui-home-callout img { display:block; width:100%; max-width:165px; max-height:76px; object-fit:contain; object-position:left center; opacity:.55; }
   body.ui-v2.theme-dark .ui-home-callout img { filter:invert(1); }
-  .ui-v2 .ui-home-callout p { position:relative; width:58%; margin:0 0 0 auto; color:var(--ink); text-align:right; font:700 clamp(15px,4.2vw,19px)/1.16 'Bricolage Grotesque',sans-serif; letter-spacing:-.35px; }
+  .ui-v2 .ui-home-callout p { min-width:0; margin:0; color:var(--ink); text-align:right; font:700 clamp(15px,4.2vw,19px)/1.16 'Bricolage Grotesque',sans-serif; letter-spacing:-.35px; }
 }
 .ui-v2 button, .ui-v2 input { font-family:inherit; }
 .ui-v2 button { cursor:pointer; }
@@ -467,14 +467,14 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
 }
 @media all { .ui-dashboard-bottom { grid-template-columns:1fr; grid-template-areas:'chart' 'expenses'; gap:0; } }
 @media all {
-  html.ui-v2,body.ui-v2 { --sidebar:0px; --ui-header:82px; }
-  .ui-sidebar { top:auto; width:100%; height:calc(72px + env(safe-area-inset-bottom,0px)); bottom:0; padding:8px 6px calc(8px + env(safe-area-inset-bottom,0px)); border:0; border-top:1px solid #2d3b30; }
+  html.ui-v2,body.ui-v2 { --sidebar:0px; --ui-safe-top:max(env(safe-area-inset-top,0px),var(--safe-area-inset-top,0px)); --ui-safe-bottom:max(env(safe-area-inset-bottom,0px),var(--safe-area-inset-bottom,0px)); --ui-header:calc(82px + var(--ui-safe-top)); }
+  .ui-sidebar { top:auto; width:100%; height:calc(72px + var(--ui-safe-bottom)); bottom:0; padding:8px 6px calc(8px + var(--ui-safe-bottom)); border:0; border-top:1px solid #2d3b30; }
   .ui-navigation { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); height:100%; column-gap:4px; row-gap:0; }
   .ui-nav-item { grid-column:auto; min-width:0; display:flex; flex-direction:column; justify-content:center; gap:5px; padding:5px 2px; border:0; border-radius:8px; }
   .ui-nav-item[data-ui-route="semana"] { margin-right:16px; }
   .ui-nav-item[data-ui-route="downloads"] { grid-column:4; margin-left:16px; }
   .ui-nav-item[data-ui-route="ajustes"] { grid-column:5; }
-  .ui-mobile-nav-brand { position:absolute; z-index:1; top:50%; left:50%; display:grid; place-items:center; width:55px; height:28px; padding:0; border:0; border-radius:0; background:transparent; box-shadow:none; transform:translate(-50%,-50%); transition:opacity .16s ease,transform .16s ease; }
+  .ui-mobile-nav-brand { position:absolute; z-index:1; top:calc(50% - var(--ui-safe-bottom) / 2); left:50%; display:grid; place-items:center; width:55px; height:28px; padding:0; border:0; border-radius:0; background:transparent; box-shadow:none; transform:translate(-50%,-50%); transition:opacity .16s ease,transform .16s ease; }
   .ui-mobile-nav-brand img { display:block; width:100%; height:100%; object-fit:contain; }
   .ui-mobile-nav-brand:active { opacity:.8; transform:translate(-50%,-50%) scale(.96); }
   .ui-nav-item span { font-size:.56rem; white-space:nowrap; }
@@ -1279,9 +1279,11 @@ body.ui-v2.theme-dark #homeListPageRelatorio .relatorio-period-controls { backgr
 .ui-v2 #homeListPageRelatorio .ss-driver-note strong { color:#d4f53c; font-size:.76rem; }
 .ui-v2 #homeListPageRelatorio .download-overview .legal-title { margin-top:0; }
 .ui-v2 #homeListPageRelatorio .relatorio-period-controls { width:100%; }
-.ui-v2 #homeListPageRelatorio .relatorio-period-controls .period-nav-row { grid-template-columns:34px minmax(0,1fr) 34px; width:100%; padding:4px; border-color:#4d725d; border-radius:10px; background:rgba(14,59,42,.72); }
+.ui-v2 #homeListPageRelatorio .relatorio-period-controls .period-nav-row { grid-template-columns:40px minmax(0,1fr) 40px; gap:5px; width:100%; padding:5px; border-color:#4d725d; border-radius:12px; background:#0e3b2a; }
 .ui-v2 #homeListPageRelatorio .relatorio-period-controls .period-label { color:#f4f9ec; }
-.ui-v2 #homeListPageRelatorio .relatorio-period-controls .period-nav-btn { color:#d4f53c; }
+.ui-v2 #homeListPageRelatorio .relatorio-period-controls .period-nav-btn { width:40px; height:40px; border:1px solid #4d725d; border-radius:8px; background:#234c35; color:#f4f9ec; }
+.ui-v2 #homeListPageRelatorio .relatorio-period-controls .period-nav-btn:hover,
+.ui-v2 #homeListPageRelatorio .relatorio-period-controls .period-nav-btn:active { background:#234c35; color:#f4f9ec; }
 .ui-v2 #homeListPageRelatorio .report-archive { padding:26px 30px; border:1px solid color-mix(in srgb,var(--ink) 12%,transparent); border-radius:16px; background:linear-gradient(135deg,color-mix(in srgb,var(--card-bg) 78%,transparent),color-mix(in srgb,var(--input-bg) 56%,transparent)); box-shadow:0 12px 30px rgba(11,31,20,.06); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); }
 .ui-v2 #homeListPageRelatorio .report-archive-heading { display:flex; align-items:flex-end; justify-content:space-between; gap:20px; margin-bottom:18px; text-align:left; }
 .ui-v2 #homeListPageRelatorio .report-archive-heading .download-kicker { margin:0 0 5px; }
@@ -1882,7 +1884,7 @@ body.ui-v2.theme-dark #homeListPageSemana .semana-day-card::before { background-
   .ui-header {
     height:var(--ui-header);
     min-height:var(--ui-header);
-    padding-top:16px;
+    padding-top:calc(16px + var(--ui-safe-top));
   }
   .ui-sidebar { padding-inline:4px; }
   .ui-navigation { grid-template-columns:repeat(5,minmax(0,1fr)); column-gap:0; }
@@ -2378,6 +2380,9 @@ body.ui-v2 .ui-header #uiHeaderDate {
   background:#17211b;
   color:#eef4ec;
 }
+.ui-v2 .ui-header-actions :is(#uiNews,#uiAdd) { position:relative; width:35px; height:35px; }
+.ui-v2 .ui-header-actions :is(#uiNews,#uiAdd)::before { content:''; position:absolute; inset:-4.5px; }
+.ui-v2 .ui-header-actions :is(#uiNews,#uiAdd) svg { width:19px; height:19px; }
 .ui-v2 .ui-header .ui-news-badge { border-color:var(--app-chrome); }
 .ui-v2 .resumo-period-controls.is-sticky,
 .ui-v2 #homeListPageSemana .semana-filter-controls.is-sticky {

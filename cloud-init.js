@@ -327,7 +327,7 @@
     if (!queue.length || !window.currentUser) { updateStatus(); return; }
     if (navigator.onLine === false) { updateStatus(); return; }
     /* Dados da app só podem sair do aparelho depois de o plano ser validado. */
-    if (window.SmartSomaPro && !window.SmartSomaPro.isPro) { updateStatus(); return; }
+    if (window.SmartSomaPro && (!window.SmartSomaPro.isPro || window.SmartSomaPro.entitlementChecked === false)) { updateStatus(); return; }
 
     var session = await getValidSession();
     if (!session) { updateStatus(); return; }
@@ -367,8 +367,7 @@
 
   // ── Indicador de estado (sem rede / a sincronizar / sincronizado) ──
   var chip = null;
-  var hideTimer = null;
-  var lastPending = 0;
+  var pendingTimer = null;
 
   function ensureChip() {
     if (chip || !document.body) return chip;
@@ -413,28 +412,38 @@
     var online = navigator.onLine !== false;
     var pending = queue.length;
 
-    clearTimeout(hideTimer);
-
     if (!online) {
+      clearTimeout(pendingTimer);
+      pendingTimer = null;
       showChip(pending
         ? 'Sem rede · guardado, envia quando voltar'
         : 'Sem rede · atualiza sozinho quando voltar', true);
     } else if (pending) {
       var failed = queue.some(function (item) { return item.attempts > 0; });
-      showChip(failed ? 'Sincronização pendente · dados guardados neste aparelho' :
-        'A sincronizar ' + pending + (pending === 1 ? ' alteração…' : ' alterações…'), failed);
-    } else if (lastPending > 0) {
-      showChip('Tudo sincronizado ✓', false);
-      hideTimer = setTimeout(hideChip, 2200);
+      if (failed) {
+        clearTimeout(pendingTimer);
+        pendingTimer = null;
+        showChip('Sincronização pendente · dados guardados neste aparelho', true);
+      } else if (!pendingTimer) {
+        hideChip();
+        pendingTimer = setTimeout(function () {
+          pendingTimer = null;
+          if (queue.length && navigator.onLine !== false && (!window.SmartSomaPro || window.SmartSomaPro.isPro)) {
+            showChip('Sincronização pendente · dados guardados neste aparelho', true);
+          }
+        }, 3000);
+      }
     } else {
+      clearTimeout(pendingTimer);
+      pendingTimer = null;
       hideChip();
     }
 
-    lastPending = pending;
     document.dispatchEvent(new CustomEvent('cloudSyncStatus', {
       detail: { online: online, pending: pending }
     }));
   }
+  window.cloudRefreshStatus = updateStatus;
 
   // ════════════════════════════════════════════════════════════════════
 

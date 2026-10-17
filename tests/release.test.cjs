@@ -131,6 +131,20 @@ test('PDF report is generated with the real bundled libraries', async t => {
   assert.deepEqual(a.errors,[]);
 });
 
+test('Android sends the generated PDF with real values to the native download handler', async t => {
+  const a=setup(t,{['homeBadgeValores:'+dateKey(new Date())]:JSON.stringify({uber:150})});
+  a.w.eval(fs.readFileSync('jspdf.umd.min.js','utf8'));
+  a.w.eval(fs.readFileSync('jspdf.plugin.autotable.min.js','utf8'));
+  let saved;
+  a.w.Capacitor={isNativePlatform:()=>true,getPlatform:()=> 'android',Plugins:{NativeDownloads:{async savePdf(value){saved=value;}}}};
+  a.click('relatorioPageDownloadBtn'); await settle();
+  assert.ok(saved);assert.match(saved.filename,/^smartsoma-relatorio-\d{2}-\d{4}\.pdf$/);
+  const pdf=Buffer.from(saved.base64,'base64').toString('latin1');
+  assert.ok(pdf.startsWith('%PDF-'));assert.match(pdf,/150\.00/);
+  assert.equal(a.el('relatorioPageDownloadBtn').disabled,false);
+  assert.deepEqual(a.errors,[]);
+});
+
 test('PDF includes fixed expenses in daily and monthly totals', async t => {
   const monday = new Date(); monday.setHours(0,0,0,0); monday.setDate(monday.getDate()-(monday.getDay()+6)%7);
   if (monday.getMonth() !== new Date().getMonth()) return t.skip('A segunda-feira pertence ao mês anterior');
@@ -189,8 +203,8 @@ for (const [label,data,error,active] of [
 
 test('offline cache includes both new presentation assets and excludes test fixture',()=>{
   const source=fs.readFileSync('sw.js','utf8');
-  assert.match(source,/'\/ui-v2.js\?v=16'/); assert.match(source,/'\/ui-v2.css\?v=19'/);
-  assert.match(source,/'\/car.png'/);
+  assert.match(source,/'\/ui-v2.js\?v=17'/); assert.match(source,/'\/ui-v2.css\?v=20'/);
+  assert.match(source,/'\/car.png\?v=2'/);
   assert.doesNotMatch(source,/__ui-test|visual-fixture/);
   assert.match(fs.readFileSync('.vercelignore','utf8'),/^tests\//m);
 });

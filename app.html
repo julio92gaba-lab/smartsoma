@@ -105,8 +105,8 @@
     <link rel="stylesheet" href="app.css">
     <link rel="preload" href="fonts/BricolageGrotesque-latin.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="fonts/DMSans-latin.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="ui-v2.css?v=19">
-    <script src="ui-v2.js?v=16" defer></script>
+    <link rel="stylesheet" href="ui-v2.css?v=20">
+    <script src="ui-v2.js?v=17" defer></script>
     <script src="supabase.min.js"></script>
 <link rel="icon" type="image/png" sizes="192x192" href="/favicon.png">
 </head>
@@ -1479,7 +1479,7 @@
 
 
 <script src="heic2any.min.js?v=12"></script>
-<script src="cloud-init.js?v=13"></script>
+<script src="cloud-init.js?v=14"></script>
 
 
     <!-- ── SmartSoma Pro: checkout + modal + verificação de plano ── -->
@@ -1549,6 +1549,77 @@
         /* ── Estado global do plano ── */
         window.SmartSomaPro = { isPro: false, entitlementChecked: false };
         let planoRetryTimer = null;
+        let planoRequest = 0;
+        const PLANO_CACHE_PREFIX = 'ss_plano_offline:';
+        const PLANO_CACHE_MAX_MS = 72 * 60 * 60 * 1000;
+
+        function guardarPlanoOffline(user, sub) {
+            try { localStorage.removeItem(PLANO_CACHE_PREFIX + user.id); } catch (e) { }
+            const now = Date.now();
+            let until = now + PLANO_CACHE_MAX_MS;
+            const end = sub.status === 'trialing' ? (sub.trial_ends_at || sub.current_period_end) : sub.current_period_end;
+            if (end) {
+                const endTime = new Date(end).getTime();
+                if (!Number.isFinite(endTime)) return;
+                until = Math.min(until, endTime);
+            } else if (sub.status === 'trialing' || sub.status === 'canceled') {
+                return;
+            }
+            if (until <= now) return;
+            try { localStorage.setItem(PLANO_CACHE_PREFIX + user.id, JSON.stringify({ sub, checkedAt: now, until })); } catch (e) { }
+        }
+
+        function lerPlanoOffline(user) {
+            try {
+                const saved = JSON.parse(localStorage.getItem(PLANO_CACHE_PREFIX + user.id));
+                const now = Date.now();
+                if (!saved || !saved.sub || !['active', 'trialing', 'canceled'].includes(saved.sub.status) ||
+                    !Number.isFinite(saved.checkedAt) || !Number.isFinite(saved.until) ||
+                    saved.checkedAt > now || saved.until <= now || saved.until > saved.checkedAt + PLANO_CACHE_MAX_MS) return null;
+                const end = saved.sub.status === 'trialing' ? (saved.sub.trial_ends_at || saved.sub.current_period_end) : saved.sub.current_period_end;
+                if (!end && saved.sub.status !== 'active') return null;
+                if (end && (!Number.isFinite(new Date(end).getTime()) || saved.until > new Date(end).getTime())) return null;
+                return saved;
+            } catch (e) { return null; }
+        }
+
+        function mostrarErroLigacao(semLigacao) {
+            const card = document.getElementById('subExpiradaCard');
+            if (!card) return;
+            const title = document.getElementById('subExpiradaTitle');
+            const text = card.querySelector('.mm-helper-text');
+            const plans = card.querySelector('.sub-expired-plans');
+            const note = card.querySelector('.cancelar-sub-note');
+            if (title && !title.dataset.original) title.dataset.original = title.textContent;
+            if (text && !text.dataset.original) text.dataset.original = text.textContent;
+            if (title) title.textContent = semLigacao ? 'Ligação necessária' : title.dataset.original;
+            if (text) text.textContent = semLigacao ? 'Liga-te à internet para confirmar a tua subscrição e continuar.' : text.dataset.original;
+            if (plans) plans.style.display = semLigacao ? 'none' : '';
+            if (note) note.style.display = semLigacao ? 'none' : '';
+        }
+
+        function usarPlanoOffline(user) {
+            const saved = user && lerPlanoOffline(user);
+            window.SmartSomaPro.entitlementChecked = false;
+            window.SmartSomaPro.isPro = !!saved;
+            if (!saved) {
+                pararNovaVerificacaoPlano();
+                aplicarEstadoPlano(null);
+                mostrarErroLigacao(true);
+                abrirModalSubExpirada();
+                if (typeof window.cloudRefreshStatus === 'function') window.cloudRefreshStatus();
+                return false;
+            }
+            aplicarEstadoPlano(saved.sub);
+            fecharModalSubExpirada();
+            pararNovaVerificacaoPlano();
+            planoRetryTimer = window.setTimeout(function () {
+                planoRetryTimer = null;
+                verificarPlano();
+            }, navigator.onLine === false ? Math.max(1, saved.until - Date.now()) : 4000);
+            if (typeof window.cloudRefreshStatus === 'function') window.cloudRefreshStatus();
+            return true;
+        }
 
         function agendarNovaVerificacaoPlano() {
             if (planoRetryTimer) return;
@@ -1581,6 +1652,7 @@
 
         /* ── Verifica plano do utilizador autenticado ── */
         async function verificarPlano() {
+            const request = ++planoRequest;
             try {
                 const sb = getSB();
                 if (!sb) {
@@ -1592,17 +1664,38 @@
                 const user = window.currentUser || (await sb.auth.getUser()).data.user;
                 if (!user) return;
 
-                const { data, error } = await sb
+                if (navigator.onLine === false) {
+                    usarPlanoOffline(user);
+                    return;
+                }
+
+                const query = sb
                     .from('subscriptions')
                     .select('plan,status,trial_ends_at,current_period_end')
                     .eq('user_id', user.id)
                     .maybeSingle();
+                let timeout;
+                let result;
+                try {
+                    result = await Promise.race([
+                        query,
+                        new Promise(resolve => { timeout = setTimeout(() => resolve({ error: { message: 'network timeout' } }), 8000); })
+                    ]);
+                } finally { clearTimeout(timeout); }
+                if (request !== planoRequest || !window.currentUser || window.currentUser.id !== user.id) return;
+                const { data, error } = result;
 
                 /* Falha ao validar = sem acesso até ser possível confirmar o plano. */
                 if (error) {
                     console.warn('SmartSomaPro: erro ao ler subscrição', error);
+                    if (error.status === 0 || /fetch|network|load failed|timeout/i.test((error.name || '') + ' ' + (error.message || ''))) {
+                        if (!usarPlanoOffline(user)) agendarNovaVerificacaoPlano();
+                        return;
+                    }
                     window.SmartSomaPro.isPro = false;
+                    window.SmartSomaPro.entitlementChecked = false;
                     aplicarEstadoPlano(null);
+                    mostrarErroLigacao(true);
                     abrirModalSubExpirada();
                     agendarNovaVerificacaoPlano();
                     return;
@@ -1615,8 +1708,11 @@
                 }
                 window.SmartSomaPro.isPro = isActive;
                 window.SmartSomaPro.entitlementChecked = true;
+                if (isActive) guardarPlanoOffline(user, data);
+                else { try { localStorage.removeItem(PLANO_CACHE_PREFIX + user.id); } catch (e) { } }
 
                 aplicarEstadoPlano(isActive ? data : null);
+                mostrarErroLigacao(false);
 
                 /* Sem subscrição válida: modal de escolha de plano (não dispensável) */
                 if (!isActive) {
@@ -1632,9 +1728,16 @@
                 }
 
             } catch(e) {
+                if (request !== planoRequest) return;
                 console.warn('SmartSomaPro: erro ao verificar plano', e);
+                if (window.currentUser && (navigator.onLine === false || /fetch|network|load failed|timeout/i.test((e.name || '') + ' ' + (e.message || '')))) {
+                    if (!usarPlanoOffline(window.currentUser) && navigator.onLine !== false) agendarNovaVerificacaoPlano();
+                    return;
+                }
                 window.SmartSomaPro.isPro = false;
+                window.SmartSomaPro.entitlementChecked = false;
                 aplicarEstadoPlano(null);
+                mostrarErroLigacao(true);
                 abrirModalSubExpirada();
                 agendarNovaVerificacaoPlano();
             }
@@ -1822,6 +1925,14 @@
         /* ── Inicialização: aguarda o cloud-init terminar o boot ── */
         function init() {
             registarBotoes();
+            window.addEventListener('offline', function () {
+                window.SmartSomaPro.entitlementChecked = false;
+                if (window.currentUser) verificarPlano();
+            });
+            window.addEventListener('online', function () {
+                window.SmartSomaPro.entitlementChecked = false;
+                if (window.currentUser) verificarPlano();
+            });
             if (window._cacheReady) {
                 verificarPlano();
             } else {

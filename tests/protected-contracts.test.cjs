@@ -4,10 +4,10 @@ const fs=require('node:fs');
 const {createHash}=require('node:crypto');
 const hash=s=>createHash('sha256').update(s.replace(/\r\n/g,'\n')).digest('hex');
 
-// Baseline após a integração explicitamente aprovada do avatar com o Storage.
+// Baseline após as alterações aprovadas de avatar, sincronização e acesso offline.
 test('authentication, cloud persistence and billing endpoints match the approved baseline',()=>{
   const expected={
-    'cloud-init.js':'aac4a490d7d87e0d2ae9410de478b678227244452a6e1950e4b06cef0d138960',
+    'cloud-init.js':'c18f505376996eb5d644f28774f9144fe0ac6ec0fe9ea3f18c35e5d77d8c378d',
     'login.html':'a39520ad9756e4cb538bb6562094b069f1040d7a284a38157a7747e376c4ba1f',
     'api/delete-account.js':'57f169bc259663ba260f46b4e15228e056480b08d43dca0b6ad38b221074c60c',
     'api/webhook.js':'7d93936fb8f016c3328f6b845cc1075819b5fdaa57bf2e88d15b2eada709d7ae',
@@ -25,5 +25,5 @@ test('authentication, cloud persistence and billing endpoints match the approved
 test('all inline auth, subscription and account scripts retain baseline source',()=>{
   const html=fs.readFileSync('app.html','utf8');
   const scripts=[...html.matchAll(/<script(?![^>]*src=)[^>]*>([\s\S]*?)<\/script>/g)].map(m=>m[1].replace(/\r\n/g,'\n'));
-  assert.equal(hash(JSON.stringify(scripts)),'d1ccc23bb4c964e548412ff230e32dc0ccab894a6712fd46e1c4332987be1bb7');
+  assert.equal(hash(JSON.stringify(scripts)),'4baccbb5517dee04c18ce6c956959de312ffa62fb034c654a81c9b7906580cca');
 });

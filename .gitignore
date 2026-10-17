@@ -1,5 +1,6 @@
 .vercel
 node_modules/
+capacitor-web/
 
 # Variáveis locais podem conter chaves de serviço e credenciais de terceiros.
 # O modelo público é mantido no repositório apenas com nomes, nunca valores.

@@ -10,6 +10,9 @@
 (function () {
   'use strict';
 
+  // No Android nativo, a app já está instalada e o WebView usa os seus recursos locais.
+  if (window.Capacitor && window.Capacitor.isNativePlatform()) return;
+
   var INSTALLED_KEY    = 'ss_pwa_installed';        /* localStorage: já instalou */
   var DISMISS_KEY      = 'ss_pwa_toast_dismissed';  /* localStorage: fechou o "Instalar" */
   var DISMISS_OPEN_KEY = 'ss_pwa_open_dismissed';   /* sessionStorage: fechou o "Abrir app" */

@@ -1,0 +1,26 @@
+body #splash, body.ui-v2 #splash {
+  inset: 0;
+  background: #0E5830;
+}
+
+#splash .native-splash-symbol {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(288px, 80vw);
+  height: auto;
+  transform: translate(-50%, -50%);
+}
+
+#splash .splash-logo {
+  position: absolute;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 104px);
+  width: 10rem;
+  opacity: 1;
+  animation: none;
+}
+
+#splash .splash-spinner-wrap {
+  position: absolute;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 48px);
+}
