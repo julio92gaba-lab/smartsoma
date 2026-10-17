@@ -2315,6 +2315,17 @@ body.ui-v2.theme-dark #homeListPageSemana .semana-day-card::before { background-
 }
 
 /* Editar perfil: cada secção é o seu próprio card, sem moldura externa. */
+body.ui-v2 .ui-settings-subpage-body:has(.ui-help-hero),
+body.ui-v2 .ui-settings-subpage-body:has(.ui-faq) {
+  padding:0;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+  backdrop-filter:none;
+  -webkit-backdrop-filter:none;
+}
+.ui-v2 .ui-settings-subpage-body :is(.ui-help-hero,.ui-faq) { margin-bottom:0; }
 .ui-v2 .ui-settings-subpage-body:has(#dpNomeInput) {
   padding:0;
   border:0;

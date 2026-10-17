@@ -345,6 +345,24 @@ test('settings menu opens internal pages and returns without the legacy sheet',t
   assert.deepEqual(a.errors,[]);
 });
 
+test('contact and FAQ use a single visual card without changing other settings pages',t=>{
+  const css=fs.readFileSync('ui-v2.css','utf8');
+  assert.match(css,/body\.ui-v2 \.ui-settings-subpage-body:has\(\.ui-help-hero\),\s*body\.ui-v2 \.ui-settings-subpage-body:has\(\.ui-faq\)\s*\{[^}]*padding:0;[^}]*border:0;[^}]*background:transparent;[^}]*box-shadow:none;/);
+  assert.ok(css.indexOf('body.ui-v2 .ui-settings-subpage-body:has(.ui-help-hero)')>css.indexOf('body.ui-v2.theme-dark :is(.home-card'));
+  const a=setup(t);a.w.SmartSomaUI.go('ajustes');
+  for(const [buttonId,selector] of [['openContactoBtn','.ui-help-hero'],['openAjudaBtn','.ui-faq']]){
+    a.click(buttonId);
+    const body=a.el('uiSettingsPage').querySelector('.ui-settings-subpage-body');
+    assert.equal(body.querySelectorAll(selector).length,1);
+    assert.equal(body.querySelectorAll('.ui-help-hero,.ui-faq').length,1);
+    body.parentElement.querySelector('.ui-settings-back').click();
+  }
+  a.click('openIdiomaBtn');
+  const body=a.el('uiSettingsPage').querySelector('.ui-settings-subpage-body');
+  assert.equal(body.querySelector('.ui-help-hero,.ui-faq'),null);
+  assert.ok(body.querySelector('#langOptionsList'));assert.deepEqual(a.errors,[]);
+});
+
 test('settings groups contact and FAQ separately and preserves instant navigation',t=>{
   const a=setup(t);a.w.SmartSomaUI.go('ajustes');
   const groups=[...a.el('uiSettingsPage').querySelectorAll('.sheet-actions')].filter(group=>!group.hidden);
