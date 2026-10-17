@@ -2390,8 +2390,15 @@ body.ui-v2 .ui-header #uiHeaderDate {
 .ui-v2 .resumo-period-controls.is-sticky :is(.resumo-current-week-label,.resumo-current-week-label strong,.resumo-current-week-label span) {
   color:#eef4ec;
 }
+.ui-v2 #resumoPeriodControls.is-sticky #resumoCurrentWeekLabel > strong { color:#eef4ec; }
+.ui-v2 #resumoPeriodControls.is-sticky #resumoCurrentWeekLabel > span { color:#c8d8cb; }
 .ui-v2 #homeListPageSemana .semana-filter-controls.is-sticky :is(.semana-view-toggle-active-label,.semana-view-toggle-inactive-label) {
   color:#eef4ec;
+}
+.ui-v2 #homeListPageSemana .semana-filter-fields .semana-week-picker-btn,
+body.ui-v2.theme-dark #homeListPageSemana .semana-filter-fields .semana-week-picker-btn {
+  background:#fff;
+  color:#183021;
 }
 .ui-v2 #homeListPageSemana .semana-filter-fields .semana-week-picker-num,
 body.ui-v2.theme-dark #homeListPageSemana .semana-filter-fields .semana-week-picker-num {
