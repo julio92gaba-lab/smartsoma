@@ -1,0 +1,38 @@
+# Preparação da ficha da Google Play
+
+## Rascunho de descrição
+
+**Nome:** SmartSoma
+
+**Descrição curta:** Regista ganhos, despesas e quilómetros e acompanha os teus resultados.
+
+**Descrição longa:**
+
+O SmartSoma ajuda motoristas e estafetas a acompanhar os seus ganhos e despesas num só lugar.
+
+- Regista ganhos por plataforma e despesas do dia a dia.
+- Acompanha distâncias, totais e resultados por período.
+- Define metas semanais e acompanha a sua evolução.
+- Consulta o histórico e gera relatórios PDF.
+- Sincroniza os teus dados entre dispositivos com a tua conta.
+
+Os detalhes de subscrição, preços e disponibilidade serão apresentados na Google Play antes da confirmação da compra.
+
+O texto é um rascunho e deve ser revisto após a integração de pagamentos e as decisões comerciais. Não incluir resultados garantidos nem fotografias ou dados reais de utilizadores nas imagens.
+
+## Privacidade e eliminação
+
+- A página pública preparada para pedidos de eliminação é `/eliminar-conta` (ainda precisa de ser publicada e testada).
+- Confirmar que `contacto@smartsoma.pt` recebe e permite responder a pedidos; não pedir palavras-passe. A página permite pedido por email ou na aplicação.
+- A política existente identifica o responsável como pendente de identificação fiscal e forma jurídica: o titular deve completar e rever essa informação com apoio adequado. A política atual refere-se à web e ao Creem; atualizar a política e os termos para Android e Google Play somente quando os tratamentos e as condições reais estiverem definidos.
+- Rever dados realmente recolhidos por todas as bibliotecas e fornecedores, retenção, processamento, transferências e práticas de segurança antes de preencher a declaração de segurança dos dados. Não presumir conformidade automática.
+- Para compras Google, adaptar primeiro a eliminação e o cancelamento. A exclusão atual apenas trata o Creem.
+
+## Imagens e assinatura
+
+- Há um ícone de 512 × 512 existente (`icon-512.png`); verificar visualmente e confirmar os requisitos atuais antes de o enviar. As capturas devem ser feitas com dados fictícios ou autorizados, após concluir a interface Android.
+- Confirmar `pt.smartsoma.app` como identificador final antes de criar o registo, configurar OAuth e gerar o AAB. Não alterar um identificador já publicado sem avaliar o impacto.
+- Para lançamento, criar uma chave de upload própria e guardar a chave e as credenciais num local seguro e com cópia de recuperação; usar Play App Signing conforme as instruções da Google. Não guardar keystore ou passwords no repositório. A chave de depuração usada no APK de testes não é uma chave de publicação.
+- Gerar e validar o AAB de release assinado quando a chave estiver disponível. Não publicar builds de teste como produção.
+
+Fontes: [eliminação de conta](https://support.google.com/googleplay/android-developer/answer/13327111), [assinatura de apps](https://developer.android.com/studio/publish/app-signing), [segurança dos dados](https://support.google.com/googleplay/android-developer/answer/10787469).
