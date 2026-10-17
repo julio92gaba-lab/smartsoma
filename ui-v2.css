@@ -21,7 +21,7 @@ html.ui-v2.theme-dark, body.ui-v2.theme-dark {
 }
 .ui-v2 [hidden] { display:none !important; }
 .ui-home-callout { display:none; }
-@media (max-width:760px) {
+@media all {
   .ui-v2 .ui-home-callout { position:relative; display:flex; align-items:center; min-height:76px; margin:0 0 12px; }
   .ui-home-callout img { position:absolute; left:0; top:50%; width:52%; max-width:165px; max-height:76px; object-fit:contain; object-position:left center; opacity:.55; transform:translateY(-50%); }
   body.ui-v2.theme-dark .ui-home-callout img { filter:invert(1); }
@@ -327,7 +327,7 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
 .ui-record-row>span { overflow-wrap:anywhere; }
 .ui-record-row small { color:var(--muted); font-size:.65rem; }
 .ui-expense-delete { display:none; }
-@media (max-width:760px) {
+@media all {
   #uiOverviewExpenseRows .ui-record-row:has(.ui-expense-delete) { grid-template-columns:42px minmax(0,1fr) auto 36px; }
   #uiOverviewExpenseRows .ui-expense-delete { display:grid; place-items:center; width:36px; height:36px; padding:0; border:0; background:transparent; color:var(--danger); font-size:1.35rem; cursor:pointer; }
 }
@@ -455,7 +455,7 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
 .ui-v2 .sheet-action-btn:last-child { border-bottom:0; }
 .ui-nav-short { display:none; }
 .ui-v2 .sheet-action-btn { border:0; border-bottom:1px solid var(--card-line); }
-@media(max-width:760px) {
+@media all {
   .ui-nav-short { display:block; }
   .ui-settings-columns { grid-template-columns:1fr; gap:16px; margin:20px 0; }
   .ui-v2 #sheetScreenDefault .sheet-profile-row { flex-wrap:wrap; gap:12px; padding:20px; }
@@ -465,8 +465,8 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
   .ui-panel-head { flex-wrap:wrap; }
   .ui-panel-head h2 { font-size:1.25rem; }
 }
-@media(max-width:1100px) { .ui-dashboard-bottom { grid-template-columns:1fr; grid-template-areas:'chart' 'expenses'; gap:0; } }
-@media (max-width:760px) {
+@media all { .ui-dashboard-bottom { grid-template-columns:1fr; grid-template-areas:'chart' 'expenses'; gap:0; } }
+@media all {
   html.ui-v2,body.ui-v2 { --sidebar:0px; --ui-header:82px; }
   .ui-sidebar { top:auto; width:100%; height:calc(72px + env(safe-area-inset-bottom,0px)); bottom:0; padding:8px 6px calc(8px + env(safe-area-inset-bottom,0px)); border:0; border-top:1px solid #2d3b30; }
   .ui-navigation { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); height:100%; column-gap:4px; row-gap:0; }
@@ -632,13 +632,13 @@ body.ui-v2 #resumoPeriodControls .period-filter-row { background:transparent; }
 .ui-v2 #homeListPageSemana .semana-despesas-detail-table :is(th,td) { padding:0; white-space:nowrap; }
 .ui-v2 #homeListPageSemana .semana-despesas-detail-table td + td,
 .ui-v2 #homeListPageSemana .semana-despesas-detail-table th + th { padding-left:12px; }
-@media (max-width:760px) {
+@media all {
   .ui-v2 #homeListPageSemana .semana-filter-controls { margin:14px -8px; padding:8px; transition:background-color .3s ease,box-shadow .3s ease,border-color .3s ease; }
   .ui-v2 #homeListPageSemana .semana-filter-controls .period-label { padding:7px 14px; font-size:.7rem; }
   .ui-v2 #homeListPageSemana .semana-live-content { gap:14px; }
 }
 /* Páginas internas em mobile. */
-@media (max-width:760px) {
+@media all {
   /* Semana: cabeçalho e filtros próprios, sem alterar os restantes ecrãs mobile. */
   body.ui-v2[data-ui-route="semana"] .ui-header-personal { display:block; min-width:0; }
   body.ui-v2[data-ui-route="semana"] .ui-header-copy { display:block; }
@@ -783,8 +783,8 @@ body.ui-v2.theme-dark .ui-metric-icon { background:#244535; color:#a1e5b6; }
 body.ui-v2.theme-dark .purple .ui-metric-icon { background:#393047; color:#c7b3f9; }
 body.ui-v2.theme-dark .coral .ui-metric-icon { background:#4b312a; color:#ffb29f; }
 body.ui-v2.theme-dark .amber .ui-metric-icon { background:#483e26; color:#f3ce80; }
-@media(max-width:1100px) { .ui-metrics { grid-template-columns:repeat(2,minmax(0,1fr)); } }
-@media(max-width:760px) {
+@media all { .ui-metrics { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media all {
   .ui-header-personal,.ui-header-copy { min-width:0; }
   .ui-header-personal { flex:1; }
   .ui-header h1 { font-size:25px; letter-spacing:-1px; }
@@ -897,7 +897,7 @@ body.ui-v2.theme-dark .amber .ui-metric-icon { background:#483e26; color:#f3ce80
 .ui-v2 #homeListPageSemana .semana-revenue-quick-row > span { white-space:nowrap; }
 .ui-v2 #homeListPageSemana .semana-revenue-quick-row strong { color:var(--ink); font-weight:800; }
 .ui-v2 #homeListPageSemana .semana-table-scroll > .semana-metric-tabs { margin:0 12px 12px; }
-@media (max-width:760px) {
+@media all {
   .ui-v2 #homeListPageSemana .semana-metric-tab { font-size:.58rem; padding-inline:4px; }
   .ui-v2 #homeListPageSemana .semana-week-block .semana-table :is(th,td) { padding:12px 6px; font-size:.62rem; }
 }
@@ -1064,7 +1064,7 @@ body.ui-v2.theme-dark .amber .ui-metric-icon { background:#483e26; color:#f3ce80
 .ui-v2 #homeListPageSemana .semana-filter-fields .semana-week-picker-chevron {
   color:var(--brand-green);
 }
-@media (max-width:760px) {
+@media all {
   .ui-v2 #homeListPageSemana .semana-filter-controls { grid-template-columns:minmax(0,1fr) 86px; column-gap:8px; min-height:92px; padding:7px 8px; }
   .ui-v2 #homeListPageSemana .semana-filter-fields { padding-right:0; }
   .ui-v2 #homeListPageSemana #subHeaderViewToggleGroup { width:86px; min-height:80px; }
@@ -1080,7 +1080,7 @@ body.ui-v2.theme-dark .amber .ui-metric-icon { background:#483e26; color:#f3ce80
 }
 .ui-v2 #homeListPageSemana .semana-week-summary.semana-goal-card::after { display:none; }
 .ui-v2 #homeListPageSemana .semana-week-summary.semana-goal-card > * { z-index:auto; }
-@media (max-width:760px) {
+@media all {
   .ui-v2 #homeListPageSemana .semana-week-summary.semana-goal-card { padding:18px; }
 }
 
@@ -1144,12 +1144,12 @@ body.ui-v2.semana-table-view #homeListPageSemana .semana-expenses-slot .semana-e
 /* Nas páginas secundárias, o título substitui a saudação e o avatar não é exibido. */
 body.ui-v2:not(.ui-home) .ui-header [id="uiHeaderAvatar"] { display:none !important; }
 body.ui-v2:not(.ui-home) .ui-header .ui-header-personal { gap:0; }
-@media (max-width:760px) {
+@media all {
   .ui-v2 #homeListPageSemana .semana-filter-controls,
   .ui-v2 #homeListPageSemana .semana-filter-controls.is-sticky { min-height:90px; }
   .ui-news-popup { right:16px; bottom:88px; }
 }
-@media (max-width:760px) {
+@media all {
   .ui-v2 #homeListPageSemana .semana-ganhos-title { margin-top:0; }
   .ui-v2 #homeListPageSemana .semana-list-placeholder { padding:2px 0 8px; }
 }
@@ -1217,7 +1217,7 @@ body.ui-v2.theme-dark #homeListPageRelatorio .relatorio-period-controls { backgr
 .ui-v2 #relatorioPageDownloadBtn { width:auto; min-width:168px; margin:0; padding-inline:18px; border-radius:10px; box-shadow:2px 3px 0 #172a17; }
 .ui-v2 #relatorioPageDownloadBtn:hover { filter:brightness(1.03); transform:translate(-1px,-1px); }
 .ui-v2 #relatorioPageDownloadBtn:active { box-shadow:none; transform:translate(1px,2px) scale(.98); }
-@media (max-width:760px) {
+@media all {
   .ui-v2 #homeListPageRelatorio .download-page { gap:12px; }
   .ui-v2 #homeListPageRelatorio .download-hero { grid-template-columns:1fr; gap:20px; padding:22px; border-radius:16px; }
   .ui-v2 #homeListPageRelatorio .relatorio-illustration { width:124px; height:124px; margin-inline:auto; }
@@ -1253,7 +1253,7 @@ body.ui-v2.theme-dark #homeListPageRelatorio .relatorio-period-controls { backgr
 .ui-v2 #homeListPageRelatorio .download-format { justify-content:center; color:#f4f9ec; text-align:center; }
 .ui-v2 #homeListPageRelatorio .download-format-icon { border-color:#4f745b; background:#234c35; color:var(--lime); }
 .ui-v2 #relatorioPageDownloadBtn { width:100%; min-width:0; }
-@media (max-width:760px) {
+@media all {
   .ui-v2 #homeListPageRelatorio .download-overview { grid-template-columns:1fr; min-height:0; border-radius:16px; }
   .ui-v2 #homeListPageRelatorio .download-overview-main { padding:22px; border-right:0; }
   .ui-v2 #homeListPageRelatorio .relatorio-period-controls { position:relative; top:auto; margin-bottom:18px; }
@@ -1297,7 +1297,7 @@ body.ui-v2.theme-dark #homeListPageRelatorio .relatorio-period-controls { backgr
 .ui-v2 #homeListPageRelatorio .report-archive-action { margin-left:auto; color:var(--brand-green); font-size:.65rem; font-weight:800; white-space:nowrap; }
 .ui-v2 #homeListPageRelatorio .report-archive-empty { margin:0; padding:18px 0 2px; border-top:1px solid color-mix(in srgb,var(--ink) 10%,transparent); color:var(--muted); font-size:.76rem; text-align:left; }
 .ui-v2 #homeListPageRelatorio .report-archive-empty[hidden] { display:none; }
-@media (max-width:760px) {
+@media all {
   .ui-v2 #homeListPageRelatorio .download-page { gap:14px; }
   .ui-v2 #homeListPageRelatorio .ss-driver-card { padding:20px 18px 18px; border-radius:14px; }
   .ui-v2 #homeListPageRelatorio .ss-driver-grid { grid-template-columns:1fr; gap:18px; padding-top:18px; }
@@ -1339,7 +1339,7 @@ body.ui-v2.theme-dark #homeListPageRelatorio .relatorio-period-controls { backgr
 .ui-v2 .ui-settings-subpage-body { padding:26px; border:1px solid color-mix(in srgb,var(--ink) 11%,transparent); border-radius:16px; background:linear-gradient(135deg,color-mix(in srgb,var(--card-bg) 78%,transparent),color-mix(in srgb,var(--input-bg) 56%,transparent)); box-shadow:0 12px 30px rgba(11,31,20,.06); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); }
 .ui-v2 .ui-settings-subpage-body .sheet-content { display:block; width:auto; max-width:none; margin:0; padding:0; }
 .ui-v2 .ui-settings-subpage-body .sheet-profile-row { display:none; }
-@media (max-width:760px) {
+@media all {
   .ui-v2 #uiSettingsPage .sheet-profile-row { grid-template-columns:50px minmax(0,1fr); gap:12px; padding:20px; border-radius:14px; }
   .ui-v2 #uiSettingsPage .sheet-avatar { width:50px; height:50px; }
   .ui-v2 #uiSettingsPage #openDadosPessoaisBtn { grid-column:1/-1; width:100%; justify-content:center; }
@@ -1412,7 +1412,7 @@ body.ui-v2.theme-dark #homeListPageRelatorio .relatorio-period-controls { backgr
   .ui-v2 #resumoPeriodControls .period-label { padding-inline:6px; font-size:.67rem; }
 }
 
-@media (max-width:760px) {
+@media all {
   /* Minha Semana: sticky realmente slim numa linha; alternador fica independente. */
   .ui-v2 #homeListPageSemana .semana-filter-controls,
   .ui-v2 #homeListPageSemana .semana-filter-controls.is-sticky {
@@ -1495,7 +1495,7 @@ body.ui-v2.theme-dark #homeListPageRelatorio .relatorio-period-controls { backgr
 
 /* Início mobile: a visão é sempre da semana atual. */
 .ui-v2 #resumoPeriodControls .resumo-current-week-label { display:none; }
-@media (max-width:760px) {
+@media all {
   .ui-v2 #resumoPeriodControls,
   .ui-v2 #resumoPeriodControls.is-sticky {
     justify-content:center;
@@ -1858,7 +1858,7 @@ body.ui-v2.theme-dark #homeListPageSemana .semana-day-card::before { background-
   justify-self:end;
   align-self:center;
 }
-@media (max-width:760px) {
+@media all {
   .ui-v2 #uiSettingsPage .sheet-profile-row {
     grid-template-columns:64px minmax(0,1fr) auto;
     gap:12px;
@@ -1878,7 +1878,7 @@ body.ui-v2.theme-dark #homeListPageSemana .semana-day-card::before { background-
 }
 
 /* Correções finais: status bar edge-to-edge, navegação e perfil. */
-@media (max-width:760px) {
+@media all {
   .ui-header {
     height:var(--ui-header);
     min-height:var(--ui-header);
@@ -1951,7 +1951,7 @@ body.ui-v2.theme-dark #homeListPageSemana .semana-day-card::before { background-
   justify-self:end;
   align-self:center;
 }
-@media (max-width:760px) {
+@media all {
   .ui-v2 #uiSettingsPage .sheet-profile-row {
     grid-template-columns:64px minmax(0,1fr) auto;
     gap:12px;
@@ -1970,7 +1970,7 @@ body.ui-v2.theme-dark #homeListPageSemana .semana-day-card::before { background-
   }
 }
 
-@media (max-width:760px) {
+@media all {
   .ui-sidebar { transition:transform .22s ease; will-change:transform; }
   body.ui-mobile-nav-hidden .ui-sidebar { transform:translate3d(0,calc(100% + env(safe-area-inset-bottom,0px)),0); }
 }
@@ -1983,7 +1983,7 @@ body.ui-v2.theme-dark #homeListPageSemana .semana-day-card::before { background-
 .ui-v2 #uiSettingsPage .sheet-profile-row #sheetProActiveBadge { align-self:center; margin:0; padding:7px 10px; border-radius:999px; border-color:rgba(212,245,60,.45); background:rgba(5,24,14,.34); }
 .ui-v2 #uiSettingsPage .sheet-profile-row #subStatusText { color:#fff; }
 .ui-v2 #uiSettingsPage #openDadosPessoaisBtn { align-self:center; border-radius:999px; background:var(--lime); color:#132619; }
-@media (max-width:760px) {
+@media all {
   .ui-v2 #uiSettingsPage .sheet-profile-row { grid-template-columns:56px minmax(0,1fr); }
   .ui-v2 #uiSettingsPage .sheet-profile-row #sheetProActiveBadge { grid-column:1/-1; justify-self:start; }
   .ui-v2 #uiSettingsPage #openDadosPessoaisBtn { grid-column:1/-1; width:auto; justify-self:end; }
@@ -2076,7 +2076,7 @@ body.ui-v2.theme-dark #homeListPageSemana .semana-day-card::before { background-
 .ui-v2 .ui-settings-subpage-body .sheet-page-content:has(#dpNomeInput) #cancelarSubscricaoSection .sheet-divider { display:none; }
 .ui-v2 .ui-settings-subpage-body .sheet-page-content:has(#dpNomeInput) #btnEliminarConta { background:transparent; color:var(--danger); border-color:color-mix(in srgb,var(--danger) 55%,var(--card-line)); }
 .ui-v2 .ui-settings-subpage-body .sheet-page-content:has(#dpNomeInput) > .cancelar-sub-note { margin:0; text-align:center; }
-@media (max-width:620px) {
+@media all {
   .ui-v2 #uiSettingsPage .sheet-profile-row { padding:22px 18px 16px; }
   .ui-v2 #uiSettingsPage .sheet-avatar { width:78px; height:78px; }
   .ui-v2 .ui-settings-subpage-body .sheet-page-content:has(#dpNomeInput) { grid-template-columns:1fr; gap:10px; }
@@ -2228,7 +2228,7 @@ body.ui-v2.theme-dark #homeListPageSemana .semana-day-card::before { background-
 .ui-v2 #uiSettingsPage .sheet-profile-info { grid-column:2; grid-row:1; justify-items:start; text-align:left; }
 .ui-v2 #uiSettingsPage #sheetProActiveBadge { grid-column:2; grid-row:2; justify-self:start; align-self:start; margin:0; }
 .ui-v2 #uiSettingsPage #openDadosPessoaisBtn { grid-column:3; grid-row:1 / span 2; width:auto; margin:0; justify-self:end; align-self:center; }
-@media (max-width:760px) {
+@media all {
   .ui-v2 #uiSettingsPage .sheet-profile-row { grid-template-columns:64px minmax(0,1fr) auto; gap:12px; padding:18px; }
   .ui-v2 #uiSettingsPage .sheet-avatar { width:60px; height:60px; }
   .ui-v2 #uiSettingsPage #openDadosPessoaisBtn { grid-column:3; grid-row:1 / span 2; justify-self:end; width:auto; }
@@ -2286,7 +2286,7 @@ body.ui-v2.theme-dark #homeListPageSemana .semana-day-card::before { background-
   padding:7px 10px;
 }
 .ui-v2 #uiSettingsPage #openDadosPessoaisBtn svg { width:16px; height:16px; }
-@media (max-width:760px) {
+@media all {
   .ui-v2 #uiSettingsPage .sheet-profile-row { min-height:250px; padding:26px 18px 18px; }
   .ui-v2 #uiSettingsPage .sheet-avatar { width:98px; height:98px; }
   .ui-v2 #uiSettingsPage #openDadosPessoaisBtn { top:14px; right:14px; }
@@ -2413,7 +2413,7 @@ body.ui-v2.theme-dark #homeListPageSemana .semana-filter-fields .semana-week-pic
 }
 
 /* Leitura e áreas de toque em telemóveis. */
-@media (max-width:760px) {
+@media all {
   .ui-v2 .sheet-close-btn,
   .ui-v2 .ui-fixed-expenses-modal-head .ui-icon-button { width:44px; height:44px; }
   .ui-v2 .ui-settings-back { min-width:44px; min-height:44px; }
@@ -2437,3 +2437,15 @@ body.ui-v2.theme-dark #homeListPageSemana .semana-filter-fields .semana-week-pic
   .ui-v2 #homeListPageSemana .semana-expenses-largest,
   .ui-v2 #homeListPageSemana .semana-revenue-best { white-space:normal; overflow-wrap:anywhere; }
 }
+
+/* Uma única interface mobile, centrada quando existe espaço nas laterais. */
+html.ui-v2 { --app-max-width:600px; --app-gutter:max(0px,calc((100vw - var(--app-max-width)) / 2)); background:#e4e9e2; }
+html.ui-v2.theme-dark { background:#07100c; }
+body.ui-v2 { width:min(100%,var(--app-max-width)); max-width:var(--app-max-width); margin-inline:auto; min-height:100dvh; background:var(--paper); }
+body.ui-v2 .ui-header,
+body.ui-v2 .ui-sidebar { left:var(--app-gutter); right:var(--app-gutter); width:auto; }
+body.ui-v2 :is(.mm-backdrop,.modal-backdrop,.sheet-backdrop,.photo-view-backdrop,.screen-overlay,.ui-entry-backdrop,.ui-entry-retro-backdrop,.ui-news-backdrop,#langPopupModal,#checkoutLoadingOverlay,#splash) {
+  left:var(--app-gutter); right:var(--app-gutter);
+}
+body.ui-v2 .ui-news-popup { right:calc(var(--app-gutter) + 16px); }
+body.ui-v2 #proWelcomeToast { right:calc(var(--app-gutter) + 20px); }
