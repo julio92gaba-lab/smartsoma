@@ -138,7 +138,7 @@ for (const [label,data,error,active] of [
 
 test('offline cache includes both new presentation assets and excludes test fixture',()=>{
   const source=fs.readFileSync('sw.js','utf8');
-  assert.match(source,/'\/ui-v2.js'/); assert.match(source,/'\/ui-v2.css'/);
+  assert.match(source,/'\/ui-v2.js\?v=11'/); assert.match(source,/'\/ui-v2.css\?v=11'/);
   assert.doesNotMatch(source,/__ui-test|visual-fixture/);
   assert.match(fs.readFileSync('.vercelignore','utf8'),/^tests\//m);
 });

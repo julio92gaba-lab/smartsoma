@@ -42,7 +42,7 @@ function createApp(seed = {}, { ui = false, cloudBoot = false } = {}) {
     const append=w.document.body.appendChild.bind(w.document.body);
     w.document.body.appendChild=function(node){
       const result=append(node);
-      if(node.tagName==='SCRIPT'&&node.getAttribute('src')==='app.js'){
+      if(node.tagName==='SCRIPT'&&node.getAttribute('src')?.startsWith('app.js')){
         w.eval(fs.readFileSync('app.js','utf8'));node.onload();
       }
       return result;

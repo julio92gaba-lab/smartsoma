@@ -57,13 +57,14 @@ test('fixed chrome has readable text and avatars use Supabase Storage',()=>{
   assert.match(css,/\.semana-filter-controls\.is-sticky[^}]*semana-view-toggle-active-label[^}]*\{[^}]*color:#eef4ec;/);
   assert.match(css,/\.semana-week-picker-num,[^{]*\{[^}]*background:#fff;[^}]*color:#183021;/);
   assert.match(html,/accept="[^"]*\.heic[^"]*image\/heif/);
-  assert.match(html,/<script src="heic2any\.min\.js"><\/script>/);
+  assert.match(html,/<script src="heic2any\.min\.js\?v=11"><\/script>/);
   assert.match(app,/'image\/heic': true/);
   assert.doesNotMatch(app,/MAX_IMAGE_BYTES/);
   assert.match(app,/window\.heic2any\(\{ blob: file, toType: 'image\/jpeg'/);
   assert.match(app,/SmartSomaAvatarStorage\.upload\(avatarBlob\)/);
   assert.match(cloud,/sb\.storage\.from\('avatars'\)\.upload\(objectPath, blob,[\s\S]*upsert: true/);
   assert.match(cloud,/getPublicUrl\(objectPath\)/);
+  assert.match(cloud,/script\.src = 'app\.js\?v=11'/);
   assert.match(migration,/INSERT INTO storage\.buckets \(id, name, public, file_size_limit, allowed_mime_types\)/);
   assert.match(migration,/VALUES \([\s\S]*'avatars',[\s\S]*true,[\s\S]*NULL/);
   assert.match(migration,/FOR INSERT TO authenticated[\s\S]*storage\.foldername\(name\)/);
