@@ -1427,6 +1427,7 @@
         <p class="cancelar-sub-note">15 dias de trial · A primeira cobrança é feita no fim do trial · Cancela antes para não pagar</p>
         <div class="mm-secondary-action">
             <button type="button" class="mm-text-link" id="subExpiradaSairBtn">Sair da conta</button>
+            <button type="button" class="mm-text-link" id="subExpiradaEliminarBtn">Eliminar conta</button>
         </div>
     </div>
 </div>
@@ -1843,7 +1844,8 @@
         /* ── Modal subscrição expirada ── */
         function abrirModalSubExpirada() {
             const backdrop = document.getElementById('subExpiradaBackdrop');
-            if (backdrop) backdrop.classList.add('visible');
+            const confirmacao = document.getElementById('eliminarContaBackdrop');
+            if (backdrop && !(confirmacao && confirmacao.classList.contains('visible'))) backdrop.classList.add('visible');
             const appRoot = document.getElementById('appRoot');
             if (appRoot) {
                 appRoot.inert = true;
@@ -2025,7 +2027,7 @@
     </div>
 
     <!-- Modal de confirmação de eliminação de conta -->
-    <div class="mm-backdrop" id="eliminarContaBackdrop">
+    <div class="mm-backdrop" id="eliminarContaBackdrop" style="z-index:100001">
         <div class="mm-card" role="dialog" aria-modal="true" aria-labelledby="eliminarContaTitle" id="eliminarContaCard">
             <div class="cancelar-sub-modal-icon" aria-hidden="true">⚠️</div>
             <h3 class="mm-title" id="eliminarContaTitle">Eliminar conta?</h3>
@@ -2044,25 +2046,37 @@
     <script>
     (function () {
         const btnEliminar  = document.getElementById('btnEliminarConta');
+        const btnEliminarSub = document.getElementById('subExpiradaEliminarBtn');
         const backdrop     = document.getElementById('eliminarContaBackdrop');
         const btnConfirmar = document.getElementById('eliminarContaConfirmBtn');
         const btnCancelar  = document.getElementById('eliminarContaCancelarBtn');
+
+        function fecharConfirmacao() {
+            if (btnConfirmar && btnConfirmar.disabled) return;
+            if (backdrop) backdrop.classList.remove('visible');
+            const appRoot = document.getElementById('appRoot');
+            const subBackdrop = document.getElementById('subExpiradaBackdrop');
+            if (appRoot && appRoot.inert && subBackdrop) subBackdrop.classList.add('visible');
+        }
 
         if (btnEliminar) {
             btnEliminar.addEventListener('click', function () {
                 if (backdrop) backdrop.classList.add('visible');
             });
         }
+        if (btnEliminarSub) {
+            btnEliminarSub.addEventListener('click', function () {
+                if (backdrop) backdrop.classList.add('visible');
+            });
+        }
 
         if (btnCancelar) {
-            btnCancelar.addEventListener('click', function () {
-                if (backdrop) backdrop.classList.remove('visible');
-            });
+            btnCancelar.addEventListener('click', fecharConfirmacao);
         }
 
         if (backdrop) {
             backdrop.addEventListener('click', function (e) {
-                if (e.target === backdrop) backdrop.classList.remove('visible');
+                if (e.target === backdrop) fecharConfirmacao();
             });
         }
 
@@ -2079,21 +2093,25 @@
                     const token = sessionData?.session?.access_token;
                     if (!token) throw new Error('Sessão inválida');
 
-                    const res = await fetch('/api/delete-account', {
-                        method : 'POST',
-                        headers: {
-                            'Content-Type' : 'application/json',
-                            'Authorization': 'Bearer ' + token
-                        }
-                    });
-
-                    const json = await res.json();
-                    if (!res.ok) throw new Error(json.error || 'Erro ao eliminar conta');
+                    const nativeAndroid = window.Capacitor && window.Capacitor.isNativePlatform() && window.Capacitor.getPlatform() === 'android';
+                    const headers = { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token };
+                    let json;
+                    if (nativeAndroid) {
+                        const http = window.Capacitor.Plugins && window.Capacitor.Plugins.CapacitorHttp;
+                        if (!http) throw new Error('Ligação nativa indisponível');
+                        const response = await http.post({ url: 'https://www.smartsoma.pt/api/delete-account', headers, disableRedirects: true });
+                        json = response.data;
+                        if (response.status < 200 || response.status >= 300 || !json || json.ok !== true) throw new Error((json && json.error) || 'Erro ao eliminar conta');
+                    } else {
+                        const res = await fetch('/api/delete-account', { method: 'POST', headers });
+                        json = await res.json();
+                        if (!res.ok || !json || json.ok !== true) throw new Error((json && json.error) || 'Erro ao eliminar conta');
+                    }
 
                     try {
                         const uid = window.currentUser && window.currentUser.id;
                         if (uid) {
-                            const prefixes = ['ss_kv:' + uid + ':', 'ss_q:' + uid, 'ss_snap:' + uid];
+                            const prefixes = ['ss_kv:' + uid + ':', 'ss_q:' + uid, 'ss_snap:' + uid, 'ss_plano_offline:' + uid];
                             for (let i = localStorage.length - 1; i >= 0; i--) {
                                 const k = localStorage.key(i);
                                 if (k && prefixes.some(prefix => k.indexOf(prefix) === 0)) {
@@ -2104,7 +2122,7 @@
                     } catch (_) {}
 
                     await sb.auth.signOut();
-                    window.location.href = '/';
+                    window.location.href = nativeAndroid ? 'login.html' : '/';
 
                 } catch (err) {
                     console.error('Erro ao eliminar conta:', err);

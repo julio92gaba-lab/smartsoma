@@ -4,7 +4,7 @@ const fs=require('node:fs');
 const {createHash}=require('node:crypto');
 const hash=s=>createHash('sha256').update(s.replace(/\r\n/g,'\n')).digest('hex');
 
-// Baseline após as alterações aprovadas de avatar, sincronização e acesso offline.
+// Baseline após as alterações aprovadas de avatar, sincronização, acesso offline e exclusão de conta.
 test('authentication, cloud persistence and billing endpoints match the approved baseline',()=>{
   const expected={
     'cloud-init.js':'c18f505376996eb5d644f28774f9144fe0ac6ec0fe9ea3f18c35e5d77d8c378d',
@@ -25,5 +25,5 @@ test('authentication, cloud persistence and billing endpoints match the approved
 test('all inline auth, subscription and account scripts retain baseline source',()=>{
   const html=fs.readFileSync('app.html','utf8');
   const scripts=[...html.matchAll(/<script(?![^>]*src=)[^>]*>([\s\S]*?)<\/script>/g)].map(m=>m[1].replace(/\r\n/g,'\n'));
-  assert.equal(hash(JSON.stringify(scripts)),'4baccbb5517dee04c18ce6c956959de312ffa62fb034c654a81c9b7906580cca');
+  assert.equal(hash(JSON.stringify(scripts)),'cc94bc078e01fed22dd16c04fd69c1ba4e6bbdfd9093d8a940aba1021e9b1c30');
 });
