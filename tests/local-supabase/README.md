@@ -18,3 +18,8 @@ Não execute comandos de migração ou de ligação ao projeto remoto como parte
 deste ambiente. A estrutura inicial ainda precisa de ser conciliada com as
 migrações e validada antes de ser utilizada nos testes. Foi obtida uma exportação apenas
 da estrutura pública, mas ainda não foi validada nem aplicada localmente.
+
+O teste `google-play-ledger-test.sql` é separado deste ambiente: foi executado
+num contentor PostgreSQL descartável, sem rede (`--network none`), sem portas
+publicadas e com dados fictícios. Valida apenas a migração de compras Google e
+as suas permissões; não substitui testes de integração com Auth, API ou Google Play.
