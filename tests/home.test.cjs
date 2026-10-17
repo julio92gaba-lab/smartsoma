@@ -72,7 +72,7 @@ test('font assets are local, cached offline and the global header keeps its avat
   assert.match(css,/body\.ui-v2 \.ui-header #uiHeaderDate\s*\{[^}]*padding:0 7px;[^}]*background:color-mix\(in srgb,var\(--card-bg\) 50%,transparent\)/);
   assert.doesNotMatch(css,/data-ui-route=.*uiHeaderDate/);
   assert.match(css,/\.ui-header h1 \{[^}]*text-overflow:ellipsis;[^}]*white-space:nowrap;/);
-  assert.match(css,/\.ui-sidebar-avatar img,\.ui-header-avatar img \{[^}]*border-radius:inherit;[^}]*object-fit:cover;[^}]*object-position:center;/);
+  assert.match(css,/\.ui-header-avatar img \{[^}]*border-radius:inherit;[^}]*object-fit:cover;[^}]*object-position:center;/);
   assert.doesNotMatch(css,/\.ui-header-avatar\s*\{\s*display\s*:\s*none/i);
   assert.match(css,/body\.ui-v2 \{ overflow:visible; \}/);
 });

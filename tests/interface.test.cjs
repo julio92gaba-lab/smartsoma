@@ -9,14 +9,15 @@ function setup(t,seed={}) { const a=createApp(seed,{ui:true}); t.after(a.close);
 test('UI keeps four navigation items, mobile brand and redirects retired routes to overview',async t=>{
   const a=setup(t);a.w.SmartSomaUI.start();await settle();
   assert.equal(a.w.document.querySelectorAll('.ui-nav-item').length,4);
-  assert.deepEqual([...a.w.document.querySelectorAll('.ui-nav-full')].map(n=>n.textContent),['Visão geral','Detalhes da semana','Downloads','Ajustes']);
+  assert.equal(a.w.document.querySelector('.ui-nav-full'),null);
   assert.deepEqual([...a.w.document.querySelectorAll('.ui-nav-short')].map(n=>n.textContent),['Início','Semana','Downloads','Ajustes']);
   assert.equal(a.w.document.querySelector('.ui-mobile-nav-brand img').getAttribute('src'),'logopeq.png');
   a.w.SmartSomaUI.go('semana');await settle();a.w.document.querySelector('.ui-mobile-nav-brand').click();await settle();assert.equal(a.w.document.body.dataset.uiRoute,'resumo');
   assert.equal(a.el('uiChart').querySelectorAll('.ui-rhythm-row').length,7);
   assert.equal(a.el('uiHeaderTitle').textContent,'Olá, Utilizador.');
   assert.equal(a.el('uiHeaderAvatar').textContent,'U');a.el('sheetAvatar').innerHTML='<img src="https://example.com/avatar.jpg">';a.w.SmartSomaUI.refreshSidebar();
-  for(const id of ['uiSidebarAvatar','uiHeaderAvatar'])assert.equal(a.el(id).querySelector('img').src,'https://example.com/avatar.jpg');
+  assert.equal(a.el('uiSidebarAvatar'),null);
+  assert.equal(a.el('uiHeaderAvatar').querySelector('img').src,'https://example.com/avatar.jpg');
   a.click('uiHeaderAvatar');
   assert.equal(a.el('homeListPageResumo').hidden,true);
   assert.equal(a.el('uiSettingsPage').hidden,false);
@@ -77,7 +78,7 @@ test('fixed chrome has readable text and avatars use Supabase Storage',()=>{
   assert.match(css,/#resumoPeriodControls\.is-sticky #resumoCurrentWeekLabel > span\s*\{\s*color:#c8d8cb;/);
   assert.match(css,/\.semana-filter-fields \.semana-week-picker-btn,[^{]*\{[^}]*background:#fff;[^}]*color:#183021;/);
   assert.match(css,/\.semana-week-picker-num,[^{]*\{[^}]*background:#fff;[^}]*color:#183021;/);
-  assert.match(html,/ui-v2\.css\?v=17/);
+  assert.match(html,/ui-v2\.css\?v=18/);
   assert.match(html,/accept="[^"]*\.heic[^"]*image\/heif/);
   assert.match(html,/<script src="heic2any\.min\.js\?v=12"><\/script>/);
   assert.match(app,/'image\/heic': true/);
@@ -336,7 +337,7 @@ test('settings keeps account flows, two font sizes, legal link and complete FAQ'
   assert.equal(a.el('openTermosMenuBtn').href,'https://smartsoma.pt/legal');
   assert.equal(a.w.document.querySelectorAll('.tamanho-option').length,2);
   assert.match(a.el('tamanhoOptionP').textContent,/Normal/);
-  assert.equal(a.w.document.querySelectorAll('#uiFaqItems details').length,11);
+  assert.equal(a.w.document.querySelectorAll('#uiFaqItems details').length,9);
   a.w.I18N.setLang('en');await settle();assert.equal(a.el('uiFaqTitle').textContent,'FAQ');
   a.click('uiThemeRow');assert.ok(a.w.document.body.classList.contains('theme-dark'));assert.deepEqual(a.errors,[]);
 });
@@ -396,7 +397,7 @@ test('settings groups contact and FAQ separately and preserves instant navigatio
   a.click('openAjudaBtn');
   assert.equal(a.el('uiSettingsPage').querySelector('.ui-settings-subpage-head h2').textContent,'Perguntas frequentes');
   assert.equal(a.el('uiSettingsPage').querySelector('.ui-help-hero'),null);
-  assert.equal(a.el('uiFaqItems').querySelectorAll('details').length,11);
+  assert.equal(a.el('uiFaqItems').querySelectorAll('details').length,9);
   a.w.SmartSomaUI.go('semana');assert.equal(a.el('homeListPageSemana').hidden,false);
   a.w.SmartSomaUI.go('downloads');assert.equal(a.el('homeListPageRelatorio').hidden,false);
   assert.equal(a.el('homeListPageSemana').hidden,true);

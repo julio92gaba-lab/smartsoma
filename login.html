@@ -681,10 +681,13 @@ body{
 
     // ── Google ────────────────────────────────────────────────────────
     document.getElementById('btnGoogle').addEventListener('click', async () => {
-        await sb.auth.signInWithOAuth({
+        const framed = window.top !== window;
+        const { data, error } = await sb.auth.signInWithOAuth({
             provider: 'google',
-            options: { redirectTo: window.location.origin + '/app.html', queryParams: { prompt: 'select_account' } }
+            options: { redirectTo: window.location.origin + '/app.html', queryParams: { prompt: 'select_account' }, skipBrowserRedirect: framed }
         });
+        if (error) { handleError(error); return; }
+        if (framed && data?.url) window.top.location.href = data.url;
     });
 
     // ── Alternar modo ─────────────────────────────────────────────────
