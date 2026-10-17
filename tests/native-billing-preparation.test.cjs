@@ -2,7 +2,7 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 
-test('Android billing preparation is read-only and not wired to checkout', () => {
+test('Android billing purchases are hard-disabled and not wired to checkout', () => {
   const source = fs.readFileSync('android/app/src/main/java/pt/smartsoma/app/NativeBillingPlugin.java', 'utf8');
   const activity = fs.readFileSync('android/app/src/main/java/pt/smartsoma/app/MainActivity.java', 'utf8');
   const app = fs.readFileSync('app.html', 'utf8');
@@ -11,6 +11,10 @@ test('Android billing preparation is read-only and not wired to checkout', () =>
   assert.match(activity, /registerPlugin\(NativeBillingPlugin\.class\)/);
   assert.match(source, /queryProductDetailsAsync/);
   assert.match(source, /queryPurchasesAsync/);
-  assert.doesNotMatch(source, /launchBillingFlow|acknowledgePurchase/);
+  assert.match(source, /private static final boolean PURCHASES_ENABLED = false/);
+  assert.match(source, /if \(!PURCHASES_ENABLED\)[\s\S]*?return;[\s\S]*?launchBillingFlow/);
+  assert.match(source, /setObfuscatedAccountId\(accountId\)/);
+  assert.match(source, /Purchase\.PurchaseState\.PENDING/);
+  assert.doesNotMatch(source, /acknowledgePurchase/);
   assert.doesNotMatch(app, /NativeBilling/);
 });

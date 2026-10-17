@@ -2,7 +2,7 @@
 
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
-const { fetchGooglePlaySubscription, evaluateGooglePlaySubscription } = require('../lib/google-play-entitlement.cjs');
+const { googlePlayAccountId, fetchGooglePlaySubscription, acknowledgeGooglePlaySubscription, evaluateGooglePlaySubscription } = require('../lib/google-play-entitlement.cjs');
 
 const now = Date.parse('2026-10-17T12:00:00Z');
 const config = { accountId: 'hashed-account', productIds: ['pro-weekly', 'pro-monthly'], now };
@@ -11,6 +11,36 @@ const purchase = (state = 'SUBSCRIPTION_STATE_ACTIVE', expiryTime = '2026-10-18T
   acknowledgementState: 'ACKNOWLEDGEMENT_STATE_PENDING',
   externalAccountIdentifiers: { obfuscatedExternalAccountId: 'hashed-account' },
   lineItems: [{ productId: 'pro-monthly', expiryTime }]
+});
+
+test('account binding is stable, private, distinct and requires a secret and UUID', () => {
+  const user = '12345678-abcd-4321-9876-0123456789ab';
+  const secret = 'a1'.repeat(32);
+  const id = googlePlayAccountId(user, secret);
+  assert.match(id, /^[a-f0-9]{64}$/);
+  assert.equal(id, googlePlayAccountId(user.toUpperCase(), secret));
+  assert.notEqual(id, googlePlayAccountId('12345678-abcd-4321-9876-0123456789ac', secret));
+  assert.notEqual(id, googlePlayAccountId(user, 'b2'.repeat(32)));
+  for (const [badUser, badSecret] of [['email@example.com', secret], [user, 'short'], [user, 'zz'.repeat(32)]]) {
+    assert.throws(() => googlePlayAccountId(badUser, badSecret), { message: 'Invalid Google Play account configuration' });
+  }
+});
+
+test('acknowledgement uses the official endpoint and never leaks credentials in errors', async () => {
+  const args = { packageName: 'pt.smartsoma.app', productId: 'pro-monthly', purchaseToken: 'secret/token', accessToken: 'secret-oauth' };
+  let request;
+  await acknowledgeGooglePlaySubscription({ ...args, fetchImpl: async (url, options) => { request = { url, options }; return { ok: true }; } });
+  assert.equal(request.url, 'https://androidpublisher.googleapis.com/androidpublisher/v3/applications/pt.smartsoma.app/purchases/subscriptions/pro-monthly/tokens/secret%2Ftoken:acknowledge');
+  assert.equal(request.options.method, 'POST');
+  assert.equal(request.options.body, '{}');
+  assert.equal(request.options.redirect, 'error');
+  assert.equal(request.options.headers.Authorization, 'Bearer secret-oauth');
+  for (const fetchImpl of [async () => ({ ok: false }), async () => { throw new Error('secret/token secret-oauth'); }]) {
+    await assert.rejects(acknowledgeGooglePlaySubscription({ ...args, fetchImpl }), { message: 'Google Play acknowledgement unavailable' });
+  }
+  for (const bad of [{ packageName: '../other' }, { productId: '../other' }, { purchaseToken: '..' }, { accessToken: 'x\ny' }]) {
+    await assert.rejects(acknowledgeGooglePlaySubscription({ ...args, ...bad }), { message: 'Invalid Google Play acknowledgement configuration' });
+  }
 });
 
 test('server fetches the subscription directly from Google with encoded token and no redirect', async () => {
