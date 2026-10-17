@@ -23,7 +23,7 @@ O texto é um rascunho e deve ser revisto após a integração de pagamentos e a
 ## Privacidade e eliminação
 
 - A página pública preparada para pedidos de eliminação é `/eliminar-conta` (ainda precisa de ser publicada e testada).
-- Confirmar que `contacto@smartsoma.pt` recebe e permite responder a pedidos; não pedir palavras-passe. A página permite pedido por email ou na aplicação.
+- O titular confirmou que `contacto@smartsoma.pt` está ativo; verificar também o envio de respostas e o tratamento dos pedidos, sem pedir palavras-passe. A página permite pedido por email ou na aplicação.
 - A política existente identifica o responsável como pendente de identificação fiscal e forma jurídica: o titular deve completar e rever essa informação com apoio adequado. A política atual refere-se à web e ao Creem; atualizar a política e os termos para Android e Google Play somente quando os tratamentos e as condições reais estiverem definidos.
 - Rever dados realmente recolhidos por todas as bibliotecas e fornecedores, retenção, processamento, transferências e práticas de segurança antes de preencher a declaração de segurança dos dados. Não presumir conformidade automática.
 - Para compras Google, adaptar primeiro a eliminação e o cancelamento. A exclusão atual apenas trata o Creem.
