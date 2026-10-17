@@ -507,7 +507,7 @@
     return new Promise(function (resolve, reject) {
       var replayDomReady = installDomReadyReplay();
       var script = document.createElement('script');
-      script.src = 'app.js?v=11';
+      script.src = 'app.js?v=12';
       script.async = false;
       script.onload = function () {
         if (replayDomReady) replayDomReady.flush();
@@ -607,7 +607,7 @@
   // Sem rede a gravacao fica na fila e segue quando a ligacao voltar.
   window.cloudSet = function cloudSet(key, value) {
     if (!window.currentUser) return Promise.resolve();
-    if (typeof key !== 'string' || !/^[A-Za-z0-9:_-]{1,120}$/.test(key)) {
+    if (typeof key !== 'string' || !/^[A-Za-z0-9:._-]{1,120}$/.test(key)) {
       return Promise.reject(new Error('Identificador de dados inválido.'));
     }
     if (window.SmartSomaPro && !window.SmartSomaPro.isPro) {

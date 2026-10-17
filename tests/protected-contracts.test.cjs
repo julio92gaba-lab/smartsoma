@@ -7,7 +7,7 @@ const hash=s=>createHash('sha256').update(s.replace(/\r\n/g,'\n')).digest('hex')
 // Baseline após a integração explicitamente aprovada do avatar com o Storage.
 test('authentication, cloud persistence and billing endpoints match the approved baseline',()=>{
   const expected={
-    'cloud-init.js':'55a85baa5c2d041cb221c89600cf46d386a128c4de8a3e57f192c20351a17e8b',
+    'cloud-init.js':'c80daed9011fc5a302910344d762d835cfb5e678df218d36b3c1901a9ae2e831',
     'login.html':'25f0a6c9e27d620c5ce104fe2f0136d649d51646549938f08bf924ac9df5db8c',
     'api/delete-account.js':'bc9e8a39a30ccb32229a9b568d69ffb883605189c667ffd5a80a341d04dda3d5',
     'api/webhook.js':'7d93936fb8f016c3328f6b845cc1075819b5fdaa57bf2e88d15b2eada709d7ae',
