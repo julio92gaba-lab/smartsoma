@@ -1141,7 +1141,7 @@ body.ui-v2.theme-dark .amber .ui-metric-icon { background:#483e26; color:#f3ce80
 .ui-v2 #homeListPageSemana .semana-day-card-details > * + * { margin-top:12px; }
 /* O cabeçalho é sempre pessoal, independente da rota ou da data selecionada. */
 body.ui-v2 .ui-header .ui-header-personal { display:flex !important; align-items:center; gap:10px; min-width:0; }
-body.ui-v2 .ui-header .ui-header-avatar { display:grid !important; visibility:visible !important; opacity:1 !important; flex:0 0 50px; place-items:center; width:50px; height:50px; overflow:hidden; border:2px solid var(--lime); border-radius:50%; background:var(--teal); color:var(--paper); font-size:.8rem; font-weight:800; }
+body.ui-v2 .ui-header .ui-header-avatar { display:grid !important; visibility:visible !important; opacity:1 !important; flex:0 0 50px; place-items:center; width:50px; height:50px; padding:0; overflow:hidden; border:2px solid var(--lime); border-radius:50%; background:var(--teal); color:var(--paper); font-size:.8rem; font-weight:800; }
 body.ui-v2 .ui-header .ui-header-copy { display:block !important; min-width:0; }
 body.ui-v2 .ui-header #uiHeaderDate { display:inline-flex !important; align-items:center; width:max-content; min-height:25px; padding:0 7px; border:1px solid var(--card-line); border-radius:8px; background:color-mix(in srgb,var(--card-bg) 50%,transparent); color:var(--muted); font-size:.56rem; font-weight:700; line-height:1; letter-spacing:.45px; text-transform:uppercase; }
 body.ui-v2 .ui-header .ui-mobile-logo { display:none !important; }
