@@ -37,6 +37,18 @@ test('UI keeps four navigation items, mobile brand and redirects retired routes 
   for(const route of ['ganhos','despesas']){a.w.SmartSomaUI.go(route);await settle();assert.equal(a.w.document.body.dataset.uiRoute,'resumo');}
 });
 
+test('mobile home callout precedes the goal and translates with the app',t=>{
+  const a=setup(t);a.w.SmartSomaUI.start();
+  const callout=a.w.document.querySelector('.ui-home-callout');
+  assert.equal(callout.nextElementSibling,a.el('metaSlotList'));
+  assert.equal(callout.querySelector('p').textContent,'Pensado para quem trabalha com TVDE e entregas por app.');
+  assert.equal(callout.querySelector('svg').getAttribute('aria-hidden'),'true');
+  assert.ok(callout.querySelector('.ui-home-callout-car'));
+  assert.ok(callout.querySelector('.ui-home-callout-moto'));
+  a.w.I18N.setLang('en');
+  assert.equal(callout.querySelector('p').textContent,'Made for ride-hailing and app delivery workers.');
+});
+
 test('header stylesheet never hides the avatar outside the overview',()=>{
   const css=fs.readFileSync('ui-v2.css','utf8');
   assert.doesNotMatch(css,/ui-header-avatar\s*\{\s*display\s*:\s*none/i);
@@ -62,7 +74,7 @@ test('fixed chrome has readable text and avatars use Supabase Storage',()=>{
   assert.match(css,/#resumoPeriodControls\.is-sticky #resumoCurrentWeekLabel > span\s*\{\s*color:#c8d8cb;/);
   assert.match(css,/\.semana-filter-fields \.semana-week-picker-btn,[^{]*\{[^}]*background:#fff;[^}]*color:#183021;/);
   assert.match(css,/\.semana-week-picker-num,[^{]*\{[^}]*background:#fff;[^}]*color:#183021;/);
-  assert.match(html,/ui-v2\.css\?v=14/);
+  assert.match(html,/ui-v2\.css\?v=15/);
   assert.match(html,/accept="[^"]*\.heic[^"]*image\/heif/);
   assert.match(html,/<script src="heic2any\.min\.js\?v=12"><\/script>/);
   assert.match(app,/'image\/heic': true/);
