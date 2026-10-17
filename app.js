@@ -357,13 +357,13 @@
 "pwdChange.atual": "Password atual",
 "pwdChange.atualPh": "A sua password atual",
 "pwdChange.nova": "Nova password",
-"pwdChange.novaPh": "Mínimo 6 caracteres",
+"pwdChange.novaPh": "Mínimo 10 caracteres",
 "pwdChange.confirmar": "Confirmar nova password",
 "pwdChange.confirmarPh": "Repita a nova password",
 "pwdChange.concluir": "Concluir",
 "pwdChange.aguarde": "A concluir...",
 "pwdChange.erroSenha": "Password atual incorreta.",
-"pwdChange.erroCurta": "A nova password precisa de pelo menos 6 caracteres.",
+"pwdChange.erroCurta": "Usa pelo menos 10 caracteres, com maiúscula, minúscula e número.",
 "pwdChange.erroDiferente": "As duas passwords novas não coincidem.",
 "pwdChange.erroGenerico": "Não foi possível concluir. Tente novamente.",
 "pwdChange.sucesso": "Password atualizada com sucesso.",
@@ -764,13 +764,13 @@
 "pwdChange.atual": "Current password",
 "pwdChange.atualPh": "Your current password",
 "pwdChange.nova": "New password",
-"pwdChange.novaPh": "At least 6 characters",
+"pwdChange.novaPh": "At least 10 characters",
 "pwdChange.confirmar": "Confirm new password",
 "pwdChange.confirmarPh": "Repeat the new password",
 "pwdChange.concluir": "Done",
 "pwdChange.aguarde": "Finishing...",
 "pwdChange.erroSenha": "Current password is incorrect.",
-"pwdChange.erroCurta": "The new password needs at least 6 characters.",
+"pwdChange.erroCurta": "Use at least 10 characters, including uppercase, lowercase and a number.",
 "pwdChange.erroDiferente": "The two new passwords don't match.",
 "pwdChange.erroGenerico": "Couldn't complete this. Please try again.",
 "pwdChange.sucesso": "Password updated successfully.",
@@ -5862,7 +5862,7 @@
         var confirmPass = confirmInput.value;
 
         if (!oldPass) { errorEl.textContent = I18N.t('pwdChange.erroSenha'); return; }
-        if (newPass.length < 6) { errorEl.textContent = I18N.t('pwdChange.erroCurta'); return; }
+        if (newPass.length < 10 || !/[a-z]/.test(newPass) || !/[A-Z]/.test(newPass) || !/[0-9]/.test(newPass)) { errorEl.textContent = I18N.t('pwdChange.erroCurta'); return; }
         if (newPass !== confirmPass) { errorEl.textContent = I18N.t('pwdChange.erroDiferente'); return; }
         if (!window.AuthAPI) { errorEl.textContent = I18N.t('pwdChange.erroGenerico'); return; }
 
@@ -7052,7 +7052,9 @@
           var itens = loadDayItemsPdf(d);
           var fixasDoDia = [];
 
-          if (d.getDay() === 1) { // segunda-feira: onde as despesas fixas são lançadas
+          var hoje = new Date();
+          hoje.setHours(0, 0, 0, 0);
+          if (d.getDay() === 1 && d <= hoje) { // segunda-feira: onde as despesas fixas são lançadas
             var weekGross = 0;
             for (var i = 0; i < 7; i++) {
               var wd = new Date(d.getTime());
@@ -7069,17 +7071,18 @@
           for (var pid in badges.plat) platIds[pid] = true;
 
           var bruto = badges.uber + badges.bolt + platSum(badges.plat);
+          var despesas = window.SmartSomaReadModel.day(d).expenses;
           dias.push({
             data: d,
             uber: badges.uber,
             bolt: badges.bolt,
             plat: badges.plat,
             distancia: badges.distancia,
-            despesas: badges.despesas,
+            despesas: despesas,
             itens: itens,
             fixasDoDia: fixasDoDia,
             bruto: bruto,
-            liquido: bruto - badges.despesas
+            liquido: bruto - despesas
           });
         }
 

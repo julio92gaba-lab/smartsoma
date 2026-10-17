@@ -31,8 +31,7 @@ html.ui-v2.theme-dark, body.ui-v2.theme-dark {
 .ui-v2 button { cursor:pointer; }
 .ui-v2 button:disabled { cursor:default; opacity:.45; }
 .ui-v2 :is(button,a,summary):focus-visible { outline:3px solid var(--brand-green); outline-offset:4px; }
-.ui-v2 input:focus,.ui-v2 input:focus-visible,.ui-v2 textarea:focus,.ui-v2 textarea:focus-visible { outline:none !important; box-shadow:none !important; border-color:var(--card-line) !important; }
-.ui-v2 #cloudSyncChip { display:none !important; }
+.ui-v2 input:focus,.ui-v2 textarea:focus { outline:2px solid var(--brand-green) !important; outline-offset:2px; }
 .ui-v2 :is(h1,h2,h3,.dash-main-value,.dash-tile-value) { font-family:'Bricolage Grotesque','Inter',sans-serif; }
 .ui-v2 .app-wallpaper,.ui-v2 .app-header,.ui-v2 #homeSubHeader,.ui-v2 .quick-nav-wrap { display:none; }
 .ui-sidebar { position:fixed; z-index:45; inset:0 auto 0 0; width:var(--sidebar); padding:35px 20px; display:flex; flex-direction:column; color:#eef4ec; background:#0b1710; border-right:1px solid #27392b; }
@@ -514,7 +513,7 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
   .ui-v2 #resumoPeriodControls .period-nav-row { gap:10px; margin:0; }
   .ui-v2 #resumoPeriodControls .period-nav-btn { width:32px; height:32px; }
   .ui-header-actions { gap:8px; }
-  .ui-icon-button,.ui-add { width:37px; height:37px; border-radius:10px; }
+  .ui-icon-button,.ui-add { width:44px; height:44px; border-radius:10px; }
   .ui-mobile-logo img { width:132px; }
   .ui-mobile-logo span { margin-top:-4px; padding-left:2px; color:var(--muted); font-size:.52rem; font-weight:700; line-height:1; letter-spacing:.12px; white-space:nowrap; }
   body.ui-v2.ui-showing-other-date .ui-header-copy { display:block; }
@@ -2439,4 +2438,30 @@ body.ui-v2.theme-dark #homeListPageSemana .semana-filter-fields .semana-week-pic
 .ui-v2 #uiSettingsPage .sheet-profile-row.has-profile-photo::before {
   filter:blur(4px);
   transform:scale(1.025);
+}
+
+/* Leitura e áreas de toque em telemóveis. */
+@media (max-width:760px) {
+  .ui-v2 .sheet-close-btn,
+  .ui-v2 .ui-fixed-expenses-modal-head .ui-icon-button { width:44px; height:44px; }
+  .ui-v2 .ui-settings-back { min-width:44px; min-height:44px; }
+  .ui-v2 #uiSettingsPage #openDadosPessoaisBtn,
+  .ui-v2 .ui-settings-subpage-body .sheet-page-content:has(#dpNomeInput) .dp-upload-btn { min-height:44px; }
+  .ui-v2 #homeListPageSemana .semana-metric-tab { min-height:44px; font-size:.72rem; }
+  .ui-v2 #homeListPageSemana .semana-week-nav .period-nav-btn { width:44px; height:44px; }
+  .ui-v2 #homeListPageSemana .semana-week-nav { grid-template-columns:44px minmax(0,1fr) 44px; }
+  .ui-nav-item span,body.ui-v2 .ui-header #uiHeaderDate { font-size:.65rem; }
+
+  .ui-v2 #homeListPageSemana .semana-week-block .semana-table :is(th,td),
+  .ui-v2 #homeListPageSemana .semana-despesas-detail-table :is(th,td) {
+    padding:10px 4px !important;
+    overflow:visible;
+    text-overflow:clip;
+    white-space:normal;
+    overflow-wrap:anywhere;
+    font-size:clamp(.72rem,3vw,.8rem);
+    line-height:1.2;
+  }
+  .ui-v2 #homeListPageSemana .semana-expenses-largest,
+  .ui-v2 #homeListPageSemana .semana-revenue-best { white-space:normal; overflow-wrap:anywhere; }
 }

@@ -1,7 +1,7 @@
 const fs = require('node:fs');
 const { JSDOM, VirtualConsole } = require('jsdom');
 
-function createApp(seed = {}, { ui = false, cloudBoot = false, mobile = false } = {}) {
+function createApp(seed = {}, { ui = false, cloudBoot = false, mobile = false, syncControl = {} } = {}) {
   const errors = [];
   const virtualConsole = new VirtualConsole();
   virtualConsole.on('jsdomError', error => errors.push(error.message));
@@ -36,7 +36,7 @@ function createApp(seed = {}, { ui = false, cloudBoot = false, mobile = false } 
       auth:{async getSession(){return{data:{session:{user}}};},async getUser(){return{data:{user}};},async signOut(){},async signInWithPassword(){return{error:null};},async updateUser(){return{error:null};}},
       from(table){if(table!=='user_data')throw new Error('Unexpected table: '+table);return{
         select(){return this;},eq(){return this;},async range(){return{data:Object.entries(seed).map(([key,value])=>({key,value})),error:null};},
-        async upsert(row){writes.push(row);return{error:null};}
+        async upsert(row){writes.push(row);return syncControl.error ? {error:syncControl.error,status:400} : {error:null};}
       };}
     })};
     const append=w.document.body.appendChild.bind(w.document.body);

@@ -80,7 +80,6 @@
   var KV_PREFIX = 'ss_kv:';          // ss_kv:<userId>:<chave>  -> valor
   var QUEUE_PREFIX = 'ss_q:';        // ss_q:<userId>           -> fila pendente
   var SNAPSHOT_PREFIX = 'ss_snap:';  // ss_snap:<userId>        -> copia local completa
-  var MAX_ATTEMPTS = 10;             // tentativas antes de descartar um item "envenenado"
 
   var userId = null;
   var queue = [];
@@ -346,12 +345,8 @@
 
       item.attempts = (item.attempts || 0) + 1;
       console.warn('Sync falhou:', item.key, res.error && res.error.message);
-      if (item.attempts >= MAX_ATTEMPTS) {
-        console.error('Item descartado apos varias falhas:', item.key);
-        removeFromQueue(item);
-      } else {
-        saveQueue();
-      }
+      // Nunca descartar dados que ainda não foram confirmados pelo servidor.
+      saveQueue();
     }
     updateStatus();
   }
@@ -425,7 +420,9 @@
         ? 'Sem rede · guardado, envia quando voltar'
         : 'Sem rede · atualiza sozinho quando voltar', true);
     } else if (pending) {
-      showChip('A sincronizar ' + pending + (pending === 1 ? ' alteração…' : ' alterações…'), false);
+      var failed = queue.some(function (item) { return item.attempts > 0; });
+      showChip(failed ? 'Sincronização pendente · dados guardados neste aparelho' :
+        'A sincronizar ' + pending + (pending === 1 ? ' alteração…' : ' alterações…'), failed);
     } else if (lastPending > 0) {
       showChip('Tudo sincronizado ✓', false);
       hideTimer = setTimeout(hideChip, 2200);
@@ -507,7 +504,7 @@
     return new Promise(function (resolve, reject) {
       var replayDomReady = installDomReadyReplay();
       var script = document.createElement('script');
-      script.src = 'app.js?v=12';
+      script.src = 'app.js?v=13';
       script.async = false;
       script.onload = function () {
         if (replayDomReady) replayDomReady.flush();
@@ -637,14 +634,6 @@
     return flushQueue().then(function () {
       return { error: null, pending: queue.length };
     });
-  };
-
-  /* Usado pelo bloqueio de subscrição para apagar escritas feitas antes de
-     existir uma subscrição válida. Esses dados nunca foram aceites no servidor. */
-  window.cloudDiscardPendingWrites = function cloudDiscardPendingWrites() {
-    queue = [];
-    saveQueue();
-    updateStatus();
   };
 
   window.cloudFlushPendingWrites = function cloudFlushPendingWrites() {

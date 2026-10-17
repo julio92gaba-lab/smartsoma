@@ -155,20 +155,16 @@ module.exports = async function handler(req, res) {
       }
     }
 
-    /* ── 4. Apagar os dados da app e a linha de subscrição ── */
-    for (const table of ['user_data', 'subscriptions']) {
-      const { error } = await supabase
-        .from(table)
-        .delete()
-        .eq('user_id', user.id);
-
-      if (error) {
-        console.error(`Erro ao eliminar dados em ${table}:`, error);
-        return res.status(500).json({ error: 'Erro ao eliminar dados da conta' });
-      }
+    /* O Storage impede a eliminação de um utilizador que seja dono de objetos.
+       Este é o único caminho de avatar criado pela aplicação. */
+    const { error: storageError } = await supabase.storage.from('avatars').remove([`${user.id}/avatar.jpg`]);
+    if (storageError) {
+      console.error('Erro ao eliminar avatar:', storageError);
+      return res.status(500).json({ error: 'Erro ao eliminar foto da conta' });
     }
 
-    /* ── 5. Apagar o utilizador do Supabase Auth ── */
+    /* A migração user_data_user_id_fkey e a FK existente de subscriptions
+       eliminam ambas as tabelas na mesma transação que o utilizador Auth. */
     const { error: deleteError } = await supabase.auth.admin.deleteUser(user.id);
 
     if (deleteError) {

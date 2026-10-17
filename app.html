@@ -105,8 +105,8 @@
     <link rel="stylesheet" href="app.css">
     <link rel="preload" href="fonts/BricolageGrotesque-latin.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="fonts/DMSans-latin.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="ui-v2.css?v=16">
-    <script src="ui-v2.js?v=14" defer></script>
+    <link rel="stylesheet" href="ui-v2.css?v=17">
+    <script src="ui-v2.js?v=15" defer></script>
     <script src="supabase.min.js"></script>
 <link rel="icon" type="image/png" sizes="192x192" href="/favicon.png">
 </head>
@@ -1075,7 +1075,7 @@
                     </label>
                     <label class="dp-field dp-field-full">
                         <span class="dp-field-label" data-i18n="pwdChange.nova">Nova password</span>
-                        <input type="password" class="dp-input" id="pwdChangeNewInput" autocomplete="new-password" data-i18n-ph="pwdChange.novaPh" placeholder="Mínimo 6 caracteres">
+                        <input type="password" class="dp-input" id="pwdChangeNewInput" autocomplete="new-password" data-i18n-ph="pwdChange.novaPh" placeholder="Mínimo 10 caracteres">
                     </label>
                     <label class="dp-field dp-field-full">
                         <span class="dp-field-label" data-i18n="pwdChange.confirmar">Confirmar nova password</span>
@@ -1479,7 +1479,7 @@
 
 
 <script src="heic2any.min.js?v=12"></script>
-<script src="cloud-init.js?v=12"></script>
+<script src="cloud-init.js?v=13"></script>
 
 
     <!-- ── SmartSoma Pro: checkout + modal + verificação de plano ── -->
@@ -1620,9 +1620,6 @@
 
                 /* Sem subscrição válida: modal de escolha de plano (não dispensável) */
                 if (!isActive) {
-                    if (typeof window.cloudDiscardPendingWrites === 'function') {
-                        window.cloudDiscardPendingWrites();
-                    }
                     abrirModalSubExpirada();
                     /* O webhook pode chegar segundos depois do regresso do checkout. */
                     agendarNovaVerificacaoPlano();

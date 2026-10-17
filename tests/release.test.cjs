@@ -131,6 +131,42 @@ test('PDF report is generated with the real bundled libraries', async t => {
   assert.deepEqual(a.errors,[]);
 });
 
+test('PDF includes fixed expenses in daily and monthly totals', async t => {
+  const monday = new Date(); monday.setHours(0,0,0,0); monday.setDate(monday.getDate()-(monday.getDay()+6)%7);
+  if (monday.getMonth() !== new Date().getMonth()) return t.skip('A segunda-feira pertence ao mês anterior');
+  const a = setup(t, {
+    ['homeBadgeValores:'+dateKey(monday)]:JSON.stringify({uber:100}),
+    despesasFixas:JSON.stringify({items:[{id:1,descricao:'Carro',tipo:'euro',valor:50,desde:dateKey(monday)}]})
+  });
+  a.w.eval(fs.readFileSync('jspdf.umd.min.js','utf8'));
+  a.w.eval(fs.readFileSync('jspdf.plugin.autotable.min.js','utf8'));
+  const Original=a.w.jspdf.jsPDF; let pdf; const tables=[];
+  function Capture(options) {
+    const doc=new Original(options), originalTable=doc.autoTable.bind(doc);
+    doc.autoTable=opts=>{tables.push(opts);return originalTable(opts);};
+    doc.save=()=>{pdf=doc.output();}; return doc;
+  }
+  Capture.API=Original.API; a.w.jspdf.jsPDF=Capture;
+  a.click('relatorioPageDownloadBtn'); await settle();
+  assert.ok(pdf); assert.equal(a.w.SmartSomaReadModel.day(monday).expenses,50);
+  const day=tables.find(table=>table.head?.[0]?.includes('Uber')).body.find(row=>String(row[0]).endsWith(String(monday.getDate()).padStart(2,'0')+'/'+String(monday.getMonth()+1).padStart(2,'0')));
+  assert.match(day.at(-4),/50[.,]00/); assert.match(day.at(-1),/50[.,]00/);
+  assert.match(pdf,/50\.00/); assert.deepEqual(a.errors,[]);
+});
+
+test('failed offline writes survive repeated attempts and resume after entitlement returns', async t => {
+  const control={error:{message:'erro fictício'}};
+  const a=createApp({}, {ui:true,cloudBoot:true,syncControl:control}); t.after(a.close);
+  for(let i=0;i<20&&!a.w._cacheReady;i++) await settle();
+  await a.w.cloudSet('testeSeguro','valor');
+  for(let i=0;i<11;i++) await a.w.cloudFlushPendingWrites();
+  assert.match(a.w.localStorage.getItem('ss_q:isolated-test'),/testeSeguro/);
+  a.w.SmartSomaPro.isPro=false; await a.w.cloudFlushPendingWrites();
+  assert.match(a.w.localStorage.getItem('ss_q:isolated-test'),/testeSeguro/);
+  a.w.SmartSomaPro.isPro=true; control.error=null; await a.w.cloudFlushPendingWrites();
+  assert.equal(a.w.localStorage.getItem('ss_q:isolated-test'),null);
+});
+
 for (const [label,data,error,active] of [
   ['active',{status:'active'},null,true],
   ['trial',{status:'trialing',trial_ends_at:new Date(Date.now()+86400000*5).toISOString()},null,true],
@@ -146,13 +182,14 @@ for (const [label,data,error,active] of [
   a.w.eval(code); await settle();
   assert.equal(a.w.SmartSomaPro.isPro,active);
   assert.equal(a.el('subExpiradaBackdrop').classList.contains('visible'),!active);
-  if(active) assert.ok(flush>0); else if(!error) assert.ok(discard>0);
+  if(active) assert.ok(flush>0);
+  assert.equal(discard,0);
   assert.deepEqual(a.errors,[]);
 });
 
 test('offline cache includes both new presentation assets and excludes test fixture',()=>{
   const source=fs.readFileSync('sw.js','utf8');
-  assert.match(source,/'\/ui-v2.js\?v=14'/); assert.match(source,/'\/ui-v2.css\?v=16'/);
+  assert.match(source,/'\/ui-v2.js\?v=15'/); assert.match(source,/'\/ui-v2.css\?v=17'/);
   assert.match(source,/'\/car.png'/);
   assert.doesNotMatch(source,/__ui-test|visual-fixture/);
   assert.match(fs.readFileSync('.vercelignore','utf8'),/^tests\//m);

@@ -57,7 +57,7 @@
     var today=new Date();today.setHours(0,0,0,0);
     document.body.classList.remove('ui-showing-other-date');
     $('uiHeaderDate').textContent = date.toLocaleDateString(locale,{weekday:'long',day:'numeric',month:'long'}).replace(/-feira\b/i,'');
-    var pageTitles = { semana:'Minha Semana', downloads:'Downloads', ajustes:'Ajustes' };
+    var pageTitles = { semana:say('Minha Semana','My Week'), downloads:'Downloads', ajustes:say('Ajustes','Settings') };
     var name = $('sheetUsername').textContent.trim().split(' ')[0];
     var greeting = say('Olá','Hello');
     $('uiHeaderTitle').textContent = pageTitles[selected] || (greeting + ', ' + name + '.');
@@ -723,22 +723,6 @@
     var homeListView=$('homeListView');
     if(homeListView)homeListView.addEventListener('scroll',function(){syncMobileNavigation(homeListView.scrollTop);},{passive:true});
     window.addEventListener('scroll',function(){syncMobileNavigation(window.scrollY||document.documentElement.scrollTop);},{passive:true});
-    document.addEventListener('wheel',function(event){
-      if(Math.abs(event.deltaY)<2)return;
-      document.body.classList.toggle('ui-mobile-nav-hidden',event.deltaY>0);
-    },{capture:true,passive:true});
-    var touchStartY=null;
-    document.addEventListener('touchstart',function(event){
-      touchStartY=event.touches[0]&&event.touches[0].clientY;
-    },{capture:true,passive:true});
-    document.addEventListener('touchmove',function(event){
-      var currentY=event.touches[0]&&event.touches[0].clientY;
-      if(touchStartY===null||currentY===undefined)return;
-      var delta=touchStartY-currentY;
-      if(Math.abs(delta)<4)return;
-      document.body.classList.toggle('ui-mobile-nav-hidden',delta>0);
-      touchStartY=currentY;
-    },{capture:true,passive:true});
     var faqs=[
       ['Como registar os meus ganhos?','Escolhe a data no calendário e toca em +. Em Ganhos, seleciona o ícone da plataforma, insere o total do dia e guarda. Uber, Bolt e as tuas plataformas ficam separadas.','How do I record earnings?','Choose a date in the calendar and tap +. Under Earnings, select a platform, enter its daily total and save. Each platform is recorded separately.'],
       ['Posso corrigir um valor já guardado?','Sim. Abre a plataforma na página Ganhos diários ou seleciona-a no registo rápido. O valor guardado aparece no campo. Guardar substitui esse total; não soma uma segunda entrada.','Can I correct an amount?','Yes. Open the platform in Daily earnings or select it in the quick entry. Saving replaces that day’s total rather than adding a second entry.'],
