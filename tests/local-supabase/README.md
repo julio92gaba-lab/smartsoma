@@ -23,3 +23,9 @@ O teste `google-play-ledger-test.sql` é separado deste ambiente: foi executado
 num contentor PostgreSQL descartável, sem rede (`--network none`), sem portas
 publicadas e com dados fictícios. Valida apenas a migração de compras Google e
 as suas permissões; não substitui testes de integração com Auth, API ou Google Play.
+
+O teste `google-play-reconciliation-queue-test.sql` também foi executado no
+mesmo tipo de base descartável, depois das duas migrações de compras. Foram
+verificadas permissões, limites, reservas, tentativas e bloqueios concorrentes.
+As migrações não foram aplicadas em produção; falta executar o Security Advisor
+e validar o fluxo completo antes de qualquer ativação.
