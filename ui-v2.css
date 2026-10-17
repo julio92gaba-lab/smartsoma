@@ -22,11 +22,10 @@ html.ui-v2.theme-dark, body.ui-v2.theme-dark {
 .ui-v2 [hidden] { display:none !important; }
 .ui-home-callout { display:none; }
 @media (max-width:760px) {
-  .ui-v2 .ui-home-callout { display:flex; align-items:center; gap:8px; min-height:76px; margin:0 0 12px; }
-  .ui-home-callout svg { display:block; flex:0 0 42%; width:42%; max-width:160px; height:auto; margin-left:-15px; color:var(--ink); fill:none; stroke:currentColor; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round; }
-  .ui-home-callout-car { opacity:.35; }
-  .ui-home-callout-moto { opacity:.7; }
-  .ui-v2 .ui-home-callout p { margin:0; color:var(--ink); font:700 clamp(15px,4.2vw,19px)/1.16 'Bricolage Grotesque',sans-serif; letter-spacing:-.35px; }
+  .ui-v2 .ui-home-callout { position:relative; display:flex; align-items:center; min-height:76px; margin:0 0 12px; }
+  .ui-home-callout img { position:absolute; left:0; top:50%; width:52%; max-width:165px; max-height:76px; object-fit:contain; object-position:left center; opacity:.55; transform:translateY(-50%); }
+  body.ui-v2.theme-dark .ui-home-callout img { filter:invert(1); }
+  .ui-v2 .ui-home-callout p { position:relative; width:58%; margin:0 0 0 auto; color:var(--ink); text-align:right; font:700 clamp(15px,4.2vw,19px)/1.16 'Bricolage Grotesque',sans-serif; letter-spacing:-.35px; }
 }
 .ui-v2 button, .ui-v2 input { font-family:inherit; }
 .ui-v2 button { cursor:pointer; }

@@ -42,9 +42,12 @@ test('mobile home callout precedes the goal and translates with the app',t=>{
   const callout=a.w.document.querySelector('.ui-home-callout');
   assert.equal(callout.nextElementSibling,a.el('metaSlotList'));
   assert.equal(callout.querySelector('p').textContent,'Pensado para quem trabalha com TVDE e entregas por app.');
-  assert.equal(callout.querySelector('svg').getAttribute('aria-hidden'),'true');
-  assert.ok(callout.querySelector('.ui-home-callout-car'));
-  assert.ok(callout.querySelector('.ui-home-callout-moto'));
+  assert.equal(callout.querySelector('img').getAttribute('src'),'car.png');
+  assert.equal(callout.querySelector('img').getAttribute('alt'),'');
+  assert.equal(callout.querySelector('svg'),null);
+  const css=fs.readFileSync('ui-v2.css','utf8');
+  assert.match(css,/\.ui-home-callout img\s*\{[^}]*left:0;[^}]*max-height:76px;[^}]*opacity:/);
+  assert.match(css,/\.ui-home-callout p\s*\{[^}]*margin:0 0 0 auto;[^}]*text-align:right;/);
   a.w.I18N.setLang('en');
   assert.equal(callout.querySelector('p').textContent,'Made for ride-hailing and app delivery workers.');
 });
@@ -74,7 +77,7 @@ test('fixed chrome has readable text and avatars use Supabase Storage',()=>{
   assert.match(css,/#resumoPeriodControls\.is-sticky #resumoCurrentWeekLabel > span\s*\{\s*color:#c8d8cb;/);
   assert.match(css,/\.semana-filter-fields \.semana-week-picker-btn,[^{]*\{[^}]*background:#fff;[^}]*color:#183021;/);
   assert.match(css,/\.semana-week-picker-num,[^{]*\{[^}]*background:#fff;[^}]*color:#183021;/);
-  assert.match(html,/ui-v2\.css\?v=15/);
+  assert.match(html,/ui-v2\.css\?v=16/);
   assert.match(html,/accept="[^"]*\.heic[^"]*image\/heif/);
   assert.match(html,/<script src="heic2any\.min\.js\?v=12"><\/script>/);
   assert.match(app,/'image\/heic': true/);
