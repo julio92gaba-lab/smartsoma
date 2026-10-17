@@ -2,7 +2,7 @@ name: Security checks
 
 on:
   push:
-    branches: [main]
+    branches: [main, codex/auditoria-mobile]
   pull_request:
   schedule:
     - cron: '17 4 * * 1'
@@ -22,7 +22,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci --ignore-scripts
-      - run: npm test
+      - run: node --test --test-concurrency=1 tests/*.test.cjs
       - run: npm audit --omit=dev --audit-level=high
 
   secrets:
