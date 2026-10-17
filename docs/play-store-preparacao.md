@@ -28,6 +28,28 @@ O texto é um rascunho e deve ser revisto após a integração de pagamentos e a
 - Rever dados realmente recolhidos por todas as bibliotecas e fornecedores, retenção, processamento, transferências e práticas de segurança antes de preencher a declaração de segurança dos dados. Não presumir conformidade automática.
 - Para compras Google, adaptar primeiro a eliminação e o cancelamento. A exclusão atual apenas trata o Creem.
 
+### Inventário preliminar para a declaração de segurança dos dados
+
+Isto é um rascunho de trabalho, não respostas prontas para a Play Console. As categorias e opções finais dependem das funcionalidades efetivamente ativadas, do comportamento dos fornecedores e da revisão do responsável.
+
+| Dados a verificar | Uso identificado no projeto | Situação a confirmar |
+| --- | --- | --- |
+| Nome, email e dados de autenticação | Conta Supabase e, quando escolhido, login Google | Dados e prazos efetivamente tratados pelos fornecedores. |
+| Foto de perfil opcional | Imagem na conta e no Supabase Storage | Conservação, eliminação e eventual exposição da imagem. |
+| Ganhos, despesas, distâncias e metas introduzidos | Registos, sincronização e relatórios PDF | Categoria adequada na declaração e retenção nos sistemas e cópias de segurança. |
+| Sessão, preferências e alterações pendentes | Guardadas localmente para funcionamento e acesso offline | Cópias de segurança Android: o manifesto atual permite backup; avaliar o impacto para dados locais e para alterações ainda não sincronizadas. |
+| Estado e identificadores de subscrição | Creem na web; Google Play está em preparação, sem compras ativas | Dados reais partilhados com cada fornecedor e conservação após cancelamento ou eliminação. |
+| Dados técnicos e segurança | Autenticação, alojamento e prevenção de abuso | Logs reais, fornecedores, partilha e prazos de retenção. |
+
+O formulário da Google inclui também os dados recolhidos por SDKs. Rever a versão final do Android e a documentação de cada dependência antes de declarar recolha ou partilha. O responsável deve confirmar a identificação legal, os prazos de conservação, o tratamento de backups e se os compromissos já descritos na política correspondem à configuração real. A política não deve dizer que o Google Play processa compras até a funcionalidade existir.
+
+### Rascunho para revisão antes de ativar a Google Play
+
+- **Privacidade:** quando a funcionalidade for ativada, descrever os identificadores da compra e da conta ofuscada, o estado e o prazo da subscrição, as finalidades de validação e prevenção de fraude e o papel da Google Play. Confirmar retenção, eventuais transferências e eliminação.
+- **Termos:** indicar que as compras Android são geridas pela Google Play e as compras web pelo Creem; apresentar preços, período experimental, renovação e condições de cancelamento conforme o plano realmente criado, sem prometer um trial específico antes da configuração.
+- **Eliminação:** explicar o que acontece à conta, aos dados locais e à subscrição em cada fornecedor, sem prometer cancelamento automático até o fluxo estar integrado e testado. Confirmar se os dados de faturação devem ser retidos e durante quanto tempo.
+- **Testes:** fazer capturas com dados fictícios; testar instalação, login, recuperação, offline, sincronização, PDF, subscrição, restauro, cancelamento e eliminação. Para uma conta pessoal nova, preparar pelo menos 12 participantes para o teste fechado exigido pela Google, após a conta e o registo da app estarem disponíveis.
+
 ## Imagens e assinatura
 
 - Há um ícone de 512 × 512 existente (`icon-512.png`); verificar visualmente e confirmar os requisitos atuais antes de o enviar. As capturas devem ser feitas com dados fictícios ou autorizados, após concluir a interface Android.
@@ -35,4 +57,4 @@ O texto é um rascunho e deve ser revisto após a integração de pagamentos e a
 - Para lançamento, criar uma chave de upload própria e guardar a chave e as credenciais num local seguro e com cópia de recuperação; usar Play App Signing conforme as instruções da Google. Não guardar keystore ou passwords no repositório. A chave de depuração usada no APK de testes não é uma chave de publicação.
 - Gerar e validar o AAB de release assinado quando a chave estiver disponível. Não publicar builds de teste como produção.
 
-Fontes: [eliminação de conta](https://support.google.com/googleplay/android-developer/answer/13327111), [assinatura de apps](https://developer.android.com/studio/publish/app-signing), [segurança dos dados](https://support.google.com/googleplay/android-developer/answer/10787469).
+Fontes: [eliminação de conta](https://support.google.com/googleplay/android-developer/answer/13327111), [assinatura de apps](https://developer.android.com/studio/publish/app-signing), [segurança dos dados](https://support.google.com/googleplay/android-developer/answer/10787469), [testes de contas pessoais](https://support.google.com/googleplay/android-developer/answer/14151465).
