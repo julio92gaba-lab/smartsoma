@@ -45,6 +45,14 @@ BEGIN
   END IF;
 
   SELECT public.save_verified_google_play_purchase(
+    'fake-token', '11111111-1111-4111-8111-111111111111', 'pro-monthly',
+    'SUBSCRIPTION_STATE_ON_HOLD', '2027-02-01Z', 'ACKNOWLEDGEMENT_STATE_ACKNOWLEDGED', '2026-10-17T13:00:00Z') INTO saved;
+  IF NOT saved OR NOT EXISTS (SELECT 1 FROM public.google_play_purchases WHERE purchase_token = 'fake-token'
+      AND subscription_state = 'SUBSCRIPTION_STATE_ON_HOLD') THEN
+    RAISE EXCEPTION 'Payment failure state was not recorded';
+  END IF;
+
+  SELECT public.save_verified_google_play_purchase(
     repeat('x', 8192), '11111111-1111-4111-8111-111111111111', 'pro-monthly',
     'SUBSCRIPTION_STATE_ACTIVE', '2027-01-01Z', 'ACKNOWLEDGEMENT_STATE_PENDING', '2026-10-17T12:00:00Z') INTO saved;
   IF NOT saved THEN RAISE EXCEPTION 'Long token could not be stored'; END IF;
