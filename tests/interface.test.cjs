@@ -18,14 +18,17 @@ test('UI keeps four navigation items, mobile brand and redirects retired routes 
   assert.equal(a.el('uiHeaderAvatar').textContent,'U');a.el('sheetAvatar').innerHTML='<img src="https://example.com/avatar.jpg">';a.w.SmartSomaUI.refreshSidebar();
   for(const id of ['uiSidebarAvatar','uiHeaderAvatar'])assert.equal(a.el(id).querySelector('img').src,'https://example.com/avatar.jpg');
   a.click('uiHeaderAvatar');
-  assert.equal(a.el('homeListPageResumo').classList.contains('is-fading'),true);await settle();
+  assert.equal(a.el('homeListPageResumo').hidden,true);
+  assert.equal(a.el('uiSettingsPage').hidden,false);
+  assert.ok(a.el('uiSettingsPage').querySelector('.ui-settings-subpage #dpNomeInput'));
   assert.equal(a.w.document.body.dataset.uiRoute,'ajustes');
-  a.w.SmartSomaUI.go('ganhos');assert.equal(a.el('uiSettingsPage').classList.contains('is-fading'),true);await settle();
+  a.w.SmartSomaUI.go('ganhos');assert.equal(a.el('uiSettingsPage').hidden,true);
+  assert.equal(a.el('homeListPageResumo').hidden,false);
   assert.equal(a.w.document.body.dataset.uiRoute,'resumo');
   const ids=[...a.w.document.querySelectorAll('[id]')].map(n=>n.id);
   assert.equal(new Set(ids).size,ids.length);assert.deepEqual(a.errors,[]);
   for(const route of ['semana','downloads','resumo']){
-    a.w.SmartSomaUI.go(route);await settle();
+    a.w.SmartSomaUI.go(route);
     assert.equal(a.w.document.body.dataset.uiRoute,route);
     assert.equal(a.w.document.querySelectorAll('.home-list-page:not([hidden])').length,1);
     assert.equal(a.el('uiHeaderAvatar').hidden,false);
@@ -220,6 +223,66 @@ test('quick expense saves through the existing daily expense control and updates
   assert.equal(a.w.document.getElementById('uiRecentRows'),null);assert.deepEqual(a.errors,[]);
 });
 
+test('mobile home deletes only the confirmed daily expense and recalculates other days safely',async t=>{
+  const today=new Date(),monday=new Date(today);monday.setHours(0,0,0,0);monday.setDate(monday.getDate()-(monday.getDay()+6)%7);
+  const other=new Date(monday);other.setDate(other.getDate()+1);
+  const seed={
+    ['homeBadgeValores:'+dateKey(monday)]:JSON.stringify({uber:100,distancia:30,despesas:45}),
+    ['homeBadgeValores:'+dateKey(other)]:JSON.stringify({despesas:7}),
+    ['metaSemanalConfig:'+dateKey(monday)]:JSON.stringify({valor:100,tipo:'liquido'}),
+    ['despesasDiarias:'+dateKey(monday)]:JSON.stringify({seq:2,items:[{id:1,descricao:'Combustível',valor:20},{id:2,descricao:'Portagem',valor:5}]}),
+    ['despesasDiarias:'+dateKey(other)]:JSON.stringify({seq:1,items:[{id:1,descricao:'Estacionamento',valor:7}]}),
+    despesasFixas:JSON.stringify({items:[{id:1,descricao:'Seguro',tipo:'euro',valor:20,desde:dateKey(monday)}]})
+  };
+  const a=createApp(seed,{ui:true,mobile:true});t.after(a.close);await settle();
+  const selectedBefore=dateKey(a.w.GanhosDate.get());
+  assert.equal(a.el('uiGoalPercent').textContent,'48%');
+  const buttons=()=>[...a.el('uiOverviewExpenseRows').querySelectorAll('.ui-expense-delete')];
+  assert.equal(buttons().length,3);
+  assert.equal(a.el('uiOverviewFixedRows').querySelector('.ui-expense-delete'),null);
+  const fuel=()=>buttons().find(btn=>btn.getAttribute('aria-label').includes('Combustível'));
+  fuel().click();assert.ok(a.el('despesaDiariaConfirmBackdrop').classList.contains('visible'));
+  assert.match(a.el('despesaDiariaConfirmText').textContent,/Combustível/);
+  a.click('despesaDiariaConfirmCancelBtn');assert.equal(JSON.parse(a.cache['despesasDiarias:'+dateKey(monday)]).items.length,2);
+  fuel().click();a.click('despesaDiariaConfirmDeleteBtn');await settle();
+  assert.deepEqual(JSON.parse(a.cache['despesasDiarias:'+dateKey(monday)]).items.map(item=>item.id),[2]);
+  assert.equal(JSON.parse(a.cache['despesasDiarias:'+dateKey(other)]).items[0].id,1);
+  assert.equal(a.w.SmartSomaReadModel.day(monday).expenses,25);
+  assert.equal(JSON.parse(a.cache['homeBadgeValores:'+dateKey(monday)]).despesas,25);
+  assert.equal(dateKey(a.w.GanhosDate.get()),selectedBefore);
+  assert.doesNotMatch(a.el('uiOverviewExpenseRows').textContent,/Combustível/);
+  assert.match(a.el('uiOverviewExpenseRows').textContent,/Portagem|Estacionamento/);
+  assert.equal(buttons().length,2);assert.equal(a.el('uiMetricExpensesValue').textContent.includes('32,00'),true);
+  assert.equal(a.el('uiGoalPercent').textContent,'68%');
+  a.w.SmartSomaUI.go('semana');assert.equal(a.el('homeListPageSemana').querySelector('.ui-expense-delete'),null);
+  assert.deepEqual(a.errors,[]);
+});
+
+test('mobile FAQ uses approved concise content in both languages',t=>{
+  const a=createApp({},{ui:true,mobile:true});t.after(a.close);
+  assert.equal(a.el('uiFaqItems').querySelectorAll('details').length,9);
+  assert.match(a.el('uiFaqItems').textContent,/Em Início, encontras as informações da semana atual/);
+  assert.match(a.el('uiFaqItems').textContent,/Para excluir uma despesa diária/);
+  assert.doesNotMatch(a.el('uiFaqItems').textContent,/Visão geral|contacto@|Gerir plataformas/);
+  a.w.I18N.setLang('en');assert.equal(a.el('uiFaqItems').querySelectorAll('details').length,9);
+  assert.match(a.el('uiFaqItems').textContent,/To delete a daily expense/);
+  assert.deepEqual(a.errors,[]);
+});
+
+test('daily expense deletion respects cancellation and the subscription gate',async t=>{
+  const key='despesasDiarias:'+dateKey(new Date());
+  const a=createApp({[key]:JSON.stringify({seq:2,items:[{id:1,descricao:'Lavagem',valor:10},{id:2,descricao:'Comida',valor:5}]})},{ui:true,mobile:true});t.after(a.close);
+  const remove=()=>a.el('uiOverviewExpenseRows').querySelector('.ui-expense-delete');
+  remove().click();a.click('despesaDiariaConfirmCancelBtn');assert.equal(JSON.parse(a.cache[key]).items.length,2);
+  remove().click();a.w.SmartSomaPro.isPro=false;a.click('despesaDiariaConfirmDeleteBtn');
+  assert.equal(JSON.parse(a.cache[key]).items.length,2);
+  a.w.SmartSomaPro.isPro=true;remove().click();a.click('despesaDiariaConfirmDeleteBtn');await settle();
+  assert.equal(JSON.parse(a.cache[key]).items.length,1);
+  assert.equal(a.w.HomeBadges.get().despesas,a.w.SmartSomaReadModel.day(new Date()).expenses);
+  assert.equal(a.w.HomeBadges.get().despesas,5);
+  assert.deepEqual(a.errors,[]);
+});
+
 test('mileage odometer persists the initial value and uses original final-minus-start calculation',t=>{
   const a=setup(t);a.click('listRowDistancia');a.click('distanciaModoInicioFimBtn');
   assert.equal(a.el('distanciaKmFimInput').disabled,true);
@@ -259,7 +322,7 @@ test('settings keeps account flows, two font sizes, legal link and complete FAQ'
   assert.equal(a.w.document.querySelectorAll('.tamanho-option').length,2);
   assert.match(a.el('tamanhoOptionP').textContent,/Normal/);
   assert.equal(a.w.document.querySelectorAll('#uiFaqItems details').length,11);
-  a.w.I18N.setLang('en');await settle();assert.match(a.el('uiFaqTitle').textContent,/Frequently/);
+  a.w.I18N.setLang('en');await settle();assert.equal(a.el('uiFaqTitle').textContent,'FAQ');
   a.click('uiThemeRow');assert.ok(a.w.document.body.classList.contains('theme-dark'));assert.deepEqual(a.errors,[]);
 });
 
@@ -268,7 +331,7 @@ test('settings menu opens internal pages and returns without the legacy sheet',t
   const routes=[
     ['openDadosPessoaisBtn','sheetScreenDadosPessoais'],['openDespesasFixasBtn','sheetScreenDespesasFixas'],
     ['openMultiplataformaBtn','sheetScreenMultiplataforma'],['openIdiomaBtn','sheetScreenIdioma'],
-    ['openTamanhoBtn','sheetScreenTamanho'],['openAjudaBtn','sheetScreenAjuda'],['openApagarDadosBtn','sheetScreenApagarDados']
+    ['openTamanhoBtn','sheetScreenTamanho'],['openContactoBtn','sheetScreenContacto'],['openAjudaBtn','sheetScreenAjuda'],['openApagarDadosBtn','sheetScreenApagarDados']
   ];
   routes.forEach(([buttonId])=>{
     a.click(buttonId);
@@ -279,6 +342,34 @@ test('settings menu opens internal pages and returns without the legacy sheet',t
     subpage.querySelector('.ui-settings-back').click();
     assert.equal(subpage.hidden,true);
   });
+  assert.deepEqual(a.errors,[]);
+});
+
+test('settings groups contact and FAQ separately and preserves instant navigation',t=>{
+  const a=setup(t);a.w.SmartSomaUI.go('ajustes');
+  const groups=[...a.el('uiSettingsPage').querySelectorAll('.sheet-actions')].filter(group=>!group.hidden);
+  assert.deepEqual(groups.map(group=>group.dataset.title),['Gestão','Preferências','Conta e suporte']);
+  assert.deepEqual(groups.map(group=>[...group.children].map(node=>node.id)),[
+    ['openDespesasFixasBtn','openMultiplataformaBtn'],
+    ['openIdiomaBtn','openTamanhoBtn','uiThemeRow'],
+    ['openContactoBtn','openAjudaBtn','openApagarDadosBtn','openTermosMenuBtn','btnSair']
+  ]);
+  assert.match(a.el('uiSettingsPage').querySelector('.sheet-credit-text').textContent,/© 2026 SmartSoma v1\.0 • By JC/);
+  a.click('openContactoBtn');
+  assert.equal(a.el('uiSettingsPage').querySelector('.ui-settings-subpage-head h2').textContent,'Contacto');
+  assert.ok(a.el('uiSettingsPage').querySelector('.ui-help-hero a[href="mailto:contacto@smartsoma.pt"]'));
+  assert.equal(a.el('uiSettingsPage').querySelector('.ui-faq'),null);
+  a.el('uiSettingsPage').querySelector('.ui-settings-back').click();
+  a.click('openAjudaBtn');
+  assert.equal(a.el('uiSettingsPage').querySelector('.ui-settings-subpage-head h2').textContent,'Perguntas frequentes');
+  assert.equal(a.el('uiSettingsPage').querySelector('.ui-help-hero'),null);
+  assert.equal(a.el('uiFaqItems').querySelectorAll('details').length,11);
+  a.w.SmartSomaUI.go('semana');assert.equal(a.el('homeListPageSemana').hidden,false);
+  a.w.SmartSomaUI.go('downloads');assert.equal(a.el('homeListPageRelatorio').hidden,false);
+  assert.equal(a.el('homeListPageSemana').hidden,true);
+  a.w.SmartSomaUI.go('ajustes');assert.equal(a.el('uiSettingsPage').hidden,false);
+  assert.equal(a.el('homeListPageRelatorio').hidden,true);
+  assert.equal(a.w.document.querySelector('.home-list-page.is-fading'),null);
   assert.deepEqual(a.errors,[]);
 });
 

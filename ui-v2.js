@@ -5,7 +5,6 @@
   var started = false;
   var route = 'resumo';
   var calendarWeekSelection = false;
-  var pageTransitioning = false;
   var $ = function (id) { return document.getElementById(id); };
   var icons = {
     resumo: '<path d="M3 10 12 3l9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"/>',
@@ -22,8 +21,8 @@
     news: '<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/>'
   };
   var text = {
-    pt: { resumo:'Visão geral', ganhos:'Ganhos diários', despesas:'Despesas', semana:'Detalhes da semana', relatorio:'Relatórios', downloads:'Downloads', ajustes:'Ajustes', hello:'Bom dia', afternoon:'Boa tarde', evening:'Boa noite', record:'Adicionar registo', calendar:'Escolher data', tag:'Para Estafetas e Motoristas de App.', ganhosNote:'Cada percurso conta. Regista os teus rendimentos e acompanha o dia.', despesasNote:'As tuas despesas, sem perder nenhum detalhe.', semanaNote:'Sete dias. Uma visão clara dos teus resultados.', relatorioNote:'Os teus resultados, organizados e prontos a guardar.', downloadsNote:'Os teus resultados, organizados e prontos a descarregar.', ajustesNote:'O SmartSoma, à tua medida.', theme:'Modo escuro', profile:'Editar perfil', help:'Ajuda e FAQ', normal:'Normal', newPlatform:'Nova plataforma', manage:'Gerir plataformas', addIncome:'Adicionar rendimento' },
-    en: { resumo:'Overview', ganhos:'Daily earnings', despesas:'Expenses', semana:'Weekly details', relatorio:'Reports', downloads:'Downloads', ajustes:'Settings', hello:'Good morning', afternoon:'Good afternoon', evening:'Good evening', record:'Add entry', calendar:'Choose date', tag:'For couriers and app drivers.', ganhosNote:'Every journey counts. Record your earnings and track your day.', despesasNote:'Your expenses, without missing a detail.', semanaNote:'Sete days. A clear view of your results.', relatorioNote:'Your results, organised and ready to save.', downloadsNote:'Your results, organised and ready to download.', ajustesNote:'SmartSoma, your way.', theme:'Dark mode', profile:'Edit profile', help:'Help and FAQ', normal:'Normal', newPlatform:'New platform', manage:'Manage platforms', addIncome:'Add earnings' }
+    pt: { resumo:'Visão geral', ganhos:'Ganhos diários', despesas:'Despesas', semana:'Detalhes da semana', relatorio:'Relatórios', downloads:'Downloads', ajustes:'Ajustes', hello:'Bom dia', afternoon:'Boa tarde', evening:'Boa noite', record:'Adicionar registo', calendar:'Escolher data', tag:'Para Estafetas e Motoristas de App.', ganhosNote:'Cada percurso conta. Regista os teus rendimentos e acompanha o dia.', despesasNote:'As tuas despesas, sem perder nenhum detalhe.', semanaNote:'Sete dias. Uma visão clara dos teus resultados.', relatorioNote:'Os teus resultados, organizados e prontos a guardar.', downloadsNote:'Os teus resultados, organizados e prontos a descarregar.', ajustesNote:'O SmartSoma, à tua medida.', theme:'Modo escuro', profile:'Editar perfil', contact:'Contacto', help:'Perguntas frequentes', normal:'Normal', newPlatform:'Nova plataforma', manage:'Gerir plataformas', addIncome:'Adicionar rendimento' },
+    en: { resumo:'Overview', ganhos:'Daily earnings', despesas:'Expenses', semana:'Weekly details', relatorio:'Reports', downloads:'Downloads', ajustes:'Settings', hello:'Good morning', afternoon:'Good afternoon', evening:'Good evening', record:'Add entry', calendar:'Choose date', tag:'For couriers and app drivers.', ganhosNote:'Every journey counts. Record your earnings and track your day.', despesasNote:'Your expenses, without missing a detail.', semanaNote:'Sete days. A clear view of your results.', relatorioNote:'Your results, organised and ready to save.', downloadsNote:'Your results, organised and ready to download.', ajustesNote:'SmartSoma, your way.', theme:'Dark mode', profile:'Edit profile', contact:'Contact', help:'Frequently asked questions', normal:'Normal', newPlatform:'New platform', manage:'Manage platforms', addIncome:'Add earnings' }
   };
   function t(key) { return (text[window.I18N && I18N.getLang()] || text.pt)[key] || key; }
   function svg(key) { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (icons[key] || icons.arrow) + '</svg>'; }
@@ -93,16 +92,6 @@
     var settingsPage=$('uiSettingsPage');
     if (key === 'ajustes') {
       if(settingsPage&&!settingsPage.hidden){route=key;syncHeader();return;}
-      var outgoing=document.querySelector('.home-list-page:not([hidden])');
-      if(outgoing&&!pageTransitioning){
-        pageTransitioning=true;outgoing.classList.add('is-fading');
-        setTimeout(function(){
-          HomeNav.hideAllInstant();if($('metaSlotList'))$('metaSlotList').hidden=true;
-          settingsPage.hidden=false;settingsPage.classList.add('is-fading');void settingsPage.offsetWidth;settingsPage.classList.remove('is-fading');
-          route=key;syncHeader();window.scrollTo({top:0,behavior:'instant'});pageTransitioning=false;
-        },140);
-        return;
-      }
       window.closeProfileSheetPublic();
       HomeNav.hideAllInstant();
       if($('metaSlotList'))$('metaSlotList').hidden=true;
@@ -113,11 +102,6 @@
       return;
     }
     window.closeProfileSheetPublic();
-    if(settingsPage&&!settingsPage.hidden&&!pageTransitioning){
-      pageTransitioning=true;settingsPage.classList.add('is-fading');
-      setTimeout(function(){settingsPage.hidden=true;settingsPage.classList.remove('is-fading');pageTransitioning=false;go(key);},140);
-      return;
-    }
     if(settingsPage)settingsPage.hidden=true;
     route = key;
     if($('metaSlotList'))$('metaSlotList').hidden = key !== 'resumo';
@@ -155,9 +139,7 @@
     nav.querySelector('.ui-mobile-nav-brand').addEventListener('click',function(){go('resumo');});
     function openSettingsProfile(){
       go('ajustes');
-      setTimeout(function(){
-        if(window.SmartSomaSettings)window.SmartSomaSettings.open('sheetScreenDadosPessoais',say('Editar perfil','Edit profile'));
-      },180);
+      if(window.SmartSomaSettings)window.SmartSomaSettings.open('sheetScreenDadosPessoais',say('Editar perfil','Edit profile'));
     }
     $('uiSidebarProfile').addEventListener('click',openSettingsProfile);
     $('uiSidebarSubscription').addEventListener('click',function(){
@@ -347,7 +329,13 @@
       var label=create('span');label.textContent=row.label;
       var date=create('small');date.textContent=shortDate(row.date);
       var value=create('strong',row.expense?'ui-negative':'ui-positive');value.textContent=(row.expense?'−':'')+money(row.value);
-      n.append(date,label,value);target.append(n);
+      n.append(date,label,value);
+      if(row.id!==undefined&&row.id!==null){
+        var remove=button('×',function(){window.DespesasDiarias.openDeleteConfirm(row.id,row.label,row.date);},'ui-expense-delete');
+        remove.setAttribute('aria-label',say('Excluir despesa: ','Delete expense: ')+row.label);
+        n.append(remove);
+      }
+      target.append(n);
     });
   }
   function records(days){
@@ -485,7 +473,7 @@
     days.slice().reverse().forEach(function(day){
       try {
         var saved=window.cloudGet&&window.cloudGet('despesasDiarias:'+day.key),items=saved&&JSON.parse(saved).items||[];
-        items.forEach(function(entry){dailyEntries.push({date:day.date,label:entry.descricao,value:Number(entry.valor)||0,expense:true});});
+        items.forEach(function(entry){dailyEntries.push({id:entry.id,date:day.date,label:entry.descricao,value:Number(entry.valor)||0,expense:true});});
       } catch(e) {}
     });
     tableRows($('uiOverviewExpenseRows'),dailyEntries);
@@ -642,7 +630,7 @@
     management.dataset.title=say('Gestão','Management');
     preferences.dataset.title=say('Preferências','Preferences');
     ['openDespesasFixasBtn','openMultiplataformaBtn'].forEach(function(id){management.append($(id));});
-    ['openIdiomaBtn','openTamanhoBtn','openAjudaBtn'].forEach(function(id){preferences.append($(id));});
+    ['openIdiomaBtn','openTamanhoBtn','uiThemeRow'].forEach(function(id){preferences.append($(id));});
     columns.append(management,preferences);
     var profileCard=settings.querySelector('.sheet-profile-row');
     profileCard.append($('sheetProActiveBadge'),$('openDadosPessoaisBtn'));
@@ -655,9 +643,12 @@
     syncProfileBackground();
     new MutationObserver(syncProfileBackground).observe($('sheetAvatar'),{childList:true,subtree:true,attributes:true,attributeFilter:['src']});
     profileCard.after(columns);
-    settings.querySelectorAll('.sheet-actions').forEach(function(n){if(!n.children.length)n.remove();else if(Array.from(n.children).every(function(c){return c.hidden;}))n.hidden=true;});
     var support=$('openApagarDadosBtn').closest('.sheet-actions');
     if(support) support.dataset.title=say('Conta e suporte','Account and support');
+    var contact=button('',null,'sheet-action-btn');contact.id='openContactoBtn';
+    contact.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg><span data-ui-text="contact"></span>';
+    support.prepend(contact,$('openAjudaBtn'));
+    settings.querySelectorAll('.sheet-actions').forEach(function(n){if(!n.children.length)n.remove();else if(Array.from(n.children).every(function(c){return c.hidden;}))n.hidden=true;});
     var newPlatform=$('sheetScreenMultiplataforma').querySelector('[data-i18n="mp.adicionar"]');newPlatform.removeAttribute('data-i18n');newPlatform.dataset.uiText='newPlatform';
     var fixedForm=$('sheetScreenDespesasFixas').querySelector('.despesa-form');
     function resetFixedForm(){fixedForm.hidden=true;fixedAdd.setAttribute('aria-expanded','false');$('despesaDescInput').value='';$('despesaValorInput').value='';$('despesaTipoPercentBtn').click();}
@@ -667,7 +658,8 @@
     document.addEventListener('fixedExpenseSaved',resetFixedForm);
     var helper=$('sheetScreenDespesasFixas').querySelector('.mm-helper-text');helper.removeAttribute('data-i18n');
     var help=$('sheetScreenAjuda').querySelector('.sheet-content');
-    help.innerHTML='<section class="ui-help-hero"><p class="ui-eyebrow">SMARTSOMA</p><h2 id="uiHelpTitle"></h2><a href="mailto:contacto@smartsoma.pt">contacto@smartsoma.pt</a><p>Lisboa, Portugal</p></section><section class="home-card ui-faq"><h2 id="uiFaqTitle"></h2><div id="uiFaqItems"></div></section>';
+    $('sheetScreenContacto').querySelector('.sheet-content').innerHTML='<section class="ui-help-hero"><p class="ui-eyebrow">SMARTSOMA</p><h2 id="uiHelpTitle"></h2><a href="mailto:contacto@smartsoma.pt">contacto@smartsoma.pt</a><p>Lisboa, Portugal</p></section>';
+    help.innerHTML='<section class="home-card ui-faq"><h2 id="uiFaqTitle">FAQ</h2><div id="uiFaqItems"></div></section>';
 
     /* Subpáginas de Ajustes: reaproveitam os ecrãs e a lógica existente,
        mas deixam de abrir o painel/modal legado. */
@@ -698,7 +690,7 @@
     var settingRoutes={
       openDadosPessoaisBtn:'sheetScreenDadosPessoais',openDespesasFixasBtn:'sheetScreenDespesasFixas',
       openMultiplataformaBtn:'sheetScreenMultiplataforma',openIdiomaBtn:'sheetScreenIdioma',
-      openTamanhoBtn:'sheetScreenTamanho',openAjudaBtn:'sheetScreenAjuda',
+      openTamanhoBtn:'sheetScreenTamanho',openContactoBtn:'sheetScreenContacto',openAjudaBtn:'sheetScreenAjuda',
       openApagarDadosBtn:'sheetScreenApagarDados',sheetAvatar:'sheetScreenDadosPessoais',
       dpChangePasswordBtn:'sheetScreenPasswordChange'
     };
@@ -713,7 +705,7 @@
       if(!event.target.closest('#langSaveBtn'))return;
       // O ecrã original regressa a Ganhos; volta pelo router visual para
       // manter o Início completo, incluindo o cartão de meta.
-      setTimeout(function(){go('resumo');refreshData();},240);
+      queueMicrotask(function(){go('resumo');refreshData();});
     },true);
     window.SmartSomaSettings={open:openSettingsSubpage,close:closeSettingsSubpage};
 
@@ -756,9 +748,22 @@
       ['Onde posso gerir a minha subscrição?','Abre Ajustes → Editar perfil. Consulta o estado da subscrição e usa Gerir subscrição para abrir o portal seguro do Creem, onde podes alterar o plano, o cartão ou cancelar.','Where do I manage my subscription?','Open Settings → Edit profile. View the subscription status and use Manage subscription to access the secure Creem portal for plan, card or cancellation changes.'],
       ['Os registos funcionam sem internet?','Com uma sessão já iniciada e os dados disponíveis no dispositivo, podes continuar offline. As alterações ficam na fila local e sincronizam quando a ligação regressa. Confirma o estado da sincronização antes de sair da conta ou limpar os dados do navegador.','Can I work offline?','With an existing session and data available on your device, entries queue locally and sync when connectivity returns. Check the sync status before signing out or clearing browser data.']
     ];
-    function labels(){fixedAdd.textContent=say('Adicionar despesa fixa','Add fixed expense');helper.textContent=say('Despesas semanais, em € ou % do bruto. Entram na segunda-feira; a percentagem acompanha os ganhos. Ao excluir, as semanas anteriores ficam preservadas.','Weekly expenses, in € or % of gross. Added on Monday; percentages follow earnings. Deleting preserves previous weeks.');$('uiHelpTitle').textContent=say('Estamos por perto.','We are here to help.');$('uiFaqTitle').textContent=say('Perguntas frequentes','Frequently asked questions');$('uiFaqItems').replaceChildren();faqs.forEach(function(f){var n=create('details');var q=create('summary');q.textContent=say(f[0],f[2]);var p=create('p');p.textContent=say(f[1],f[3]);n.append(q,p);$('uiFaqItems').append(n);});}
+    var mobileFaqs=[
+      ['Como registar ou corrigir ganhos?','Toca em +, confirma a data, escolhe a plataforma e introduz o total do dia. Toca em Guardar. Se já existir um valor, o novo substitui o anterior.','How do I record or correct earnings?','Tap +, confirm the date, choose a platform and enter the daily total. Tap Save. If a value already exists, the new one replaces it.'],
+      ['Como registar despesas e quilómetros?','Toca em + e escolhe Despesas ou KM. Para despesas, introduz a descrição e o valor. Para quilómetros, usa Km Total ou confirma as leituras de Início e Fim. Depois toca em Guardar. Para excluir uma despesa diária, toca no X junto dela em Início e confirma.','How do I record expenses and distance?','Tap + and choose Expenses or KM. For expenses, enter a description and amount. For distance, use Total km or confirm the Start and End readings. Then tap Save. To delete a daily expense, tap its X on Home and confirm.'],
+      ['Posso registar dados de dias anteriores?','Sim. No formulário de registo, toca na data e escolhe o dia no calendário. Para ganhos e despesas, confirma o aviso de lançamento retroativo. Datas futuras não podem ser selecionadas.','Can I record data for previous days?','Yes. In the entry form, tap the date and choose a day in the calendar. For earnings and expenses, confirm the backdated entry. Future dates cannot be selected.'],
+      ['Como consultar os meus resultados?','Em Início, encontras as informações da semana atual. Em Semana, podes consultar os detalhes e outros períodos, alternar entre Lista e Tabela e tocar num dia da lista para ver os detalhes.','How do I view my results?','Home shows the current week. In Week, view details and other periods, switch between List and Table, and tap a day in the list to see its details.'],
+      ['Como funciona a meta semanal?','Em Início, toca em Definir meta ou Editar meta, introduz o valor e escolhe Bruto ou Líquido. O bruto soma os ganhos das plataformas; o líquido desconta as despesas aplicáveis. Também podes consultar metas anteriores.','How does the weekly goal work?','On Home, tap Set goal or Edit goal, enter the amount and choose Gross or Net. Gross adds platform earnings; net subtracts applicable expenses. You can also view previous goals.'],
+      ['Como configurar despesas fixas e plataformas?','Em Ajustes → Despesas Fixas, adiciona uma descrição e um valor em euros ou uma percentagem do bruto semanal. As despesas fixas são contabilizadas na segunda-feira. Em Ajustes → Multiplataforma, podes adicionar outras plataformas.','How do I configure fixed expenses and platforms?','In Settings → Fixed expenses, add a description and a euro amount or percentage of weekly gross earnings. Fixed expenses are counted on Monday. In Settings → Multi-platform, add other platforms.'],
+      ['Como descarregar um relatório?','Abre Downloads, seleciona o mês e toca em Baixar PDF. Em Relatórios anteriores, podes gerar novamente relatórios de meses com registos.','How do I download a report?','Open Downloads, choose a month and tap Download PDF. Under Previous reports, generate reports again for months with entries.'],
+      ['Como alterar as preferências ou gerir a subscrição?','Em Ajustes, podes alterar o idioma, o tamanho da fonte e o modo escuro. Para gerir a subscrição, toca em Editar no card de perfil e depois em Gerir subscrição, quando disponível.','How do I change preferences or manage my subscription?','In Settings, change the language, font size and dark mode. To manage your subscription, tap Edit on the profile card, then Manage subscription when available.'],
+      ['A aplicação funciona sem internet?','Com uma sessão já iniciada e os dados disponíveis no dispositivo, podes continuar offline. As alterações ficam guardadas localmente e são enviadas quando a ligação regressa e a subscrição permite a sincronização.','Does the app work offline?','With an existing session and data available on the device, you can work offline. Changes are stored locally and sent when the connection returns and the subscription permits syncing.']
+    ];
+    function labels(){management.dataset.title=say('Gestão','Management');preferences.dataset.title=say('Preferências','Preferences');support.dataset.title=say('Conta e suporte','Account and support');fixedAdd.textContent=say('Adicionar despesa fixa','Add fixed expense');helper.textContent=say('Despesas semanais, em € ou % do bruto. Entram na segunda-feira; a percentagem acompanha os ganhos. Ao excluir, as semanas anteriores ficam preservadas.','Weekly expenses, in € or % of gross. Added on Monday; percentages follow earnings. Deleting preserves previous weeks.');$('uiHelpTitle').textContent=say('Estamos por perto.','We are here to help.');$('uiFaqItems').replaceChildren();(window.matchMedia('(max-width: 760px)').matches?mobileFaqs:faqs).forEach(function(f){var n=create('details');var q=create('summary');q.textContent=say(f[0],f[2]);var p=create('p');p.textContent=say(f[1],f[3]);n.append(q,p);$('uiFaqItems').append(n);});}
     function navLabels(){var labels=say(['Início','Semana','Downloads','Ajustes'],['Home','Week','Downloads','Settings']);document.querySelectorAll('.ui-nav-short').forEach(function(n,i){n.textContent=labels[i];});}
     labels();navLabels();document.addEventListener('languageChanged',function(){labels();navLabels();});
+    var faqMobile=window.matchMedia('(max-width: 760px)');
+    if(faqMobile.addEventListener)faqMobile.addEventListener('change',labels);
   }
   window.SmartSomaUI={start:start,go:go,t:t,svg:svg,create:create,button:button,translate:translate,syncHeader:syncHeader,refreshSidebar:syncSidebarAccount};
   document.addEventListener('smartSomaAppReady',function(){setTimeout(start,0);});

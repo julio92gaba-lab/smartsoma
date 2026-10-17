@@ -49,6 +49,20 @@ test('quick entry selects a past day with confirmation and keeps the current pag
   assert.deepEqual(a.errors,[]);
 });
 
+test('mobile daily expense deletion queues and synchronizes offline changes',async t=>{
+  const key='despesasDiarias:'+dateKey(new Date());
+  const a=createApp({[key]:JSON.stringify({seq:1,items:[{id:1,descricao:'Combustível',valor:20}]})},{ui:true,cloudBoot:true,mobile:true});t.after(a.close);
+  for(let i=0;i<20&&(!a.w._cacheReady||!a.el('uiOverviewExpenseRows'));i++)await settle();
+  Object.defineProperty(a.w.navigator,'onLine',{value:false,configurable:true});
+  a.el('uiOverviewExpenseRows').querySelector('.ui-expense-delete').click();a.click('despesaDiariaConfirmDeleteBtn');await settle();
+  assert.equal(JSON.parse(a.w.cloudGet(key)).items.length,0);
+  assert.match(a.w.localStorage.getItem('ss_q:isolated-test'),/despesasDiarias/);
+  Object.defineProperty(a.w.navigator,'onLine',{value:true,configurable:true});
+  a.w.dispatchEvent(new a.w.Event('online'));await settle();
+  assert.ok(a.writes.some(row=>row.key===key&&JSON.parse(row.value).items.length===0));
+  assert.equal(a.w.localStorage.getItem('ss_q:isolated-test'),null);assert.deepEqual(a.errors,[]);
+});
+
 test('news keeps an unread notice and moves it to the local archive after reading', t => {
   const a = setup(t);
   assert.ok(a.el('uiNews'));

@@ -338,6 +338,11 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
 .ui-record-row { display:grid; grid-template-columns:42px minmax(0,1fr) auto; align-items:center; gap:10px; padding:14px 0; border-top:1px solid var(--card-line); font-size:.8rem; }
 .ui-record-row>span { overflow-wrap:anywhere; }
 .ui-record-row small { color:var(--muted); font-size:.65rem; }
+.ui-expense-delete { display:none; }
+@media (max-width:760px) {
+  #uiOverviewExpenseRows .ui-record-row:has(.ui-expense-delete) { grid-template-columns:42px minmax(0,1fr) auto 36px; }
+  #uiOverviewExpenseRows .ui-expense-delete { display:grid; place-items:center; width:36px; height:36px; padding:0; border:0; background:transparent; color:var(--danger); font-size:1.35rem; cursor:pointer; }
+}
 .ui-positive { color:var(--brand-green); }
 .ui-negative { color:var(--danger); }
 .ui-empty,.ui-muted { font-size:.8rem; color:var(--muted); line-height:1.65; }
@@ -1284,7 +1289,7 @@ body.ui-v2.theme-dark #homeListPageRelatorio .relatorio-period-controls { backgr
 .ui-v2 #homeListPageRelatorio .download-page { display:grid; gap:20px; }
 .ui-v2 #homeListPageRelatorio .ss-driver-card { position:relative; isolation:isolate; overflow:hidden; padding:25px 30px 20px; border:0; border-radius:15px; background:#0e3b2a; box-shadow:0 12px 32px #0b0f0c12; color:#f4f9ec; }
 .ui-v2 #homeListPageRelatorio .ss-driver-card::before { content:''; position:absolute; z-index:-1; right:-90px; top:-190px; width:530px; height:530px; background:radial-gradient(circle,#d4f53c30,transparent 64%); }
-.ui-v2 #homeListPageRelatorio .ss-driver-watermark { position:absolute; z-index:-1; right:-3%; bottom:-45%; width:min(48%,340px); color:#d4f53c; opacity:.12; transform:rotate(-8deg); pointer-events:none; }
+.ui-v2 #homeListPageRelatorio .ss-driver-watermark { position:absolute; z-index:-1; right:-3%; bottom:-15%; width:min(48%,340px); color:#d4f53c; opacity:.12; transform:rotate(-8deg); pointer-events:none; }
 .ui-v2 #homeListPageRelatorio .ss-driver-watermark svg { display:block; width:100%; height:auto; fill:none; stroke:currentColor; stroke-linecap:round; stroke-linejoin:round; stroke-width:8; }
 .ui-v2 #homeListPageRelatorio .ss-driver-topline { display:flex; justify-content:space-between; align-items:center; gap:12px; }
 .ui-v2 #homeListPageRelatorio .ss-driver-tag { display:inline-flex; padding:5px 9px; border:1px solid #d4f53c47; border-radius:4px; background:#d4f53c1f; color:#d4f53c; font-size:.625rem; font-weight:800; letter-spacing:.9px; }
@@ -1320,7 +1325,7 @@ body.ui-v2.theme-dark #homeListPageRelatorio .relatorio-period-controls { backgr
   .ui-v2 #homeListPageRelatorio .ss-driver-grid { grid-template-columns:1fr; gap:18px; padding-top:18px; }
   .ui-v2 #homeListPageRelatorio .ss-driver-grid h2 { font-size:1.7rem; }
   .ui-v2 #homeListPageRelatorio .ss-driver-note { padding:12px 0 0; border-top:1px solid #ffffff26; border-left:0; }
-  .ui-v2 #homeListPageRelatorio .ss-driver-watermark { right:-10%; bottom:-29%; width:85%; }
+  .ui-v2 #homeListPageRelatorio .ss-driver-watermark { right:-10%; bottom:1%; width:85%; }
   .ui-v2 #homeListPageRelatorio .report-archive { padding:20px 18px; border-radius:14px; }
   .ui-v2 #homeListPageRelatorio .report-archive-heading { align-items:flex-start; flex-direction:column; gap:8px; margin-bottom:14px; }
   .ui-v2 #homeListPageRelatorio .report-archive-heading p { max-width:none; text-align:left; }
@@ -2343,6 +2348,14 @@ body.ui-v2.theme-dark #homeListPageSemana .semana-day-card::before { background-
 .ui-v2 #uiSettingsPage #sheetProActiveBadge {
   width:max-content;
   margin-inline:auto;
+}
+.ui-v2 #uiSettingsPage .sheet-profile-row #sheetProActiveBadge {
+  grid-column:1;
+  grid-row:3;
+  justify-self:center;
+  justify-content:center;
+  max-width:100%;
+  text-align:center;
 }
 .ui-v2 .ui-settings-subpage-body .sheet-page-content:has(#dpNomeInput) .dp-field-row-single:has(#dpNomeInput) {
   margin-bottom:16px;

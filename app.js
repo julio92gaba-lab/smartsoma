@@ -1541,6 +1541,7 @@
       var items = [];
       var seq = 0;
       var pendingDeleteId = null;
+      var pendingDeleteDate = null;
 
       function pad2 (n) { return n < 10 ? '0' + n : String(n); }
       function dateKey () {
@@ -1774,25 +1775,47 @@
         descInput.focus();
       });
 
-      function openDeleteConfirm (id, descricao) {
+      function openDeleteConfirm (id, descricao, date) {
+        if (window.SmartSomaPro && !window.SmartSomaPro.isPro) {
+          if (window.abrirModalSubExpirada) window.abrirModalSubExpirada();
+          return;
+        }
         pendingDeleteId = id;
+        pendingDeleteDate = dateKeyFor(date || refDate());
         if (confirmText) confirmText.textContent = I18N.t('fixas.confirmNamed', { n: descricao });
         if (confirmBackdrop) confirmBackdrop.classList.add('visible');
       }
 
       function closeDeleteConfirm () {
         pendingDeleteId = null;
+        pendingDeleteDate = null;
         if (confirmBackdrop) confirmBackdrop.classList.remove('visible');
       }
 
       if (confirmCancelBtn) confirmCancelBtn.addEventListener('click', closeDeleteConfirm);
       if (confirmDeleteBtn) {
         confirmDeleteBtn.addEventListener('click', function () {
-          if (pendingDeleteId !== null) {
-            items = items.filter(function (item) { return item.id !== pendingDeleteId; });
-            saveItems();
-            renderList();
-            syncBadge();
+          if (pendingDeleteId !== null && pendingDeleteDate && (!window.SmartSomaPro || window.SmartSomaPro.isPro)) {
+            var key = STORAGE_PREFIX + pendingDeleteDate;
+            var saved = cloudGet(key);
+            var data = saved ? JSON.parse(saved) : null;
+            if (data && Array.isArray(data.items) && data.items.some(function (item) { return item.id === pendingDeleteId; })) {
+              data.items = data.items.filter(function (item) { return item.id !== pendingDeleteId; });
+              cloudSet(key, JSON.stringify(data));
+              if (pendingDeleteDate === dateKey()) {
+                loadItems();
+                renderList();
+                syncBadge();
+              } else {
+                var parts = pendingDeleteDate.split('-').map(Number);
+                var date = new Date(parts[0], parts[1] - 1, parts[2]);
+                var badgeKey = 'homeBadgeValores:' + pendingDeleteDate;
+                var badge = JSON.parse(cloudGet(badgeKey) || '{}');
+                badge.despesas = window.SmartSomaReadModel.day(date).expenses;
+                cloudSet(badgeKey, JSON.stringify(badge));
+                document.dispatchEvent(new CustomEvent('homeBadgesSaved'));
+              }
+            }
           }
           closeDeleteConfirm();
         });
@@ -1842,6 +1865,7 @@
         syncBadge();
       });
       document.addEventListener('languageChanged', renderList);
+      window.DespesasDiarias = { openDeleteConfirm: openDeleteConfirm };
     })();
 
 
@@ -4748,55 +4772,23 @@
       // ---- Navegação entre seções (Ganhos / Resumo Financeiro / Detalhes
       // da Semana), chamada a partir do menu principal. Cada seção é uma
       // "página" própria dentro de #homeListView.
-      //
-      // A troca entre páginas usa um crossfade curto (fade-out da página
-      // atual, depois fade-in da nova) em vez de simplesmente alternar o
-      // atributo "hidden" — a troca instantânea deixava a tela "piscar"
-      // ao navegar pelo menu.
-      var HOME_PAGE_FADE_MS = 140;
-      var homePageTimer = null;
       function resetNavigationScroll () {
         if (listView) listView.scrollTop = 0;
         window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
       }
       function showHomeListPage (section) {
-        clearTimeout(homePageTimer);
         resetNavigationScroll();
         var normalized = (section === 'default') ? 'ganhos' : section;
         var pages = PAGES_LIST;
         var nextEl = null;
         pages.forEach(function (p) { if (p.key === normalized) nextEl = p.el; });
-        var currentEl = null;
-        pages.forEach(function (p) { if (p.el && !p.el.hidden) currentEl = p.el; });
-
         setHeaderTitleState(normalized === 'ganhos' ? 'default' : normalized);
 
         if (!nextEl) return;
-
-        function reveal () {
-          pages.forEach(function (p) {
-            if (!p.el) return;
-            if (p.el === nextEl) {
-              p.el.hidden = false;
-              p.el.classList.add('is-fading');
-              void p.el.offsetWidth; // força reflow para garantir a transição no fade-in
-              p.el.classList.remove('is-fading');
-            } else {
-              p.el.hidden = true;
-              p.el.classList.remove('is-fading');
-            }
-          });
-          if (listView) listView.scrollTop = 0;
-          if (normalized === 'semana') {
-            document.dispatchEvent(new CustomEvent('semanaPageShown'));
-          }
-        }
-
-        if (currentEl && currentEl !== nextEl) {
-          currentEl.classList.add('is-fading');
-          homePageTimer = setTimeout(reveal, HOME_PAGE_FADE_MS);
-        } else {
-          reveal();
+        pages.forEach(function (p) { if (p.el) p.el.hidden = p.el !== nextEl; });
+        if (listView) listView.scrollTop = 0;
+        if (normalized === 'semana') {
+          document.dispatchEvent(new CustomEvent('semanaPageShown'));
         }
       }
 
@@ -4806,103 +4798,20 @@
         { key: 'semana', el: homeListPageSemana },
         { key: 'relatorio', el: homeListPageRelatorio }
       ];
-      var homeListInner = listView ? listView.querySelector('.home-list-inner') : null;
-
-      // ---- Deslize entre Ganhos <-> Resumo Financeiro, acionado pelas
-      // setas "Ver meu resumo" / "Registrar ganhos". A direção do deslize
-      // segue a seta do botão clicado: seta para a direita desliza para a
-      // direita (página nova entra pela esquerda, atual sai pela direita);
-      // seta para a esquerda faz o inverso.
-      var SLIDE_MS = 300;
-      var slideBusy = false;
-      function slideToSection (section, direction) {
-        if (slideBusy) return;
-        resetNavigationScroll();
-        var normalized = (section === 'default') ? 'ganhos' : section;
-        var nextEl = null;
-        PAGES_LIST.forEach(function (p) { if (p.key === normalized) nextEl = p.el; });
-        var currentEl = null;
-        PAGES_LIST.forEach(function (p) { if (p.el && !p.el.hidden) currentEl = p.el; });
-
-        setHeaderTitleState(normalized === 'ganhos' ? 'default' : normalized);
-
-        if (!nextEl || nextEl === currentEl || !currentEl || !homeListInner) {
-          showHomeListPage(section);
-          return;
-        }
-
-        slideBusy = true;
-        var goingRight = direction === 'right';
-        homeListInner.classList.add('is-sliding');
-
-        nextEl.hidden = false;
-        nextEl.classList.remove('slide-current', 'slide-out-left', 'slide-out-right', 'slide-in-left', 'slide-in-right');
-        currentEl.classList.remove('slide-current', 'slide-out-left', 'slide-out-right', 'slide-in-left', 'slide-in-right');
-        nextEl.classList.add(goingRight ? 'slide-in-left' : 'slide-in-right');
-        currentEl.classList.add('slide-current');
-        void nextEl.offsetWidth; // força reflow antes de animar
-
-        requestAnimationFrame(function () {
-          currentEl.classList.remove('slide-current');
-          currentEl.classList.add(goingRight ? 'slide-out-right' : 'slide-out-left');
-          nextEl.classList.remove(goingRight ? 'slide-in-left' : 'slide-in-right');
-          nextEl.classList.add('slide-current');
-        });
-
-        setTimeout(function () {
-          PAGES_LIST.forEach(function (p) {
-            if (!p.el) return;
-            p.el.hidden = (p.el !== nextEl);
-            p.el.classList.remove('slide-current', 'slide-out-left', 'slide-out-right', 'slide-in-left', 'slide-in-right');
-          });
-          homeListInner.classList.remove('is-sliding');
-          if (listView) listView.scrollTop = 0;
-          if (normalized === 'semana') {
-            document.dispatchEvent(new CustomEvent('semanaPageShown'));
-          }
-          slideBusy = false;
-        }, SLIDE_MS);
-      }
-
-      // ---- Navegação a partir do menu Ajustes: a página que estiver
-      // atrás deve fechar/sumir instantaneamente assim que a opção é
-      // clicada (antes mesmo do menu terminar de fechar), e a nova página
-      // só aparece com um fade-in suave depois que o menu termina de
-      // fechar.
       function hideAllInstant () {
-        clearTimeout(homePageTimer);
         PAGES_LIST.forEach(function (p) {
           if (!p.el) return;
-          p.el.classList.remove('is-fading', 'slide-current', 'slide-out-left', 'slide-out-right', 'slide-in-left', 'slide-in-right');
           p.el.hidden = true;
         });
-        if (homeListInner) homeListInner.classList.remove('is-sliding');
-      }
-
-      function fadeInSection (section) {
-        resetNavigationScroll();
-        var normalized = (section === 'default') ? 'ganhos' : section;
-        var nextEl = null;
-        PAGES_LIST.forEach(function (p) { if (p.key === normalized) nextEl = p.el; });
-        setHeaderTitleState(normalized === 'ganhos' ? 'default' : normalized);
-        if (!nextEl) return;
-        nextEl.hidden = false;
-        nextEl.classList.add('is-fading');
-        void nextEl.offsetWidth; // força reflow para garantir a transição no fade-in
-        nextEl.classList.remove('is-fading');
-        if (listView) listView.scrollTop = 0;
-        if (normalized === 'semana') {
-          document.dispatchEvent(new CustomEvent('semanaPageShown'));
-        }
       }
 
       window.HomeNav = {
         goToSection: function (section) {
           showHomeListPage(section);
         },
-        slideToSection: slideToSection,
+        slideToSection: showHomeListPage,
         hideAllInstant: hideAllInstant,
-        fadeInSection: fadeInSection,
+        fadeInSection: showHomeListPage,
         getCurrentState: function () { return currentHeaderState; }
       };
 

@@ -1,7 +1,7 @@
 const fs = require('node:fs');
 const { JSDOM, VirtualConsole } = require('jsdom');
 
-function createApp(seed = {}, { ui = false, cloudBoot = false } = {}) {
+function createApp(seed = {}, { ui = false, cloudBoot = false, mobile = false } = {}) {
   const errors = [];
   const virtualConsole = new VirtualConsole();
   virtualConsole.on('jsdomError', error => errors.push(error.message));
@@ -23,7 +23,7 @@ function createApp(seed = {}, { ui = false, cloudBoot = false } = {}) {
   w.HTMLElement.prototype.scrollBy = () => {};
   w.HTMLDialogElement.prototype.showModal = function () { this.open = true; };
   w.HTMLDialogElement.prototype.close = function () { this.open = false; this.dispatchEvent(new w.Event('close')); };
-  w.matchMedia = () => ({ matches: false, addEventListener() {}, removeEventListener() {} });
+  w.matchMedia = query => ({ matches: mobile && query === '(max-width: 760px)', addEventListener() {}, removeEventListener() {} });
   w.HTMLCanvasElement.prototype.getContext = () => new Proxy({}, {
     get: (_, key) => key === 'measureText' ? () => ({ width: 20 }) : () => {}
   });
