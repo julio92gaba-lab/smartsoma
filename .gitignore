@@ -7,3 +7,9 @@ capacitor-web/
 .env
 .env.*
 !.env.example
+
+# Chaves de assinatura nunca pertencem ao repositório.
+*.jks
+*.keystore
+*.p12
+*.pfx

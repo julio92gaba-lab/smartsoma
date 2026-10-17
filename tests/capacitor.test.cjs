@@ -121,6 +121,17 @@ test('Android project keeps its provisional identity, existing icon and minimal 
   assert.deepEqual(fs.readFileSync('android/app/src/main/res/drawable-nodpi/smartsoma_icon.png'), fs.readFileSync('icon-512.png'));
 });
 
+test('release signing requires complete external credentials and excludes keystores from Git', () => {
+  const gradle = fs.readFileSync('android/app/build.gradle', 'utf8');
+  for (const name of ['SMARTSOMA_UPLOAD_STORE_FILE', 'SMARTSOMA_UPLOAD_STORE_PASSWORD',
+    'SMARTSOMA_UPLOAD_KEY_ALIAS', 'SMARTSOMA_UPLOAD_KEY_PASSWORD']) assert.match(gradle, new RegExp(name));
+  assert.match(gradle, /Configuração de assinatura de upload incompleta/);
+  assert.match(gradle, /isAbsolute\(\)/);
+  assert.match(gradle, /if \(hasUploadSigning\) signingConfig signingConfigs\.release/);
+  const ignored = fs.readFileSync('.gitignore', 'utf8');
+  for (const ext of ['jks', 'keystore', 'p12', 'pfx']) assert.ok(ignored.includes('*.' + ext));
+});
+
 test('Android back is handled in-app and legal links leave the WebView', () => {
   const activity = fs.readFileSync('android/app/src/main/java/pt/smartsoma/app/MainActivity.java', 'utf8');
   const ui = fs.readFileSync('ui-v2.js', 'utf8');

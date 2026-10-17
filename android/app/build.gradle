@@ -1,5 +1,21 @@
 apply plugin: 'com.android.application'
 
+// For release signing, supply all values through a secure local environment.
+// With no values configured, bundleRelease stays unsigned for verification.
+def uploadSigning = [
+    System.getenv('SMARTSOMA_UPLOAD_STORE_FILE'),
+    System.getenv('SMARTSOMA_UPLOAD_STORE_PASSWORD'),
+    System.getenv('SMARTSOMA_UPLOAD_KEY_ALIAS'),
+    System.getenv('SMARTSOMA_UPLOAD_KEY_PASSWORD')
+]
+def hasUploadSigning = uploadSigning.every { it != null && !it.isEmpty() }
+if (!hasUploadSigning && uploadSigning.any { it != null && !it.isEmpty() }) {
+    throw new GradleException('Configuração de assinatura de upload incompleta.')
+}
+if (hasUploadSigning && (!new File(uploadSigning[0]).isAbsolute() || !new File(uploadSigning[0]).isFile())) {
+    throw new GradleException('Ficheiro da chave de upload inválido.')
+}
+
 android {
     namespace = "pt.smartsoma.app"
     compileSdk = rootProject.ext.compileSdkVersion
@@ -16,8 +32,19 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        release {
+            if (hasUploadSigning) {
+                storeFile new File(uploadSigning[0])
+                storePassword uploadSigning[1]
+                keyAlias uploadSigning[2]
+                keyPassword uploadSigning[3]
+            }
+        }
+    }
     buildTypes {
         release {
+            if (hasUploadSigning) signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
