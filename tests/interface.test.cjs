@@ -124,7 +124,7 @@ test('fixed chrome has readable text and avatars use Supabase Storage',()=>{
   assert.match(css,/#resumoPeriodControls\.is-sticky #resumoCurrentWeekLabel > span\s*\{\s*color:#c8d8cb;/);
   assert.match(css,/\.semana-filter-fields \.semana-week-picker-btn,[^{]*\{[^}]*background:#fff;[^}]*color:#183021;/);
   assert.match(css,/\.semana-week-picker-num,[^{]*\{[^}]*background:#fff;[^}]*color:#183021;/);
-  assert.match(html,/ui-v2\.css\?v=25/);
+  assert.match(html,/ui-v2\.css\?v=26/);
   assert.match(html,/accept="[^"]*\.heic[^"]*image\/heif/);
   assert.match(html,/<script src="heic2any\.min\.js\?v=12"><\/script>/);
   assert.match(app,/'image\/heic': true/);
@@ -133,7 +133,7 @@ test('fixed chrome has readable text and avatars use Supabase Storage',()=>{
   assert.match(app,/SmartSomaAvatarStorage\.upload\(avatarBlob\)/);
   assert.match(cloud,/sb\.storage\.from\('avatars'\)\.upload\(objectPath, blob,[\s\S]*upsert: true/);
   assert.match(cloud,/getPublicUrl\(objectPath\)/);
-  assert.match(cloud,/script\.src = 'app\.js\?v=14'/);
+  assert.match(cloud,/script\.src = 'app\.js\?v=15'/);
   assert.match(cloud,/\^\[A-Za-z0-9:\._-\]\{1,120\}\$/);
   assert.match(migration,/INSERT INTO storage\.buckets \(id, name, public, file_size_limit, allowed_mime_types\)/);
   assert.match(migration,/VALUES \([\s\S]*'avatars',[\s\S]*true,[\s\S]*NULL/);
@@ -220,6 +220,8 @@ test('weekly table marks positive income and expenses, zero values and negative 
   assert.ok(empty);for(const cell of empty.querySelectorAll('.semana-cell-total')){assert.ok(!cell.classList.contains('has-value'));assert.ok(cell.querySelector('.semana-cell-value.is-zero'));}
   const css=fs.readFileSync('ui-v2.css','utf8');
   assert.match(css,/\.semana-cell-total\.has-value::after/);assert.match(css,/\.semana-cell-expense\.has-value::after[^}]*var\(--danger\)/);
+  assert.match(css,/\.semana-cell-total\.has-value::after[^}]*width:min\(56px, calc\(100% - 18px\)\)/);
+  assert.doesNotMatch(css,/--semana-bar-size/);assert.doesNotMatch(fs.readFileSync('app.js','utf8'),/--semana-bar-size/);
   assert.match(css,/\.semana-cell-value\.is-zero\s*\{\s*opacity:/);assert.match(css,/\.semana-cell-liquido\.is-negative\s*\{\s*color:var\(--danger\)/);
   assert.deepEqual(a.errors,[]);
 });

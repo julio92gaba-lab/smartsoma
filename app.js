@@ -4034,7 +4034,7 @@
 
         var tbody = document.createElement('tbody');
 
-        var sumUber = 0, sumBolt = 0, sumExtras = 0, sumDespesas = 0, sumKm = 0, totalCells = [], bestRevenueDay = null;
+        var sumUber = 0, sumBolt = 0, sumExtras = 0, sumDespesas = 0, sumKm = 0, bestRevenueDay = null;
         var meta = window.MetaSemanalRead && window.MetaSemanalRead.forDate(week.monday);
         var activeDays = 0, earningsActiveDays = 0;
 
@@ -4087,7 +4087,6 @@
           var tdGross = document.createElement('td');
           tdGross.className = 'semana-metric-financeiro semana-cell-total';
           setTableAmount(tdGross, dayTotal);
-          totalCells.push({ el: tdGross, value: dayTotal });
           tr.appendChild(tdGross);
 
           var tdDespesas = document.createElement('td');
@@ -4121,7 +4120,6 @@
             var cell = document.createElement('td');
             cell.className = 'semana-metric-apps semana-cell-total';
             setTableAmount(cell, value);
-            cell.style.setProperty('--semana-bar-size', (dayTotal ? Math.max(8, value / dayTotal * 100) : 8) + '%');
             tr.appendChild(cell);
           });
 
@@ -4153,11 +4151,6 @@
         revenueFooter.innerHTML = '<span class="semana-revenue-title">Melhor da semana</span>' +
           '<span class="semana-revenue-best">' + bestRevenueLabel + '</span>';
         scrollWrap.appendChild(revenueFooter);
-        var maxDayTotal = Math.max.apply(null, totalCells.map(function (item) { return item.value; }).concat([0]));
-        totalCells.forEach(function (item) {
-          item.el.style.setProperty('--semana-bar-size', (maxDayTotal ? Math.max(8, item.value / maxDayTotal * 100) : 8) + '%');
-        });
-
         var summary = document.createElement('div');
         summary.className = 'semana-week-summary semana-goal-card';
         var achieved = meta && meta.config ? meta.achieved : sumBruto;
