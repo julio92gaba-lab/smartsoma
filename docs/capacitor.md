@@ -9,7 +9,18 @@
 - O APK de depuração foi instalado e testado num dispositivo Android, incluindo login Google, recuperação de senha, PDF e funcionamento sem rede. Usa a configuração Supabase de produção; testes com contas, pagamentos ou exclusões reais têm efeitos reais.
 - A subscrição continua a usar o Creem na web. A integração com Google Play Billing, os testes de compra e a validação para publicação Android ainda estão pendentes.
 - Antes da publicação, confirmar o identificador, preparar a assinatura e gerar o AAB, verificar privacidade e requisitos da Play Store e realizar os testes pela Google Play.
-- A assinatura de upload está preparada para receber, no ambiente seguro do processo, `SMARTSOMA_UPLOAD_STORE_FILE` (caminho absoluto), `SMARTSOMA_UPLOAD_STORE_PASSWORD`, `SMARTSOMA_UPLOAD_KEY_ALIAS` e `SMARTSOMA_UPLOAD_KEY_PASSWORD`. Fornecer as quatro variáveis; uma configuração parcial falha. Sem variáveis, o AAB gerado é **não assinado** e não pode ser publicado. Guardar a chave real fora do projeto, proteger e testar uma cópia de recuperação, e nunca enviar passwords ou chaves no chat ou no Git. A configuração foi testada com uma chave fictícia descartável; a chave real ainda não foi criada.
+- A assinatura de upload está preparada para receber, no ambiente seguro do processo, `SMARTSOMA_UPLOAD_STORE_FILE` (caminho absoluto), `SMARTSOMA_UPLOAD_STORE_PASSWORD`, `SMARTSOMA_UPLOAD_KEY_ALIAS` e `SMARTSOMA_UPLOAD_KEY_PASSWORD`. Fornecer as quatro variáveis; uma configuração parcial falha. Sem variáveis, o AAB gerado é **não assinado** e não pode ser publicado. Nunca enviar passwords ou chaves no chat ou no Git.
+- A chave real de upload foi criada localmente em `%LOCALAPPDATA%\SmartSoma\assinatura\smartsoma-upload.jks`; a senha foi cifrada com DPAPI no mesmo diretório, protegido por permissões Windows. O script `scripts/android-release.ps1` usa a chave existente para gerar o AAB assinado e verificar a assinatura. Não repetir `-CreateKey`: o script não substitui uma chave existente.
+- **Cópia de recuperação pendente:** DPAPI depende da conta Windows atual e não substitui uma cópia recuperável. O titular deve guardar o ficheiro `.jks` e a senha num gestor seguro e testar a recuperação antes de depender da chave. A senha pode ser copiada localmente para a área de transferência com o comando abaixo, sem a publicar nem enviar no chat; colar de imediato no gestor de senhas e limpar a área de transferência depois.
+
+  ```powershell
+  $ssEncrypted = Get-Content "$env:LOCALAPPDATA\SmartSoma\assinatura\upload-password.dpapi" -Raw | ConvertTo-SecureString
+  Set-Clipboard ([System.Net.NetworkCredential]::new('', $ssEncrypted).Password)
+  $ssEncrypted = $null
+  # Depois de guardar a senha: Set-Clipboard ''
+  ```
+
+- O AAB produzido antes da configuração e dos testes de subscrição é provisório. Gerar outro após as alterações finais. O Play App Signing e o envio exigem a Play Console; a chave de upload não é a chave de depuração nem necessariamente a chave de distribuição da Google.
 - O identificador `pt.smartsoma.app` já foi usado num dispositivo com o APK de depuração. Preservar a chave de depuração existente: a Google poderá pedir prova da chave anteriormente usada ao registar o identificador. Não usar a chave de depuração como chave de publicação. Ver [guia da Google para verificação de programadores](https://developer.android.com/developer-verification/guides/pdf-guides/pdc-guide.pdf).
 - Um APK assinado para lançamento normalmente não atualiza uma instalação de depuração com assinatura diferente. Antes de trocar versões, confirmar a sincronização dos dados; desinstalar pode apagar alterações locais não sincronizadas.
 - Para compilar é necessário ter o SDK Android instalado e configurado no Android Studio; a instalação e as licenças são tratadas pelo utilizador.
