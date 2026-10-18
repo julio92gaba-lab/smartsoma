@@ -35,7 +35,7 @@ async function main() {
     await db.exec('SET ROLE service_role');
     assert.equal((await db.query('SELECT id FROM public.support_contacts')).rows.length, 1);
     await db.exec('RESET ROLE');
-    await db.exec("DELETE FROM auth.users WHERE id = '123e4567-e89b-42d3-a456-426614174000'");
+    await db.query('DELETE FROM auth.users WHERE id = $1', ['123e4567-e89b-42d3-a456-426614174000']);
     assert.equal((await db.query('SELECT id FROM public.support_contacts')).rows.length, 0);
     console.log('PASS migration: bucket privado, validação, permissões e eliminação em cascata.');
   } finally {
