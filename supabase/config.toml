@@ -435,3 +435,15 @@ entrypoint = "./functions/creem-webhook/index.ts"
 # Specifies static files to be bundled with the function. Supports glob patterns.
 # For example, if you want to serve static HTML pages in your function:
 # static_files = [ "./functions/creem-webhook/*.html" ]
+
+# Authentication is verified inside each handler, including asymmetric user JWTs.
+[functions.support-contact]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/support-contact/index.ts"
+
+# This private job requires SUPPORT_CLEANUP_SECRET on every request.
+[functions.support-cleanup]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/support-cleanup/index.ts"

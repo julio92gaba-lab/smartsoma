@@ -408,6 +408,16 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
 .ui-help-hero a { color:#d4f53c; font-size:1rem; }
 .ui-help-hero p { font-size:.85rem; color:#c2d7c7; }
 .ui-help-hero .ui-button { margin-top:16px; }
+.ui-v2 .ui-contact-form { display:grid; gap:8px; margin:22px 0; }
+.ui-v2 .ui-contact-form label { margin-top:6px; font-size:.8rem; font-weight:700; color:#f4f9ec; }
+.ui-v2 .ui-contact-form :is(input,textarea) { box-sizing:border-box; width:100%; padding:10px 12px; border:1px solid #53715d; border-radius:8px; background:#fff; color:#183021; font:inherit; }
+.ui-v2 .ui-contact-form input[readonly] { background:#e9f0e9; }
+.ui-v2 .ui-contact-form input[type=file] { font-size:.78rem; }
+.ui-v2 .ui-contact-form textarea { resize:vertical; min-height:110px; }
+.ui-v2 .ui-contact-form small { color:#c2d7c7; font-size:.75rem; }
+.ui-v2 .ui-contact-form .ui-button { justify-self:start; margin-top:10px; }
+.ui-v2 .ui-contact-form .ui-button:disabled { opacity:.65; }
+.ui-v2 .ui-contact-form #uiContactStatus { min-height:1.2em; margin:0; }
 .ui-faq h2 { font-size:1.5rem; }
 .ui-faq details { border-top:1px solid var(--card-line); padding:17px 0; }
 .ui-faq summary { font-size:.88rem; font-weight:700; cursor:pointer; line-height:1.5; }

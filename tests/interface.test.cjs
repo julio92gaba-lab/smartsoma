@@ -124,7 +124,7 @@ test('fixed chrome has readable text and avatars use Supabase Storage',()=>{
   assert.match(css,/#resumoPeriodControls\.is-sticky #resumoCurrentWeekLabel > span\s*\{\s*color:#c8d8cb;/);
   assert.match(css,/\.semana-filter-fields \.semana-week-picker-btn,[^{]*\{[^}]*background:#fff;[^}]*color:#183021;/);
   assert.match(css,/\.semana-week-picker-num,[^{]*\{[^}]*background:#fff;[^}]*color:#183021;/);
-  assert.match(html,/ui-v2\.css\?v=22/);
+  assert.match(html,/ui-v2\.css\?v=23/);
   assert.match(html,/accept="[^"]*\.heic[^"]*image\/heif/);
   assert.match(html,/<script src="heic2any\.min\.js\?v=12"><\/script>/);
   assert.match(app,/'image\/heic': true/);
@@ -423,6 +423,38 @@ test('contact and FAQ use a single visual card without changing other settings p
   const body=a.el('uiSettingsPage').querySelector('.ui-settings-subpage-body');
   assert.equal(body.querySelector('.ui-help-hero,.ui-faq'),null);
   assert.ok(body.querySelector('#langOptionsList'));assert.deepEqual(a.errors,[]);
+});
+
+test('contact keeps identity from the session and allows safe retries',async t=>{
+  const a=setup(t);
+  a.w.currentUser={id:'test-user'};
+  a.w.currentUserEmail='pessoa@example.com';
+  a.el('sheetUsername').textContent='Pessoa Teste';
+  const calls=[];
+  let finish;
+  a.w.supabaseClient={functions:{invoke:(name,{body})=>{
+    calls.push({name,id:body.get('id'),subject:body.get('subject'),message:body.get('message')});
+    return new Promise(resolve=>{finish=resolve;});
+  }}};
+  a.w.SmartSomaUI.go('ajustes');a.click('openContactoBtn');
+  assert.equal(a.el('uiContactName').value,'Pessoa Teste');
+  assert.equal(a.el('uiContactEmail').value,'pessoa@example.com');
+  a.el('uiContactSubject').value='Ajuda';a.el('uiContactMessage').value='A minha mensagem';
+  const submitContact=()=>a.el('uiContactForm').dispatchEvent(new a.w.Event('submit',{bubbles:true,cancelable:true}));
+  submitContact();
+  assert.equal(a.el('uiContactSubject').disabled,true);
+  assert.equal(a.el('uiContactMessage').disabled,true);
+  assert.equal(a.el('uiContactAttachment').disabled,true);
+  assert.equal(calls[0].name,'support-contact');
+  finish({error:new Error('offline')});await settle();
+  assert.equal(a.el('uiContactSubject').disabled,false);
+  assert.equal(a.el('uiContactMessage').value,'A minha mensagem');
+  assert.match(a.el('uiContactStatus').textContent,/Não foi possível/);
+  submitContact();assert.equal(calls[1].id,calls[0].id);
+  finish({data:{ok:true},error:null});await settle();
+  assert.match(a.el('uiContactStatus').textContent,/Mensagem enviada/);
+  assert.equal(a.el('uiContactMessage').value,'');
+  assert.deepEqual(a.errors,[]);
 });
 
 test('settings groups contact and FAQ separately and preserves instant navigation',t=>{

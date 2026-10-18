@@ -4,6 +4,8 @@ const Module = require('node:module');
 
 function handlerFor(options = {}) {
   const calls = [];
+  const attachments = [...(options.attachments || [])];
+  let supportLists = 0;
   const client = {
     rpc: async () => ({data:true,error:null}),
     auth: {
@@ -15,8 +17,16 @@ function handlerFor(options = {}) {
       return {select(){return this;},eq(){return this;},async maybeSingle(){return {data:options.subscription || null,error:null};}};
     },
     storage: {from(bucket) {
-      assert.equal(bucket,'avatars');
-      return {async remove(paths){calls.push(['storage',paths]);return {error:options.storageError || null};}};
+      if (bucket === 'avatars') return {async remove(paths){calls.push(['storage',paths]);return {error:options.storageError || null};}};
+      assert.equal(bucket,'support-attachments');
+      return {
+        async list(){
+          supportLists++;
+          if (options.supportListError === supportLists) return {data:null,error:{message:'falha simulada'}};
+          return {data:attachments.map(name=>({name})),error:null};
+        },
+        async remove(paths){calls.push(['attachments',paths]);attachments.length=0;return {error:options.attachmentError || null};}
+      };
     }}
   };
   const oldLoad=Module._load, oldFetch=global.fetch;
@@ -36,9 +46,27 @@ async function run(options) {
   finally {fixture.cleanup();}
 }
 
-test('deletion removes only the user avatar before atomic Auth deletion',async()=>{
+test('deletion removes the user avatar before atomic Auth deletion',async()=>{
   const result=await run();
   assert.equal(result.response.code,200);
+  assert.deepEqual(result.calls,[['storage',['fake-user/avatar.jpg']],['auth','fake-user']]);
+});
+
+test('deletion removes private support attachments before deleting the account',async()=>{
+  const name='123e4567-e89b-42d3-a456-426614174000.jpg';
+  const result=await run({attachments:[name]});
+  assert.equal(result.response.code,200);
+  assert.deepEqual(result.calls,[['attachments',['fake-user/'+name]],['storage',['fake-user/avatar.jpg']],['auth','fake-user']]);
+});
+
+test('deletion stops before Auth if private attachments cannot be removed',async()=>{
+  const result=await run({attachments:['123e4567-e89b-42d3-a456-426614174000.jpg'],attachmentError:{message:'falha simulada'}});
+  assert.equal(result.response.code,500); assert.deepEqual(result.calls.map(call=>call[0]),['attachments']);
+});
+
+test('deletion reports a warning if the final attachment check fails',async()=>{
+  const result=await run({supportListError:2});
+  assert.equal(result.response.code,200); assert.match(result.response.body.warning,/remoção dos anexos/);
   assert.deepEqual(result.calls,[['storage',['fake-user/avatar.jpg']],['auth','fake-user']]);
 });
 

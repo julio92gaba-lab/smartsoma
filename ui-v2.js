@@ -26,6 +26,8 @@
     pt: { resumo:'Início', ganhos:'Ganhos diários', despesas:'Despesas', semana:'Semana', relatorio:'Relatórios', downloads:'Downloads', ajustes:'Ajustes', hello:'Bom dia', afternoon:'Boa tarde', evening:'Boa noite', record:'Adicionar registo', calendar:'Escolher data', tag:'Para Estafetas e Motoristas de App.', ganhosNote:'Cada percurso conta. Regista os teus rendimentos e acompanha o dia.', despesasNote:'As tuas despesas, sem perder nenhum detalhe.', semanaNote:'Sete dias. Uma visão clara dos teus resultados.', relatorioNote:'Os teus resultados, organizados e prontos a guardar.', downloadsNote:'Os teus resultados, organizados e prontos a descarregar.', ajustesNote:'O SmartSoma, à tua medida.', theme:'Modo escuro', profile:'Editar perfil', contact:'Contacto', help:'Perguntas frequentes', normal:'Normal', newPlatform:'Nova plataforma', manage:'Gerir plataformas', addIncome:'Adicionar rendimento' },
     en: { resumo:'Home', ganhos:'Daily earnings', despesas:'Expenses', semana:'Week', relatorio:'Reports', downloads:'Downloads', ajustes:'Settings', hello:'Good morning', afternoon:'Good afternoon', evening:'Good evening', record:'Add entry', calendar:'Choose date', tag:'For couriers and app drivers.', ganhosNote:'Every journey counts. Record your earnings and track your day.', despesasNote:'Your expenses, without missing a detail.', semanaNote:'Sete days. A clear view of your results.', relatorioNote:'Your results, organised and ready to save.', downloadsNote:'Your results, organised and ready to download.', ajustesNote:'SmartSoma, your way.', theme:'Dark mode', profile:'Edit profile', contact:'Contact', help:'Frequently asked questions', normal:'Normal', newPlatform:'New platform', manage:'Manage platforms', addIncome:'Add earnings' }
   };
+  Object.assign(text.pt, { contactIntro:'Conta-nos como podemos ajudar. Responderemos o mais breve possível.', contactName:'Nome', contactEmail:'Email', contactSubject:'Assunto', contactMessage:'Mensagem', contactAttachment:'Imagem ou vídeo (opcional)', contactHint:'Um ficheiro até 10 MB. Os anexos são guardados em privado. Evita incluir dados sensíveis.', contactSend:'Enviar mensagem', contactSending:'A enviar…', contactSuccess:'Mensagem enviada. Responderemos o mais breve possível.', contactError:'Não foi possível confirmar o envio. Tenta novamente ou escreve para contacto@smartsoma.pt.', contactFileError:'Escolhe uma imagem ou um vídeo suportado com até 10 MB.' });
+  Object.assign(text.en, { contactIntro:'Tell us how we can help. We will reply as soon as possible.', contactName:'Name', contactEmail:'Email', contactSubject:'Subject', contactMessage:'Message', contactAttachment:'Image or video (optional)', contactHint:'One file up to 10 MB. Attachments are stored privately. Avoid including sensitive information.', contactSend:'Send message', contactSending:'Sending…', contactSuccess:'Message sent. We will reply as soon as possible.', contactError:'We could not confirm sending. Try again or email contacto@smartsoma.pt.', contactFileError:'Choose a supported image or video up to 10 MB.' });
   function t(key) { return (text[window.I18N && I18N.getLang()] || text.pt)[key] || key; }
   function svg(key) { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (icons[key] || icons.arrow) + '</svg>'; }
   function create(tag, className, html) { var n = document.createElement(tag); n.className = className || ''; if (html) n.innerHTML = html; return n; }
@@ -222,6 +224,38 @@
     window.addEventListener('scroll',update,{passive:true});
     window.addEventListener('resize',update,{passive:true});
     requestAnimationFrame(update);
+  }
+  function setupContact(){
+    var form=$('uiContactForm'), status=$('uiContactStatus'), send=$('uiContactSend'), file=$('uiContactAttachment');
+    var pendingId=null, sending=false;
+    function syncIdentity(){
+      $('uiContactName').value=$('sheetUsername').textContent.trim();
+      $('uiContactEmail').value=window.currentUserEmail || '';
+    }
+    form.addEventListener('input',function(){if(!sending)pendingId=null;});
+    form.addEventListener('submit',async function(event){
+      event.preventDefault();
+      if(sending)return;
+      syncIdentity();
+      var selected=file.files && file.files[0];
+      var allowed=['image/jpeg','image/png','image/webp','video/mp4','video/quicktime','video/webm'];
+      if(selected && (!selected.size || selected.size>10*1024*1024 || !allowed.includes(selected.type))){status.textContent=t('contactFileError');return;}
+      if(!window.currentUser || !window.currentUserEmail || !window.supabaseClient || !window.crypto.randomUUID){status.textContent=t('contactError');return;}
+      var body=new FormData();
+      pendingId=pendingId || window.crypto.randomUUID();
+      body.append('id',pendingId);body.append('name',$('uiContactName').value);
+      body.append('subject',$('uiContactSubject').value);body.append('message',$('uiContactMessage').value);
+      if(selected)body.append('attachment',selected,selected.name);
+      var fields=[$('uiContactSubject'),$('uiContactMessage'),file];
+      sending=true;fields.forEach(function(field){field.disabled=true;});send.disabled=true;send.textContent=t('contactSending');status.textContent='';
+      try{
+        var result=await window.supabaseClient.functions.invoke('support-contact',{body:body});
+        if(result.error || !result.data || !result.data.ok)throw new Error('contact failed');
+        form.reset();pendingId=null;syncIdentity();status.textContent=t('contactSuccess');
+      }catch(error){status.textContent=t('contactError');}
+      finally{sending=false;fields.forEach(function(field){field.disabled=false;});send.disabled=false;send.textContent=t('contactSend');}
+    });
+    return syncIdentity;
   }
   function setupStickyWeekFilters(){
     var controls=document.querySelector('.semana-filter-controls'), header=document.querySelector('.ui-header');
@@ -648,7 +682,8 @@
     document.addEventListener('fixedExpenseSaved',resetFixedForm);
     var helper=$('sheetScreenDespesasFixas').querySelector('.mm-helper-text');helper.removeAttribute('data-i18n');
     var help=$('sheetScreenAjuda').querySelector('.sheet-content');
-    $('sheetScreenContacto').querySelector('.sheet-content').innerHTML='<section class="ui-help-hero"><p class="ui-eyebrow">SMARTSOMA</p><h2 id="uiHelpTitle"></h2><a href="mailto:contacto@smartsoma.pt">contacto@smartsoma.pt</a><p>Lisboa, Portugal</p></section>';
+    $('sheetScreenContacto').querySelector('.sheet-content').innerHTML='<section class="ui-help-hero"><p class="ui-eyebrow">SMARTSOMA</p><h2 id="uiHelpTitle"></h2><p data-ui-text="contactIntro"></p><form id="uiContactForm" class="ui-contact-form"><label for="uiContactName" data-ui-text="contactName"></label><input id="uiContactName" autocomplete="name" readonly><label for="uiContactEmail" data-ui-text="contactEmail"></label><input id="uiContactEmail" type="email" autocomplete="email" readonly><label for="uiContactSubject" data-ui-text="contactSubject"></label><input id="uiContactSubject" required maxlength="120"><label for="uiContactMessage" data-ui-text="contactMessage"></label><textarea id="uiContactMessage" required maxlength="5000" rows="5"></textarea><label for="uiContactAttachment" data-ui-text="contactAttachment"></label><input id="uiContactAttachment" type="file" accept="image/jpeg,image/png,image/webp,video/mp4,video/quicktime,video/webm"><small data-ui-text="contactHint"></small><button id="uiContactSend" class="ui-button" type="submit" data-ui-text="contactSend"></button><p id="uiContactStatus" role="status" aria-live="polite"></p></form><a href="mailto:contacto@smartsoma.pt">contacto@smartsoma.pt</a></section>';
+    var syncContactIdentity=setupContact();
     help.innerHTML='<section class="home-card ui-faq"><h2 id="uiFaqTitle">FAQ</h2><div id="uiFaqItems"></div></section>';
 
     /* Subpáginas de Ajustes: reaproveitam os ecrãs e a lógica existente,
@@ -675,6 +710,7 @@
       if(screenId==='sheetScreenIdioma'&&window.IdiomaScreen)window.IdiomaScreen.prepare();
       if(screenId==='sheetScreenTamanho'&&window.TamanhoScreen)window.TamanhoScreen.prepare();
       if(screenId==='sheetScreenMultiplataforma'&&window.Multiplataformas)window.Multiplataformas.prepare();
+      if(screenId==='sheetScreenContacto')syncContactIdentity();
       activeContent=content;activeScreen=screen;screen.hidden=true;screen.classList.remove('is-active');
       subpageTitle.textContent=title;back.querySelector('span').textContent=say('Voltar para Ajustes','Back to Settings');
       subpageBody.replaceChildren(content);settings.hidden=true;subpage.hidden=false;window.closeProfileSheetPublic();window.scrollTo({top:0,behavior:'instant'});

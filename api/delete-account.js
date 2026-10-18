@@ -29,6 +29,26 @@ function getClientIp(req) {
   return /^[0-9a-fA-F:.]{3,45}$/.test(raw) ? raw : 'unknown';
 }
 
+async function deleteSupportAttachments(userId) {
+  const bucket = supabase.storage.from('support-attachments');
+  // Each page starts at zero because the previous page has been removed.
+  for (let page = 0; page < 100; page++) {
+    const { data, error } = await bucket.list(userId, { limit: 100 });
+    if (error) throw error;
+    if (!Array.isArray(data)) throw new Error('Lista de anexos inválida');
+    if (data.length === 0) return;
+    const paths = data.map(item => {
+      if (!item.name || !/^[0-9a-f-]{36}\.(jpg|png|webp|mp4|mov|webm)$/i.test(item.name)) {
+        throw new Error('Caminho de anexo inválido');
+      }
+      return `${userId}/${item.name}`;
+    });
+    const removed = await bucket.remove(paths);
+    if (removed.error) throw removed.error;
+  }
+  throw new Error('Demasiados anexos para eliminar');
+}
+
 /* ── Cancela a subscrição no Creem ──────────────────────────────────────
    Chama a API do Creem para cancelar imediatamente.
    Se o utilizador não tiver subscrição no Creem (novo registo, trial
@@ -155,6 +175,14 @@ module.exports = async function handler(req, res) {
       }
     }
 
+    /* Os anexos do contacto são privados e também devem ser removidos. */
+    try {
+      await deleteSupportAttachments(user.id);
+    } catch (err) {
+      console.error('Erro ao eliminar anexos de contacto:', err);
+      return res.status(500).json({ error: 'Erro ao eliminar anexos da conta' });
+    }
+
     /* O Storage impede a eliminação de um utilizador que seja dono de objetos.
        Este é o único caminho de avatar criado pela aplicação. */
     const { error: storageError } = await supabase.storage.from('avatars').remove([`${user.id}/avatar.jpg`]);
@@ -170,6 +198,14 @@ module.exports = async function handler(req, res) {
     if (deleteError) {
       console.error('Erro ao eliminar utilizador:', deleteError);
       return res.status(500).json({ error: 'Erro ao eliminar conta' });
+    }
+
+    // An upload started just before deletion may have finished during the first cleanup.
+    try {
+      await deleteSupportAttachments(user.id);
+    } catch (err) {
+      console.error('Conta eliminada, mas a verificação final dos anexos falhou:', err);
+      return res.status(200).json({ ok: true, warning: 'Conta eliminada. Contacta contacto@smartsoma.pt para confirmar a remoção dos anexos.' });
     }
 
     console.log('🗑️ Conta eliminada com sucesso:', user.id);

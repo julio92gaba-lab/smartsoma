@@ -9,7 +9,7 @@ const gate = [...fs.readFileSync('app.html', 'utf8').matchAll(/<script(?![^>]*sr
   .map(match => match[1]).find(script => script.includes('window.SmartSomaPro ='));
 const settle = () => new Promise(resolve => setTimeout(resolve, 20));
 
-function setup(t, native = false, status = 200) {
+function setup(t, native = false, status = 200, warning = null) {
   const app = createApp();
   t.after(app.close);
   const calls = [];
@@ -17,10 +17,10 @@ function setup(t, native = false, status = 200) {
     getSession: async () => ({ data: { session: { access_token: 'test-token' } } }),
     signOut: async () => { calls.push(['signOut']); }
   } };
-  app.w.alert = () => calls.push(['alert']);
+  app.w.alert = message => calls.push(['alert', message]);
   if (native) {
     app.w.Capacitor = { isNativePlatform: () => true, getPlatform: () => 'android', Plugins: {
-      CapacitorHttp: { post: async options => { calls.push(['native', options]); return { status, data: status === 200 ? { ok: true } : { error: 'falha' } }; } }
+      CapacitorHttp: { post: async options => { calls.push(['native', options]); return { status, data: status === 200 ? { ok: true, warning } : { error: 'falha' } }; } }
     } };
   } else {
     app.w.fetch = async (url, options) => { calls.push(['web', url, options]); return { ok: status === 200, json: async () => status === 200 ? { ok: true } : { error: 'falha' } }; };
@@ -107,4 +107,13 @@ test('Android does not sign out or clear local data when deletion fails', async 
   assert.deepEqual(a.calls.map(call => call[0]), ['native', 'alert']);
   assert.equal(a.w.localStorage.getItem('ss_plano_offline:isolated-test'), 'test');
   assert.equal(a.el('eliminarContaConfirmBtn').disabled, false);
+});
+
+test('Android shows a cleanup warning before signing out', async t => {
+  const a = setup(t, true, 200, 'Contacta o suporte sobre os anexos.');
+  a.click('subExpiradaEliminarBtn');
+  a.click('eliminarContaConfirmBtn');
+  await settle();
+  assert.deepEqual(a.calls.map(call => call[0]), ['native', 'alert', 'signOut']);
+  assert.equal(a.calls[1][1], 'Contacta o suporte sobre os anexos.');
 });

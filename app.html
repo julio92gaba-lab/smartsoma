@@ -105,8 +105,8 @@
     <link rel="stylesheet" href="app.css">
     <link rel="preload" href="fonts/BricolageGrotesque-latin.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="fonts/DMSans-latin.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="ui-v2.css?v=22">
-    <script src="ui-v2.js?v=18" defer></script>
+    <link rel="stylesheet" href="ui-v2.css?v=23">
+    <script src="ui-v2.js?v=19" defer></script>
     <script src="supabase.min.js"></script>
 <link rel="icon" type="image/png" sizes="192x192" href="/favicon.png">
 </head>
@@ -2121,6 +2121,7 @@
                         }
                     } catch (_) {}
 
+                    if (json.warning) alert(json.warning);
                     await sb.auth.signOut();
                     window.location.href = nativeAndroid ? 'login.html' : '/';
 
