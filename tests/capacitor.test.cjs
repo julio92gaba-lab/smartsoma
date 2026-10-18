@@ -29,6 +29,8 @@ test('native launch uses the app and does not register a PWA service worker', ()
   assert.match(splash, /background: #0E5830/);
   assert.match(splash, /native-splash-symbol/);
   assert.match(splash, /\.splash-logo[\s\S]*bottom:/);
+  assert.match(splash, /\.splash-logo\s*\{[^}]*height:\s*40px;[^}]*object-fit:\s*contain/s);
+  assert.match(splash, /\.splash-spinner-wrap\s*\{[^}]*height:\s*28px;[^}]*animation:\s*none/s);
   let registered = false;
   const window = { Capacitor: { isNativePlatform: () => true } };
   const navigator = { serviceWorker: { register() { registered = true; } } };
@@ -114,7 +116,7 @@ test('Android project keeps its provisional identity, existing icon and minimal 
   const styles = fs.readFileSync('android/app/src/main/res/values/styles.xml', 'utf8');
   assert.ok(gradle.includes(`applicationId "${config.appId}"`));
   assert.match(manifest, /android:icon="@drawable\/smartsoma_icon"/);
-  assert.deepEqual([...manifest.matchAll(/<uses-permission android:name="([^"]+)"/g)].map(m => m[1]), ['android.permission.INTERNET']);
+  assert.deepEqual([...manifest.matchAll(/<uses-permission android:name="([^"]+)"/g)].map(m => m[1]), ['android.permission.INTERNET', 'android.permission.POST_NOTIFICATIONS']);
   assert.match(styles, /windowSplashScreenAnimatedIcon">@drawable\/smartsoma_splash_icon<\/item>/);
   assert.match(styles, /windowSplashScreenBackground">#0E5830<\/item>/);
   assert.ok(fs.existsSync('android/app/src/main/res/drawable-nodpi/smartsoma_splash_icon.png'));

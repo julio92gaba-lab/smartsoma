@@ -15,7 +15,9 @@ body #splash, body.ui-v2 #splash {
 #splash .splash-logo {
   position: absolute;
   bottom: calc(env(safe-area-inset-bottom, 0px) + 104px);
-  width: 10rem;
+  width: 160px;
+  height: 40px;
+  object-fit: contain;
   opacity: 1;
   animation: none;
 }
@@ -23,4 +25,14 @@ body #splash, body.ui-v2 #splash {
 #splash .splash-spinner-wrap {
   position: absolute;
   bottom: calc(env(safe-area-inset-bottom, 0px) + 48px);
+  width: 28px;
+  height: 28px;
+  opacity: 1;
+  animation: none;
+}
+
+#splash .splash-spinner {
+  display: block;
+  width: 28px;
+  height: 28px;
 }

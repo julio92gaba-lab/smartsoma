@@ -82,20 +82,13 @@ test('UI keeps four navigation items, mobile brand and redirects retired routes 
   for(const route of ['ganhos','despesas']){a.w.SmartSomaUI.go(route);await settle();assert.equal(a.w.document.body.dataset.uiRoute,'resumo');}
 });
 
-test('mobile home callout precedes the goal and translates with the app',t=>{
+test('home places the weekly goal first without the promotional callout',t=>{
   const a=setup(t);a.w.SmartSomaUI.start();
-  const callout=a.w.document.querySelector('.ui-home-callout');
-  assert.equal(callout.nextElementSibling,a.el('metaSlotList'));
-  assert.equal(callout.querySelector('p').textContent,'Pensado para quem trabalha com TVDE e entregas por app.');
-  assert.equal(callout.querySelector('img').getAttribute('src'),'car.png?v=2');
-  assert.equal(callout.querySelector('img').getAttribute('alt'),'');
-  assert.equal(callout.querySelector('svg'),null);
-  const css=fs.readFileSync('ui-v2.css','utf8');
-  assert.match(css,/\.ui-v2 \.ui-home-callout\s*\{[^}]*grid-template-columns:minmax\(0,1fr\) minmax\(0,1fr\)/);
-  assert.match(css,/\.ui-home-callout img\s*\{[^}]*max-height:76px;[^}]*opacity:/);
-  assert.match(css,/\.ui-home-callout p\s*\{[^}]*text-align:right;/);
+  assert.equal(a.w.document.querySelector('.ui-home-callout'),null);
+  assert.equal(a.el('resumoLiveContent').firstElementChild,a.el('metaSlotList'));
+  assert.equal(fs.existsSync('car.png'),true);
   a.w.I18N.setLang('en');
-  assert.equal(callout.querySelector('p').textContent,'Made for ride-hailing and app delivery workers.');
+  assert.equal(a.w.document.querySelector('.ui-home-callout'),null);
 });
 
 test('header stylesheet never hides the avatar outside the overview',()=>{
@@ -108,6 +101,14 @@ test('week filters keep the same geometry while sticky',()=>{
   const css=fs.readFileSync('ui-v2.css','utf8');
   assert.match(css,/\.semana-filter-controls,\s*\.ui-v2 #homeListPageSemana \.semana-filter-controls\.is-sticky\s*\{[^}]*min-height:96px;[^}]*padding-top:5px;[^}]*padding-bottom:5px;[^}]*will-change:transform;/);
   assert.doesNotMatch(css,/\.semana-filter-controls\.is-sticky\s*\{[^}]*padding-bottom:3px/);
+});
+
+test('home period controls keep their geometry and rounded corners when unstuck',()=>{
+  const css=fs.readFileSync('ui-v2.css','utf8');
+  assert.match(css,/\.ui-v2 \.resumo-period-controls\s*\{[^}]*border-radius:14px;/);
+  assert.match(css,/#resumoPeriodControls,\s*\.ui-v2 #resumoPeriodControls\.is-sticky\s*\{[^}]*min-height:58px;[^}]*padding:7px 8px;/);
+  assert.match(css,/#resumoPeriodControls\.is-sticky\s*\{\s*border-color:[^;]+;\s*border-radius:0 0 14px 14px;/);
+  assert.match(css,/\.resumo-current-week-label :is\(strong,span\)\s*\{\s*transition:color \.3s ease;/);
 });
 
 test('fixed chrome has readable text and avatars use Supabase Storage',()=>{
@@ -123,7 +124,7 @@ test('fixed chrome has readable text and avatars use Supabase Storage',()=>{
   assert.match(css,/#resumoPeriodControls\.is-sticky #resumoCurrentWeekLabel > span\s*\{\s*color:#c8d8cb;/);
   assert.match(css,/\.semana-filter-fields \.semana-week-picker-btn,[^{]*\{[^}]*background:#fff;[^}]*color:#183021;/);
   assert.match(css,/\.semana-week-picker-num,[^{]*\{[^}]*background:#fff;[^}]*color:#183021;/);
-  assert.match(html,/ui-v2\.css\?v=20/);
+  assert.match(html,/ui-v2\.css\?v=22/);
   assert.match(html,/accept="[^"]*\.heic[^"]*image\/heif/);
   assert.match(html,/<script src="heic2any\.min\.js\?v=12"><\/script>/);
   assert.match(app,/'image\/heic': true/);
