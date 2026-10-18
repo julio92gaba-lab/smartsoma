@@ -4038,6 +4038,15 @@
         var meta = window.MetaSemanalRead && window.MetaSemanalRead.forDate(week.monday);
         var activeDays = 0, earningsActiveDays = 0;
 
+        function setTableAmount(cell, value) {
+          var text = document.createElement('span');
+          text.className = 'semana-cell-value';
+          text.textContent = formatEuro(value);
+          if (Math.round(value * 100) === 0) text.classList.add('is-zero');
+          if (Math.round(value * 100) >= 1) cell.classList.add('has-value');
+          cell.appendChild(text);
+        }
+
         for (var i = 0; i < 7; i++) {
           var d = new Date(week.monday.getTime());
           d.setDate(week.monday.getDate() + i);
@@ -4077,24 +4086,25 @@
           var otherApps = dayBadges.extras;
           var tdGross = document.createElement('td');
           tdGross.className = 'semana-metric-financeiro semana-cell-total';
-          tdGross.textContent = formatEuro(dayTotal);
+          setTableAmount(tdGross, dayTotal);
           totalCells.push({ el: tdGross, value: dayTotal });
           tr.appendChild(tdGross);
 
           var tdDespesas = document.createElement('td');
-          tdDespesas.className = 'semana-metric-financeiro';
-          tdDespesas.textContent = formatEuro(despesasDia);
+          tdDespesas.className = 'semana-metric-financeiro semana-cell-total semana-cell-expense';
+          setTableAmount(tdDespesas, despesasDia);
           tr.appendChild(tdDespesas);
 
           var tdLiquido = document.createElement('td');
           tdLiquido.className = 'semana-metric-financeiro semana-cell-liquido';
           tdLiquido.textContent = formatEuro(dayLiquido);
           if (Math.round(dayLiquido * 100) >= 1) tdLiquido.classList.add('is-positive');
+          if (dayLiquido < 0) tdLiquido.classList.add('is-negative');
           tr.appendChild(tdLiquido);
 
           var tdOperationalGross = document.createElement('td');
           tdOperationalGross.className = 'semana-metric-operacional semana-cell-total';
-          tdOperationalGross.textContent = formatEuro(dayTotal);
+          setTableAmount(tdOperationalGross, dayTotal);
           tr.appendChild(tdOperationalGross);
 
           var tdKm = document.createElement('td');
@@ -4110,7 +4120,7 @@
           [dayBadges.uber, dayBadges.bolt].concat(extraCols.map(function (platform) { return dayBadges.plat[platform.id] || 0; })).forEach(function (value) {
             var cell = document.createElement('td');
             cell.className = 'semana-metric-apps semana-cell-total';
-            cell.textContent = formatEuro(value);
+            setTableAmount(cell, value);
             cell.style.setProperty('--semana-bar-size', (dayTotal ? Math.max(8, value / dayTotal * 100) : 8) + '%');
             tr.appendChild(cell);
           });

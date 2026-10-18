@@ -124,7 +124,7 @@ test('fixed chrome has readable text and avatars use Supabase Storage',()=>{
   assert.match(css,/#resumoPeriodControls\.is-sticky #resumoCurrentWeekLabel > span\s*\{\s*color:#c8d8cb;/);
   assert.match(css,/\.semana-filter-fields \.semana-week-picker-btn,[^{]*\{[^}]*background:#fff;[^}]*color:#183021;/);
   assert.match(css,/\.semana-week-picker-num,[^{]*\{[^}]*background:#fff;[^}]*color:#183021;/);
-  assert.match(html,/ui-v2\.css\?v=24/);
+  assert.match(html,/ui-v2\.css\?v=25/);
   assert.match(html,/accept="[^"]*\.heic[^"]*image\/heif/);
   assert.match(html,/<script src="heic2any\.min\.js\?v=12"><\/script>/);
   assert.match(app,/'image\/heic': true/);
@@ -133,7 +133,7 @@ test('fixed chrome has readable text and avatars use Supabase Storage',()=>{
   assert.match(app,/SmartSomaAvatarStorage\.upload\(avatarBlob\)/);
   assert.match(cloud,/sb\.storage\.from\('avatars'\)\.upload\(objectPath, blob,[\s\S]*upsert: true/);
   assert.match(cloud,/getPublicUrl\(objectPath\)/);
-  assert.match(cloud,/script\.src = 'app\.js\?v=13'/);
+  assert.match(cloud,/script\.src = 'app\.js\?v=14'/);
   assert.match(cloud,/\^\[A-Za-z0-9:\._-\]\{1,120\}\$/);
   assert.match(migration,/INSERT INTO storage\.buckets \(id, name, public, file_size_limit, allowed_mime_types\)/);
   assert.match(migration,/VALUES \([\s\S]*'avatars',[\s\S]*true,[\s\S]*NULL/);
@@ -196,6 +196,31 @@ test('weekly view choice is stored and survives section navigation',async t=>{
   assert.ok(a.w.document.body.classList.contains('semana-table-view'));
   a.w.SmartSomaUI.go('resumo');a.w.SmartSomaUI.go('semana');await settle();
   assert.ok(a.w.document.body.classList.contains('semana-table-view'));
+  assert.deepEqual(a.errors,[]);
+});
+
+test('weekly table marks positive income and expenses, zero values and negative net',async t=>{
+  const monday=new Date();monday.setHours(0,0,0,0);monday.setDate(monday.getDate()-(monday.getDay()+6)%7);
+  const a=setup(t,{
+    ['homeBadgeValores:'+dateKey(monday)]:JSON.stringify({uber:.01,bolt:0}),
+    ['despesasDiarias:'+dateKey(monday)]:JSON.stringify({items:[{descricao:'Despesa',valor:.02}]})
+  });
+  a.w.SmartSomaUI.start();a.w.SmartSomaUI.go('semana');await settle();a.w.SemanaView.showTable();
+  const date=String(monday.getDate()).padStart(2,'0')+'/'+String(monday.getMonth()+1).padStart(2,'0');
+  const rows=[...a.w.document.querySelectorAll('.semana-week-block tbody tr')];
+  const row=rows.find(item=>item.querySelector('.semana-cell-date')?.textContent===date);
+  const financial=row.querySelectorAll('.semana-metric-financeiro');
+  assert.equal(financial[0].textContent,'€ 0.01');assert.ok(financial[0].classList.contains('has-value'));
+  assert.equal(financial[1].textContent,'€ 0.02');assert.ok(financial[1].classList.contains('semana-cell-expense'));assert.ok(financial[1].classList.contains('has-value'));
+  assert.equal(financial[2].textContent,'€ -0.01');assert.ok(financial[2].classList.contains('is-negative'));
+  assert.ok(row.querySelector('.semana-metric-operacional.semana-cell-total').classList.contains('has-value'));
+  const apps=row.querySelectorAll('.semana-metric-apps');assert.ok(apps[0].classList.contains('has-value'));
+  assert.ok(!apps[1].classList.contains('has-value'));assert.ok(apps[1].querySelector('.semana-cell-value.is-zero'));
+  const empty=rows.find(item=>item!==row && item.querySelector('.semana-metric-financeiro')?.textContent==='€ 0.00');
+  assert.ok(empty);for(const cell of empty.querySelectorAll('.semana-cell-total')){assert.ok(!cell.classList.contains('has-value'));assert.ok(cell.querySelector('.semana-cell-value.is-zero'));}
+  const css=fs.readFileSync('ui-v2.css','utf8');
+  assert.match(css,/\.semana-cell-total\.has-value::after/);assert.match(css,/\.semana-cell-expense\.has-value::after[^}]*var\(--danger\)/);
+  assert.match(css,/\.semana-cell-value\.is-zero\s*\{\s*opacity:/);assert.match(css,/\.semana-cell-liquido\.is-negative\s*\{\s*color:var\(--danger\)/);
   assert.deepEqual(a.errors,[]);
 });
 

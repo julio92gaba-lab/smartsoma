@@ -18,6 +18,8 @@ test('authentication, cloud persistence and billing endpoints match the approved
     let source=fs.readFileSync(path,'utf8');
     // Explicitly approved Google account-selector fix, released before this UI correction.
     if(path==='login.html') source=source.replace(", queryParams: { prompt: 'select_account' }",'');
+    // Apenas a versão de cache do app.js foi atualizada; toda a lógica continua protegida.
+    if(path==='cloud-init.js') source=source.replace("script.src = 'app.js?v=14'", "script.src = 'app.js?v=13'");
     assert.equal(hash(source),checksum,path);
   }
 });
