@@ -425,6 +425,21 @@ test('contact and FAQ use a single visual card without changing other settings p
   assert.ok(body.querySelector('#langOptionsList'));assert.deepEqual(a.errors,[]);
 });
 
+test('contact fields remain visible when the Android keyboard resizes the viewport',async t=>{
+  const a=createApp({},{ui:true,mobile:true,nativeAndroid:true});t.after(a.close);
+  a.w.SmartSomaUI.go('ajustes');a.click('openContactoBtn');
+  const field=a.el('uiContactSubject');
+  a.w.document.querySelector('.ui-header').getBoundingClientRect=()=>({bottom:82});
+  field.getBoundingClientRect=()=>({top:260,bottom:305});
+  const scrolls=[];a.w.scrollBy=options=>scrolls.push(options.top);
+  field.focus();await settle();assert.deepEqual(scrolls,[]);
+  a.w.visualViewport.height=280;
+  a.w.visualViewport.dispatchEvent(new a.w.Event('resize'));await settle();
+  assert.deepEqual(scrolls,[162]);
+  field.blur();a.w.visualViewport.dispatchEvent(new a.w.Event('resize'));await settle();
+  assert.deepEqual(scrolls,[162]);
+});
+
 test('contact keeps identity from the session and allows safe retries',async t=>{
   const a=setup(t);
   a.w.currentUser={id:'test-user'};

@@ -1,7 +1,7 @@
 const fs = require('node:fs');
 const { JSDOM, VirtualConsole } = require('jsdom');
 
-function createApp(seed = {}, { ui = false, cloudBoot = false, mobile = false, syncControl = {} } = {}) {
+function createApp(seed = {}, { ui = false, cloudBoot = false, mobile = false, nativeAndroid = false, syncControl = {} } = {}) {
   const errors = [];
   const virtualConsole = new VirtualConsole();
   virtualConsole.on('jsdomError', error => errors.push(error.message));
@@ -10,6 +10,12 @@ function createApp(seed = {}, { ui = false, cloudBoot = false, mobile = false, s
     pretendToBeVisual: true, virtualConsole
   });
   const w = dom.window;
+  if (nativeAndroid) {
+    w.Capacitor = { isNativePlatform: () => true, getPlatform: () => 'android', Plugins: {} };
+    w.visualViewport = new w.EventTarget();
+    w.visualViewport.offsetTop = 0;
+    w.visualViewport.height = 600;
+  }
   const cache = { ...seed };
   w._cloudCache = cache;
   w.cloudGet = key => cache[key] ?? null;

@@ -228,6 +228,21 @@
   function setupContact(){
     var form=$('uiContactForm'), status=$('uiContactStatus'), send=$('uiContactSend'), file=$('uiContactAttachment');
     var pendingId=null, sending=false;
+    var nativeAndroid=window.Capacitor&&window.Capacitor.isNativePlatform()&&window.Capacitor.getPlatform()==='android';
+    var revealTimer;
+    function revealFocusedContactField(){
+      var field=document.activeElement;
+      if(!nativeAndroid||!field||!form.contains(field)||!field.matches('input:not([readonly]):not([type=file]),textarea'))return;
+      var viewport=window.visualViewport, rect=field.getBoundingClientRect(), header=document.querySelector('.ui-header');
+      var top=Math.max(viewport?viewport.offsetTop:0,header?header.getBoundingClientRect().bottom:0)+16;
+      var bottom=(viewport?viewport.offsetTop+viewport.height:window.innerHeight)-16;
+      if(rect.top<top||rect.bottom>bottom)window.scrollBy({top:rect.top-top,behavior:'smooth'});
+    }
+    function scheduleContactReveal(){clearTimeout(revealTimer);revealTimer=setTimeout(revealFocusedContactField,180);}
+    if(nativeAndroid){
+      form.addEventListener('focusin',scheduleContactReveal);
+      (window.visualViewport||window).addEventListener('resize',scheduleContactReveal,{passive:true});
+    }
     function syncIdentity(){
       $('uiContactName').value=$('sheetUsername').textContent.trim();
       $('uiContactEmail').value=window.currentUserEmail || '';
