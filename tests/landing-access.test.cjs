@@ -8,14 +8,22 @@ test('landing presents Android access and translated iPhone instructions', () =>
   const dom = new JSDOM(html, { url: 'https://smartsoma.pt/', runScripts: 'dangerously' });
   try {
     const doc = dom.window.document;
-    assert.equal(doc.querySelector('.access-store').href, 'https://play.google.com/store/apps/details?id=pt.smartsoma.app');
+    const playButton = doc.querySelector('.access-store');
+    assert.equal(playButton.disabled, true);
+    assert.equal(playButton.tagName, 'BUTTON');
+    assert.equal(playButton.querySelector('img').getAttribute('src'), 'google-play-badge-pt.png');
+    playButton.click();
+    assert.equal(dom.window.location.href, 'https://smartsoma.pt/');
     assert.match(doc.querySelector('.access-ios').textContent, /Safari[\s\S]*Partilhar[\s\S]*Adicionar ao ecrã principal/);
     assert.match(doc.querySelector('footer').textContent, /contacto@smartsoma\.pt/);
     dom.window.setLang('en');
     assert.match(doc.querySelector('.access-ios').textContent, /Safari[\s\S]*Share[\s\S]*Add to Home Screen/);
-    assert.match(doc.querySelector('.access-store').textContent, /Google Play/);
+    assert.equal(playButton.querySelector('img').getAttribute('src'), 'google-play-badge-en.png');
+    assert.match(playButton.querySelector('img').alt, /Google Play/);
     dom.window.setLang('pt');
     assert.match(doc.querySelector('.access-ios').textContent, /Partilhar/);
+    assert.equal(playButton.querySelector('img').getAttribute('src'), 'google-play-badge-pt.png');
+    assert.ok(doc.querySelector('.access-section').compareDocumentPosition(doc.querySelector('#funcionalidades')) & dom.window.Node.DOCUMENT_POSITION_FOLLOWING);
   } finally { dom.window.close(); }
 });
 

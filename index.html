@@ -181,22 +181,28 @@ nav{flex-wrap:wrap;padding:12px 5vw 0}
 .feat-card{padding:16px;box-shadow:4px 4px 0 var(--ink)}.feat-card h3{font-size:15px}.feat-card p{font-size:13px}.feat-icon{width:34px;height:34px}}
 @media(max-width:580px){.deco{opacity:.07}.d-hero-car{width:88vw;top:3%;right:-18%}.d-hero-road{width:240px;height:240px}.d-feat-moto,.d-testi-car,.d-cta-moto{width:300px}.hero-btns{flex-direction:column;align-items:center}.plans-row{flex-direction:column;align-items:center}.plan-card{min-width:0;width:100%;max-width:360px}section{padding:64px 5vw}.testi-card:nth-child(even){transform:none}}
 /* Apresentação e acesso à aplicação */
-.hero{min-height:auto;padding:74px 5vw 64px;background:radial-gradient(ellipse at 50% 0,rgba(46,204,113,.12),transparent 54%),var(--paper)}
+.hero{min-height:auto;padding:74px 5vw 56px;background:repeating-linear-gradient(135deg,transparent 0 22px,rgba(14,59,42,.05) 22px 24px),radial-gradient(ellipse at 50% 0,rgba(46,204,113,.12),transparent 54%),var(--paper)}
 .hero-badge{transform:none;border-radius:999px;margin-bottom:24px;letter-spacing:.04em}
 .hero h1{max-width:760px}.hero p{margin-bottom:28px}.hero-btns{gap:12px;margin-bottom:18px}
 .hero-trial-note{margin-bottom:0!important;font-size:13px!important}
-.access-panel{width:min(100%,640px);margin:32px auto 0;padding:20px;text-align:left;border:1px solid rgba(14,59,42,.13);border-radius:18px;background:rgba(255,255,255,.8);box-shadow:0 16px 50px rgba(14,59,42,.08)}
-.access-title{font-size:15px;font-weight:800;margin-bottom:4px}.access-sub{font-size:13px!important;line-height:1.45;color:var(--muted);margin:0 0 14px!important}
-.access-actions{display:flex;flex-wrap:wrap;gap:10px}.access-store,.access-ios summary{min-height:48px;display:flex;align-items:center;justify-content:center;gap:9px;border-radius:10px;padding:10px 16px;font:800 14px 'DM Sans',sans-serif;text-decoration:none;cursor:pointer}
-.access-store{background:var(--ink);color:white;border:1px solid var(--ink)}.access-store:hover{background:var(--forest)}
-.access-ios{flex:1;min-width:190px}.access-ios summary{list-style:none;border:1px solid #b7c6bd;background:white;color:var(--ink)}.access-ios summary::-webkit-details-marker{display:none}
+.access-section{padding:32px 5vw;background:#e9f0e9;text-align:center}
+.access-panel{width:min(100%,660px);margin:0 auto}
+.access-title{font-size:22px;line-height:1.2;font-weight:800;margin-bottom:4px}.access-sub{font-size:13px;line-height:1.45;color:var(--muted);margin:0 0 18px}
+.access-actions{display:flex;justify-content:center;align-items:flex-start;flex-wrap:wrap;gap:14px}.access-store{display:block;width:169px;height:50px;padding:0;border:0;background:none;cursor:default}.access-store img{display:block;width:100%;height:100%;object-fit:contain}
+.access-ios{width:190px;text-align:left}.access-ios summary{min-height:50px;display:flex;align-items:center;justify-content:center;gap:5px;list-style:none;border:1px solid #b7c6bd;border-radius:9px;background:white;color:var(--ink);padding:8px;font:800 13px 'DM Sans',sans-serif;cursor:pointer}.access-ios summary span{white-space:nowrap}.access-ios summary::-webkit-details-marker{display:none}.access-ios svg{width:20px;height:20px;flex-shrink:0}
 .access-ios summary::after{content:'+';font-size:19px;line-height:1}.access-ios[open] summary::after{content:'−'}
 .access-ios ol{margin:12px 0 2px 22px;color:var(--muted);font-size:13px;line-height:1.6}.access-ios li+li{margin-top:5px}
 .feat-card,.plans-features-card,.plan-card,.faq-item,.testi-card{border-color:rgba(14,59,42,.16);border-radius:16px;box-shadow:0 10px 28px rgba(14,59,42,.07)}
 .feat-card:hover{transform:translateY(-2px);box-shadow:0 14px 32px rgba(14,59,42,.12)}
 .phone-frame{box-shadow:0 16px 38px rgba(14,59,42,.2)}.section-label{border-radius:999px}.plans-trial-highlight{border-radius:14px;box-shadow:none}.step-num{transform:none!important;border-radius:12px}
-@media(max-width:580px){.hero{padding:54px 5vw 48px}.hero h1{font-size:clamp(34px,9vw,44px)}.hero-btns{flex-direction:column;align-items:stretch;width:min(100%,340px);margin-inline:auto}.hero-btns a{text-align:center}.access-panel{padding:16px}.access-actions{flex-direction:column}.access-ios{min-width:0}.access-store,.access-ios summary{width:100%}.feat-pair-row{gap:14px}.phone-wrap{width:120px}.feat-card{padding:14px}.feat-card p{font-size:13px}}
-@media(max-width:350px){.feat-pair-row{flex-direction:column}.phone-wrap{width:145px}.feat-card{width:100%}}
+section:not(.hero):not(.access-section):not(.cta-final){padding-top:68px;padding-bottom:68px}
+.hero-btns a{font-size:14px;padding:11px 18px;box-shadow:3px 3px 0 var(--gb)}.hero-btns .btn-ghost{box-shadow:3px 3px 0 var(--ink)}
+.features-container{gap:24px}.phone-wrap{width:160px}.other-cards-grid{gap:16px}.feat-card{padding:18px}
+.steps{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 28px;justify-items:stretch}
+.step{max-width:none;display:grid;grid-template-columns:42px 1fr;column-gap:12px;row-gap:3px;align-items:start;text-align:left}
+.step-num{width:38px;height:38px;font-size:16px;grid-row:1 / 3}.step h3{font-size:16px}.step p{font-size:14px;line-height:1.5}
+@media(max-width:580px){.hero{padding:48px 5vw 40px}.hero h1{font-size:clamp(34px,9vw,44px)}.hero-btns{flex-direction:row;align-items:center;width:100%;margin-inline:auto;gap:10px}.hero-btns a{text-align:center;font-size:13px;padding:10px 12px}.hero-trial-note{font-size:12px!important;line-height:1.5}.access-section{padding:28px 5vw}.access-actions{gap:10px}.access-store{width:150px}.feat-pair-row{gap:14px}.phone-wrap{width:100px}.feat-card{padding:14px}.feat-card p{font-size:13px}.features-container{gap:20px}.other-cards-grid{gap:12px;margin-top:4px}.steps{grid-template-columns:1fr;gap:18px}.plans-layout{gap:22px}.plans-features-card,.plans-price-col{width:100%;max-width:420px}.plans-price-col{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.plan-card{padding:20px 13px;min-width:0}.plan-price{font-size:28px}.plan-desc{font-size:12px}.plans-trial-highlight{margin-bottom:30px;padding:14px}.plans-trial-highlight p{font-size:13px}.plans-trial-highlight p span{font-size:18px}section:not(.hero):not(.access-section):not(.cta-final){padding-top:48px;padding-bottom:48px}.cta-final{padding:60px 5vw}}
+@media(max-width:350px){.feat-pair-row{flex-direction:row}.phone-wrap{width:88px}.feat-card{width:auto}.access-actions{flex-direction:column;align-items:center}.plans-price-col{grid-template-columns:1fr}.plan-card{max-width:none}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.hero-badge-dot{animation:none!important}}
 </style>
 <link rel="icon" type="image/png" sizes="192x192" href="/favicon.png">
@@ -286,13 +292,17 @@ nav{flex-wrap:wrap;padding:12px 5vw 0}
     <a href="#funcionalidades" class="btn-ghost" data-i18n="hero.btn2">Ver como funciona</a>
   </div>
   <p class="hero-trial-note" data-i18n="hero.trial.note">Cartão necessário &nbsp;·&nbsp; <strong>só cobrado após os 15 dias</strong> &nbsp;·&nbsp; Cancela quando quiseres</p>
+</section>
+
+<!-- ACESSO À APLICAÇÃO -->
+<section class="access-section" aria-labelledby="accessTitle">
   <div class="access-panel" aria-labelledby="accessTitle">
-    <div class="access-title" id="accessTitle" data-i18n="access.title">Leva o SmartSoma contigo</div>
+    <h2 class="access-title" id="accessTitle" data-i18n="access.title">Download</h2>
     <p class="access-sub" data-i18n="access.sub">Usa no Android, no iPhone ou diretamente no navegador.</p>
     <div class="access-actions">
-      <a class="access-store" href="https://play.google.com/store/apps/details?id=pt.smartsoma.app" data-i18n="access.android">Descarregar na Google Play</a>
+      <button class="access-store" type="button" disabled aria-label="Google Play indisponível"><img id="playBadge" src="google-play-badge-pt.png" alt="Disponível no Google Play"></button>
       <details class="access-ios">
-        <summary data-i18n="access.ios">Adicionar ao iPhone</summary>
+        <summary><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="3"/><path d="M12 17v-6m-3 3 3-3 3 3M10 19h4"/></svg><span data-i18n="access.ios">Adicionar ao iPhone</span></summary>
         <ol>
           <li data-i18n="access.ios.step1">Abre o SmartSoma no Safari do iPhone.</li>
           <li data-i18n="access.ios.step2">Toca em Partilhar e depois em Adicionar ao ecrã principal.</li>
@@ -573,7 +583,7 @@ const I18N_DICT = {
     "hero.btn1":"Try free for 15 days",
     "hero.btn2":"See how it works",
     "hero.trial.note":"Card required &nbsp;·&nbsp; <strong>only charged after 15 days</strong> &nbsp;·&nbsp; Cancel anytime",
-    "access.title":"Take SmartSoma with you",
+    "access.title":"Download",
     "access.sub":"Use it on Android, iPhone or directly in your browser.",
     "access.android":"Get it on Google Play",
     "access.ios":"Add to iPhone",
@@ -695,6 +705,10 @@ function setLang(lang){
     if(el) el.textContent = labelText;
   });
   document.documentElement.setAttribute('lang', lang==='pt' ? 'pt-PT' : 'en');
+  const playBadge = document.getElementById('playBadge');
+  playBadge.src = lang==='pt' ? 'google-play-badge-pt.png' : 'google-play-badge-en.png';
+  playBadge.alt = lang==='pt' ? 'Disponível no Google Play' : 'Get it on Google Play';
+  document.querySelector('.access-store').setAttribute('aria-label', lang==='pt' ? 'Google Play indisponível' : 'Google Play unavailable');
   try{ localStorage.setItem('ss_landing_lang', lang); }catch(e){}
 }
 (function(){
