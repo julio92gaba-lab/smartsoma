@@ -6038,10 +6038,11 @@
         }
       }
 
-      if (document.readyState === 'complete') {
-        revealWhenReady();
+      // O evento load pode ficar à espera de imagens externas sem ligação.
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', revealWhenReady, { once: true });
       } else {
-        window.addEventListener('load', revealWhenReady);
+        revealWhenReady();
       }
     })();
 

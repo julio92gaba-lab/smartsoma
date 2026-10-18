@@ -178,6 +178,14 @@ nav{flex-wrap:wrap;padding:12px 5vw 0}
 .hero-badge{transform:none;border-radius:999px;margin-bottom:24px;letter-spacing:.04em}
 .hero-layout{width:min(100%,1100px);display:flex;align-items:center;gap:32px;text-align:left}
 .hero-copy{flex:1;min-width:0}.hero-copy h1{max-width:760px;margin-left:0;margin-right:0}.hero-copy p{margin:0;max-width:620px}.hero-image{width:43%;height:auto;display:block}
+.hero-visual{flex:0 0 43%;min-width:0;display:flex;flex-direction:column;align-items:center;gap:18px}.hero-visual .hero-badge{display:none}.hero-visual .hero-image{width:100%}
+.platform-carousel{width:min(100%,380px);overflow:hidden;mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.platform-track{display:flex;width:max-content;animation:platform-scroll 18s ease-in-out infinite alternate}
+.platform-group{display:flex;align-items:center;gap:12px;padding-right:12px}
+.platform-item{width:56px;height:56px;flex:none;border-radius:14px;object-fit:contain}
+.platform-more{display:grid;place-items:center;border:2px dashed rgba(14,59,42,.3);color:rgba(14,59,42,.5);font-size:30px;font-weight:400;line-height:1}
+@keyframes platform-scroll{to{transform:translateX(-50%)}}
+@media(min-width:769px){.hero-copy .hero-badge{display:none}.hero-visual .hero-badge{display:inline-flex;margin-bottom:0}.hero .d-hero-car,.hero .d-hero-road{display:none}}
 .section-label[id]{scroll-margin-top:90px}
 .access-section{padding:32px 5vw;background:var(--forest);color:#fff;text-align:center}
 .access-panel{width:min(100%,660px);margin:0 auto}
@@ -194,10 +202,10 @@ section:not(.hero):not(.access-section):not(.cta-final){padding-top:68px;padding
 .steps{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 28px;justify-items:stretch}
 .step{max-width:none;display:grid;grid-template-columns:42px 1fr;column-gap:12px;row-gap:3px;align-items:start;text-align:left}
 .step-num{width:38px;height:38px;font-size:16px;grid-row:1 / 3}.step h3{font-size:16px}.step p{font-size:14px;line-height:1.5}
-@media(max-width:768px){.section-label[id]{scroll-margin-top:135px}.hero-layout{flex-direction:column;gap:20px;text-align:center}.hero-copy h1,.hero-copy p{margin-left:auto;margin-right:auto}.hero-image{width:min(100%,520px)}}
+@media(max-width:768px){.section-label[id]{scroll-margin-top:135px}.hero-layout{flex-direction:column;gap:20px;text-align:center}.hero-copy h1,.hero-copy p{margin-left:auto;margin-right:auto}.hero-visual{width:min(100%,520px);gap:18px}.hero-image{width:min(100%,520px)}}
 @media(max-width:580px){.hero{padding:48px 5vw 32px}.hero h1{font-size:clamp(34px,9vw,44px)}.access-section{padding:28px 5vw}.access-actions{gap:10px}.access-store{width:150px}.feat-pair-row{gap:14px}.phone-wrap{width:100px}.feat-card{padding:14px}.feat-card p{font-size:13px}.features-container{gap:20px}.other-cards-grid{gap:12px;margin-top:4px}.steps{grid-template-columns:1fr;gap:18px}.plans-layout{gap:22px}.plans-features-card,.plans-price-col{width:100%;max-width:420px}.plans-price-col{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.plan-card{padding:20px 13px;min-width:0}.plan-price{font-size:28px}.plan-desc{font-size:12px}.plans-trial-highlight{margin-bottom:30px;padding:14px}.plans-trial-highlight p{font-size:13px}.plans-trial-highlight p span{font-size:18px}section:not(.hero):not(.access-section):not(.cta-final){padding-top:48px;padding-bottom:48px}.cta-final{padding:60px 5vw}}
 @media(max-width:350px){.feat-pair-row{flex-direction:row}.phone-wrap{width:88px}.feat-card{width:auto}.access-actions{flex-direction:column;align-items:center}.plans-price-col{grid-template-columns:1fr}.plan-card{max-width:none}}
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.hero-badge-dot{animation:none!important}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.hero-badge-dot,.platform-track{animation:none!important}}
 </style>
 <link rel="icon" type="image/png" sizes="192x192" href="/favicon.png">
 </head>
@@ -283,7 +291,16 @@ section:not(.hero):not(.access-section):not(.cta-final){padding-top:68px;padding
       <h1 data-i18n="hero.h1">As tuas contas do dia a dia,<em>sem confusão</em></h1>
       <p data-i18n="hero.p">O SmartSoma junta os teus ganhos das plataformas, calcula as despesas e a distância percorrida — e mostra-te o que realmente interessa no final das contas.</p>
     </div>
-    <img class="hero-image" src="car2.png" alt="Carro e mota">
+    <div class="hero-visual">
+      <div class="hero-badge"><span class="hero-badge-dot"></span> <span data-i18n="hero.badge">Feito para Motoristas e Estafetas de App</span></div>
+      <div class="platform-carousel" aria-label="Uber, Bolt, Pop, Vloz e outras plataformas">
+        <div class="platform-track">
+          <div class="platform-group"><img class="platform-item" src="01uber.png" alt="Uber"><img class="platform-item" src="02bolt.png" alt="Bolt"><img class="platform-item" src="03pop.png" alt="Pop"><img class="platform-item" src="04vloz.png" alt="Vloz"><span class="platform-item platform-more" aria-label="Outras plataformas">+</span></div>
+          <div class="platform-group" aria-hidden="true"><img class="platform-item" src="01uber.png" alt=""><img class="platform-item" src="02bolt.png" alt=""><img class="platform-item" src="03pop.png" alt=""><img class="platform-item" src="04vloz.png" alt=""><span class="platform-item platform-more">+</span></div>
+        </div>
+      </div>
+      <img class="hero-image" src="car2.png" alt="Carro e mota">
+    </div>
   </div>
 </section>
 

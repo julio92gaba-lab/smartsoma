@@ -27,6 +27,22 @@ test('landing presents Android access and translated iPhone instructions', () =>
   } finally { dom.window.close(); }
 });
 
+test('landing carousel shows platforms and the noninteractive extra item', () => {
+  const html=fs.readFileSync('index.html','utf8');
+  const dom=new JSDOM(html);
+  try {
+    const doc=dom.window.document;
+    const group=doc.querySelector('.platform-group');
+    assert.deepEqual([...group.querySelectorAll('img')].map(img=>img.getAttribute('src')),['01uber.png','02bolt.png','03pop.png','04vloz.png']);
+    assert.equal(group.querySelector('.platform-more').textContent,'+');
+    assert.equal(group.querySelectorAll('button,a').length,0);
+    assert.match(html,/platform-scroll 18s ease-in-out infinite alternate/);
+    assert.match(html,/@media\(prefers-reduced-motion:reduce\)[\s\S]*?\.platform-track\{animation:none!important\}/);
+    assert.ok(doc.querySelector('.hero-copy p').compareDocumentPosition(doc.querySelector('.platform-carousel')) & dom.window.Node.DOCUMENT_POSITION_FOLLOWING);
+    assert.ok(doc.querySelector('.platform-carousel').compareDocumentPosition(doc.querySelector('.hero-image')) & dom.window.Node.DOCUMENT_POSITION_FOLLOWING);
+  } finally { dom.window.close(); }
+});
+
 test('legal text distinguishes web and Android without promising unavailable Play purchases', () => {
   const html = fs.readFileSync('legal.html', 'utf8');
   assert.match(html, /SmartSoma LDA 2026/);

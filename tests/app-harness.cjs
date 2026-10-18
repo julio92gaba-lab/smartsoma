@@ -1,7 +1,7 @@
 const fs = require('node:fs');
 const { JSDOM, VirtualConsole } = require('jsdom');
 
-function createApp(seed = {}, { ui = false, cloudBoot = false, mobile = false, nativeAndroid = false, syncControl = {} } = {}) {
+function createApp(seed = {}, { ui = false, cloudBoot = false, mobile = false, nativeAndroid = false, offlineStart = false, delayedAppScript = false, syncControl = {} } = {}) {
   const errors = [];
   const virtualConsole = new VirtualConsole();
   virtualConsole.on('jsdomError', error => errors.push(error.message));
@@ -38,6 +38,12 @@ function createApp(seed = {}, { ui = false, cloudBoot = false, mobile = false, n
   const writes=[];
   if (cloudBoot) {
     const user={id:'isolated-test',email:'teste@example.invalid',app_metadata:{provider:'email'}};
+    if (offlineStart) {
+      Object.defineProperty(w.navigator, 'onLine', { value: false, configurable: true });
+      w.localStorage.setItem('sb-ojhnierbhqrwxvabrzkt-auth-token', JSON.stringify({user,refresh_token:'cached'}));
+      w.localStorage.setItem('ss_snap:isolated-test','1');
+      for (const [key,value] of Object.entries(seed)) w.localStorage.setItem('ss_kv:isolated-test:'+key,typeof value==='string'?value:JSON.stringify(value));
+    }
     w.supabase={createClient:()=>({
       auth:{async getSession(){return{data:{session:{user}}};},async getUser(){return{data:{user}};},async signOut(){},async signInWithPassword(){return{error:null};},async updateUser(){return{error:null};}},
       from(table){if(table!=='user_data')throw new Error('Unexpected table: '+table);return{
@@ -49,7 +55,8 @@ function createApp(seed = {}, { ui = false, cloudBoot = false, mobile = false, n
     w.document.body.appendChild=function(node){
       const result=append(node);
       if(node.tagName==='SCRIPT'&&node.getAttribute('src')?.startsWith('app.js')){
-        w.eval(fs.readFileSync('app.js','utf8'));node.onload();
+        const load=()=>{w.eval(fs.readFileSync('app.js','utf8'));node.onload();};
+        if(delayedAppScript) w.setTimeout(load,40); else load();
       }
       return result;
     };

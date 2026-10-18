@@ -231,12 +231,12 @@
       return { session: stored, offline: true };
     }
 
-    var result = await withTimeout(sb.auth.getSession(), stored ? 8000 : 20000);
+    var result = await withTimeout(sb.auth.getSession(), stored ? 2500 : 20000);
     var value = result.value;
 
     if (value && value.data && value.data.session) {
       var session = value.data.session;
-      var userResult = await withTimeout(sb.auth.getUser(), 8000);
+      var userResult = await withTimeout(sb.auth.getUser(), stored ? 2500 : 8000);
       var userValue = userResult.value;
 
       if (userValue && userValue.data && userValue.data.user) {
@@ -368,6 +368,8 @@
   // ── Indicador de estado (sem rede / a sincronizar / sincronizado) ──
   var chip = null;
   var pendingTimer = null;
+  var offlineTimer = null;
+  var offlineMessage = null;
 
   function ensureChip() {
     if (chip || !document.body) return chip;
@@ -405,6 +407,9 @@
     /* Enquanto o modal de subscrição bloqueia a app, não mostramos uma fila
        que não tem autorização para ser sincronizada. */
     if (window.SmartSomaPro && !window.SmartSomaPro.isPro) {
+      clearTimeout(offlineTimer);
+      offlineTimer = null;
+      offlineMessage = null;
       hideChip();
       return;
     }
@@ -415,10 +420,19 @@
     if (!online) {
       clearTimeout(pendingTimer);
       pendingTimer = null;
-      showChip(pending
+      var message = pending
         ? 'Sem rede · guardado, envia quando voltar'
-        : 'Sem rede · atualiza sozinho quando voltar', true);
+        : 'Sem rede · atualiza sozinho quando voltar';
+      if (message !== offlineMessage) {
+        offlineMessage = message;
+        showChip(message, true);
+        clearTimeout(offlineTimer);
+        offlineTimer = setTimeout(function () { hideChip(); offlineTimer = null; }, 4000);
+      }
     } else if (pending) {
+      clearTimeout(offlineTimer);
+      offlineTimer = null;
+      offlineMessage = null;
       var failed = queue.some(function (item) { return item.attempts > 0; });
       if (failed) {
         clearTimeout(pendingTimer);
@@ -434,6 +448,9 @@
         }, 3000);
       }
     } else {
+      clearTimeout(offlineTimer);
+      offlineTimer = null;
+      offlineMessage = null;
       clearTimeout(pendingTimer);
       pendingTimer = null;
       hideChip();
@@ -482,7 +499,7 @@
     var hydrated = false;
 
     if (!offlineSession && navigator.onLine !== false) {
-      var result = await withTimeout(fetchServerData(uid), snapshotExists ? 7000 : 30000);
+      var result = await withTimeout(fetchServerData(uid), snapshotExists ? 2500 : 30000);
 
       if (result.value) {
         Object.keys(cache).forEach(function (k) { delete cache[k]; });
@@ -513,7 +530,7 @@
     return new Promise(function (resolve, reject) {
       var replayDomReady = installDomReadyReplay();
       var script = document.createElement('script');
-      script.src = 'app.js?v=15';
+      script.src = 'app.js?v=16';
       script.async = false;
       script.onload = function () {
         if (replayDomReady) replayDomReady.flush();
@@ -677,6 +694,13 @@
 
       await hydrateCloudCache(session.user.id, resolved.offline);
       setupLogout();
+      // A inicialização dinâmica depende de eventos DOMContentLoaded do app.js.
+      // Esperar pelo DOM elimina a corrida entre a injeção e o fim do parsing.
+      if (document.readyState === 'loading') {
+        await new Promise(function (resolve) {
+          document.addEventListener('DOMContentLoaded', resolve, { once: true });
+        });
+      }
       await loadAppScript();
 
       // Sincronizacao: ao voltar a rede, ao voltar ao app e a cada 30s se houver pendentes

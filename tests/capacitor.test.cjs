@@ -71,7 +71,7 @@ test('startup splash stays visible until its minimum time and actual fade', () =
   }
   w.eval(splashScript);
   w.eval(app.slice(start, end));
-  w.dispatchEvent(new w.Event('load'));
+  w.document.dispatchEvent(new w.Event('DOMContentLoaded'));
   advance(2999);
   const splash = w.document.getElementById('splash');
   assert.ok(splash);

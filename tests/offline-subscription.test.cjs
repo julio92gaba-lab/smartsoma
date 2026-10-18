@@ -99,10 +99,19 @@ test('routine sync is silent and queued offline changes wait for server entitlem
   await a.w.cloudSet('silent-test', 'ok');
   const chip = a.el('cloudSyncChip');
   assert.ok(!chip || chip.style.opacity !== '1');
+  const realSetTimeout=a.w.setTimeout.bind(a.w), realClearTimeout=a.w.clearTimeout.bind(a.w);
+  let dismissOffline;
+  a.w.setTimeout=(fn,delay)=>delay===4000?(dismissOffline=fn,987654):realSetTimeout(fn,delay);
+  a.w.clearTimeout=id=>id===987654?undefined:realClearTimeout(id);
   Object.defineProperty(a.w.navigator, 'onLine', { value: false, configurable: true });
   a.w.dispatchEvent(new a.w.Event('offline'));
   await a.w.cloudSet('offline-test', 'saved');
   assert.match(a.el('cloudSyncChip').textContent, /sem rede/i);
+  assert.equal(a.el('cloudSyncChip').style.opacity,'1');
+  dismissOffline();
+  assert.equal(a.el('cloudSyncChip').style.opacity,'0');
+  await a.w.cloudFlushPendingWrites();
+  assert.equal(a.el('cloudSyncChip').style.opacity,'0');
   a.w.SmartSomaPro.entitlementChecked = false;
   Object.defineProperty(a.w.navigator, 'onLine', { value: true, configurable: true });
   a.w.dispatchEvent(new a.w.Event('online'));
@@ -114,4 +123,18 @@ test('routine sync is silent and queued offline changes wait for server entitlem
   assert.ok(a.writes.some(row => row.key === 'offline-test'));
   assert.equal(a.w.localStorage.getItem('ss_q:isolated-test'), null);
   assert.ok(a.el('cloudSyncChip').style.opacity !== '1');
+});
+
+test('offline boot renders the current interface even when the app script loads after DOM ready', async t => {
+  const a = createApp({offlineSample:'guardado'}, {cloudBoot:true, ui:true, offlineStart:true, delayedAppScript:true});
+  t.after(a.close);
+  for (let i=0; i<30 && !a.w.document.body.classList.contains('ui-v2'); i++) await settle();
+  assert.equal(a.w._cacheReady,true);
+  assert.equal(a.w.cloudGet('offlineSample'),'guardado');
+  assert.ok(a.w.document.body.classList.contains('ui-v2'));
+  assert.ok(a.w.document.querySelector('.ui-header'));
+  await a.w.cloudSet('offline-edit','novo');
+  assert.match(a.w.localStorage.getItem('ss_q:isolated-test'),/offline-edit/);
+  assert.equal(a.writes.length,0);
+  assert.deepEqual(a.errors,[]);
 });

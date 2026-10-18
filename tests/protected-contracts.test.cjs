@@ -7,7 +7,7 @@ const hash=s=>createHash('sha256').update(s.replace(/\r\n/g,'\n')).digest('hex')
 // Baseline inclui a remoção de anexos de contacto e o aviso de falha após a exclusão.
 test('authentication, cloud persistence and billing endpoints match the approved baseline',()=>{
   const expected={
-    'cloud-init.js':'c18f505376996eb5d644f28774f9144fe0ac6ec0fe9ea3f18c35e5d77d8c378d',
+    'cloud-init.js':'c85ad90780ffface59882a43cf2b950ebb8135933f48fd827e8cbb854799d3f3',
     'login.html':'a39520ad9756e4cb538bb6562094b069f1040d7a284a38157a7747e376c4ba1f',
     'api/delete-account.js':'eed898072bd2aebdd7a4c8c2f5eb94a4a83a382963a31abcba641907db72a270',
     'api/webhook.js':'7d93936fb8f016c3328f6b845cc1075819b5fdaa57bf2e88d15b2eada709d7ae',
@@ -18,8 +18,8 @@ test('authentication, cloud persistence and billing endpoints match the approved
     let source=fs.readFileSync(path,'utf8');
     // Explicitly approved Google account-selector fix, released before this UI correction.
     if(path==='login.html') source=source.replace(", queryParams: { prompt: 'select_account' }",'');
-    // Apenas a versão de cache do app.js foi atualizada; toda a lógica continua protegida.
-    if(path==='cloud-init.js') source=source.replace("script.src = 'app.js?v=15'", "script.src = 'app.js?v=13'");
+    // Baseline atualizado para a correção aprovada de arranque offline e aviso temporário.
+    if(path==='cloud-init.js') source=source.replace("script.src = 'app.js?v=16'", "script.src = 'app.js?v=13'");
     assert.equal(hash(source),checksum,path);
   }
 });
