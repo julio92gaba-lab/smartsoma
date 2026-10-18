@@ -472,6 +472,13 @@ test('contact keeps identity from the session and allows safe retries',async t=>
   assert.deepEqual(a.errors,[]);
 });
 
+test('desktop web aligns the support card without changing the native layout',()=>{
+  const css=fs.readFileSync('ui-v2.css','utf8');
+  const prepare=fs.readFileSync('scripts/prepare-capacitor.cjs','utf8');
+  assert.match(css,/@media \(min-width:768px\)\s*\{\s*html:not\(:has\(link\[href="native-splash\.css"\]\)\) \.ui-v2 #uiSettingsPage \.sheet-actions:not\(\.ui-settings-group\)\s*\{\s*max-width:none;/);
+  assert.match(prepare,/href="native-splash\.css"/);
+});
+
 test('settings groups contact and FAQ separately and preserves instant navigation',t=>{
   const a=setup(t);a.w.SmartSomaUI.go('ajustes');
   const groups=[...a.el('uiSettingsPage').querySelectorAll('.sheet-actions')].filter(group=>!group.hidden);
