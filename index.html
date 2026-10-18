@@ -180,6 +180,24 @@ nav{flex-wrap:wrap;padding:12px 5vw 0}
 .phone-frame{border-radius:20px;box-shadow:5px 5px 0 var(--green)}
 .feat-card{padding:16px;box-shadow:4px 4px 0 var(--ink)}.feat-card h3{font-size:15px}.feat-card p{font-size:13px}.feat-icon{width:34px;height:34px}}
 @media(max-width:580px){.deco{opacity:.07}.d-hero-car{width:88vw;top:3%;right:-18%}.d-hero-road{width:240px;height:240px}.d-feat-moto,.d-testi-car,.d-cta-moto{width:300px}.hero-btns{flex-direction:column;align-items:center}.plans-row{flex-direction:column;align-items:center}.plan-card{min-width:0;width:100%;max-width:360px}section{padding:64px 5vw}.testi-card:nth-child(even){transform:none}}
+/* Apresentação e acesso à aplicação */
+.hero{min-height:auto;padding:74px 5vw 64px;background:radial-gradient(ellipse at 50% 0,rgba(46,204,113,.12),transparent 54%),var(--paper)}
+.hero-badge{transform:none;border-radius:999px;margin-bottom:24px;letter-spacing:.04em}
+.hero h1{max-width:760px}.hero p{margin-bottom:28px}.hero-btns{gap:12px;margin-bottom:18px}
+.hero-trial-note{margin-bottom:0!important;font-size:13px!important}
+.access-panel{width:min(100%,640px);margin:32px auto 0;padding:20px;text-align:left;border:1px solid rgba(14,59,42,.13);border-radius:18px;background:rgba(255,255,255,.8);box-shadow:0 16px 50px rgba(14,59,42,.08)}
+.access-title{font-size:15px;font-weight:800;margin-bottom:4px}.access-sub{font-size:13px!important;line-height:1.45;color:var(--muted);margin:0 0 14px!important}
+.access-actions{display:flex;flex-wrap:wrap;gap:10px}.access-store,.access-ios summary{min-height:48px;display:flex;align-items:center;justify-content:center;gap:9px;border-radius:10px;padding:10px 16px;font:800 14px 'DM Sans',sans-serif;text-decoration:none;cursor:pointer}
+.access-store{background:var(--ink);color:white;border:1px solid var(--ink)}.access-store:hover{background:var(--forest)}
+.access-ios{flex:1;min-width:190px}.access-ios summary{list-style:none;border:1px solid #b7c6bd;background:white;color:var(--ink)}.access-ios summary::-webkit-details-marker{display:none}
+.access-ios summary::after{content:'+';font-size:19px;line-height:1}.access-ios[open] summary::after{content:'−'}
+.access-ios ol{margin:12px 0 2px 22px;color:var(--muted);font-size:13px;line-height:1.6}.access-ios li+li{margin-top:5px}
+.feat-card,.plans-features-card,.plan-card,.faq-item,.testi-card{border-color:rgba(14,59,42,.16);border-radius:16px;box-shadow:0 10px 28px rgba(14,59,42,.07)}
+.feat-card:hover{transform:translateY(-2px);box-shadow:0 14px 32px rgba(14,59,42,.12)}
+.phone-frame{box-shadow:0 16px 38px rgba(14,59,42,.2)}.section-label{border-radius:999px}.plans-trial-highlight{border-radius:14px;box-shadow:none}.step-num{transform:none!important;border-radius:12px}
+@media(max-width:580px){.hero{padding:54px 5vw 48px}.hero h1{font-size:clamp(34px,9vw,44px)}.hero-btns{flex-direction:column;align-items:stretch;width:min(100%,340px);margin-inline:auto}.hero-btns a{text-align:center}.access-panel{padding:16px}.access-actions{flex-direction:column}.access-ios{min-width:0}.access-store,.access-ios summary{width:100%}.feat-pair-row{gap:14px}.phone-wrap{width:120px}.feat-card{padding:14px}.feat-card p{font-size:13px}}
+@media(max-width:350px){.feat-pair-row{flex-direction:column}.phone-wrap{width:145px}.feat-card{width:100%}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.hero-badge-dot{animation:none!important}}
 </style>
 <link rel="icon" type="image/png" sizes="192x192" href="/favicon.png">
 </head>
@@ -268,6 +286,21 @@ nav{flex-wrap:wrap;padding:12px 5vw 0}
     <a href="#funcionalidades" class="btn-ghost" data-i18n="hero.btn2">Ver como funciona</a>
   </div>
   <p class="hero-trial-note" data-i18n="hero.trial.note">Cartão necessário &nbsp;·&nbsp; <strong>só cobrado após os 15 dias</strong> &nbsp;·&nbsp; Cancela quando quiseres</p>
+  <div class="access-panel" aria-labelledby="accessTitle">
+    <div class="access-title" id="accessTitle" data-i18n="access.title">Leva o SmartSoma contigo</div>
+    <p class="access-sub" data-i18n="access.sub">Usa no Android, no iPhone ou diretamente no navegador.</p>
+    <div class="access-actions">
+      <a class="access-store" href="https://play.google.com/store/apps/details?id=pt.smartsoma.app" data-i18n="access.android">Descarregar na Google Play</a>
+      <details class="access-ios">
+        <summary data-i18n="access.ios">Adicionar ao iPhone</summary>
+        <ol>
+          <li data-i18n="access.ios.step1">Abre o SmartSoma no Safari do iPhone.</li>
+          <li data-i18n="access.ios.step2">Toca em Partilhar e depois em Adicionar ao ecrã principal.</li>
+          <li data-i18n="access.ios.step3">Escolhe Abrir como aplicação web, se aparecer, e toca em Adicionar.</li>
+        </ol>
+      </details>
+    </div>
+  </div>
 </section>
 
 <!-- FUNCIONALIDADES -->
@@ -365,8 +398,8 @@ nav{flex-wrap:wrap;padding:12px 5vw 0}
     </div>
     <div class="step">
       <div class="step-num">3</div>
-      <h3 data-i18n="how.s3.title">Escolhe o teu plano</h3>
-      <p data-i18n="how.s3.text">No fim do trial, escolhe entre o plano semanal ou mensal — o que melhor se adapta à tua rotina.</p>
+      <h3 data-i18n="how.s3.title">Mantém o acesso</h3>
+      <p data-i18n="how.s3.text">Escolhe o plano no início. Após o trial, a subscrição renova automaticamente se não a cancelares.</p>
     </div>
     <div class="step">
       <div class="step-num">4</div>
@@ -381,7 +414,7 @@ nav{flex-wrap:wrap;padding:12px 5vw 0}
   <div style="text-align:center;margin-bottom:48px;">
     <div class="section-label" data-i18n="plans.label">Planos e Preços</div>
     <h2 class="section-title" style="margin:0 auto 16px;" data-i18n="plans.title">Simples e transparente</h2>
-    <p class="section-sub" style="margin:0 auto;" data-i18n="plans.sub">Experimenta tudo grátis durante 15 dias. Depois escolhes como preferes pagar.</p>
+    <p class="section-sub" style="margin:0 auto;" data-i18n="plans.sub">Escolhe o teu plano na web e experimenta todas as funcionalidades durante 15 dias.</p>
   </div>
 
   <div class="plans-trial-highlight">
@@ -417,7 +450,7 @@ nav{flex-wrap:wrap;padding:12px 5vw 0}
         <p class="plan-note" data-i18n="plans.semanal.note">Só cobrado após os 15 dias</p>
       </div>
       <div class="plan-card featured">
-        <div class="plan-badge" data-i18n="plans.mensal.badge">MAIS POPULAR</div>
+        <div class="plan-badge" data-i18n="plans.mensal.badge">MAIS ECONÓMICO</div>
         <div class="plan-name" style="margin-top:8px;" data-i18n="plans.mensal.name">Mensal</div>
         <div class="plan-price">€ 5 <span data-i18n="plans.permonth">/ mês</span></div>
         <p class="plan-desc" data-i18n="plans.mensal.desc">Mais económico. Renova a cada 30 dias — poupas mais de 50%.</p>
@@ -481,7 +514,7 @@ nav{flex-wrap:wrap;padding:12px 5vw 0}
     </div>
     <div class="faq-item">
       <button class="faq-q" data-i18n="faq.q3.q">O que acontece quando o período de trial acaba? <span class="arrow">+</span></button>
-      <div class="faq-a" data-i18n="faq.q3.a">Ao fim dos 15 dias podes escolher o plano semanal (€2/semana) ou mensal (€5/mês). Se não escolheres nenhum, o acesso fica suspenso mas os teus dados ficam guardados em segurança.</div>
+      <div class="faq-a" data-i18n="faq.q3.a">Na web, o plano escolhido no início renova automaticamente após os 15 dias, salvo se cancelares antes. O preço e as condições são apresentados no checkout.</div>
     </div>
     <div class="faq-item">
       <button class="faq-q" data-i18n="faq.q4.q">Os meus dados estão seguros? <span class="arrow">+</span></button>
@@ -518,7 +551,7 @@ nav{flex-wrap:wrap;padding:12px 5vw 0}
     <span>•</span>
     <a href="eliminar-conta.html" data-i18n="footer.eliminar">Eliminar conta</a>
     <span>•</span>
-    <span>suporte@smartsoma.pt</span>
+    <span>contacto@smartsoma.pt</span>
   </div>
 </footer>
 
@@ -540,6 +573,13 @@ const I18N_DICT = {
     "hero.btn1":"Try free for 15 days",
     "hero.btn2":"See how it works",
     "hero.trial.note":"Card required &nbsp;·&nbsp; <strong>only charged after 15 days</strong> &nbsp;·&nbsp; Cancel anytime",
+    "access.title":"Take SmartSoma with you",
+    "access.sub":"Use it on Android, iPhone or directly in your browser.",
+    "access.android":"Get it on Google Play",
+    "access.ios":"Add to iPhone",
+    "access.ios.step1":"Open SmartSoma in Safari on your iPhone.",
+    "access.ios.step2":"Tap Share, then Add to Home Screen.",
+    "access.ios.step3":"Choose Open as Web App if shown, then tap Add.",
     "feat.label":"All in one place",
     "feat.title":"Built for those who live on the road",
     "feat.sub":"Simple, fast and straight to the point. No hassle entering your daily data.",
@@ -568,13 +608,13 @@ const I18N_DICT = {
     "how.s1.text":"Sign up in seconds with your email and a valid card. Only charged after the trial.",
     "how.s2.title":"Try free for 15 days",
     "how.s2.text":"Full access to all features for 15 days, completely free.",
-    "how.s3.title":"Choose your plan",
-    "how.s3.text":"At the end of your trial, pick the weekly or monthly plan — whichever fits your routine best.",
+    "how.s3.title":"Keep your access",
+    "how.s3.text":"Choose your plan at the start. After the trial, your subscription renews automatically unless you cancel.",
     "how.s4.title":"Track your earnings",
     "how.s4.text":"Follow goals, net profit and clear, automatic reports. No complications.",
     "plans.label":"Plans & Pricing",
     "plans.title":"Simple and transparent",
-    "plans.sub":"Try everything free for 15 days. Then choose how you'd like to pay.",
+    "plans.sub":"Choose your web plan and try every feature free for 15 days.",
     "plans.trial.highlight":"<span>🎁 15 days free on any plan</span>Enter your card, choose your plan · Only charged after the trial · Cancel anytime",
     "plans.perweek":"/ week",
     "plans.permonth":"/ month",
@@ -583,7 +623,7 @@ const I18N_DICT = {
     "plans.semanal.desc":"Total flexibility. Renews every 7 days, cancel anytime.",
     "plans.semanal.btn":"Try free",
     "plans.semanal.note":"Only charged after the 15-day trial",
-    "plans.mensal.badge":"MOST POPULAR",
+    "plans.mensal.badge":"BEST VALUE",
     "plans.mensal.name":"Monthly",
     "plans.mensal.desc":"Best value. Renews every 30 days — save over 50%.",
     "plans.mensal.btn":"Try free",
@@ -613,7 +653,7 @@ const I18N_DICT = {
     "faq.q2.q":"Do I need to enter a card to try it? <span class=\"arrow\">+</span>",
     "faq.q2.a":"Yes, a valid card is required to start the 15-day trial. However, you won't be charged during that period — the payment only happens at the end of the trial if you don't cancel beforehand.",
     "faq.q3.q":"What happens when the trial ends? <span class=\"arrow\">+</span>",
-    "faq.q3.a":"After 15 days you can choose the weekly (€2/week) or monthly (€5/month) plan. If you don't choose one, access is suspended but your data is kept safe.",
+    "faq.q3.a":"On the web, the plan chosen at the start renews automatically after 15 days unless you cancel first. The price and terms are shown at checkout.",
     "faq.q4.q":"Is my data secure? <span class=\"arrow\">+</span>",
     "faq.q4.a":"Yes, all information is encrypted and stored securely. We never share your financial data with third parties.",
     "faq.q5.q":"Can I cancel at any time? <span class=\"arrow\">+</span>",
