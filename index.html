@@ -27,8 +27,6 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
 .nav-links a{color:#cfd8d2;font-size:14px;font-weight:600;text-decoration:none;padding-bottom:2px;border-bottom:2px solid transparent;transition:.2s}
 .nav-links a:hover{color:#fff;border-color:var(--lime)}
 .nav-actions{display:flex;align-items:center;gap:12px}
-.btn-ghost-sm{color:#fff;font-size:14px;font-weight:700;padding:7px 14px;border-radius:6px;text-decoration:none;border:2px solid #3a443d;transition:.2s}
-.btn-ghost-sm:hover{border-color:#fff}
 .nav-cta{background:var(--lime);color:var(--ink);font-size:14px;font-weight:800;padding:8px 16px;border-radius:6px;text-decoration:none;transition:transform .15s}
 .nav-cta:hover{transform:translateY(-2px)}
 .lang-btn{background:transparent;border:2px solid #3a443d;color:#fff;padding:6px 10px;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:.2s}
@@ -57,13 +55,8 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
 .hero h1{font-size:clamp(38px,7.4vw,78px);font-weight:800;line-height:1.02;letter-spacing:-.045em;max-width:860px;margin:0 auto 22px}
 .hero h1 em{font-style:normal;background:linear-gradient(transparent 58%,var(--lime) 58% 92%,transparent 92%);padding:0 .08em;margin-left:.14em}
 .hero p{font-size:clamp(16px,2.2vw,20px);color:var(--muted);max-width:620px;margin:0 auto 40px}
-.hero-btns{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin-bottom:40px}
-.hero-trial-note{font-size:13px;color:var(--muted);margin-bottom:56px}
-.hero-trial-note strong{color:var(--ink)}
 .btn-primary{background:var(--ink);color:#fff;font-weight:800;padding:15px 30px;border-radius:8px;font-size:16px;text-decoration:none;box-shadow:5px 5px 0 var(--gb);transition:transform .15s,box-shadow .15s}
 .btn-primary:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--gb)}
-.btn-ghost{background:var(--card);color:var(--ink);font-weight:800;padding:15px 30px;border-radius:8px;font-size:16px;text-decoration:none;border:2px solid var(--ink);box-shadow:5px 5px 0 var(--ink);transition:.15s}
-.btn-ghost:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--ink)}
 /* SECÇÕES */
 section{padding:96px 5vw}
 .section-label{display:inline-block;font-size:12px;font-weight:800;letter-spacing:.12em;color:var(--ink);background:var(--lime);padding:4px 10px;border-radius:3px;margin-bottom:14px;text-transform:uppercase}
@@ -128,7 +121,7 @@ section{padding:96px 5vw}
 .plan-note{font-size:11.5px;color:var(--muted);text-align:center;margin-top:10px}
 .featured .plan-note{color:#b4c0b8}
 /* DEPOIMENTOS */
-#depoimentos{background:#ECE8DC;border-top:2px solid var(--ink);border-bottom:2px solid var(--ink)}
+#depoimentos{background:repeating-linear-gradient(135deg,transparent 0 22px,rgba(14,59,42,.05) 22px 24px),#ECE8DC;border-top:2px solid var(--ink);border-bottom:2px solid var(--ink)}
 .testimonials-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:26px;max-width:980px;margin:0 auto}
 .testi-card{background:var(--card);border:2px solid var(--ink);border-radius:var(--r);padding:26px;box-shadow:6px 6px 0 var(--gb)}
 .testi-card:nth-child(even){transform:translateY(10px)}
@@ -179,29 +172,30 @@ nav{flex-wrap:wrap;padding:12px 5vw 0}
 .feat-pair-row{gap:20px}.phone-wrap{width:145px}
 .phone-frame{border-radius:20px;box-shadow:5px 5px 0 var(--green)}
 .feat-card{padding:16px;box-shadow:4px 4px 0 var(--ink)}.feat-card h3{font-size:15px}.feat-card p{font-size:13px}.feat-icon{width:34px;height:34px}}
-@media(max-width:580px){.deco{opacity:.07}.d-hero-car{width:88vw;top:3%;right:-18%}.d-hero-road{width:240px;height:240px}.d-feat-moto,.d-testi-car,.d-cta-moto{width:300px}.hero-btns{flex-direction:column;align-items:center}.plans-row{flex-direction:column;align-items:center}.plan-card{min-width:0;width:100%;max-width:360px}section{padding:64px 5vw}.testi-card:nth-child(even){transform:none}}
+@media(max-width:580px){.deco{opacity:.07}.d-hero-car{width:88vw;top:3%;right:-18%}.d-hero-road{width:240px;height:240px}.d-feat-moto,.d-testi-car,.d-cta-moto{width:300px}.plans-row{flex-direction:column;align-items:center}.plan-card{min-width:0;width:100%;max-width:360px}section{padding:64px 5vw}.testi-card:nth-child(even){transform:none}}
 /* Apresentação e acesso à aplicação */
 .hero{min-height:auto;padding:74px 5vw 56px;background:repeating-linear-gradient(135deg,transparent 0 22px,rgba(14,59,42,.05) 22px 24px),radial-gradient(ellipse at 50% 0,rgba(46,204,113,.12),transparent 54%),var(--paper)}
 .hero-badge{transform:none;border-radius:999px;margin-bottom:24px;letter-spacing:.04em}
-.hero h1{max-width:760px}.hero p{margin-bottom:28px}.hero-btns{gap:12px;margin-bottom:18px}
-.hero-trial-note{margin-bottom:0!important;font-size:13px!important}
-.access-section{padding:32px 5vw;background:#e9f0e9;text-align:center}
+.hero-layout{width:min(100%,1100px);display:flex;align-items:center;gap:32px;text-align:left}
+.hero-copy{flex:1;min-width:0}.hero-copy h1{max-width:760px;margin-left:0;margin-right:0}.hero-copy p{margin:0;max-width:620px}.hero-image{width:43%;height:auto;display:block}
+.section-label[id]{scroll-margin-top:90px}
+.access-section{padding:32px 5vw;background:var(--forest);color:#fff;text-align:center}
 .access-panel{width:min(100%,660px);margin:0 auto}
-.access-title{font-size:22px;line-height:1.2;font-weight:800;margin-bottom:4px}.access-sub{font-size:13px;line-height:1.45;color:var(--muted);margin:0 0 18px}
+.access-title{font-size:22px;line-height:1.2;font-weight:800;margin-bottom:4px}.access-sub{font-size:13px;line-height:1.45;color:#c5d9cd;margin:0 0 18px}
 .access-actions{display:flex;justify-content:center;align-items:flex-start;flex-wrap:wrap;gap:14px}.access-store{display:block;width:169px;height:50px;padding:0;border:0;background:none;cursor:default}.access-store img{display:block;width:100%;height:100%;object-fit:contain}
 .access-ios{width:190px;text-align:left}.access-ios summary{min-height:50px;display:flex;align-items:center;justify-content:center;gap:5px;list-style:none;border:1px solid #b7c6bd;border-radius:9px;background:white;color:var(--ink);padding:8px;font:800 13px 'DM Sans',sans-serif;cursor:pointer}.access-ios summary span{white-space:nowrap}.access-ios summary::-webkit-details-marker{display:none}.access-ios svg{width:20px;height:20px;flex-shrink:0}
 .access-ios summary::after{content:'+';font-size:19px;line-height:1}.access-ios[open] summary::after{content:'−'}
-.access-ios ol{margin:12px 0 2px 22px;color:var(--muted);font-size:13px;line-height:1.6}.access-ios li+li{margin-top:5px}
+.access-ios ol{margin:12px 0 2px 22px;color:#d8e7de;font-size:13px;line-height:1.6}.access-ios li+li{margin-top:5px}
 .feat-card,.plans-features-card,.plan-card,.faq-item,.testi-card{border-color:rgba(14,59,42,.16);border-radius:16px;box-shadow:0 10px 28px rgba(14,59,42,.07)}
 .feat-card:hover{transform:translateY(-2px);box-shadow:0 14px 32px rgba(14,59,42,.12)}
 .phone-frame{box-shadow:0 16px 38px rgba(14,59,42,.2)}.section-label{border-radius:999px}.plans-trial-highlight{border-radius:14px;box-shadow:none}.step-num{transform:none!important;border-radius:12px}
 section:not(.hero):not(.access-section):not(.cta-final){padding-top:68px;padding-bottom:68px}
-.hero-btns a{font-size:14px;padding:11px 18px;box-shadow:3px 3px 0 var(--gb)}.hero-btns .btn-ghost{box-shadow:3px 3px 0 var(--ink)}
 .features-container{gap:24px}.phone-wrap{width:160px}.other-cards-grid{gap:16px}.feat-card{padding:18px}
 .steps{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 28px;justify-items:stretch}
 .step{max-width:none;display:grid;grid-template-columns:42px 1fr;column-gap:12px;row-gap:3px;align-items:start;text-align:left}
 .step-num{width:38px;height:38px;font-size:16px;grid-row:1 / 3}.step h3{font-size:16px}.step p{font-size:14px;line-height:1.5}
-@media(max-width:580px){.hero{padding:48px 5vw 40px}.hero h1{font-size:clamp(34px,9vw,44px)}.hero-btns{flex-direction:row;align-items:center;width:100%;margin-inline:auto;gap:10px}.hero-btns a{text-align:center;font-size:13px;padding:10px 12px}.hero-trial-note{font-size:12px!important;line-height:1.5}.access-section{padding:28px 5vw}.access-actions{gap:10px}.access-store{width:150px}.feat-pair-row{gap:14px}.phone-wrap{width:100px}.feat-card{padding:14px}.feat-card p{font-size:13px}.features-container{gap:20px}.other-cards-grid{gap:12px;margin-top:4px}.steps{grid-template-columns:1fr;gap:18px}.plans-layout{gap:22px}.plans-features-card,.plans-price-col{width:100%;max-width:420px}.plans-price-col{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.plan-card{padding:20px 13px;min-width:0}.plan-price{font-size:28px}.plan-desc{font-size:12px}.plans-trial-highlight{margin-bottom:30px;padding:14px}.plans-trial-highlight p{font-size:13px}.plans-trial-highlight p span{font-size:18px}section:not(.hero):not(.access-section):not(.cta-final){padding-top:48px;padding-bottom:48px}.cta-final{padding:60px 5vw}}
+@media(max-width:768px){.section-label[id]{scroll-margin-top:135px}.hero-layout{flex-direction:column;gap:20px;text-align:center}.hero-copy h1,.hero-copy p{margin-left:auto;margin-right:auto}.hero-image{width:min(100%,520px)}}
+@media(max-width:580px){.hero{padding:48px 5vw 32px}.hero h1{font-size:clamp(34px,9vw,44px)}.access-section{padding:28px 5vw}.access-actions{gap:10px}.access-store{width:150px}.feat-pair-row{gap:14px}.phone-wrap{width:100px}.feat-card{padding:14px}.feat-card p{font-size:13px}.features-container{gap:20px}.other-cards-grid{gap:12px;margin-top:4px}.steps{grid-template-columns:1fr;gap:18px}.plans-layout{gap:22px}.plans-features-card,.plans-price-col{width:100%;max-width:420px}.plans-price-col{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.plan-card{padding:20px 13px;min-width:0}.plan-price{font-size:28px}.plan-desc{font-size:12px}.plans-trial-highlight{margin-bottom:30px;padding:14px}.plans-trial-highlight p{font-size:13px}.plans-trial-highlight p span{font-size:18px}section:not(.hero):not(.access-section):not(.cta-final){padding-top:48px;padding-bottom:48px}.cta-final{padding:60px 5vw}}
 @media(max-width:350px){.feat-pair-row{flex-direction:row}.phone-wrap{width:88px}.feat-card{width:auto}.access-actions{flex-direction:column;align-items:center}.plans-price-col{grid-template-columns:1fr}.plan-card{max-width:none}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.hero-badge-dot{animation:none!important}}
 </style>
@@ -231,8 +225,7 @@ section:not(.hero):not(.access-section):not(.cta-final){padding-top:68px;padding
     <li><a href="#faq" data-i18n="nav.faq">FAQ</a></li>
   </ul>
   <div class="nav-actions">
-    <a href="login.html" class="btn-ghost-sm" data-i18n="nav.entrar">Entrar</a>
-    <a href="login.html" class="nav-cta" data-i18n="nav.comecar">Experimentar grátis</a>
+    <a href="login.html" class="nav-cta" data-i18n="nav.comecar">Entrar / Registar</a>
     <button class="lang-btn lang-toggle-btn" title="Alterar idioma" aria-label="Alterar idioma" id="langBtnMobile">
       <span class="lang-btn-flag" id="langFlagMobile">
         <svg viewBox="0 0 600 400"><rect width="600" height="400" fill="#ff0000"/><rect width="200" height="400" fill="#006600"/><circle cx="200" cy="200" r="80" fill="#ffff00" stroke="#000" stroke-width="3"/><rect x="170" y="150" width="60" height="100" fill="#ffffff" stroke="#000" stroke-width="2"/><rect x="180" y="165" width="40" height="50" fill="#0000ff"/></svg>
@@ -284,14 +277,14 @@ section:not(.hero):not(.access-section):not(.cta-final){padding-top:68px;padding
 <svg class="deco d-hero-car" viewBox="0 0 200 100" aria-hidden="true" focusable="false"><use href="#g-car"/></svg>
 <svg class="deco d-hero-road" viewBox="0 0 300 300" aria-hidden="true" focusable="false"><use href="#g-road"/></svg>
 
-  <div class="hero-badge"><span class="hero-badge-dot"></span> <span data-i18n="hero.badge">Feito para Motoristas e Estafetas de App</span></div>
-  <h1 data-i18n="hero.h1">As tuas contas do dia a dia,<em>sem confusão</em></h1>
-  <p data-i18n="hero.p">O SmartSoma junta os teus ganhos das plataformas, calcula as despesas e a distância percorrida — e mostra-te o que realmente interessa no final das contas.</p>
-  <div class="hero-btns">
-    <a href="login.html" class="btn-primary" data-i18n="hero.btn1">Experimentar 15 dias grátis</a>
-    <a href="#funcionalidades" class="btn-ghost" data-i18n="hero.btn2">Ver como funciona</a>
+  <div class="hero-layout">
+    <div class="hero-copy">
+      <div class="hero-badge"><span class="hero-badge-dot"></span> <span data-i18n="hero.badge">Feito para Motoristas e Estafetas de App</span></div>
+      <h1 data-i18n="hero.h1">As tuas contas do dia a dia,<em>sem confusão</em></h1>
+      <p data-i18n="hero.p">O SmartSoma junta os teus ganhos das plataformas, calcula as despesas e a distância percorrida — e mostra-te o que realmente interessa no final das contas.</p>
+    </div>
+    <img class="hero-image" src="car2.png" alt="Carro e mota">
   </div>
-  <p class="hero-trial-note" data-i18n="hero.trial.note">Cartão necessário &nbsp;·&nbsp; <strong>só cobrado após os 15 dias</strong> &nbsp;·&nbsp; Cancela quando quiseres</p>
 </section>
 
 <!-- ACESSO À APLICAÇÃO -->
@@ -314,11 +307,11 @@ section:not(.hero):not(.access-section):not(.cta-final){padding-top:68px;padding
 </section>
 
 <!-- FUNCIONALIDADES -->
-<section id="funcionalidades">
+<section>
 <svg class="deco d-feat-moto" viewBox="0 0 200 110" aria-hidden="true" focusable="false"><use href="#g-moto"/></svg>
 
   <div style="text-align:center;margin-bottom:48px;">
-    <div class="section-label" data-i18n="feat.label">Tudo num só lugar</div>
+    <div class="section-label" id="funcionalidades" data-i18n="feat.label">Tudo num só lugar</div>
     <h2 class="section-title" style="margin:0 auto 16px;" data-i18n="feat.title">Criado para quem vive na estrada</h2>
     <p class="section-sub" style="margin:0 auto;" data-i18n="feat.sub">Simples, rápido e direto ao ponto. Sem complicações para inserção de dados no seu dia a dia.</p>
   </div>
@@ -420,9 +413,9 @@ section:not(.hero):not(.access-section):not(.cta-final){padding-top:68px;padding
 </section>
 
 <!-- PLANOS -->
-<section id="planos">
+<section>
   <div style="text-align:center;margin-bottom:48px;">
-    <div class="section-label" data-i18n="plans.label">Planos e Preços</div>
+    <div class="section-label" id="planos" data-i18n="plans.label">Planos e Preços</div>
     <h2 class="section-title" style="margin:0 auto 16px;" data-i18n="plans.title">Simples e transparente</h2>
     <p class="section-sub" style="margin:0 auto;" data-i18n="plans.sub">Escolhe o teu plano na web e experimenta todas as funcionalidades durante 15 dias.</p>
   </div>
@@ -508,9 +501,9 @@ section:not(.hero):not(.access-section):not(.cta-final){padding-top:68px;padding
 </section>
 
 <!-- FAQ -->
-<section id="faq">
+<section>
   <div style="text-align:center;margin-bottom:48px;">
-    <div class="section-label" data-i18n="faq.label">Dúvidas</div>
+    <div class="section-label" id="faq" data-i18n="faq.label">Dúvidas</div>
     <h2 class="section-title" style="margin:0 auto 16px;" data-i18n="faq.title">Perguntas Frequentes</h2>
   </div>
   <div class="faq-list">
@@ -574,15 +567,11 @@ const I18N_DICT = {
     "nav.funcionalidades":"Features",
     "nav.planos":"Plans",
     "nav.faq":"FAQ",
-    "nav.entrar":"Log in",
-    "nav.comecar":"Try for free",
+    "nav.comecar":"Log in / Sign up",
     "lang.title":"Select Language",
     "hero.badge":"Made for Drivers and Couriers",
     "hero.h1":"Your day-to-day accounts,<br><em>without the hassle</em>",
     "hero.p":"SmartSoma brings together your earnings from every platform, calculates the expenses you enter and the distance driven — and shows you what really matters in the end.",
-    "hero.btn1":"Try free for 15 days",
-    "hero.btn2":"See how it works",
-    "hero.trial.note":"Card required &nbsp;·&nbsp; <strong>only charged after 15 days</strong> &nbsp;·&nbsp; Cancel anytime",
     "access.title":"Download",
     "access.sub":"Use it on Android, iPhone or directly in your browser.",
     "access.android":"Get it on Google Play",
