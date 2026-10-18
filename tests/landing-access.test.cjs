@@ -33,10 +33,12 @@ test('landing carousel shows platforms and the noninteractive extra item', () =>
   try {
     const doc=dom.window.document;
     const group=doc.querySelector('.platform-group');
-    assert.deepEqual([...group.querySelectorAll('img')].map(img=>img.getAttribute('src')),['01uber.png','02bolt.png','03pop.png','04vloz.png']);
+    assert.deepEqual([...group.querySelectorAll('img')].map(img=>img.getAttribute('src')),['carrosel1.png','carrosel2.png','carrosel3.png','carrosel4.png','carrosel5.png','carrosel6.png']);
+    const duplicate=doc.querySelector('.platform-group[aria-hidden="true"]');
+    assert.deepEqual([...duplicate.querySelectorAll('img')].map(img=>img.getAttribute('src')),[...group.querySelectorAll('img')].map(img=>img.getAttribute('src')));
     assert.equal(group.querySelector('.platform-more').textContent,'+');
     assert.equal(group.querySelectorAll('button,a').length,0);
-    assert.match(html,/platform-scroll 18s ease-in-out infinite alternate/);
+    assert.match(html,/platform-scroll 12s linear infinite/);
     assert.match(html,/@media\(prefers-reduced-motion:reduce\)[\s\S]*?\.platform-track\{animation:none!important\}/);
     assert.ok(doc.querySelector('.hero-copy p').compareDocumentPosition(doc.querySelector('.platform-carousel')) & dom.window.Node.DOCUMENT_POSITION_FOLLOWING);
     assert.ok(doc.querySelector('.platform-carousel').compareDocumentPosition(doc.querySelector('.hero-image')) & dom.window.Node.DOCUMENT_POSITION_FOLLOWING);
