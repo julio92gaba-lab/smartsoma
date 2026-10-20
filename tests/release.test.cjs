@@ -63,22 +63,34 @@ test('mobile daily expense deletion queues and synchronizes offline changes',asy
   assert.equal(a.w.localStorage.getItem('ss_q:isolated-test'),null);assert.deepEqual(a.errors,[]);
 });
 
-test('news keeps an unread notice and moves it to the local archive after reading', t => {
+test('amount receivable replaces notifications and closes before opening a new entry', t => {
+  const today = new Date();
+  const a = setup(t, { ['homeBadgeValores:'+dateKey(today)]:JSON.stringify({ ganhosExtras:[{ id:'x', descricao:'Bónus', valor:20, aindaReceber:true }] }) });
+  assert.ok(a.el('uiReceivable'));
+  assert.equal(a.el('uiNews'),null);
+  a.click('uiReceivable');
+  assert.ok(a.w.document.querySelector('.ui-receivable-backdrop.visible'));
+  assert.equal(a.el('uiReceivableExtra').hidden,false);
+  assert.match(a.el('uiReceivableExtra').textContent,/Ganhos extras/);
+  a.click('uiAdd');
+  assert.equal(a.w.document.querySelector('.ui-receivable-backdrop.visible'),null);
+  assert.equal(a.el('uiEntryDialog').open,true);
+  assert.deepEqual(a.errors,[]);
+});
+
+test('extra earnings are stored separately and enter gross only when selected', t => {
   const a = setup(t);
-  assert.ok(a.el('uiNews'));
-  assert.equal(a.el('uiNewsBadge').hidden,false);
-  a.click('uiNews');
-  assert.ok(a.w.document.querySelector('.ui-news-backdrop.visible'));
-  assert.equal(a.el('uiNewsTitle').textContent,'Novidades');
-  assert.match(a.el('uiNewsContent').textContent,/assistente no trânsito/i);
-  assert.match(a.el('uiNewsContent').textContent,/12\/10\/2026/);
-  a.click('uiNewsClose');
-  assert.equal(a.el('uiNewsBadge').hidden,true);
-  a.click('uiNewsPopupRead');
-  a.click('uiNewsClose');
-  a.click('uiNews'); a.click('uiNewsArchive');
-  assert.match(a.el('uiNewsContent').textContent,/assistente no trânsito/i);
-  assert.match(a.w.localStorage.getItem('smartsoma:news:archive'),/news1/);
+  a.click('uiAdd'); a.click('uiOpenExtraIncome');
+  assert.equal(a.el('uiEntryTitle').textContent,'Ganho extra');
+  a.input('uiEntryDescription','Bónus semanal'); a.input('uiEntryValue','40');
+  a.click('uiExtraGrossSwitch'); a.click('uiExtraReceivableSwitch');
+  a.el('uiEntryForm').dispatchEvent(new a.w.Event('submit',{cancelable:true}));
+  const saved=JSON.parse(a.cache['homeBadgeValores:'+dateKey(new Date())]);
+  assert.deepEqual(saved.ganhosExtras,[{id:saved.ganhosExtras[0].id,descricao:'Bónus semanal',valor:40,incluidoBruto:true,aindaReceber:true}]);
+  assert.equal(a.w.SmartSomaReadModel.day(new Date()).gross,40);
+  a.click('uiReceivable');
+  assert.match(a.el('uiReceivableValue').textContent,/40/);
+  assert.equal(a.el('uiReceivableExtra').hidden,false);
   assert.deepEqual(a.errors,[]);
 });
 
@@ -203,7 +215,7 @@ for (const [label,data,error,active] of [
 
 test('offline cache includes both new presentation assets and excludes test fixture',()=>{
   const source=fs.readFileSync('sw.js','utf8');
-  assert.match(source,/'\/ui-v2.js\?v=20'/); assert.match(source,/'\/ui-v2.css\?v=26'/);
+  assert.match(source,/'\/ui-v2.js\?v=21'/); assert.match(source,/'\/ui-v2.css\?v=27'/);
   assert.match(source,/'\/car.png\?v=2'/);
   assert.doesNotMatch(source,/__ui-test|visual-fixture/);
   assert.match(fs.readFileSync('.vercelignore','utf8'),/^tests\//m);

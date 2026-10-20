@@ -152,7 +152,7 @@
 "fmt.compactSameMonth": "{d1}–{d2} {m}",
 "fmt.dpDate": "{d} {m} de {y}",
 "fmt.todayIs": "Hoje: {d} de {m}",
-"app.save": "Salvar",
+"app.save": "Guardar",
 "app.cancel": "Cancelar",
 "app.delete": "Excluir",
 "app.close": "Fechar",
@@ -333,7 +333,7 @@
 "sheet.sair": "Sair",
 "idioma.title": "Idioma",
 "idioma.intro": "Escolha o idioma da aplicação. Todos os textos serão apresentados no idioma selecionado.",
-"idioma.save": "Salvar",
+"idioma.save": "Guardar",
 "dp.upload": "Carregar imagem..",
 "dp.nome": "Nome",
 "dp.nomePh": "Seu nome",
@@ -1082,6 +1082,7 @@
 
 
     function closeAllOverlays () {
+      if (window.SmartSomaReceivable && typeof window.SmartSomaReceivable.close === 'function') window.SmartSomaReceivable.close();
       var entryDialog = document.getElementById('uiEntryDialog');
       if (entryDialog && entryDialog.open) entryDialog.close();
       document.querySelectorAll('.mm-backdrop.visible').forEach(function (b) {
@@ -1746,7 +1747,7 @@
           var raw = cloudGet('homeBadgeValores:' + dateKeyFor(d));
           if (raw) {
             var parsed = JSON.parse(raw);
-            return (Number(parsed.uber) || 0) + (Number(parsed.bolt) || 0) + platSum(platExtrasFrom(parsed));
+            return (Number(parsed.uber) || 0) + (Number(parsed.bolt) || 0) + platSum(platExtrasFrom(parsed)) + ganhosExtrasBruto(parsed);
           }
         } catch (e) {  }
         return 0;
@@ -2299,6 +2300,40 @@
       for (var id in plat) s += Number(plat[id]) || 0;
       return s;
     }
+    // Ganhos que não pertencem a uma plataforma. Mantêm-se separados dos
+    // valores por plataforma para que só entrem no bruto quando o utilizador
+    // o indicar expressamente.
+    function ganhosExtrasFrom (parsed) {
+      if (!parsed || !Array.isArray(parsed.ganhosExtras)) return [];
+      return parsed.ganhosExtras.filter(function (item) {
+        return item && Number(item.valor) > 0;
+      }).map(function (item) {
+        return {
+          id: String(item.id || ''),
+          descricao: String(item.descricao || '').trim(),
+          valor: Number(item.valor) || 0,
+          incluidoBruto: item.incluidoBruto === true,
+          aindaReceber: item.aindaReceber === true
+        };
+      });
+    }
+    function ganhosExtrasBruto (parsed) {
+      return ganhosExtrasFrom(parsed).reduce(function (sum, item) {
+        return sum + (item.incluidoBruto ? item.valor : 0);
+      }, 0);
+    }
+    function ganhosExtrasReceber (parsed) {
+      return ganhosExtrasFrom(parsed).reduce(function (sum, item) {
+        // Quando já entrou no bruto, o valor já faz parte do líquido e não
+        // pode ser somado uma segunda vez ao valor a receber.
+        return sum + (item.aindaReceber && !item.incluidoBruto ? item.valor : 0);
+      }, 0);
+    }
+    window.GanhosExtras = {
+      list: ganhosExtrasFrom,
+      bruto: ganhosExtrasBruto,
+      aReceber: ganhosExtrasReceber
+    };
     // Plataformas que aparecem num intervalo (semana): todas as que estão
     // ativas (como Uber e Bolt, aparecem em todas as semanas), as que só
     // foram excluídas depois do início dessa semana, e qualquer uma com
@@ -2637,7 +2672,7 @@
               b.uber     = Number(parsed.uber) || 0;
               b.bolt     = Number(parsed.bolt) || 0;
               b.despesas = Number(parsed.despesas) || 0;
-              b.extras   = platSum(platExtrasFrom(parsed));
+              b.extras   = platSum(platExtrasFrom(parsed)) + ganhosExtrasBruto(parsed);
             }
           } catch (e) {  }
           sumBruto     += b.uber + b.bolt + b.extras;
@@ -3298,7 +3333,7 @@
                 if (parsed && typeof parsed[k] === 'number') badges[k] = parsed[k];
               }
               badges.plat = platExtrasFrom(parsed);
-              badges.extras = platSum(badges.plat);
+              badges.extras = platSum(badges.plat) + ganhosExtrasBruto(parsed);
             }
           } catch (e) {  }
           return badges;
@@ -3518,10 +3553,10 @@
         return ref.getFullYear() + '-' + pad2(ref.getMonth() + 1) + '-' + pad2(ref.getDate());
       }
 
-      var badges = { uber: 0, bolt: 0, despesas: 0, distancia: 0, plat: {} };
+      var badges = { uber: 0, bolt: 0, despesas: 0, distancia: 0, plat: {}, ganhosExtras: [] };
 
       function loadBadges () {
-        badges = { uber: 0, bolt: 0, despesas: 0, distancia: 0, plat: {} };
+        badges = { uber: 0, bolt: 0, despesas: 0, distancia: 0, plat: {}, ganhosExtras: [] };
         try {
           var raw = cloudGet(BADGES_STORAGE_PREFIX + dateKey());
           if (raw) {
@@ -3530,6 +3565,7 @@
               if (k !== 'plat' && parsed && typeof parsed[k] === 'number') badges[k] = parsed[k];
             }
             badges.plat = platExtrasFrom(parsed);
+            badges.ganhosExtras = ganhosExtrasFrom(parsed);
           }
         } catch (e) {  }
       }
@@ -3641,6 +3677,20 @@
           saveBadges();
           renderBadges();
         },
+        addGanhoExtra: function (item) {
+          if (!item || !(Number(item.valor) > 0)) return false;
+          badges.ganhosExtras.push({
+            id: String(item.id || ('extra-' + Date.now().toString(36))),
+            descricao: String(item.descricao || '').trim(),
+            valor: Math.min(Number(item.valor), 999.99),
+            incluidoBruto: item.incluidoBruto === true,
+            aindaReceber: item.aindaReceber === true
+          });
+          saveBadges();
+          renderBadges();
+          return true;
+        },
+        getGanhosExtras: function () { return ganhosExtrasFrom({ ganhosExtras: badges.ganhosExtras }); },
         reload: function () { loadBadges(); renderBadges(); },
         setDespesas: function (valor) {
           badges.despesas = (typeof valor === 'number' && !isNaN(valor)) ? valor : 0;
@@ -3717,7 +3767,7 @@
               if (parsed && typeof parsed[k] === 'number') badges[k] = parsed[k];
             }
             badges.plat = platExtrasFrom(parsed);
-            badges.extras = platSum(badges.plat);
+            badges.extras = platSum(badges.plat) + ganhosExtrasBruto(parsed);
           }
         } catch (e) {  }
         return badges;
@@ -7267,7 +7317,7 @@
         return m;
       }
       function loadDayBadgesPdf (d) {
-        var b = { uber: 0, bolt: 0, despesas: 0, distancia: 0, plat: {} };
+        var b = { uber: 0, bolt: 0, despesas: 0, distancia: 0, plat: {}, raw: {} };
         try {
           var raw = cloudGet(BADGES_PREFIX + dateKeyFor(d));
           if (raw) {
@@ -7277,6 +7327,7 @@
             b.despesas  = Number(parsed.despesas) || 0;
             b.distancia = Number(parsed.distancia) || 0;
             b.plat      = platExtrasFrom(parsed);
+            b.raw       = parsed;
           }
         } catch (e) {  }
         return b;
@@ -7333,7 +7384,7 @@
               var wd = new Date(d.getTime());
               wd.setDate(d.getDate() + i);
               var wb = loadDayBadgesPdf(wd);
-              weekGross += wb.uber + wb.bolt + platSum(wb.plat);
+              weekGross += wb.uber + wb.bolt + platSum(wb.plat) + ganhosExtrasBruto(wb.raw);
             }
             fixasDoDia = fixasAtivasDaSemana(d).map(function (item) {
               var valor = (item.tipo === 'euro') ? Number(item.valor || 0) : (weekGross * (Number(item.valor || 0) / 100));
@@ -7343,7 +7394,7 @@
 
           for (var pid in badges.plat) platIds[pid] = true;
 
-          var bruto = badges.uber + badges.bolt + platSum(badges.plat);
+          var bruto = badges.uber + badges.bolt + platSum(badges.plat) + ganhosExtrasBruto(badges.raw);
           var despesas = window.SmartSomaReadModel.day(d).expenses;
           dias.push({
             data: d,
@@ -7778,7 +7829,7 @@
         for (var day = 1; day <= lastDay; day++) {
           var date = new Date(year, month, day);
           var badges = loadDayBadgesPdf(date);
-          var hasBadge = badges.uber || badges.bolt || badges.despesas || badges.distancia || platSum(badges.plat);
+          var hasBadge = badges.uber || badges.bolt || badges.despesas || badges.distancia || platSum(badges.plat) || ganhosExtrasFrom(badges.raw).length;
           if (hasBadge || loadDayItemsPdf(date).length) return true;
         }
         return false;
@@ -8160,21 +8211,6 @@
         start: iniciar
       };
     })();
-
-    /* ===================================================================
-       NOVIDADES GLOBAIS
-
-       Para enviar uma nova mensagem a todos os utilizadores, altere SEMPRE
-       o id para um valor novo e depois sentAt, title e text. A leitura é guardada
-       localmente por utilizador/dispositivo; mensagens antigas permanecem
-       no Arquivo e nunca são apagadas pela interface.
-       =================================================================== */
-    window.SmartSomaNewsNotice = {
-      id: 'news1',
-      sentAt: '2026-10-12',
-      title: '⚡ Spoiler: O teu novo assistente no trânsito!',
-      text: 'EM BREVE: Uma app integrada para calcular cada corrida em tempo real. Aguarda!'
-    };
 
     // A apresentação só inicia depois dos controlos reais e do cache estarem prontos.
     // Last DOM-ready listener: cloud-init replays these after hydration when

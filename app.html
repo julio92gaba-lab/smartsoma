@@ -105,8 +105,8 @@
     <link rel="stylesheet" href="app.css">
     <link rel="preload" href="fonts/BricolageGrotesque-latin.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="fonts/DMSans-latin.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="ui-v2.css?v=26">
-    <script src="ui-v2.js?v=20" defer></script>
+    <link rel="stylesheet" href="ui-v2.css?v=27">
+    <script src="ui-v2.js?v=21" defer></script>
     <script src="supabase.min.js"></script>
 <link rel="icon" type="image/png" sizes="192x192" href="/favicon.png">
 </head>
@@ -615,26 +615,6 @@
                         </div>
                         <div class="home-list-page" id="homeListPageRelatorio" hidden>
                             <div class="download-page">
-                                <section class="ss-driver-card" aria-labelledby="ssDriverTitle">
-                                    <div class="ss-driver-watermark" aria-hidden="true">
-                                        <svg viewBox="0 0 240 160" focusable="false"><path d="M30 104h15l17-40h92l29 40h20c8 0 14 6 14 14v8h-18a22 22 0 0 1-43 0H93a22 22 0 0 1-43 0H30Z"/><circle cx="72" cy="126" r="16"/><circle cx="178" cy="126" r="16"/><path d="M76 64 91 42h45l22 22"/></svg>
-                                    </div>
-                                    <div class="ss-driver-topline">
-                                        <span class="ss-driver-tag" data-i18n="relatorio.driver.tag">EM BREVE</span>
-                                        <span class="ss-driver-product">SS DRIVER</span>
-                                    </div>
-                                    <div class="ss-driver-grid">
-                                        <div>
-                                            <h2 id="ssDriverTitle" data-i18n="relatorio.driver.title">Cada viagem, uma decisão melhor.</h2>
-                                            <p data-i18n="relatorio.driver.copy">O SS Driver será a tua calculadora de viagens. Define a tua meta e vê, antes de aceitar, se cada corrida aproxima o teu objetivo.</p>
-                                        </div>
-                                        <div class="ss-driver-note">
-                                            <strong data-i18n="relatorio.driver.noteTitle">Calculadora de viagens</strong>
-                                            <span data-i18n="relatorio.driver.noteCopy">Feito à medida para motoristas TVDE e estafetas.</span>
-                                        </div>
-                                    </div>
-                                </section>
-
                                 <section class="download-overview" aria-labelledby="downloadPageTitle">
                                     <div class="download-overview-main">
                                         <h2 class="legal-title" id="downloadPageTitle" data-i18n="relatorio.pageTitle">Relatório mensal</h2>
@@ -982,7 +962,7 @@
                     <p class="ajuda-intro-text" data-i18n="idioma.intro">Escolha o idioma da aplicação. Todos os textos serão apresentados no idioma selecionado.</p>
                     <div class="lang-options" id="langOptionsList" role="radiogroup" data-i18n-aria="sheet.idioma" aria-label="Idioma"></div>
                     <div class="sheet-divider"></div>
-                    <button type="button" class="dp-save-btn" id="langSaveBtn" data-i18n="idioma.save">Salvar</button>
+                    <button type="button" class="dp-save-btn" id="langSaveBtn" data-i18n="idioma.save">Guardar</button>
                 </div>
             </div>
             <div class="sheet-screen" id="sheetScreenDespesasFixas" hidden>
@@ -1015,7 +995,7 @@
                             <span class="despesa-weekly-label" data-i18n="fixas.semanal">Semanal</span>
                         </div>
 
-                        <button type="button" class="mm-save-btn" id="despesaSalvarBtn" data-i18n="app.save">Salvar</button>
+                        <button type="button" class="mm-save-btn" id="despesaSalvarBtn" data-i18n="app.save">Guardar</button>
                         <div class="fixas-retro-control">
                             <div class="fixas-retro-row">
                                 <strong data-i18n="fixas.retroTitle">Retroativo?</strong>
@@ -1049,7 +1029,7 @@
 
                     <input type="text" class="dp-input" id="mpNovaInput" data-i18n-ph="mp.novaPh" placeholder="NOME" maxlength="9" autocomplete="off">
 
-                    <button type="button" class="dp-save-btn" id="mpSalvarBtn" data-i18n="app.save">Salvar</button>
+                    <button type="button" class="dp-save-btn" id="mpSalvarBtn" data-i18n="app.save">Guardar</button>
 
                 </div>
             </div>
@@ -1231,7 +1211,7 @@
                     <span class="mm-value-prefix">€</span>
                     <input type="text" inputmode="decimal" class="mm-value-input" id="platExtraValorInput" placeholder="0.00" data-i18n-aria="plat.valorAria" aria-label="Valor recebido">
                 </div>
-                <button type="button" class="mm-save-btn" id="platExtraSalvarBtn" data-i18n="app.save">Salvar</button>
+                <button type="button" class="mm-save-btn" id="platExtraSalvarBtn" data-i18n="app.save">Guardar</button>
             </div>
         </div>
     </div>
@@ -1307,7 +1287,7 @@
                 <button type="button" class="meta-tipo-btn" id="semanaDespesaEditEuroBtn" aria-pressed="false" data-i18n="despesaEdit.euro">Valor fixo</button>
             </div>
             <button type="button" class="mm-delete-btn" id="semanaDespesaEditDeleteBtn" data-i18n="despesaEdit.delete">Apagar despesa</button>
-            <button type="button" class="mm-save-btn" id="semanaDespesaEditSaveBtn" data-i18n="app.save">Salvar</button>
+            <button type="button" class="mm-save-btn" id="semanaDespesaEditSaveBtn" data-i18n="app.save">Guardar</button>
         </div>
     </div>
 
@@ -1331,7 +1311,7 @@
                     <span class="mm-value-prefix">€</span>
                     <input type="text" inputmode="decimal" class="mm-value-input" id="uberValorInput" placeholder="0.00" data-i18n-aria="uber.valorAria" aria-label="Valor recebido na Uber">
                 </div>
-                <button type="button" class="mm-save-btn" id="uberSalvarBtn" data-i18n="app.save">Salvar</button>
+                <button type="button" class="mm-save-btn" id="uberSalvarBtn" data-i18n="app.save">Guardar</button>
             </div>
         </div>
     </div>
@@ -1345,7 +1325,7 @@
                     <span class="mm-value-prefix">€</span>
                     <input type="text" inputmode="decimal" class="mm-value-input" id="boltValorInput" placeholder="0.00" data-i18n-aria="bolt.valorAria" aria-label="Valor recebido na Bolt">
                 </div>
-                <button type="button" class="mm-save-btn" id="boltSalvarBtn" data-i18n="app.save">Salvar</button>
+                <button type="button" class="mm-save-btn" id="boltSalvarBtn" data-i18n="app.save">Guardar</button>
             </div>
         </div>
     </div>
@@ -1361,7 +1341,7 @@
                     <span class="mm-value-prefix">€</span>
                     <input type="text" inputmode="decimal" class="mm-value-input" id="despesasSemanaValorInput" placeholder="0.00" data-i18n-aria="dia.valorAria" aria-label="Valor gasto em despesas">
                 </div>
-                <button type="button" class="mm-save-btn" id="despesasSemanaSalvarBtn" data-i18n="app.save">Salvar</button>
+                <button type="button" class="mm-save-btn" id="despesasSemanaSalvarBtn" data-i18n="app.save">Guardar</button>
             </div>
 
             <div id="despesaFixaLembreteEl"></div>
@@ -1431,7 +1411,7 @@
                 <p class="distancia-status-text" id="distanciaStatusText">Insira Km Início</p>
             </div>
 
-            <button type="button" class="mm-save-btn" id="distanciaSalvarBtn" data-i18n="app.save">Salvar</button>
+            <button type="button" class="mm-save-btn" id="distanciaSalvarBtn" data-i18n="app.save">Guardar</button>
         </div>
     </div>
 
@@ -1455,7 +1435,7 @@
                 <span class="meta-semanal-row-compact-value" id="metaSemanalCurrentText" data-i18n="meta.nenhuma">Nenhuma</span>
             </div>
 
-            <button type="button" class="mm-save-btn" id="metaSemanalSalvarBtn" data-i18n="app.save">Salvar</button>
+            <button type="button" class="mm-save-btn" id="metaSemanalSalvarBtn" data-i18n="app.save">Guardar</button>
 
             <div class="mm-secondary-action">
                 <button type="button" class="mm-zerar-link" id="btnZerarMetaSemanal">
@@ -1484,7 +1464,7 @@
                 <p class="mm-helper-text" data-i18n="meta.podeAlterar">Pode alterar quando quiser.</p>
             </div>
 
-            <button type="button" class="mm-save-btn" id="metaSemanalWelcomeSalvarBtn" data-i18n="app.save">Salvar</button>
+            <button type="button" class="mm-save-btn" id="metaSemanalWelcomeSalvarBtn" data-i18n="app.save">Guardar</button>
         </div>
     </div>
 
@@ -1512,7 +1492,7 @@
                 <button type="button" class="meta-tipo-btn" id="metaRetroTipoLiquidoBtn" aria-pressed="false" data-i18n="meta.liquido">Líquido</button>
             </div>
 
-            <button type="button" class="mm-save-btn" id="metaSemanalRetroSalvarBtn" data-i18n="app.save">Salvar</button>
+            <button type="button" class="mm-save-btn" id="metaSemanalRetroSalvarBtn" data-i18n="app.save">Guardar</button>
         </div>
     </div>
 
@@ -2146,7 +2126,7 @@
         <div class="lpm-card">
             <p class="lpm-title" data-i18n="sheet.idioma">Idioma</p>
             <div class="lang-options" id="langPopupOptionsList" role="radiogroup" aria-label="Idioma"></div>
-            <button type="button" class="lpm-save-btn" id="langPopupSaveBtn" data-i18n="idioma.save">Salvar</button>
+            <button type="button" class="lpm-save-btn" id="langPopupSaveBtn" data-i18n="idioma.save">Guardar</button>
         </div>
     </div>
 

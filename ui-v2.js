@@ -20,7 +20,7 @@
     arrow: '<path d="M5 12h14m-6-6 6 6-6 6"/>',
     profit: '<path d="M5 18 19 4M5 4h14v14"/>',
     distance: '<path d="M7 3 3 21M17 3l4 18M12 3v3M12 10v4M12 18v3"/>',
-    news: '<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/>'
+    receivable: '<path d="M4 6h16v12H4zM4 10h16M8 15h3M15 14.5c0 1-1 1.5-2 1.5s-2-.5-2-1.5 1-1.5 2-1.5 2 .5 2 1.5M13 13v4"/>'
   };
   var text = {
     pt: { resumo:'Início', ganhos:'Ganhos diários', despesas:'Despesas', semana:'Semana', relatorio:'Relatórios', downloads:'Downloads', ajustes:'Ajustes', hello:'Bom dia', afternoon:'Boa tarde', evening:'Boa noite', record:'Adicionar registo', calendar:'Escolher data', tag:'Para Estafetas e Motoristas de App.', ganhosNote:'Cada percurso conta. Regista os teus rendimentos e acompanha o dia.', despesasNote:'As tuas despesas, sem perder nenhum detalhe.', semanaNote:'Sete dias. Uma visão clara dos teus resultados.', relatorioNote:'Os teus resultados, organizados e prontos a guardar.', downloadsNote:'Os teus resultados, organizados e prontos a descarregar.', ajustesNote:'O SmartSoma, à tua medida.', theme:'Modo escuro', profile:'Editar perfil', contact:'Contacto', help:'Perguntas frequentes', normal:'Normal', newPlatform:'Nova plataforma', manage:'Gerir plataformas', addIncome:'Adicionar rendimento' },
@@ -149,13 +149,13 @@
       var n=button('',function(){go(key);},'ui-nav-item');
       n.dataset.uiRoute=key; n.innerHTML=svg(key)+'<span class="ui-nav-short" aria-hidden="true"></span>'; nav.querySelector('nav').append(n);
     });
-    var header=create('header','ui-header','<div class="ui-header-personal"><button type="button" id="uiHeaderAvatar" class="ui-header-avatar"></button><div class="ui-header-copy"><p id="uiHeaderDate" class="ui-eyebrow"></p><h1 id="uiHeaderTitle"></h1></div></div><div class="ui-header-actions"><button type="button" id="uiNews" class="ui-icon-button">'+svg('news')+'<span id="uiNewsBadge" class="ui-news-badge" hidden></span></button><button type="button" id="uiAdd" class="ui-add">'+svg('plus')+'</button></div>');
+    var header=create('header','ui-header','<div class="ui-header-personal"><button type="button" id="uiHeaderAvatar" class="ui-header-avatar"></button><div class="ui-header-copy"><p id="uiHeaderDate" class="ui-eyebrow"></p><h1 id="uiHeaderTitle"></h1></div></div><div class="ui-header-actions"><button type="button" id="uiReceivable" class="ui-icon-button">'+svg('receivable')+'</button><button type="button" id="uiAdd" class="ui-add">'+svg('plus')+'</button></div>');
     $('appRoot').prepend(header);
     $('uiHeaderAvatar').addEventListener('click',openSettingsProfile);
     var headerAvatar=$('headerAvatarBtn');
     if(headerAvatar)headerAvatar.addEventListener('click',function(e){e.preventDefault();e.stopImmediatePropagation();openSettingsProfile();},true);
-    $('uiAdd').addEventListener('click',function(){window.closeProfileSheetPublic(); if(window.SmartSomaUI.openEntry) SmartSomaUI.openEntry(); else PlataformaModals.uber.open();});
-    $('uiNews').setAttribute('aria-label',say('Novidades','News'));
+    $('uiAdd').addEventListener('click',function(){if(window.SmartSomaReceivable)SmartSomaReceivable.close();window.closeProfileSheetPublic(); if(window.SmartSomaUI.openEntry) SmartSomaUI.openEntry(); else PlataformaModals.uber.open();});
+    $('uiReceivable').setAttribute('aria-label',say('Valor a receber','Amount receivable'));
     if(window.Capacitor&&window.Capacitor.isNativePlatform()) $('openTermosMenuBtn').target='_self';
     $('homeListPageSemana').prepend(heading('semana'));
     $('tamanhoOptionP').querySelector('.tamanho-option-letter').textContent='A';
@@ -209,7 +209,7 @@
       setTimeout(refreshData,160);
     });
     setupPages();
-    setupNews();
+    setupReceivable();
     syncSidebarAccount();
     translate(); go('resumo');
     document.dispatchEvent(new CustomEvent('smartSomaUIReady'));
@@ -518,51 +518,39 @@
     tableRows($('uiOverviewExpenseRows'),dailyEntries);
     $('uiOverviewExpenseTotal').textContent=money(days.reduce(function(total,day){return total+day.expenses;},0));
   }
-  function setupNews(){
-    var notice=window.SmartSomaNewsNotice;
-    if(!notice||!notice.id||!notice.title||!notice.text)return;
-    var storageKey='smartsoma:news:archive';
-    var archive=[];
-    try { archive=JSON.parse(localStorage.getItem(storageKey)||'[]');if(!Array.isArray(archive))archive=[]; } catch(e) { archive=[]; }
-    var modal=create('div','ui-news-backdrop','<section class="ui-news-card" role="dialog" aria-modal="true" aria-labelledby="uiNewsTitle"><div class="ui-panel-head"><h2 id="uiNewsTitle"></h2><button type="button" id="uiNewsClose" class="ui-icon-button" aria-label="Fechar">×</button></div><div class="ui-news-divider"></div><div class="ui-news-tabs"><button type="button" id="uiNewsNew"></button><button type="button" id="uiNewsArchive"></button></div><div id="uiNewsContent" class="ui-news-content"></div></section>');
-    var popup=create('div','ui-news-popup','<strong id="uiNewsPopupTitle"></strong><p id="uiNewsPopupText"></p><div><button type="button" id="uiNewsPopupClose" class="ui-button ui-secondary"></button><button type="button" id="uiNewsPopupRead" class="ui-button"></button></div>');
-    var activeTab='new',readingNotice=null;
-    document.body.append(modal,popup);
-    function save(){try{localStorage.setItem(storageKey,JSON.stringify(archive));}catch(e){}}
-    function isArchived(id){return archive.some(function(item){return item.id===id;});}
-    function archiveNotice(){if(isArchived(notice.id))return;archive.unshift({id:notice.id,title:notice.title,text:notice.text,sentAt:notice.sentAt,readAt:new Date().toISOString()});save();}
-    function newItems(){return isArchived(notice.id)?[]:[notice];}
-    function messageDate(item){var date=new Date(item.sentAt||item.readAt);if(isNaN(date.getTime()))return '';return String(date.getDate()).padStart(2,'0')+'/'+String(date.getMonth()+1).padStart(2,'0')+'/'+date.getFullYear();}
-    function updateBadge(){var unread=newItems().length,badge=$('uiNewsBadge');badge.hidden=!unread;badge.textContent=unread||'';}
+  function setupReceivable(){
+    var modal=create('div','ui-receivable-backdrop','<section class="ui-receivable-card" role="dialog" aria-modal="true" aria-labelledby="uiReceivableTitle"><div class="ui-panel-head"><h2 id="uiReceivableTitle"></h2><button type="button" id="uiReceivableClose" class="ui-icon-button" aria-label="Fechar">×</button></div><p id="uiReceivablePeriod" class="ui-receivable-period"></p><strong id="uiReceivableValue" class="ui-receivable-value"></strong><div id="uiReceivableExtra" class="ui-receivable-extra" hidden><span>Ganhos extras</span><strong></strong><small>Inclui ganhos extras</small></div><div class="ui-receivable-history"><div class="ui-receivable-month"><button type="button" id="uiReceivablePrev" class="ui-icon-button" aria-label="Mês anterior">‹</button><h3 id="uiReceivableMonth"></h3><button type="button" id="uiReceivableNext" class="ui-icon-button" aria-label="Próximo mês">›</button></div><div id="uiReceivableRows"></div></div></section>');
+    var cursor=new Date();cursor.setDate(1);
+    document.body.append(modal);
+    function mondayOf(date){var d=new Date(date);d.setHours(0,0,0,0);d.setDate(d.getDate()+(d.getDay()===0?-6:1-d.getDay()));return d;}
+    function key(date){return date.getFullYear()+'-'+String(date.getMonth()+1).padStart(2,'0')+'-'+String(date.getDate()).padStart(2,'0');}
+    function rawFor(date){try{return JSON.parse(cloudGet('homeBadgeValores:'+key(date))||'{}');}catch(e){return {};}}
+    function number(value){return Number(value)||0;}
+    function dayGross(date){var raw=rawFor(date);return number(raw.uber)+number(raw.bolt)+Object.keys(raw.plat||{}).reduce(function(sum,id){return sum+number(raw.plat[id]);},0)+(window.GanhosExtras&&GanhosExtras.bruto?GanhosExtras.bruto(raw):0);}
+    function weekTotals(monday){var gross=0,expenses=0,extra=0,extraReceivable=0;for(var i=0;i<7;i++){var day=new Date(monday);day.setDate(monday.getDate()+i);var raw=rawFor(day);gross+=dayGross(day);var list=window.GanhosExtras&&GanhosExtras.list?GanhosExtras.list(raw):[];extra+=list.reduce(function(sum,item){return sum+number(item.valor);},0);extraReceivable+=(window.GanhosExtras&&GanhosExtras.aReceber?GanhosExtras.aReceber(raw):0);expenses+=window.SmartSomaReadModel?number(SmartSomaReadModel.day(day).expenses):number(raw.despesas);}return{gross:gross,expenses:expenses,extra:extra,value:gross-expenses+extraReceivable};}
+    function label(monday){var sunday=new Date(monday);sunday.setDate(monday.getDate()+6);return monday.toLocaleDateString(I18N.t('lang.code'),{day:'numeric',month:'long'})+' a '+sunday.toLocaleDateString(I18N.t('lang.code'),{day:'numeric',month:'long'});}
     function render(){
-      var items=activeTab==='new'?(readingNotice?[readingNotice]:newItems()):archive;
-      $('uiNewsTitle').textContent=say('Novidades','News');
-      $('uiNewsNew').classList.toggle('is-active',activeTab==='new');$('uiNewsArchive').classList.toggle('is-active',activeTab==='archive');
-      $('uiNewsNew').textContent=say('Novas','New');$('uiNewsArchive').textContent=say('Arquivo','Archive');
-      updateBadge();
-      $('uiNewsContent').replaceChildren();
-      if(!items.length){var empty=create('p','ui-news-empty');empty.textContent=activeTab==='new'?say('Não há novidades por ler.','There are no unread updates.'):say('O arquivo ainda está vazio.','The archive is empty.');$('uiNewsContent').append(empty);return;}
-      items.forEach(function(item){var article=create('article','ui-news-item'+(item.id===notice.id&&activeTab==='new'?' is-highlighted':''));var title=create('h3');var date=create('small','ui-news-date');var text=create('p');title.textContent=item.title;date.textContent=messageDate(item);text.textContent=item.text;article.append(title,date,text);$('uiNewsContent').append(article);});
+      var current=mondayOf(new Date()),currentData=weekTotals(current);
+      $('uiReceivableTitle').textContent=say('Valor a receber','Amount receivable');$('uiReceivablePeriod').textContent=label(current);$('uiReceivableValue').textContent=money(currentData.value);
+      var extra=$('uiReceivableExtra');extra.hidden=currentData.extra<=0;if(currentData.extra>0)extra.querySelector('strong').textContent=money(currentData.extra);
+      $('uiReceivableMonth').textContent=cursor.toLocaleDateString(I18N.t('lang.code'),{month:'long',year:'numeric'});
+      $('uiReceivableRows').replaceChildren();var today=new Date();today.setHours(0,0,0,0);
+      var weeks=window.SmartSomaWeeks?SmartSomaWeeks.weeksForMonth(cursor.getFullYear(),cursor.getMonth()):[];
+      weeks.forEach(function(week,index){var monday=week.monday;if(monday>today||monday.getTime()===current.getTime())return;var row=create('div','ui-receivable-row');row.textContent=say('Sem. ','Week ')+(index+1)+' — '+money(weekTotals(monday).value);$('uiReceivableRows').append(row);});
+      if(!$('uiReceivableRows').children.length){var empty=create('p','ui-muted');empty.textContent=say('Ainda não há semanas anteriores neste mês.','There are no previous weeks in this month yet.');$('uiReceivableRows').append(empty);}
     }
-    function open(tab,markAsRead){activeTab=tab||'new';readingNotice=null;if(markAsRead&&!isArchived(notice.id)){readingNotice=notice;archiveNotice();}render();modal.classList.add('visible');}
-    function close(){modal.classList.remove('visible');readingNotice=null;render();}
-    function closePopup(){popup.classList.remove('visible');}
-    $('uiNews').addEventListener('click',function(){closePopup();open('new',true);});
-    $('uiNewsClose').addEventListener('click',close);modal.addEventListener('click',function(e){if(e.target===modal)close();});
-    $('uiNewsNew').addEventListener('click',function(){activeTab='new';render();});$('uiNewsArchive').addEventListener('click',function(){activeTab='archive';render();});
-    $('uiNewsPopupClose').addEventListener('click',closePopup);$('uiNewsPopupRead').addEventListener('click',function(){closePopup();open('new',true);});
-    $('uiNewsPopupTitle').textContent=say('Nova mensagem','New message');$('uiNewsPopupText').textContent=notice.title;
-    $('uiNewsPopupClose').textContent=say('Fechar','Close');$('uiNewsPopupRead').textContent=say('Ler','Read');
-    document.addEventListener('keydown',function(e){if(e.key==='Escape'){if(modal.classList.contains('visible'))close();else closePopup();}});
-    updateBadge();
-    if(!isArchived(notice.id))window.setTimeout(function(){popup.classList.add('visible');},900);
+    function open(){window.closeAllOverlays();if($('uiEntryDialog').open)$('uiEntryDialog').close();render();modal.classList.add('visible');}
+    function close(){modal.classList.remove('visible');}
+    $('uiReceivable').addEventListener('click',open);$('uiReceivableClose').addEventListener('click',close);modal.addEventListener('click',function(e){if(e.target===modal)close();});
+    $('uiReceivablePrev').addEventListener('click',function(){cursor.setMonth(cursor.getMonth()-1);render();});$('uiReceivableNext').addEventListener('click',function(){var next=new Date(cursor);next.setMonth(next.getMonth()+1);if(next<=new Date(new Date().getFullYear(),new Date().getMonth(),1)){cursor=next;render();}});
+    window.SmartSomaReceivable={open:open,close:close,visible:function(){return modal.classList.contains('visible');}};
   }
   var entryMode='income',entryScreen='home',chosen=null,entryReturnFocus=null,restoreKmComponent=function(){},mountKmComponent=function(){};
   function setupEntry(){
-    var dialog=create('dialog','ui-entry-dialog','<form id="uiEntryForm"><div class="ui-panel-head"><h2 id="uiEntryTitle"></h2><button type="button" id="uiEntryClose" class="ui-icon-button" aria-label="Fechar">×</button></div><p class="ui-entry-section-label">Data:</p><button type="button" id="uiEntryDate" class="ui-entry-date-selector" aria-haspopup="dialog"></button><p id="uiEntryTypeLabel" class="ui-entry-section-label">Tipo:</p><div class="ui-entry-tabs" id="uiEntryTabs"><button type="button" id="uiEntryIncome"></button><button type="button" id="uiEntryExpense"></button><button type="button" id="uiEntryKm">KM</button></div><div id="uiEntryHomeContent"><p id="uiPlatformHint" class="ui-platform-hint"></p><div class="ui-platform-selector" id="uiPlatformSelector"><div id="uiPlatformChoices" class="ui-platform-choices"></div></div></div><div id="uiEntryFormContent" hidden><label id="uiEntryDescriptionLabel"><span id="uiDescriptionLabel"></span><input id="uiEntryDescription" maxlength="60"></label><label><span id="uiValueLabel"></span><div class="ui-entry-amount"><span>€</span><input id="uiEntryValue" inputmode="decimal" autocomplete="off" required aria-label="Valor" placeholder="0,00"></div></label><p id="uiEntryHint" class="ui-muted" aria-live="polite"></p><p id="uiEntryError" class="ui-error" role="alert"></p><button type="submit" id="uiEntrySave" class="ui-button"></button></div><div id="uiEntryKmContent" hidden></div></form>');
+    var dialog=create('dialog','ui-entry-dialog','<form id="uiEntryForm"><div class="ui-panel-head"><h2 id="uiEntryTitle"></h2><button type="button" id="uiEntryClose" class="ui-icon-button" aria-label="Fechar">×</button></div><p class="ui-entry-section-label">Data:</p><button type="button" id="uiEntryDate" class="ui-entry-date-selector" aria-haspopup="dialog"></button><p id="uiEntryTypeLabel" class="ui-entry-section-label">Tipo:</p><div class="ui-entry-tabs" id="uiEntryTabs"><button type="button" id="uiEntryIncome"></button><button type="button" id="uiEntryExpense"></button><button type="button" id="uiEntryKm">KM</button></div><div id="uiEntryHomeContent"><p id="uiPlatformHint" class="ui-platform-hint"></p><div class="ui-platform-selector" id="uiPlatformSelector"><div id="uiPlatformChoices" class="ui-platform-choices"></div></div><div id="uiExtraIncomeLauncher" class="ui-extra-income-launcher"><p>Outros ganhos?</p><button type="button" id="uiOpenExtraIncome">Inserir ganhos extras</button></div></div><div id="uiEntryFormContent" hidden><label id="uiEntryDescriptionLabel"><span id="uiDescriptionLabel"></span><input id="uiEntryDescription" maxlength="60"></label><label><span id="uiValueLabel"></span><div class="ui-entry-amount"><span>€</span><input id="uiEntryValue" inputmode="decimal" autocomplete="off" required aria-label="Valor" placeholder="0,00"></div></label><div id="uiExtraIncomeOptions" hidden><div class="ui-entry-switch-row"><strong>Incluído no valor bruto?</strong><button type="button" id="uiExtraGrossSwitch" class="ui-toggle" role="switch" aria-checked="false"></button></div><p class="ui-entry-switch-copy">Ao incluir o ganho extra no valor bruto, pode sofrer taxas de despesas fixas semanais em percentagem, caso as tenhas adicionado, por exemplo, taxas semanais fixas da plataforma.</p><div class="ui-entry-switch-row"><strong>Ainda a receber?</strong><button type="button" id="uiExtraReceivableSwitch" class="ui-toggle" role="switch" aria-checked="false"></button></div><p class="ui-entry-switch-copy">O ganho extra adicionado será contabilizado no valor a receber da semana selecionada.</p></div><p id="uiEntryHint" class="ui-muted" aria-live="polite"></p><p id="uiEntryError" class="ui-error" role="alert"></p><button type="submit" id="uiEntrySave" class="ui-button"></button></div><div id="uiEntryKmContent" hidden></div></form>');
     var backdrop=create('div','ui-entry-backdrop');dialog.id='uiEntryDialog';dialog.setAttribute('aria-labelledby','uiEntryTitle');document.body.append(backdrop,dialog);
     var retro=create('div','ui-entry-retro-backdrop','<section class="ui-entry-retro-card" role="dialog" aria-modal="true" aria-labelledby="uiEntryRetroTitle"><div class="ui-panel-head"><h2 id="uiEntryRetroTitle"></h2><button type="button" id="uiEntryRetroClose" class="ui-icon-button" aria-label="Fechar">×</button></div><p id="uiEntryRetroCopy"></p><div class="ui-entry-retro-actions"><button type="button" id="uiEntryRetroCancel" class="ui-button ui-secondary"></button><button type="button" id="uiEntryRetroConfirm" class="ui-button"></button></div></section>');
-    var pendingEntry=null;document.body.append(retro);
+    var pendingEntry=null,extraOptions={incluidoBruto:false,aindaReceber:false};document.body.append(retro);
     var distanceCard=$('distanciaModalCard'),kmContent=$('uiEntryKmContent');
     var kmNodes=distanceCard?['.distancia-mode-row','#distanciaModoHelperText','#distanciaTotalForm','#distanciaInicioFimForm','#distanciaSalvarBtn'].map(function(selector){return distanceCard.querySelector(selector);}):[];
     restoreKmComponent=function(){
@@ -588,11 +576,15 @@
     $('uiEntryIncome').addEventListener('click',function(){entryMode='income';entryScreen='home';chosen=null;renderEntry();});
     $('uiEntryExpense').addEventListener('click',function(){entryMode='expense';entryScreen='expense';chosen=null;renderEntry();});
     $('uiEntryKm').addEventListener('click',function(){entryMode='km';entryScreen='km';chosen=null;renderEntry();});
+    $('uiOpenExtraIncome').addEventListener('click',function(){chosen={id:'ganho-extra',nome:say('Ganho extra','Extra earnings')};entryMode='income';entryScreen='extra';extraOptions={incluidoBruto:false,aindaReceber:false};renderEntry();});
+    [['uiExtraGrossSwitch','incluidoBruto'],['uiExtraReceivableSwitch','aindaReceber']].forEach(function(pair){$(pair[0]).addEventListener('click',function(){extraOptions[pair[1]]=!extraOptions[pair[1]];this.setAttribute('aria-checked',String(extraOptions[pair[1]]));});});
     $('distanciaSalvarBtn').addEventListener('click',function(){if(entryMode==='km'){dialog.close();refreshData();}});
     function commitEntry(value,desc){
       if(window.SmartSomaPro && !SmartSomaPro.isPro){dialog.close();if(window.abrirModalSubExpirada)abrirModalSubExpirada();return;}
       if(entryMode==='income'){
-        if(chosen.id==='uber'||chosen.id==='bolt'){
+        if(entryScreen==='extra'){
+          HomeBadges.addGanhoExtra({descricao:desc,valor:value,incluidoBruto:extraOptions.incluidoBruto,aindaReceber:extraOptions.aindaReceber});
+        } else if(chosen.id==='uber'||chosen.id==='bolt'){
           $(chosen.id+'ValorInput').value=String(value);$(chosen.id+'SalvarBtn').click();
         }else{HomeBadges.setPlat(chosen.id,value);}
       }else{
@@ -604,21 +596,22 @@
     $('uiEntryForm').addEventListener('submit',function(e){
       e.preventDefault();
       var value=Number($('uiEntryValue').value.trim().replace(',','.'));
+      var desc=$('uiEntryDescription').value.trim();
       if(!Number.isFinite(value)||value<0||value>999.99||!$('uiEntryValue').value.trim()||(entryMode==='expense'&&value===0)){$('uiEntryError').textContent=say('Insere um valor válido até 999,99 €.','Enter a valid amount up to €999.99.');return;}
       if(entryMode==='income'){
         if(!chosen){$('uiEntryError').textContent=say('Seleciona uma plataforma.','Select a platform.');return;}
+        if(entryScreen==='extra'&&!desc){$('uiEntryError').textContent=say('Adiciona uma descrição.','Add a description.');return;}
       }else{
-        var desc=$('uiEntryDescription').value.trim();
         if(!desc){$('uiEntryError').textContent=say('Adiciona uma descrição.','Add a description.');return;}
       }
       var selected=GanhosDate.get(),today=new Date();today.setHours(0,0,0,0);
       if(selected.getTime()<today.getTime()){
-        pendingEntry={value:value,desc:entryMode==='expense'?desc:''};
+        pendingEntry={value:value,desc:(entryMode==='expense'||entryScreen==='extra')?desc:''};
         $('uiEntryRetroTitle').textContent=say('Confirmar lançamento retroativo','Confirm backdated entry');
         $('uiEntryRetroCopy').textContent=say('Atenção: Está a registar esta informação numa data passada ('+GanhosDate.formatLabel(selected)+'). Deseja confirmar o lançamento retroativo?','Attention: you are recording this information on a past date ('+GanhosDate.formatLabel(selected)+'). Do you want to confirm the backdated entry?');
         $('uiEntryRetroCancel').textContent=say('Voltar','Back');$('uiEntryRetroConfirm').textContent=say('Confirmar','Confirm');retro.classList.add('visible');return;
       }
-      commitEntry(value,entryMode==='expense'?desc:'');
+      commitEntry(value,(entryMode==='expense'||entryScreen==='extra')?desc:'');
     });
     GanhosDate.onChange(function(){if(dialog.open)renderEntry();});
     SmartSomaUI.openEntry=openEntry;
@@ -626,17 +619,17 @@
   function openEntry(mode){
     window.closeAllOverlays();window.closeProfileSheetPublic();entryReturnFocus=document.activeElement;
     GanhosDate.set(new Date());
-    entryMode=mode||'income';entryScreen=mode==='expense'?'expense':mode==='km'?'km':'home';chosen=null;$('uiEntryValue').value='';$('uiEntryDescription').value='';renderEntry();
+    entryMode=mode||'income';entryScreen=mode==='expense'?'expense':mode==='km'?'km':'home';chosen=null;extraOptions={incluidoBruto:false,aindaReceber:false};$('uiEntryValue').value='';$('uiEntryDescription').value='';renderEntry();
     var entryDialog=$('uiEntryDialog');entryDialog.previousElementSibling.classList.add('visible');
     if(typeof entryDialog.show==='function')entryDialog.show();else entryDialog.showModal();
   }
   function renderEntry(){
-    var income=entryMode==='income',km=entryMode==='km',home=entryScreen==='home',incomeForm=entryScreen==='income';
+    var income=entryMode==='income',km=entryMode==='km',home=entryScreen==='home',incomeForm=entryScreen==='income'||entryScreen==='extra',extraForm=entryScreen==='extra';
     var title=$('uiEntryTitle');title.replaceChildren();
     if(incomeForm&&chosen){
       title.classList.add('ui-entry-title-with-icon');
-      if(chosen.img&&(chosen.id==='uber'||chosen.id==='bolt'||SmartSomaSecurity.isSafeImageUrl(chosen.img))){var image=create('img','ui-entry-title-icon');image.src=chosen.img;image.alt='';title.append(image);}
-      var titleText=create('span');titleText.textContent=say('Ganhos ','Earnings ')+chosen.nome;title.append(titleText);
+      if(extraForm){var extraIcon=create('span','ui-entry-title-icon ui-entry-extra-icon');extraIcon.innerHTML=svg('receivable');title.append(extraIcon);}else if(chosen.img&&(chosen.id==='uber'||chosen.id==='bolt'||SmartSomaSecurity.isSafeImageUrl(chosen.img))){var image=create('img','ui-entry-title-icon');image.src=chosen.img;image.alt='';title.append(image);}
+      var titleText=create('span');titleText.textContent=extraForm?chosen.nome:say('Ganhos ','Earnings ')+chosen.nome;title.append(titleText);
     }else{title.classList.remove('ui-entry-title-with-icon');title.textContent=home?t('record'):entryScreen==='expense'?say('Nova Despesa','New expense'):say('Registrar KM','Record KM');}
     var selected=GanhosDate.get(),today=new Date();today.setHours(0,0,0,0);selected=new Date(selected);selected.setHours(0,0,0,0);
     $('uiEntryDate').innerHTML=svg('semana')+'<span>'+(selected.getTime()===today.getTime()?say('HOJE','TODAY'):GanhosDate.formatLabel(selected))+'</span>';
@@ -653,10 +646,11 @@
       platforms().forEach(function(p){var n=button('',function(){chosen=p;entryMode='income';entryScreen='income';$('uiEntryValue').value=String(p.id==='uber'||p.id==='bolt'?HomeBadges.get()[p.id]||'':HomeBadges.getPlat(p.id)||'');renderEntry();},'ui-platform-choice');n.setAttribute('aria-label',p.nome);n.dataset.platform=p.id;var avatar=create('span','ui-platform-choice-avatar');if(p.img && (p.id==='uber'||p.id==='bolt'||SmartSomaSecurity.isSafeImageUrl(p.img))){var image=create('img');image.src=p.img;image.alt='';avatar.append(image);}else avatar.textContent=p.nome.slice(0,2).toUpperCase();var label=create('span','ui-platform-choice-label');label.textContent=p.nome;n.append(avatar,label);$('uiPlatformChoices').append(n);});
       return;
     }
-    $('uiEntryDescriptionLabel').hidden=income;$('uiEntryDescription').required=!income;
-    $('uiDescriptionLabel').textContent=say('Descrição','Description');$('uiValueLabel').textContent=say('Valor','Amount');
+    $('uiEntryDescriptionLabel').hidden=income&&!extraForm;$('uiEntryDescription').required=!income||extraForm;
+    $('uiDescriptionLabel').textContent=say('Descrição','Description');$('uiValueLabel').textContent=extraForm?say('Total do valor extra','Total extra amount'):say('Valor','Amount');$('uiExtraIncomeOptions').hidden=!extraForm;
+    $('uiExtraGrossSwitch').setAttribute('aria-checked',String(extraOptions.incluidoBruto));$('uiExtraReceivableSwitch').setAttribute('aria-checked',String(extraOptions.aindaReceber));
     $('uiEntrySave').textContent=say('Guardar','Save');$('uiEntryError').textContent='';
-    $('uiEntryHint').textContent=income?(chosen?say('Total do dia na '+chosen.nome,'Daily total on '+chosen.nome):say('Total do dia','Daily total')):say('A despesa será guardada na data selecionada.','The expense will be saved for the selected date.');
+    $('uiEntryHint').textContent=extraForm?'':income?(chosen?say('Total do dia na '+chosen.nome,'Daily total on '+chosen.nome):say('Total do dia','Daily total')):say('A despesa será guardada na data selecionada.','The expense will be saved for the selected date.');
     if(income&&chosen&&Number($('uiEntryValue').value)>0)$('uiEntryHint').textContent=say('Já existe um registo. Guardar substitui o total deste dia.','An entry exists. Saving replaces this day’s total.');
   }
   function setupSettings(){
@@ -765,7 +759,7 @@
       if(Math.abs(next-previousScroll)<4)return;
       var scrollingDown=next>previousScroll;
       previousScroll=next;
-      if(document.querySelector('dialog[open],.mm-backdrop.visible,.modal-backdrop.visible,.ui-news-backdrop.visible,.ui-entry-retro-backdrop.visible'))return;
+      if(document.querySelector('dialog[open],.mm-backdrop.visible,.modal-backdrop.visible,.ui-receivable-backdrop.visible,.ui-entry-retro-backdrop.visible'))return;
       clearTimeout(navTimer);
       if(!scrollingDown){document.body.classList.remove('ui-mobile-nav-hidden');return;}
       document.body.classList.add('ui-mobile-nav-hidden');
@@ -792,8 +786,7 @@
   function nativeBack(){
     var retro=document.querySelector('.ui-entry-retro-backdrop.visible');
     if(retro){$('uiEntryRetroCancel').click();return true;}
-    var news=document.querySelector('.ui-news-backdrop.visible');
-    if(news){$('uiNewsClose').click();return true;}
+    if(window.SmartSomaReceivable&&SmartSomaReceivable.visible()){SmartSomaReceivable.close();return true;}
     var dialog=document.querySelector('dialog[open]');
     if(dialog){var close=dialog.querySelector('#uiEntryClose,.ui-modal-close');if(close)close.click();else dialog.close();return true;}
     var overlay=document.querySelector('.mm-backdrop.visible,.modal-backdrop.visible');
