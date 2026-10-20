@@ -691,7 +691,7 @@
     var newPlatform=$('sheetScreenMultiplataforma').querySelector('[data-i18n="mp.adicionar"]');newPlatform.removeAttribute('data-i18n');newPlatform.dataset.uiText='newPlatform';
     var fixedForm=$('sheetScreenDespesasFixas').querySelector('.despesa-form');
     function resetFixedForm(){fixedForm.hidden=true;fixedAdd.setAttribute('aria-expanded','false');$('despesaDescInput').value='';$('despesaValorInput').value='';$('despesaTipoPercentBtn').click();}
-    var fixedAdd=button('',function(){fixedForm.hidden=!fixedForm.hidden;fixedAdd.setAttribute('aria-expanded',String(!fixedForm.hidden));if(!fixedForm.hidden)$('despesaDescInput').focus();});
+    var fixedAdd=button('',function(){fixedForm.hidden=!fixedForm.hidden;fixedAdd.setAttribute('aria-expanded',String(!fixedForm.hidden));});
     fixedAdd.id='uiFixedAdd';fixedAdd.setAttribute('aria-expanded','false');fixedForm.before(fixedAdd);fixedForm.hidden=true;
     document.addEventListener('fixedExpensesFormReset',resetFixedForm);
     document.addEventListener('fixedExpenseSaved',resetFixedForm);

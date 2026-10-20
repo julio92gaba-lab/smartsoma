@@ -406,6 +406,18 @@
 "fixas.weeklyShort": "€{v} (semanal)",
 "fixas.sufixoFixa": "{d} (FIXA)",
 "fixas.sufixoFixaPct": "{d} {p}% do Bruto (FIXA)",
+"fixas.retroTitle": "Retroativo?",
+"fixas.retroAria": "Adicionar despesa fixa retroativa",
+"fixas.retroHint": "Insira despesas fixas na semana que quiser.",
+"fixas.retroModalTitle": "Selecionar semana",
+"fixas.retroModalHelper": "Escolha a semana em que esta despesa fixa deve começar.",
+"fixas.retroWeeksAria": "Semanas do mês",
+"fixas.retroSelected": "Despesa fixa adicionada na {week} semana de {month}, de {start} a {end} de {month}.",
+"despesaEdit.title": "Editar despesa",
+"despesaEdit.valorAria": "Valor da despesa",
+"despesaEdit.delete": "Apagar despesa",
+"despesaEdit.deleteTitle": "Apagar despesa",
+"despesaEdit.deleteText": "Tem certeza que deseja apagar esta despesa?",
 "cal.title": "Selecionar Data",
 "cal.prevAria": "Mês anterior",
 "cal.nextAria": "Próximo mês",
@@ -816,6 +828,18 @@
 "fixas.weeklyShort": "€{v} (weekly)",
 "fixas.sufixoFixa": "{d} (FIXED)",
 "fixas.sufixoFixaPct": "{d} {p}% of Gross (FIXED)",
+"fixas.retroTitle": "Retroactive?",
+"fixas.retroAria": "Add retroactive fixed expense",
+"fixas.retroHint": "Add fixed expenses to any week you choose.",
+"fixas.retroModalTitle": "Select week",
+"fixas.retroModalHelper": "Choose the week when this fixed expense should start.",
+"fixas.retroWeeksAria": "Weeks of the month",
+"fixas.retroSelected": "Fixed expense added in week {week} of {month}, from {start} to {end} {month}.",
+"despesaEdit.title": "Edit expense",
+"despesaEdit.valorAria": "Expense amount",
+"despesaEdit.delete": "Delete expense",
+"despesaEdit.deleteTitle": "Delete expense",
+"despesaEdit.deleteText": "Are you sure you want to delete this expense?",
 "cal.title": "Select Date",
 "cal.prevAria": "Previous month",
 "cal.nextAria": "Next month",
@@ -1304,6 +1328,13 @@
       var btnEuro     = document.getElementById('despesaTipoEuroBtn');
       var salvarBtn   = document.getElementById('despesaSalvarBtn');
       var listEl      = document.getElementById('despesaListEl');
+      var retroSwitch = document.getElementById('fixasRetroSwitch');
+      var retroHint   = document.getElementById('fixasRetroHint');
+      var retroModal  = document.getElementById('fixasRetroPeriodModalBackdrop');
+      var retroMonthPrev = document.getElementById('fixasRetroMonthPrev');
+      var retroMonthNext = document.getElementById('fixasRetroMonthNext');
+      var retroMonthLabel = document.getElementById('fixasRetroMonthLabel');
+      var retroWeekList = document.getElementById('fixasRetroWeekList');
 
       var confirmBackdrop  = document.getElementById('despesaConfirmBackdrop');
       var confirmCancelBtn = document.getElementById('despesaConfirmCancelBtn');
@@ -1315,6 +1346,9 @@
       var despesas  = [];
       var despesaSeq = 0;
       var pendingDeleteId = null;
+      var retroMonday = null;
+      var retroYear = null;
+      var retroMonth = null;
 
       // Cada despesa fixa é "carimbada" com a semana (segunda-feira) em
       // que foi cadastrada. Ao excluir, também carimbamos a semana da
@@ -1330,6 +1364,58 @@
         var monday = new Date(d.getTime());
         monday.setDate(d.getDate() + diff);
         return monday.getFullYear() + '-' + pad2(monday.getMonth() + 1) + '-' + pad2(monday.getDate());
+      }
+
+      function dateKeyFor (d) { return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
+      function formatRetroHint () {
+        if (!retroHint) return;
+        if (!retroMonday) {
+          retroHint.textContent = I18N.t('fixas.retroHint');
+          retroHint.classList.remove('is-selected');
+          return;
+        }
+        var sunday = new Date(retroMonday.getTime()); sunday.setDate(retroMonday.getDate() + 6);
+        var months = I18N.list('months.lower');
+        var owner = new Date(retroMonday.getTime()); owner.setDate(retroMonday.getDate() + 3);
+        var weekIndex = window.SmartSomaWeeks ? window.SmartSomaWeeks.indexInMonth(retroMonday, owner.getFullYear(), owner.getMonth()) + 1 : 1;
+        retroHint.textContent = I18N.t('fixas.retroSelected', {
+          week: weekIndex, month: months[owner.getMonth()], start: retroMonday.getDate(), end: sunday.getDate()
+        });
+        retroHint.classList.add('is-selected');
+      }
+      function setRetroEnabled (enabled) {
+        if (retroSwitch) retroSwitch.setAttribute('aria-checked', enabled ? 'true' : 'false');
+        if (!enabled) retroMonday = null;
+        formatRetroHint();
+      }
+      function closeRetroPicker (reset) {
+        if (retroModal) retroModal.classList.remove('visible');
+        if (reset && !retroMonday) setRetroEnabled(false);
+      }
+      function renderRetroPicker () {
+        if (!retroWeekList || !retroMonthLabel || !window.SmartSomaWeeks) return;
+        retroMonthLabel.textContent = I18N.capitalize(I18N.list('months.lower')[retroMonth]) + ' de ' + retroYear;
+        retroWeekList.innerHTML = '';
+        window.SmartSomaWeeks.weeksForMonth(retroYear, retroMonth).forEach(function (week, idx) {
+          var button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'semana-period-week-option';
+          button.setAttribute('role', 'option');
+          button.innerHTML = '<span>Semana ' + (idx + 1) + ' <small>(' + window.SmartSomaWeeks.formatPeriod(week.monday, week.sunday) + ')</small></span>';
+          button.addEventListener('click', function () {
+            retroMonday = new Date(week.monday.getTime());
+            setRetroEnabled(true);
+            closeRetroPicker(false);
+          });
+          retroWeekList.appendChild(button);
+        });
+      }
+      function openRetroPicker () {
+        if (!retroModal || !window.SmartSomaWeeks) return;
+        var owner = window.SmartSomaWeeks.ownerMonth(new Date());
+        retroYear = owner.year; retroMonth = owner.month;
+        renderRetroPicker();
+        retroModal.classList.add('visible');
       }
 
       function loadDespesas () {
@@ -1444,7 +1530,7 @@
           descricao: descricao,
           valor: valorNum,
           tipo: tipoAtual,
-          desde: semanaAtualKey()
+          desde: retroMonday ? dateKeyFor(retroMonday) : semanaAtualKey()
         });
 
         saveDespesas();
@@ -1453,7 +1539,28 @@
 
         descInput.value = '';
         valorInput.value = '';
+        setRetroEnabled(false);
         document.dispatchEvent(new CustomEvent('fixedExpenseSaved'));
+      });
+
+      if (retroSwitch) retroSwitch.addEventListener('click', function () {
+        var enabled = retroSwitch.getAttribute('aria-checked') === 'true';
+        if (enabled) {
+          setRetroEnabled(false);
+          return;
+        }
+        openRetroPicker();
+      });
+      if (retroMonthPrev) retroMonthPrev.addEventListener('click', function () {
+        retroMonth--; if (retroMonth < 0) { retroMonth = 11; retroYear--; }
+        renderRetroPicker();
+      });
+      if (retroMonthNext) retroMonthNext.addEventListener('click', function () {
+        retroMonth++; if (retroMonth > 11) { retroMonth = 0; retroYear++; }
+        renderRetroPicker();
+      });
+      if (retroModal) retroModal.addEventListener('click', function (e) {
+        if (e.target === retroModal) closeRetroPicker(true);
       });
 
       function openDeleteConfirm (id, descricao) {
@@ -1501,7 +1608,7 @@
       loadDespesas();
       renderDespesas();
       setTipo('percentual');
-      document.addEventListener('languageChanged', renderDespesas);
+      document.addEventListener('languageChanged', function () { renderDespesas(); formatRetroHint(); });
 
       // Exclui de vez todas as despesas fixas ainda ativas (mesma marca
       // .ate usada na exclusão manual, uma por uma, na página de Despesas
@@ -1778,7 +1885,6 @@
 
         descInput.value = '';
         valorInput.value = '';
-        descInput.focus();
       });
 
       function openDeleteConfirm (id, descricao, date) {
@@ -2990,22 +3096,12 @@
         });
       }
 
-      var NO_AUTOFOCUS_IDS = ['despesasSemanaModalBackdrop', 'despesasModalBackdrop'];
-
-      function focusFirstField (backdrop) {
-        if (NO_AUTOFOCUS_IDS.indexOf(backdrop.id) !== -1) return;
-        var field = backdrop.querySelector('input, textarea, select');
-        if (!field) return;
-        setTimeout(function () { field.focus(); }, 80);
-      }
-
       allBackdrops.forEach(function (backdrop) {
         var observer = new MutationObserver(function (mutations) {
           for (var i = 0; i < mutations.length; i++) {
             if (mutations[i].attributeName === 'class') {
               if (backdrop.classList.contains('visible')) {
                 if (!isNested(backdrop)) closeOtherBackdrops(backdrop);
-                focusFirstField(backdrop);
               }
               if (typeof syncBodyScroll === 'function') syncBodyScroll();
               break;
@@ -3669,7 +3765,7 @@
       // acrescentadas apenas pela leitura completa da tabela de despesas.
       function loadDayVariableExpenseEntries (d) {
         return loadDayItems(d).map(function (item) {
-          return { descricao: item.descricao, valor: Number(item.valor) || 0 };
+          return { id: item.id, descricao: item.descricao, valor: Number(item.valor) || 0, source: 'daily' };
         });
       }
 
@@ -3703,7 +3799,7 @@
               var descricao = isEuro
                 ? I18N.t('fixas.sufixoFixa', { d: item.descricao })
                 : I18N.t('fixas.sufixoFixaPct', { d: item.descricao, p: Number(item.valor) });
-              entradas.push({ descricao: descricao, valor: valor });
+              entradas.push({ descricao: descricao, valor: valor, source: 'fixed' });
             });
           }
         }
@@ -3746,6 +3842,12 @@
         return monday;
       }
 
+      function weekOwnerDate (monday) {
+        var owner = new Date(monday.getTime());
+        owner.setDate(monday.getDate() + 3);
+        return owner;
+      }
+
       // "Regra do 4 e 3": cada semana (segunda a domingo) pertence ao mês
       // que contém a maioria (4 ou mais) dos seus 7 dias.
       function computeWeeksForMonth (year, month) {
@@ -3758,14 +3860,10 @@
           var sunday = new Date(monday.getTime());
           sunday.setDate(monday.getDate() + 6);
 
-          var count = 0;
-          for (var i = 0; i < 7; i++) {
-            var d = new Date(monday.getTime());
-            d.setDate(monday.getDate() + i);
-            if (d.getFullYear() === year && d.getMonth() === month) count++;
+          var owner = weekOwnerDate(monday);
+          if (owner.getFullYear() === year && owner.getMonth() === month) {
+            weeks.push({ monday: new Date(monday.getTime()), sunday: sunday });
           }
-
-          if (count >= 4) weeks.push({ monday: new Date(monday.getTime()), sunday: sunday });
 
           monday = new Date(monday.getTime());
           monday.setDate(monday.getDate() + 7);
@@ -3788,6 +3886,20 @@
         return monday.getDate() + ' ' + monthShort(monday) + ' a ' + sunday.getDate() + ' ' + monthShort(sunday);
       }
 
+      window.SmartSomaWeeks = {
+        ownerMonth: function (date) {
+          var owner = weekOwnerDate(getMonday(date));
+          return { year: owner.getFullYear(), month: owner.getMonth() };
+        },
+        weeksForMonth: computeWeeksForMonth,
+        formatPeriod: formatWeekPickerPeriod,
+        indexInMonth: function (monday, year, month) {
+          return computeWeeksForMonth(year, month).findIndex(function (week) {
+            return week.monday.getTime() === monday.getTime();
+          });
+        }
+      };
+
       // Rótulo (em HTML) usado no botão/opções de seleção de semana, com o
       // período em destaque: <span class="semana-week-picker-num">SEMANA 1</span>
       // <span class="semana-week-picker-period">14 a 20 de set.</span>
@@ -3801,18 +3913,7 @@
       // "regra do 4 e 3" — pode ser diferente do mês calendário de hoje
       // quando hoje é segunda-feira e a semana já pertence ao mês seguinte.
       function currentWeekMonth () {
-        var monday = getMonday(today);
-        // Verifica se a semana de hoje pertence ao mês seguinte ao calendário
-        var nextMonth = today.getMonth() + 1;
-        var nextYear  = today.getFullYear();
-        if (nextMonth > 11) { nextMonth = 0; nextYear += 1; }
-        var nextMonthWeeks = computeWeeksForMonth(nextYear, nextMonth);
-        for (var i = 0; i < nextMonthWeeks.length; i++) {
-          if (nextMonthWeeks[i].monday.getTime() === monday.getTime()) {
-            return { year: nextYear, month: nextMonth };
-          }
-        }
-        return { year: today.getFullYear(), month: today.getMonth() };
+        return window.SmartSomaWeeks.ownerMonth(today);
       }
 
       function isAtCurrentMonth () {
@@ -4198,7 +4299,7 @@
           d.setDate(week.monday.getDate() + i);
           var entradas = loadDayExpenseEntries(d);
           entradas.forEach(function (entry) {
-            linhas.push({ dia: DIAS_ABBR()[i] + ' ' + pad2(d.getDate()) + '/' + pad2(d.getMonth() + 1), entry: entry });
+            linhas.push({ dia: DIAS_ABBR()[i] + ' ' + pad2(d.getDate()) + '/' + pad2(d.getMonth() + 1), date: new Date(d.getTime()), entry: entry });
           });
         }
         var section = document.createElement('section');
@@ -4230,7 +4331,25 @@
           var tdDia = document.createElement('td');
           tdDia.textContent = linha.dia;
           var tdDesc = document.createElement('td');
-          tdDesc.textContent = linha.entry.descricao;
+          tdDesc.className = 'semana-expense-description';
+          if (linha.entry.source === 'daily' && linha.entry.id !== undefined) {
+            var descWrap = document.createElement('div');
+            descWrap.className = 'semana-expense-editable';
+            var descText = document.createElement('span');
+            descText.textContent = linha.entry.descricao;
+            descText.title = linha.entry.descricao;
+            var editBtn = document.createElement('button');
+            editBtn.type = 'button';
+            editBtn.className = 'semana-expense-edit-btn';
+            editBtn.setAttribute('aria-label', I18N.t('despesaEdit.title'));
+            editBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
+            editBtn.addEventListener('click', function () { openWeekExpenseEdit(linha.date, linha.entry.id); });
+            descWrap.appendChild(descText);
+            descWrap.appendChild(editBtn);
+            tdDesc.appendChild(descWrap);
+          } else {
+            tdDesc.textContent = linha.entry.descricao;
+          }
           var tdValor = document.createElement('td');
           tdValor.className = 'semana-expense-value';
           tdValor.textContent = formatEuro(linha.entry.valor);
@@ -4252,6 +4371,89 @@
 
         return section;
       }
+
+      var expenseEditBackdrop = document.getElementById('semanaDespesaEditBackdrop');
+      var expenseEditDesc = document.getElementById('semanaDespesaEditDesc');
+      var expenseEditDate = document.getElementById('semanaDespesaEditDate');
+      var expenseEditValue = document.getElementById('semanaDespesaEditValorInput');
+      var expenseEditSave = document.getElementById('semanaDespesaEditSaveBtn');
+      var expenseEditDelete = document.getElementById('semanaDespesaEditDeleteBtn');
+      var expenseDeleteBackdrop = document.getElementById('semanaDespesaDeleteBackdrop');
+      var expenseDeleteCancel = document.getElementById('semanaDespesaDeleteCancelBtn');
+      var expenseDeleteConfirm = document.getElementById('semanaDespesaDeleteConfirmBtn');
+      var editingExpense = null;
+
+      function formatExpenseDate (date) {
+        return date.getDate() + ' de ' + MESES_MINUS()[date.getMonth()] + ' de ' + date.getFullYear();
+      }
+      function loadEditableExpense (date, id) {
+        var data = null;
+        try { data = JSON.parse(cloudGet(DESPESAS_DIARIAS_PREFIX + dateKeyFor(date)) || 'null'); } catch (e) { }
+        if (!data || !Array.isArray(data.items)) return null;
+        return data.items.find(function (item) { return item.id === id; }) || null;
+      }
+      function openWeekExpenseEdit (date, id) {
+        var item = loadEditableExpense(date, id);
+        if (!item || !expenseEditBackdrop) return;
+        editingExpense = { date: new Date(date.getTime()), id: id };
+        if (expenseEditDesc) expenseEditDesc.textContent = item.descricao;
+        if (expenseEditDate) expenseEditDate.textContent = formatExpenseDate(date);
+        if (expenseEditValue) expenseEditValue.value = Number(item.valor).toFixed(2);
+        expenseEditBackdrop.classList.add('visible');
+      }
+      function closeWeekExpenseEdit () {
+        if (expenseEditBackdrop) expenseEditBackdrop.classList.remove('visible');
+        editingExpense = null;
+      }
+      function refreshAfterWeekExpenseChange (date) {
+        var badgeKey = BADGES_STORAGE_PREFIX + dateKeyFor(date);
+        var badge = {};
+        try { badge = JSON.parse(cloudGet(badgeKey) || '{}'); } catch (e) { }
+        badge.despesas = dayExpenseTotal(date);
+        cloudSet(badgeKey, JSON.stringify(badge));
+        document.dispatchEvent(new CustomEvent('homeBadgesSaved'));
+      }
+      function updateEditingExpense (remove) {
+        if (!editingExpense) return false;
+        var key = DESPESAS_DIARIAS_PREFIX + dateKeyFor(editingExpense.date);
+        var data = null;
+        try { data = JSON.parse(cloudGet(key) || 'null'); } catch (e) { }
+        if (!data || !Array.isArray(data.items)) return false;
+        var item = data.items.find(function (entry) { return entry.id === editingExpense.id; });
+        if (!item) return false;
+        if (remove) {
+          data.items = data.items.filter(function (entry) { return entry.id !== editingExpense.id; });
+        } else {
+          var value = parseFloat(String(expenseEditValue.value).replace(',', '.'));
+          if (isNaN(value) || value < 0) return false;
+          item.valor = Math.min(value, 999.99);
+        }
+        cloudSet(key, JSON.stringify(data));
+        refreshAfterWeekExpenseChange(editingExpense.date);
+        return true;
+      }
+      if (expenseEditValue) expenseEditValue.addEventListener('input', function () {
+        expenseEditValue.value = expenseEditValue.value.replace(/[^0-9.,]/g, '').replace(/([.,].*)[.,]/g, '$1');
+      });
+      if (expenseEditSave) expenseEditSave.addEventListener('click', function () {
+        if (updateEditingExpense(false)) closeWeekExpenseEdit();
+      });
+      if (expenseEditDelete) expenseEditDelete.addEventListener('click', function () {
+        if (editingExpense && expenseDeleteBackdrop) expenseDeleteBackdrop.classList.add('visible');
+      });
+      if (expenseDeleteCancel) expenseDeleteCancel.addEventListener('click', function () {
+        if (expenseDeleteBackdrop) expenseDeleteBackdrop.classList.remove('visible');
+      });
+      if (expenseDeleteConfirm) expenseDeleteConfirm.addEventListener('click', function () {
+        if (updateEditingExpense(true)) closeWeekExpenseEdit();
+        if (expenseDeleteBackdrop) expenseDeleteBackdrop.classList.remove('visible');
+      });
+      if (expenseEditBackdrop) expenseEditBackdrop.addEventListener('click', function (e) {
+        if (e.target === expenseEditBackdrop) closeWeekExpenseEdit();
+      });
+      if (expenseDeleteBackdrop) expenseDeleteBackdrop.addEventListener('click', function (e) {
+        if (e.target === expenseDeleteBackdrop) expenseDeleteBackdrop.classList.remove('visible');
+      });
 
       var pickerBtn   = document.getElementById('semanaWeekPickerBtn');
       var pickerLabel = document.getElementById('semanaWeekPickerLabel');
@@ -4332,13 +4534,7 @@
       }
 
       function modalWeekPeriod (week) {
-        var first = new Date(modalYear, modalMonth, 1);
-        var last = new Date(modalYear, modalMonth + 1, 0);
-        var start = week.monday < first ? first : week.monday;
-        var end = week.sunday > last ? last : week.sunday;
-        var month = MESES_ABBR()[modalMonth].replace(/\.$/, '');
-        month = month.charAt(0).toUpperCase() + month.slice(1);
-        return start.getDate() + ' a ' + end.getDate() + ' ' + month;
+        return formatWeekPickerPeriod(week.monday, week.sunday);
       }
 
       function renderPeriodModal () {
@@ -4424,6 +4620,9 @@
         });
 
         var week = currentWeeks[idx];
+        if (week && window.HomeNav && window.HomeNav.getCurrentState && window.HomeNav.getCurrentState() === 'semana' && window.GanhosDate && typeof window.GanhosDate.set === 'function') {
+          window.GanhosDate.set(week.monday);
+        }
         if (week && pickerLabel) {
           pickerLabel.innerHTML = formatWeekPickerLabelHTML(idx, week.monday, week.sunday);
         }
@@ -4556,8 +4755,9 @@
         // que pode ser o mês seguinte ao calendário quando hoje é segunda
         // e a semana já pertence ao mês seguinte.
         var selected = (window.GanhosDate && typeof window.GanhosDate.get === 'function') ? window.GanhosDate.get() : today;
-        refYear  = selected.getFullYear();
-        refMonth = selected.getMonth();
+        var selectedOwner = window.SmartSomaWeeks.ownerMonth(selected);
+        refYear  = selectedOwner.year;
+        refMonth = selectedOwner.month;
 
         var weeksForToday = computeWeeksForMonth(refYear, refMonth);
         var idx = 0;
