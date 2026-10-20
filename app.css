@@ -2310,8 +2310,12 @@
         }
         .semana-despesas-detail-table th,
         .semana-despesas-detail-table td{ white-space:normal; }
+        .semana-despesas-detail-table th:nth-child(1),
+        .semana-despesas-detail-table td:nth-child(1){ text-align:center; }
+        .semana-despesas-detail-table th:nth-child(2),
+        .semana-despesas-detail-table td:nth-child(2){ text-align:left; }
         .semana-despesas-detail-table th:nth-child(3),
-        .semana-despesas-detail-table td:nth-child(3){ text-align:left; }
+        .semana-despesas-detail-table td:nth-child(3){ text-align:right; }
         .semana-expense-description{ min-width:0; }
         .semana-expense-editable{ display:flex; align-items:center; gap:0.3125rem; min-width:0; }
         .semana-expense-editable > span{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0; flex:1; }

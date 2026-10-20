@@ -50,6 +50,38 @@ test('fixed expenses can start in a selected retroactive week', async t => {
   let month = owner.month - 1, year = owner.year;
   if (month < 0) { month = 11; year--; }
   assert.equal(item.desde, dateKey(app.w.SmartSomaWeeks.weeksForMonth(year, month)[0].monday));
+  assert.equal(item.retroativa, true);
+  assert.match(app.el('despesaListEl').textContent, /Sem despesas/);
+});
+
+test('retroactive fixed expenses can be edited and deleted from the weekly card', async t => {
+  const day = monday();
+  const seed = {
+    despesasFixas: JSON.stringify({ seq: 1, items: [{ id: 1, descricao: 'Aluguer', valor: 10, tipo: 'percentual', desde: dateKey(day), retroativa: true }] }),
+    ['homeBadgeValores:' + dateKey(day)]: JSON.stringify({ uber: 200 })
+  };
+  const app = createApp(seed, { ui: true });
+  t.after(app.close);
+  app.w.SmartSomaUI.go('semana');
+  await settle();
+  const pencils = app.w.document.querySelectorAll('.semana-expense-edit-btn');
+  assert.equal(pencils.length, 1);
+  pencils[0].click();
+  assert.equal(app.el('semanaDespesaEditFixedTypes').hidden, false);
+  assert.match(app.el('semanaDespesaEditDesc').textContent, /Aluguer/);
+  app.click('semanaDespesaEditEuroBtn');
+  app.input('semanaDespesaEditValorInput', '55');
+  app.click('semanaDespesaEditSaveBtn');
+  let fixed = JSON.parse(app.cache.despesasFixas).items[0];
+  assert.equal(fixed.tipo, 'euro');
+  assert.equal(fixed.valor, 55);
+
+  await settle();
+  app.w.document.querySelector('.semana-expense-edit-btn').click();
+  app.click('semanaDespesaEditDeleteBtn');
+  app.click('semanaDespesaDeleteConfirmBtn');
+  fixed = JSON.parse(app.cache.despesasFixas).items[0];
+  assert.equal(fixed.ate, dateKey(day));
 });
 
 test('weekly expense card edits and deletes the original daily expense', async t => {

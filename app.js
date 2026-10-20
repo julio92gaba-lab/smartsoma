@@ -418,6 +418,8 @@
 "despesaEdit.delete": "Apagar despesa",
 "despesaEdit.deleteTitle": "Apagar despesa",
 "despesaEdit.deleteText": "Tem certeza que deseja apagar esta despesa?",
+"despesaEdit.percent": "Percentagem",
+"despesaEdit.euro": "Valor fixo",
 "cal.title": "Selecionar Data",
 "cal.prevAria": "Mês anterior",
 "cal.nextAria": "Próximo mês",
@@ -840,6 +842,8 @@
 "despesaEdit.delete": "Delete expense",
 "despesaEdit.deleteTitle": "Delete expense",
 "despesaEdit.deleteText": "Are you sure you want to delete this expense?",
+"despesaEdit.percent": "Percentage",
+"despesaEdit.euro": "Fixed amount",
 "cal.title": "Select Date",
 "cal.prevAria": "Previous month",
 "cal.nextAria": "Next month",
@@ -1478,7 +1482,10 @@
       function renderDespesas () {
         listEl.innerHTML = '';
 
-        var ativas = despesas.filter(function (item) { return !item.ate; });
+        var semanaAtual = semanaAtualKey();
+        var ativas = despesas.filter(function (item) {
+          return !item.retroativa && (!item.desde || item.desde <= semanaAtual) && (!item.ate || item.ate > semanaAtual);
+        });
 
         if (ativas.length === 0) {
           var empty = document.createElement('p');
@@ -1530,7 +1537,8 @@
           descricao: descricao,
           valor: valorNum,
           tipo: tipoAtual,
-          desde: retroMonday ? dateKeyFor(retroMonday) : semanaAtualKey()
+          desde: retroMonday ? dateKeyFor(retroMonday) : semanaAtualKey(),
+          retroativa: !!retroMonday
         });
 
         saveDespesas();
@@ -1609,6 +1617,7 @@
       renderDespesas();
       setTipo('percentual');
       document.addEventListener('languageChanged', function () { renderDespesas(); formatRetroHint(); });
+      document.addEventListener('despesasFixasChanged', renderDespesas);
 
       // Exclui de vez todas as despesas fixas ainda ativas (mesma marca
       // .ate usada na exclusão manual, uma por uma, na página de Despesas
@@ -3799,7 +3808,15 @@
               var descricao = isEuro
                 ? I18N.t('fixas.sufixoFixa', { d: item.descricao })
                 : I18N.t('fixas.sufixoFixaPct', { d: item.descricao, p: Number(item.valor) });
-              entradas.push({ descricao: descricao, valor: valor, source: 'fixed' });
+              entradas.push({
+                id: item.id,
+                descricao: descricao,
+                rawDescricao: item.descricao,
+                valor: valor,
+                fixedValor: Number(item.valor) || 0,
+                fixedTipo: item.tipo,
+                source: 'fixed'
+              });
             });
           }
         }
@@ -4332,7 +4349,7 @@
           tdDia.textContent = linha.dia;
           var tdDesc = document.createElement('td');
           tdDesc.className = 'semana-expense-description';
-          if (linha.entry.source === 'daily' && linha.entry.id !== undefined) {
+          if ((linha.entry.source === 'daily' || linha.entry.source === 'fixed') && linha.entry.id !== undefined) {
             var descWrap = document.createElement('div');
             descWrap.className = 'semana-expense-editable';
             var descText = document.createElement('span');
@@ -4343,7 +4360,7 @@
             editBtn.className = 'semana-expense-edit-btn';
             editBtn.setAttribute('aria-label', I18N.t('despesaEdit.title'));
             editBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
-            editBtn.addEventListener('click', function () { openWeekExpenseEdit(linha.date, linha.entry.id); });
+            editBtn.addEventListener('click', function () { openWeekExpenseEdit(linha.date, linha.entry.id, linha.entry.source); });
             descWrap.appendChild(descText);
             descWrap.appendChild(editBtn);
             tdDesc.appendChild(descWrap);
@@ -4376,6 +4393,9 @@
       var expenseEditDesc = document.getElementById('semanaDespesaEditDesc');
       var expenseEditDate = document.getElementById('semanaDespesaEditDate');
       var expenseEditValue = document.getElementById('semanaDespesaEditValorInput');
+      var expenseEditFixedTypes = document.getElementById('semanaDespesaEditFixedTypes');
+      var expenseEditPercent = document.getElementById('semanaDespesaEditPercentBtn');
+      var expenseEditEuro = document.getElementById('semanaDespesaEditEuroBtn');
       var expenseEditSave = document.getElementById('semanaDespesaEditSaveBtn');
       var expenseEditDelete = document.getElementById('semanaDespesaEditDeleteBtn');
       var expenseDeleteBackdrop = document.getElementById('semanaDespesaDeleteBackdrop');
@@ -4386,19 +4406,46 @@
       function formatExpenseDate (date) {
         return date.getDate() + ' de ' + MESES_MINUS()[date.getMonth()] + ' de ' + date.getFullYear();
       }
-      function loadEditableExpense (date, id) {
+      var expenseEditFixedTipo = 'percentual';
+      function setExpenseEditFixedTipo (tipo) {
+        expenseEditFixedTipo = tipo;
+        var isPercent = tipo === 'percentual';
+        if (expenseEditPercent) {
+          expenseEditPercent.classList.toggle('active', isPercent);
+          expenseEditPercent.setAttribute('aria-pressed', isPercent ? 'true' : 'false');
+        }
+        if (expenseEditEuro) {
+          expenseEditEuro.classList.toggle('active', !isPercent);
+          expenseEditEuro.setAttribute('aria-pressed', !isPercent ? 'true' : 'false');
+        }
+        var prefix = expenseEditValue && expenseEditValue.parentElement.querySelector('.mm-value-prefix');
+        if (prefix) prefix.textContent = isPercent ? '%' : '€';
+      }
+      function loadEditableExpense (date, id, source) {
+        if (source === 'fixed') {
+          var fixed = null;
+          try { fixed = JSON.parse(cloudGet(DESPESAS_FIXAS_KEY) || 'null'); } catch (e) { }
+          if (!fixed || !Array.isArray(fixed.items)) return null;
+          return fixed.items.find(function (item) { return item.id === id; }) || null;
+        }
         var data = null;
         try { data = JSON.parse(cloudGet(DESPESAS_DIARIAS_PREFIX + dateKeyFor(date)) || 'null'); } catch (e) { }
         if (!data || !Array.isArray(data.items)) return null;
         return data.items.find(function (item) { return item.id === id; }) || null;
       }
-      function openWeekExpenseEdit (date, id) {
-        var item = loadEditableExpense(date, id);
+      function openWeekExpenseEdit (date, id, source) {
+        var item = loadEditableExpense(date, id, source);
         if (!item || !expenseEditBackdrop) return;
-        editingExpense = { date: new Date(date.getTime()), id: id };
+        editingExpense = { date: new Date(date.getTime()), id: id, source: source || 'daily' };
         if (expenseEditDesc) expenseEditDesc.textContent = item.descricao;
         if (expenseEditDate) expenseEditDate.textContent = formatExpenseDate(date);
         if (expenseEditValue) expenseEditValue.value = Number(item.valor).toFixed(2);
+        if (expenseEditFixedTypes) expenseEditFixedTypes.hidden = editingExpense.source !== 'fixed';
+        if (editingExpense.source === 'fixed') setExpenseEditFixedTipo(item.tipo === 'euro' ? 'euro' : 'percentual');
+        else {
+          var prefix = expenseEditValue && expenseEditValue.parentElement.querySelector('.mm-value-prefix');
+          if (prefix) prefix.textContent = '€';
+        }
         expenseEditBackdrop.classList.add('visible');
       }
       function closeWeekExpenseEdit () {
@@ -4415,6 +4462,25 @@
       }
       function updateEditingExpense (remove) {
         if (!editingExpense) return false;
+        if (editingExpense.source === 'fixed') {
+          var fixedData = null;
+          try { fixedData = JSON.parse(cloudGet(DESPESAS_FIXAS_KEY) || 'null'); } catch (e) { }
+          if (!fixedData || !Array.isArray(fixedData.items)) return false;
+          var fixedItem = fixedData.items.find(function (entry) { return entry.id === editingExpense.id; });
+          if (!fixedItem) return false;
+          if (remove) {
+            fixedItem.ate = dateKeyFor(getMonday(editingExpense.date));
+          } else {
+            var fixedValue = parseFloat(String(expenseEditValue.value).replace(',', '.'));
+            if (isNaN(fixedValue) || fixedValue <= 0 || (expenseEditFixedTipo === 'percentual' && fixedValue > 100)) return false;
+            fixedItem.valor = Math.min(fixedValue, expenseEditFixedTipo === 'euro' ? 999.99 : 100);
+            fixedItem.tipo = expenseEditFixedTipo;
+          }
+          cloudSet(DESPESAS_FIXAS_KEY, JSON.stringify(fixedData));
+          document.dispatchEvent(new CustomEvent('despesasFixasChanged'));
+          document.dispatchEvent(new CustomEvent('homeBadgesSaved'));
+          return true;
+        }
         var key = DESPESAS_DIARIAS_PREFIX + dateKeyFor(editingExpense.date);
         var data = null;
         try { data = JSON.parse(cloudGet(key) || 'null'); } catch (e) { }
@@ -4435,6 +4501,8 @@
       if (expenseEditValue) expenseEditValue.addEventListener('input', function () {
         expenseEditValue.value = expenseEditValue.value.replace(/[^0-9.,]/g, '').replace(/([.,].*)[.,]/g, '$1');
       });
+      if (expenseEditPercent) expenseEditPercent.addEventListener('click', function () { setExpenseEditFixedTipo('percentual'); });
+      if (expenseEditEuro) expenseEditEuro.addEventListener('click', function () { setExpenseEditFixedTipo('euro'); });
       if (expenseEditSave) expenseEditSave.addEventListener('click', function () {
         if (updateEditingExpense(false)) closeWeekExpenseEdit();
       });
