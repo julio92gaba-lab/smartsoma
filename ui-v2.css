@@ -402,12 +402,14 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
 .ui-receivable-backdrop { position:fixed; z-index:220; top:var(--ui-header); right:0; bottom:0; left:0; display:grid; place-items:start center; padding:24px; overflow-y:auto; visibility:hidden; opacity:0; background:rgba(5,15,9,.58); backdrop-filter:blur(4px); transition:opacity .18s ease,visibility .18s ease; }
 .ui-receivable-backdrop.visible { visibility:visible; opacity:1; }
 .ui-receivable-card { width:min(420px,100%); padding:20px; border:1px solid var(--card-line); border-radius:14px; background:var(--card-bg); color:var(--ink); box-shadow:0 24px 80px #0005; }
-.ui-receivable-period { margin:12px 0 4px; color:var(--muted); font-size:.75rem; font-weight:700; text-align:center; }
+.ui-receivable-week,.ui-receivable-period { color:var(--muted); font-size:.75rem; font-weight:700; text-align:center; }
+.ui-receivable-week { margin:12px 0 2px; }
+.ui-receivable-period { margin:0 0 4px; }
 .ui-receivable-value { display:block; margin-bottom:16px; color:var(--brand-green); font:800 2.1rem/1 'Bricolage Grotesque',sans-serif; text-align:center; }
 .ui-receivable-extra { display:grid; grid-template-columns:1fr auto; gap:3px 12px; padding:12px; border:1px solid var(--card-line); border-radius:10px; background:var(--input-bg); font-size:.78rem; }
 .ui-receivable-extra strong { color:var(--brand-green); }.ui-receivable-extra small { grid-column:1/-1; color:var(--muted); }
 .ui-receivable-history { margin-top:20px; }.ui-receivable-month { display:grid; grid-template-columns:34px 1fr 34px; align-items:center; gap:8px; }
-.ui-receivable-month h3 { margin:0; font-size:.92rem; text-align:center; text-transform:capitalize; }.ui-receivable-month .ui-icon-button { width:34px; height:34px; font-size:1.25rem; }
+.ui-receivable-month h3 { margin:0; font-size:.92rem; text-align:center; }.ui-receivable-month .ui-icon-button { width:34px; height:34px; font-size:1.25rem; }
 .ui-receivable-row { padding:12px 2px; border-bottom:1px solid var(--card-line); color:var(--ink); font-size:.84rem; font-weight:700; }
 .ui-v2 .ui-help-hero { padding:30px; border-radius:16px; background:#0e3b2a; color:#f4f9ec; margin-bottom:24px; }
 .ui-help-hero h2 { font-size:2rem; margin:12px 0; }
@@ -2391,7 +2393,7 @@ body.ui-v2 .ui-header #uiHeaderDate {
 }
 .ui-v2 .ui-header-actions :is(#uiReceivable,#uiAdd) { position:relative; width:35px; height:35px; }
 .ui-v2 .ui-header-actions :is(#uiReceivable,#uiAdd)::before { content:''; position:absolute; inset:-4.5px; }
-.ui-v2 .ui-header-actions :is(#uiNews,#uiAdd) svg { width:19px; height:19px; }
+.ui-v2 .ui-header-actions :is(#uiReceivable,#uiAdd) svg { width:19px; height:19px; }
 .ui-v2 .resumo-period-controls.is-sticky,
 .ui-v2 #homeListPageSemana .semana-filter-controls.is-sticky {
   background:var(--app-chrome);
@@ -2461,3 +2463,6 @@ body.ui-v2 :is(.mm-backdrop,.modal-backdrop,.sheet-backdrop,.photo-view-backdrop
   left:var(--app-gutter); right:var(--app-gutter);
 }
 body.ui-v2 #proWelcomeToast { right:calc(var(--app-gutter) + 20px); }
+/* A página Semana conserva o mesmo espaço lateral do restante da aplicação. */
+.ui-v2 #homeListPageSemana,
+.ui-v2 #homeListPageSemana #semanaTechCard { box-sizing:border-box; width:100%; max-width:100%; min-width:0; }

@@ -70,8 +70,15 @@ test('amount receivable replaces notifications and closes before opening a new e
   assert.equal(a.el('uiNews'),null);
   a.click('uiReceivable');
   assert.ok(a.w.document.querySelector('.ui-receivable-backdrop.visible'));
+  assert.match(a.el('uiReceivableWeek').textContent,/Sem\. \d/);
   assert.equal(a.el('uiReceivableExtra').hidden,false);
   assert.match(a.el('uiReceivableExtra').textContent,/Ganhos extras/);
+  const currentMonth=a.el('uiReceivableMonth').textContent;
+  a.click('uiReceivablePrev');
+  assert.notEqual(a.el('uiReceivableMonth').textContent,currentMonth);
+  a.click('uiReceivableNext');
+  assert.equal(a.el('uiReceivableMonth').textContent,currentMonth);
+  assert.equal(a.el('uiReceivableNext').disabled,true);
   a.click('uiAdd');
   assert.equal(a.w.document.querySelector('.ui-receivable-backdrop.visible'),null);
   assert.equal(a.el('uiEntryDialog').open,true);
@@ -215,7 +222,7 @@ for (const [label,data,error,active] of [
 
 test('offline cache includes both new presentation assets and excludes test fixture',()=>{
   const source=fs.readFileSync('sw.js','utf8');
-  assert.match(source,/'\/ui-v2.js\?v=21'/); assert.match(source,/'\/ui-v2.css\?v=27'/);
+  assert.match(source,/'\/ui-v2.js\?v=23'/); assert.match(source,/'\/ui-v2.css\?v=29'/);
   assert.match(source,/'\/car.png\?v=2'/);
   assert.doesNotMatch(source,/__ui-test|visual-fixture/);
   assert.match(fs.readFileSync('.vercelignore','utf8'),/^tests\//m);

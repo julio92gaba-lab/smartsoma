@@ -20,7 +20,7 @@
     arrow: '<path d="M5 12h14m-6-6 6 6-6 6"/>',
     profit: '<path d="M5 18 19 4M5 4h14v14"/>',
     distance: '<path d="M7 3 3 21M17 3l4 18M12 3v3M12 10v4M12 18v3"/>',
-    receivable: '<path d="M4 6h16v12H4zM4 10h16M8 15h3M15 14.5c0 1-1 1.5-2 1.5s-2-.5-2-1.5 1-1.5 2-1.5 2 .5 2 1.5M13 13v4"/>'
+    receivable: '<path d="M17 5.5C15.9 4.5 14.4 4 12.7 4 9.4 4 6.7 6.3 5.9 9.5H3v2h2.6v1H3v2h2.9c.8 3.2 3.5 5.5 6.8 5.5 1.7 0 3.2-.5 4.3-1.5M5.6 11.5h7.1M5.6 14.5h6.1"/>'
   };
   var text = {
     pt: { resumo:'Início', ganhos:'Ganhos diários', despesas:'Despesas', semana:'Semana', relatorio:'Relatórios', downloads:'Downloads', ajustes:'Ajustes', hello:'Bom dia', afternoon:'Boa tarde', evening:'Boa noite', record:'Adicionar registo', calendar:'Escolher data', tag:'Para Estafetas e Motoristas de App.', ganhosNote:'Cada percurso conta. Regista os teus rendimentos e acompanha o dia.', despesasNote:'As tuas despesas, sem perder nenhum detalhe.', semanaNote:'Sete dias. Uma visão clara dos teus resultados.', relatorioNote:'Os teus resultados, organizados e prontos a guardar.', downloadsNote:'Os teus resultados, organizados e prontos a descarregar.', ajustesNote:'O SmartSoma, à tua medida.', theme:'Modo escuro', profile:'Editar perfil', contact:'Contacto', help:'Perguntas frequentes', normal:'Normal', newPlatform:'Nova plataforma', manage:'Gerir plataformas', addIncome:'Adicionar rendimento' },
@@ -519,8 +519,8 @@
     $('uiOverviewExpenseTotal').textContent=money(days.reduce(function(total,day){return total+day.expenses;},0));
   }
   function setupReceivable(){
-    var modal=create('div','ui-receivable-backdrop','<section class="ui-receivable-card" role="dialog" aria-modal="true" aria-labelledby="uiReceivableTitle"><div class="ui-panel-head"><h2 id="uiReceivableTitle"></h2><button type="button" id="uiReceivableClose" class="ui-icon-button" aria-label="Fechar">×</button></div><p id="uiReceivablePeriod" class="ui-receivable-period"></p><strong id="uiReceivableValue" class="ui-receivable-value"></strong><div id="uiReceivableExtra" class="ui-receivable-extra" hidden><span>Ganhos extras</span><strong></strong><small>Inclui ganhos extras</small></div><div class="ui-receivable-history"><div class="ui-receivable-month"><button type="button" id="uiReceivablePrev" class="ui-icon-button" aria-label="Mês anterior">‹</button><h3 id="uiReceivableMonth"></h3><button type="button" id="uiReceivableNext" class="ui-icon-button" aria-label="Próximo mês">›</button></div><div id="uiReceivableRows"></div></div></section>');
-    var cursor=new Date();cursor.setDate(1);
+    var modal=create('div','ui-receivable-backdrop','<section class="ui-receivable-card" role="dialog" aria-modal="true" aria-labelledby="uiReceivableTitle"><div class="ui-panel-head"><h2 id="uiReceivableTitle"></h2><button type="button" id="uiReceivableClose" class="ui-icon-button" aria-label="Fechar">×</button></div><p id="uiReceivableWeek" class="ui-receivable-week"></p><p id="uiReceivablePeriod" class="ui-receivable-period"></p><strong id="uiReceivableValue" class="ui-receivable-value"></strong><div id="uiReceivableExtra" class="ui-receivable-extra" hidden><span>Ganhos extras</span><strong></strong><small>Inclui ganhos extras</small></div><div class="ui-receivable-history"><div class="ui-receivable-month"><button type="button" id="uiReceivablePrev" class="ui-icon-button" aria-label="Mês anterior">‹</button><h3 id="uiReceivableMonth"></h3><button type="button" id="uiReceivableNext" class="ui-icon-button" aria-label="Próximo mês">›</button></div><div id="uiReceivableRows"></div></div></section>');
+    var cursor;
     document.body.append(modal);
     function mondayOf(date){var d=new Date(date);d.setHours(0,0,0,0);d.setDate(d.getDate()+(d.getDay()===0?-6:1-d.getDay()));return d;}
     function key(date){return date.getFullYear()+'-'+String(date.getMonth()+1).padStart(2,'0')+'-'+String(date.getDate()).padStart(2,'0');}
@@ -529,28 +529,35 @@
     function dayGross(date){var raw=rawFor(date);return number(raw.uber)+number(raw.bolt)+Object.keys(raw.plat||{}).reduce(function(sum,id){return sum+number(raw.plat[id]);},0)+(window.GanhosExtras&&GanhosExtras.bruto?GanhosExtras.bruto(raw):0);}
     function weekTotals(monday){var gross=0,expenses=0,extra=0,extraReceivable=0;for(var i=0;i<7;i++){var day=new Date(monday);day.setDate(monday.getDate()+i);var raw=rawFor(day);gross+=dayGross(day);var list=window.GanhosExtras&&GanhosExtras.list?GanhosExtras.list(raw):[];extra+=list.reduce(function(sum,item){return sum+number(item.valor);},0);extraReceivable+=(window.GanhosExtras&&GanhosExtras.aReceber?GanhosExtras.aReceber(raw):0);expenses+=window.SmartSomaReadModel?number(SmartSomaReadModel.day(day).expenses):number(raw.despesas);}return{gross:gross,expenses:expenses,extra:extra,value:gross-expenses+extraReceivable};}
     function label(monday){var sunday=new Date(monday);sunday.setDate(monday.getDate()+6);return monday.toLocaleDateString(I18N.t('lang.code'),{day:'numeric',month:'long'})+' a '+sunday.toLocaleDateString(I18N.t('lang.code'),{day:'numeric',month:'long'});}
+    function ownerMonth(monday){return window.SmartSomaWeeks?SmartSomaWeeks.ownerMonth(monday):{year:monday.getFullYear(),month:monday.getMonth()};}
+    function monthStart(owner){return new Date(owner.year,owner.month,1);}
+    function weekNumber(monday,owner){var weeks=window.SmartSomaWeeks?SmartSomaWeeks.weeksForMonth(owner.year,owner.month):[];var index=weeks.findIndex(function(week){return week.monday.getTime()===monday.getTime();});return index<0?1:index+1;}
+    function monthLabel(date){var value=date.toLocaleDateString(I18N.t('lang.code'),{month:'long',year:'numeric'});return value.charAt(0).toUpperCase()+value.slice(1);}
     function render(){
       var current=mondayOf(new Date()),currentData=weekTotals(current);
-      $('uiReceivableTitle').textContent=say('Valor a receber','Amount receivable');$('uiReceivablePeriod').textContent=label(current);$('uiReceivableValue').textContent=money(currentData.value);
+      var currentOwner=ownerMonth(current), currentMonth=monthStart(currentOwner);
+      if(!cursor)cursor=currentMonth;
+      $('uiReceivableTitle').textContent=say('Valor a receber','Amount receivable');$('uiReceivableWeek').textContent=say('Sem. ','Week ')+weekNumber(current,currentOwner);$('uiReceivablePeriod').textContent=label(current);$('uiReceivableValue').textContent=money(currentData.value);
       var extra=$('uiReceivableExtra');extra.hidden=currentData.extra<=0;if(currentData.extra>0)extra.querySelector('strong').textContent=money(currentData.extra);
-      $('uiReceivableMonth').textContent=cursor.toLocaleDateString(I18N.t('lang.code'),{month:'long',year:'numeric'});
+      $('uiReceivableMonth').textContent=monthLabel(cursor);
       $('uiReceivableRows').replaceChildren();var today=new Date();today.setHours(0,0,0,0);
       var weeks=window.SmartSomaWeeks?SmartSomaWeeks.weeksForMonth(cursor.getFullYear(),cursor.getMonth()):[];
       weeks.forEach(function(week,index){var monday=week.monday;if(monday>today||monday.getTime()===current.getTime())return;var row=create('div','ui-receivable-row');row.textContent=say('Sem. ','Week ')+(index+1)+' — '+money(weekTotals(monday).value);$('uiReceivableRows').append(row);});
       if(!$('uiReceivableRows').children.length){var empty=create('p','ui-muted');empty.textContent=say('Ainda não há semanas anteriores neste mês.','There are no previous weeks in this month yet.');$('uiReceivableRows').append(empty);}
+      $('uiReceivableNext').disabled=cursor.getTime()>=currentMonth.getTime();
     }
-    function open(){window.closeAllOverlays();if($('uiEntryDialog').open)$('uiEntryDialog').close();render();modal.classList.add('visible');}
+    function open(){window.closeAllOverlays();if($('uiEntryDialog').open)$('uiEntryDialog').close();cursor=monthStart(ownerMonth(mondayOf(new Date())));render();modal.classList.add('visible');}
     function close(){modal.classList.remove('visible');}
     $('uiReceivable').addEventListener('click',open);$('uiReceivableClose').addEventListener('click',close);modal.addEventListener('click',function(e){if(e.target===modal)close();});
-    $('uiReceivablePrev').addEventListener('click',function(){cursor.setMonth(cursor.getMonth()-1);render();});$('uiReceivableNext').addEventListener('click',function(){var next=new Date(cursor);next.setMonth(next.getMonth()+1);if(next<=new Date(new Date().getFullYear(),new Date().getMonth(),1)){cursor=next;render();}});
+    $('uiReceivablePrev').addEventListener('click',function(){cursor=new Date(cursor.getFullYear(),cursor.getMonth()-1,1);render();});$('uiReceivableNext').addEventListener('click',function(){var currentMonth=monthStart(ownerMonth(mondayOf(new Date())));if(cursor.getTime()<currentMonth.getTime()){cursor=new Date(cursor.getFullYear(),cursor.getMonth()+1,1);render();}});
     window.SmartSomaReceivable={open:open,close:close,visible:function(){return modal.classList.contains('visible');}};
   }
-  var entryMode='income',entryScreen='home',chosen=null,entryReturnFocus=null,restoreKmComponent=function(){},mountKmComponent=function(){};
+  var entryMode='income',entryScreen='home',chosen=null,entryReturnFocus=null,extraOptions={incluidoBruto:false,aindaReceber:false},restoreKmComponent=function(){},mountKmComponent=function(){};
   function setupEntry(){
     var dialog=create('dialog','ui-entry-dialog','<form id="uiEntryForm"><div class="ui-panel-head"><h2 id="uiEntryTitle"></h2><button type="button" id="uiEntryClose" class="ui-icon-button" aria-label="Fechar">×</button></div><p class="ui-entry-section-label">Data:</p><button type="button" id="uiEntryDate" class="ui-entry-date-selector" aria-haspopup="dialog"></button><p id="uiEntryTypeLabel" class="ui-entry-section-label">Tipo:</p><div class="ui-entry-tabs" id="uiEntryTabs"><button type="button" id="uiEntryIncome"></button><button type="button" id="uiEntryExpense"></button><button type="button" id="uiEntryKm">KM</button></div><div id="uiEntryHomeContent"><p id="uiPlatformHint" class="ui-platform-hint"></p><div class="ui-platform-selector" id="uiPlatformSelector"><div id="uiPlatformChoices" class="ui-platform-choices"></div></div><div id="uiExtraIncomeLauncher" class="ui-extra-income-launcher"><p>Outros ganhos?</p><button type="button" id="uiOpenExtraIncome">Inserir ganhos extras</button></div></div><div id="uiEntryFormContent" hidden><label id="uiEntryDescriptionLabel"><span id="uiDescriptionLabel"></span><input id="uiEntryDescription" maxlength="60"></label><label><span id="uiValueLabel"></span><div class="ui-entry-amount"><span>€</span><input id="uiEntryValue" inputmode="decimal" autocomplete="off" required aria-label="Valor" placeholder="0,00"></div></label><div id="uiExtraIncomeOptions" hidden><div class="ui-entry-switch-row"><strong>Incluído no valor bruto?</strong><button type="button" id="uiExtraGrossSwitch" class="ui-toggle" role="switch" aria-checked="false"></button></div><p class="ui-entry-switch-copy">Ao incluir o ganho extra no valor bruto, pode sofrer taxas de despesas fixas semanais em percentagem, caso as tenhas adicionado, por exemplo, taxas semanais fixas da plataforma.</p><div class="ui-entry-switch-row"><strong>Ainda a receber?</strong><button type="button" id="uiExtraReceivableSwitch" class="ui-toggle" role="switch" aria-checked="false"></button></div><p class="ui-entry-switch-copy">O ganho extra adicionado será contabilizado no valor a receber da semana selecionada.</p></div><p id="uiEntryHint" class="ui-muted" aria-live="polite"></p><p id="uiEntryError" class="ui-error" role="alert"></p><button type="submit" id="uiEntrySave" class="ui-button"></button></div><div id="uiEntryKmContent" hidden></div></form>');
     var backdrop=create('div','ui-entry-backdrop');dialog.id='uiEntryDialog';dialog.setAttribute('aria-labelledby','uiEntryTitle');document.body.append(backdrop,dialog);
     var retro=create('div','ui-entry-retro-backdrop','<section class="ui-entry-retro-card" role="dialog" aria-modal="true" aria-labelledby="uiEntryRetroTitle"><div class="ui-panel-head"><h2 id="uiEntryRetroTitle"></h2><button type="button" id="uiEntryRetroClose" class="ui-icon-button" aria-label="Fechar">×</button></div><p id="uiEntryRetroCopy"></p><div class="ui-entry-retro-actions"><button type="button" id="uiEntryRetroCancel" class="ui-button ui-secondary"></button><button type="button" id="uiEntryRetroConfirm" class="ui-button"></button></div></section>');
-    var pendingEntry=null,extraOptions={incluidoBruto:false,aindaReceber:false};document.body.append(retro);
+    var pendingEntry=null;document.body.append(retro);
     var distanceCard=$('distanciaModalCard'),kmContent=$('uiEntryKmContent');
     var kmNodes=distanceCard?['.distancia-mode-row','#distanciaModoHelperText','#distanciaTotalForm','#distanciaInicioFimForm','#distanciaSalvarBtn'].map(function(selector){return distanceCard.querySelector(selector);}):[];
     restoreKmComponent=function(){
@@ -617,11 +624,12 @@
     SmartSomaUI.openEntry=openEntry;
   }
   function openEntry(mode){
-    window.closeAllOverlays();window.closeProfileSheetPublic();entryReturnFocus=document.activeElement;
+    if(window.SmartSomaReceivable)SmartSomaReceivable.close();window.closeAllOverlays();window.closeProfileSheetPublic();entryReturnFocus=document.activeElement;
     GanhosDate.set(new Date());
     entryMode=mode||'income';entryScreen=mode==='expense'?'expense':mode==='km'?'km':'home';chosen=null;extraOptions={incluidoBruto:false,aindaReceber:false};$('uiEntryValue').value='';$('uiEntryDescription').value='';renderEntry();
     var entryDialog=$('uiEntryDialog');entryDialog.previousElementSibling.classList.add('visible');
-    if(typeof entryDialog.show==='function')entryDialog.show();else entryDialog.showModal();
+    if(!entryDialog.open&&typeof entryDialog.showModal==='function')entryDialog.showModal();
+    else if(!entryDialog.open)entryDialog.setAttribute('open','');
   }
   function renderEntry(){
     var income=entryMode==='income',km=entryMode==='km',home=entryScreen==='home',incomeForm=entryScreen==='income'||entryScreen==='extra',extraForm=entryScreen==='extra';

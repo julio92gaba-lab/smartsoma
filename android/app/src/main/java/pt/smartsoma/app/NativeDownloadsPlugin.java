@@ -98,13 +98,10 @@ public class NativeDownloadsPlugin extends Plugin {
     private void finishSavedPdf(PluginCall call, Uri uri, boolean inDownloads) {
         try {
             Toast.makeText(getContext(), inDownloads ? "PDF guardado em Downloads" : "PDF guardado", Toast.LENGTH_LONG).show();
-            // A notification is optional: saving must succeed even if permission is denied.
+            // The saved file is never held back by the optional Android permission.
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
                 getPermissionState("notifications") != PermissionState.GRANTED) {
-                boolean asked = getContext().getSharedPreferences("pdf_notifications", Context.MODE_PRIVATE)
-                    .getBoolean("asked", false);
-                if (!asked && getActivity() != null) {
-                    getContext().getSharedPreferences("pdf_notifications", Context.MODE_PRIVATE).edit().putBoolean("asked", true).apply();
+                if (getActivity() != null) {
                     call.getData().put("savedPdfUri", uri.toString());
                     call.getData().put("savedPdfInDownloads", inDownloads);
                     getActivity().runOnUiThread(() -> {
@@ -152,6 +149,8 @@ public class NativeDownloadsPlugin extends Plugin {
                 .setContentTitle("PDF guardado")
                 .setContentText(message)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setCategory(NotificationCompat.CATEGORY_STATUS)
                 .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
                 .setContentIntent(action)
                 .setAutoCancel(true)
