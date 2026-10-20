@@ -194,6 +194,8 @@ nav{flex-wrap:wrap;padding:12px 5vw 0}
 .access-ios{width:190px;text-align:left}.access-ios summary{min-height:50px;display:flex;align-items:center;justify-content:center;gap:5px;list-style:none;border:1px solid #b7c6bd;border-radius:9px;background:white;color:var(--ink);padding:8px;font:800 13px 'DM Sans',sans-serif;cursor:pointer}.access-ios summary span{white-space:nowrap}.access-ios summary::-webkit-details-marker{display:none}.access-ios svg{width:20px;height:20px;flex-shrink:0}
 .access-ios summary::after{content:'+';font-size:19px;line-height:1}.access-ios[open] summary::after{content:'−'}
 .access-ios ol{margin:12px 0 2px 22px;color:#d8e7de;font-size:13px;line-height:1.6}.access-ios li+li{margin-top:5px}
+.subscription-route{margin:20px auto 0;max-width:680px;padding:16px 18px;border:1px solid rgba(46,204,113,.5);border-radius:14px;background:rgba(46,204,113,.1);color:#e8fff0;text-align:center}.subscription-route strong{color:#70eea3}.subscription-route a{display:inline-block;margin-top:9px;color:#0f281a;background:#2ECC71;border-radius:999px;padding:8px 14px;font-weight:800;text-decoration:none}
+.plans-subscription-link{display:block;max-width:560px;margin:-24px auto 30px;padding:15px 18px;border-radius:14px;background:#e4f9ec;color:#123a24;text-align:center;font-weight:800;text-decoration:none;border:1px solid rgba(14,59,42,.18)}.plans-subscription-link span{display:block;margin-top:3px;font-size:13px;font-weight:600;color:#42624f}
 .feat-card,.plans-features-card,.plan-card,.faq-item,.testi-card{border-color:rgba(14,59,42,.16);border-radius:16px;box-shadow:0 10px 28px rgba(14,59,42,.07)}
 .feat-card:hover{transform:translateY(-2px);box-shadow:0 14px 32px rgba(14,59,42,.12)}
 .phone-frame{box-shadow:0 16px 38px rgba(14,59,42,.2)}.section-label{border-radius:999px}.plans-trial-highlight{border-radius:14px;box-shadow:none}.step-num{transform:none!important;border-radius:12px}
@@ -233,7 +235,7 @@ section:not(.hero):not(.access-section):not(.cta-final){padding-top:68px;padding
     <li><a href="#faq" data-i18n="nav.faq">FAQ</a></li>
   </ul>
   <div class="nav-actions">
-    <a href="login.html" class="nav-cta" data-i18n="nav.comecar">Entrar / Registar</a>
+    <a href="login.html" class="nav-cta" data-i18n="nav.comecar">Começar</a>
     <button class="lang-btn lang-toggle-btn" title="Alterar idioma" aria-label="Alterar idioma" id="langBtnMobile">
       <span class="lang-btn-flag" id="langFlagMobile">
         <svg viewBox="0 0 600 400"><rect width="600" height="400" fill="#ff0000"/><rect width="200" height="400" fill="#006600"/><circle cx="200" cy="200" r="80" fill="#ffff00" stroke="#000" stroke-width="3"/><rect x="170" y="150" width="60" height="100" fill="#ffffff" stroke="#000" stroke-width="2"/><rect x="180" y="165" width="40" height="50" fill="#0000ff"/></svg>
@@ -320,6 +322,7 @@ section:not(.hero):not(.access-section):not(.cta-final){padding-top:68px;padding
         </ol>
       </details>
     </div>
+    <div class="subscription-route"><strong>Já tens o Android?</strong> A contratação da subscrição é feita no website. Depois, entra na app com a mesma conta SmartSoma.<br><a href="subscricao.html">Ver subscrição e trial</a></div>
   </div>
 </section>
 
@@ -440,6 +443,7 @@ section:not(.hero):not(.access-section):not(.cta-final){padding-top:68px;padding
   <div class="plans-trial-highlight">
     <p data-i18n="plans.trial.highlight"><span>🎁 15 dias grátis em qualquer plano</span>Introduz o cartão, escolhe o plano &nbsp;·&nbsp; Só cobrado após o trial &nbsp;·&nbsp; Cancela quando quiseres</p>
   </div>
+  <a class="plans-subscription-link" href="subscricao.html">Como funciona o pagamento, o trial e a gestão da subscrição?<span>Consulta os passos, o checkout Creem e as condições antes de começar.</span></a>
 
   <div class="plans-layout">
 

@@ -31,7 +31,6 @@ public class MainActivity extends BridgeActivity {
         registerPlugin(NativeAuthPlugin.class);
         registerPlugin(NativeDownloadsPlugin.class);
         registerPlugin(NativeStartupPlugin.class);
-        registerPlugin(NativeBillingPlugin.class);
         super.onCreate(savedInstanceState);
         getBridge().getWebView().setBackgroundColor(Color.parseColor("#0E5830"));
         protectNavigationBar();

@@ -182,7 +182,7 @@ test('failed offline writes survive repeated attempts and resume after entitleme
 });
 
 for (const [label,data,error,active] of [
-  ['active',{status:'active'},null,true],
+  ['active',{status:'active',current_period_end:new Date(Date.now()+86400000).toISOString()},null,true],
   ['trial',{status:'trialing',trial_ends_at:new Date(Date.now()+86400000*5).toISOString()},null,true],
   ['canceled with paid time',{status:'canceled',current_period_end:new Date(Date.now()+86400000).toISOString()},null,true],
   ['expired',{status:'canceled',current_period_end:'2020-01-01'},null,false],

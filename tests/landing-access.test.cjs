@@ -50,8 +50,8 @@ test('legal text distinguishes web and Android without promising unavailable Pla
   assert.match(html, /SmartSoma LDA 2026/);
   assert.match(html, /Rua 5 de outubro 43, Sintra, Lisboa, Portugal/);
   assert.doesNotMatch(html, /identificação fiscal e forma jurídica a completar/);
-  assert.match(html, /quando disponibilizado, processamento de subscrições pela Google Play/);
-  assert.match(html, /subscrições adquiridas através da Google Play, quando disponíveis/i);
-  assert.match(html, /Desinstalar a aplicação não cancela uma subscrição Google Play/);
+  assert.match(html, /Os pagamentos são processados exclusivamente pela <strong>Creem<\/strong>/);
+  assert.match(html, /Desinstalar a aplicação Android não cancela a subscrição/);
+  assert.doesNotMatch(html, /subscrições adquiridas através da Google Play/i);
   assert.doesNotMatch(html, /ec\.europa\.eu\/consumers\/odr/);
 });

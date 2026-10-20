@@ -25,7 +25,7 @@ for (const file of files) {
   fs.copyFileSync(path.join(root, file), target);
 }
 // A apresentação Android replica a imagem e a cor da tela nativa, sem alterar o site.
-const nativeSplash = '<style>html,body{background:#0E5830}#splash{position:fixed;inset:0;z-index:9999;background:#0E5830}#subExpiradaBackdrop .sub-expired-plans,#subExpiradaBackdrop .cancelar-sub-note{display:none!important}</style>';
+const nativeSplash = '<style>html,body{background:#0E5830}#splash{position:fixed;inset:0;z-index:9999;background:#0E5830}#pwaToast,#pwaSheetInstall,#subExpiradaBackdrop .sub-expired-plans,#subExpiradaBackdrop .cancelar-sub-note{display:none!important}</style>';
 const nativeApp = fs.readFileSync(path.join(root, 'app.html'), 'utf8')
   .replace('<head>', '<head>' + nativeSplash)
   .replace('<script src="ui-v2.js?v=20" defer></script>', '<link rel="stylesheet" href="native-splash.css">\n    <script src="ui-v2.js?v=20" defer></script>')

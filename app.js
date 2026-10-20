@@ -437,7 +437,7 @@
 "dist.percorridos": "{v} km percorridos",
 "meta.title": "Meta Semanal",
 "meta.welcome": "Defina sua meta de ganhos da semana na página inicial. Pode alterar sempre que quiser.",
-"meta.welcomeKept": "Mantivemos sua meta em €{v} {t}. Pode alterar sempre que quiser na página inicial.",
+"meta.welcomeKept": "A semana começou. Quer manter a meta de €{v} {t} ou zerá-la?",
 "meta.valorAria": "Valor da meta semanal",
 "meta.bruto": "Bruto",
 "meta.liquido": "Líquido",
@@ -450,6 +450,8 @@
 "meta.fixasEmpty": "Nenhuma despesa fixa cadastrada. Para usar esta opção, cadastre em Ajustes › Despesas Fixas.",
 "meta.fixasManter": "Manter",
 "meta.fixasZerar": "Zerar Despesas",
+"meta.manterMeta": "Manter meta",
+"meta.zerarMeta": "Zerar meta",
 "meta.podeAlterar": "Pode alterar quando quiser.",
 "meta.zerar": "Zerar",
 "meta.fixasLinhaEuro": "{v} Eur",
@@ -459,7 +461,8 @@
 "meta.histGanho": "Ganho no período:",
 "meta.histAcima": "Você ultrapassou a meta, atingindo {p}% dela.",
 "meta.histAbaixo": "Você atingiu {p}% da meta até então.",
-"meta.histAbaixo": "Você atingiu {p}% da meta até então."
+"meta.retroTitle": "Meta Semanal Retroativa",
+"meta.retroWelcome": "Defina a meta apenas para esta semana. Não altera outros períodos."
 },
 "en": {
 "lang.code": "en",
@@ -844,7 +847,7 @@
 "dist.percorridos": "{v} km travelled",
 "meta.title": "Weekly Goal",
 "meta.welcome": "Set your weekly earnings goal on the home screen. You can change it whenever you like.",
-"meta.welcomeKept": "We kept your goal at €{v} {t}. You can change it whenever you like on the home screen.",
+"meta.welcomeKept": "A new week has started. Do you want to keep the €{v} {t} goal or clear it?",
 "meta.valorAria": "Weekly goal amount",
 "meta.bruto": "Gross",
 "meta.liquido": "Net",
@@ -857,6 +860,8 @@
 "meta.fixasEmpty": "No fixed expenses registered. To use this option, register them in Settings › Fixed Expenses.",
 "meta.fixasManter": "Keep",
 "meta.fixasZerar": "Clear Expenses",
+"meta.manterMeta": "Keep goal",
+"meta.zerarMeta": "Clear goal",
 "meta.podeAlterar": "You can change it whenever you like.",
 "meta.zerar": "Clear",
 "meta.fixasLinhaEuro": "{v} Eur",
@@ -866,7 +871,8 @@
 "meta.histGanho": "Earned in the period:",
 "meta.histAcima": "You went past the goal, reaching {p}% of it.",
 "meta.histAbaixo": "You reached {p}% of the goal so far.",
-"meta.histAbaixo": "You reached {p}% of the goal so far."
+"meta.retroTitle": "Retroactive Weekly Goal",
+"meta.retroWelcome": "Set the goal only for this week. It does not change other periods."
 }
 };
 
@@ -2366,6 +2372,12 @@
       var histPeriodEl       = document.getElementById('metaSemanalHistPeriodText');
       var histBodyEl         = document.getElementById('metaSemanalHistBody');
       var histFecharBtn      = document.getElementById('metaSemanalHistFecharBtn');
+      var retroBackdrop      = document.getElementById('metaSemanalRetroModalBackdrop');
+      var retroPeriodEl      = document.getElementById('metaSemanalRetroPeriodText');
+      var retroValorInput    = document.getElementById('metaSemanalRetroValorInput');
+      var retroBrutoBtn      = document.getElementById('metaRetroTipoBrutoBtn');
+      var retroLiquidoBtn    = document.getElementById('metaRetroTipoLiquidoBtn');
+      var retroSalvarBtn     = document.getElementById('metaSemanalRetroSalvarBtn');
 
       function MESES_ABBR () { return I18N.list('months.abbr'); }
       function MESES_FULL () { return I18N.list('months.lower'); }
@@ -2401,61 +2413,27 @@
       // Persistência da meta entre semanas. A meta é guardada por semana
       // (metaSemanalConfig:<segunda>), para que o histórico de cada semana
       // fique intacto. Ao começar uma semana nova sem meta própria, a meta
-      // da semana anterior é copiada para ela (o utilizador pode alterar ou
-      // "Zerar"). Procura para trás a semana mais recente que tenha meta;
-      // se essa semana foi "zerada" de propósito, não herda nada — senão
-      // uma meta antiga "ressuscitaria" depois de zerada.
+      // da semana anterior é copiada para ela até o utilizador confirmar a
+      // decisão no aviso. Só a semana imediatamente anterior pode ser
+      // herdada: metas antigas não devem reaparecer depois de uma semana
+      // sem meta.
       var metaMantidaDaSemanaAnterior = null;
       function carryOverMetaFromPreviousWeeks () {
         var monday = weekMonday(new Date());
-        for (var i = 1; i <= 104; i++) {
-          var d = new Date(monday.getTime());
-          d.setDate(monday.getDate() - 7 * i);
-          var key = dateKeyFor(d);
-          try {
-            var raw = cloudGet(storageKeyForWeek(key));
-            if (raw) {
-              var parsed = JSON.parse(raw);
-              if (parsed && typeof parsed.valor === 'number' && parsed.valor > 0) {
-                return { valor: parsed.valor, tipo: (parsed.tipo === 'liquido') ? 'liquido' : 'bruto', percent: 0 };
-              }
-            }
-          } catch (e) {  }
-          if (isMetaZeradaForWeek(key)) return null;
-        }
-        return null;
-      }
-
-      var DESPESAS_FIXAS_KEY = 'despesasFixas';
-      var DESPESAS_FIXAS_SKIP_PREFIX = 'despesasFixasSkipSemana:';
-
-      function loadDespesasFixasCadastradas () {
+        var previousMonday = new Date(monday.getTime());
+        previousMonday.setDate(monday.getDate() - 7);
+        var key = dateKeyFor(previousMonday);
+        if (isMetaZeradaForWeek(key)) return null;
         try {
-          var raw = cloudGet(DESPESAS_FIXAS_KEY);
+          var raw = cloudGet(storageKeyForWeek(key));
           if (raw) {
             var parsed = JSON.parse(raw);
-            var items = (parsed && parsed.items) || [];
-            var weekKey = currentWeekKey();
-            return items.filter(function (item) {
-              if (item && item.desde && item.desde > weekKey) return false;
-              if (item && item.ate && item.ate <= weekKey) return false;
-              return true;
-            });
+            if (parsed && !parsed.retroativa && typeof parsed.valor === 'number' && parsed.valor > 0) {
+              return { valor: parsed.valor, tipo: (parsed.tipo === 'liquido') ? 'liquido' : 'bruto', percent: 0 };
+            }
           }
         } catch (e) {  }
-        return [];
-      }
-      function isFixasSkippedForWeek (weekKey) {
-        try {
-          return cloudGet(DESPESAS_FIXAS_SKIP_PREFIX + weekKey) === '1';
-        } catch (e) {  }
-        return false;
-      }
-      function setFixasSkippedForWeek (weekKey, skip) {
-        try {
-          if (skip) cloudSet(DESPESAS_FIXAS_SKIP_PREFIX + weekKey, '1');
-          else cloudRemove(DESPESAS_FIXAS_SKIP_PREFIX + weekKey);
-        } catch (e) {  }
+        return null;
       }
 
       function formatWeekPeriodLabel (monday) {
@@ -2597,87 +2575,39 @@
         document.dispatchEvent(new CustomEvent('metaSemanalConfigChanged', { detail: config }));
       }
 
-      // O bloco "Manter/Zerar despesas fixas" só faz sentido uma vez por
-      // semana e mora no popup automático de boas-vindas (ver
-      // metaFixasWelcomeSection mais abaixo). O popup manual da meta não
-      // tem mais essa pergunta — só a meta semanal em si.
-
-      // Despesas fixas ainda não excluídas, sem olhar para a semana em que
-      // foram criadas. Serve de plano B para a pergunta lá em baixo (no
-      // popup de boas-vindas): se a janela desde/ate da semana (ex.: data
-      // do aparelho alterada para testar) deixasse a lista vazia, a
-      // pergunta sumia sem explicação.
-      function loadDespesasFixasNaoExcluidas () {
-        try {
-          var raw = cloudGet(DESPESAS_FIXAS_KEY);
-          if (raw) {
-            var parsed = JSON.parse(raw);
-            return ((parsed && parsed.items) || []).filter(function (item) { return item && !item.ate; });
-          }
-        } catch (e) {  }
-        return [];
-      }
-
       // ---- Popup exclusivo do aviso automático de início de semana ----
-      // Duplicado do popup principal, mas sem os campos de editar a meta
-      // (valor, Bruto/Líquido, meta atual, link Zerar): a meta já foi
-      // mantida automaticamente da semana anterior (ver
-      // carryOverMetaFromPreviousWeeks). Mostra só o texto de boas-vindas
-      // e a seção de despesas fixas (Manter/Zerar).
+      // A meta anterior é mantida de imediato, para que fechar o popup não
+      // a apague. O utilizador pode confirmar essa escolha ou zerar a meta.
       var welcomeModalBackdrop  = document.getElementById('metaSemanalWelcomeModalBackdrop');
       var welcomeModalText      = document.getElementById('metaSemanalWelcomeModalText');
-      var welcomeFixasListEl    = document.getElementById('metaFixasWelcomeListEl');
-      var welcomeFixasEmptyEl   = document.getElementById('metaFixasWelcomeEmptyEl');
-      var welcomeFixasManterBtn = document.getElementById('metaFixasWelcomeManterBtn');
-      var welcomeFixasPularBtn  = document.getElementById('metaFixasWelcomePularBtn');
+      var welcomeManterBtn      = document.getElementById('metaWelcomeManterBtn');
+      var welcomeZerarBtn       = document.getElementById('metaWelcomeZerarBtn');
       var welcomeSalvarBtn      = document.getElementById('metaSemanalWelcomeSalvarBtn');
 
-      function renderWelcomeFixas () {
-        if (!welcomeFixasListEl) return;
-
-        var lista = loadDespesasFixasCadastradas();
-        if (!lista.length) lista = loadDespesasFixasNaoExcluidas();
-        var temFixas = lista.length > 0;
-
-        welcomeFixasListEl.innerHTML = lista.map(function (item) {
-          var linha = (item.tipo === 'euro')
-            ? ('<span class="valor">' + I18N.t('meta.fixasLinhaEuro', { v: Number(item.valor).toFixed(2) }) + '</span> - ' + window.SmartSomaSecurity.escapeHtml(item.descricao))
-            : ('<span class="valor">' + I18N.t('meta.fixasLinhaPct', { v: Number(item.valor) }) + '</span> - ' + window.SmartSomaSecurity.escapeHtml(item.descricao));
-          return '<div class="meta-fixas-list-item">' + linha + '</div>';
-        }).join('');
-
-        if (welcomeFixasEmptyEl) welcomeFixasEmptyEl.hidden = temFixas;
-
-        // Popup abre sempre com "Manter" pré-selecionado; o estado visual
-        // dos botões é gerido pela variável welcomeFixasEscolha (não pelo
-        // cloudGet), porque a escolha só é aplicada ao clicar em Salvar.
-        var selManter = (welcomeFixasEscolha === 'manter');
-        if (welcomeFixasManterBtn) {
-          welcomeFixasManterBtn.disabled = !temFixas;
-          welcomeFixasManterBtn.classList.toggle('active', selManter);
-          welcomeFixasManterBtn.setAttribute('aria-pressed', selManter ? 'true' : 'false');
+      function renderWelcomeMeta () {
+        var selManter = (welcomeMetaEscolha === 'manter');
+        if (welcomeManterBtn) {
+          welcomeManterBtn.classList.toggle('active', selManter);
+          welcomeManterBtn.setAttribute('aria-pressed', selManter ? 'true' : 'false');
         }
-        if (welcomeFixasPularBtn) {
-          welcomeFixasPularBtn.disabled = !temFixas;
-          welcomeFixasPularBtn.classList.toggle('active', !selManter);
-          welcomeFixasPularBtn.setAttribute('aria-pressed', (!selManter) ? 'true' : 'false');
+        if (welcomeZerarBtn) {
+          welcomeZerarBtn.classList.toggle('active', !selManter);
+          welcomeZerarBtn.setAttribute('aria-pressed', (!selManter) ? 'true' : 'false');
         }
       }
 
-      // Variável local que guarda a escolha do utilizador dentro do popup.
-      // Começa sempre em 'manter' quando o popup abre.
-      var welcomeFixasEscolha = 'manter';
+      var welcomeMetaEscolha = 'manter';
 
-      if (welcomeFixasManterBtn) {
-        welcomeFixasManterBtn.addEventListener('click', function () {
-          welcomeFixasEscolha = 'manter';
-          renderWelcomeFixas();
+      if (welcomeManterBtn) {
+        welcomeManterBtn.addEventListener('click', function () {
+          welcomeMetaEscolha = 'manter';
+          renderWelcomeMeta();
         });
       }
-      if (welcomeFixasPularBtn) {
-        welcomeFixasPularBtn.addEventListener('click', function () {
-          welcomeFixasEscolha = 'zerar';
-          renderWelcomeFixas();
+      if (welcomeZerarBtn) {
+        welcomeZerarBtn.addEventListener('click', function () {
+          welcomeMetaEscolha = 'zerar';
+          renderWelcomeMeta();
         });
       }
 
@@ -2691,18 +2621,20 @@
             welcomeModalText.textContent = I18N.t('meta.welcome');
           }
         }
-        // Sempre abre com "Manter" pré-selecionado.
-        welcomeFixasEscolha = 'manter';
-        renderWelcomeFixas();
+        welcomeMetaEscolha = 'manter';
+        renderWelcomeMeta();
         closeAllOverlays();
         welcomeModalBackdrop.classList.add('visible');
       }
       function closeWelcomeModal (aplicar) {
-        // Se aplicar=true (clique em Salvar), aplica a escolha actual.
-        // Se aplicar=false (fechar pelo backdrop ou outro meio), não altera nada.
-        if (aplicar) {
-          setFixasSkippedForWeek(currentWeekKey(), welcomeFixasEscolha === 'zerar');
-          document.dispatchEvent(new CustomEvent('despesasFixasChanged'));
+        // Se fechar sem escolha, a meta já copiada é conservada. Só "Zerar"
+        // confirmado remove a meta da semana atual.
+        if (aplicar && welcomeMetaEscolha === 'zerar') {
+          config = null;
+          try { cloudRemove(storageKeyForWeek(currentWeekKey())); } catch (e) {  }
+          setMetaZeradaForWeek(currentWeekKey(), true);
+          metaMantidaDaSemanaAnterior = null;
+          renderCurrent();
         }
         if (welcomeModalBackdrop) welcomeModalBackdrop.classList.remove('visible');
       }
@@ -2728,8 +2660,8 @@
       btnBruto.addEventListener('click', function () { setTipo('bruto'); });
       btnLiquido.addEventListener('click', function () { setTipo('liquido'); });
 
-      valorInput.addEventListener('input', function () {
-        var value = valorInput.value.replace(/[^0-9.,]/g, '');
+      function sanitizeGoalInput (input) {
+        var value = input.value.replace(/[^0-9.,]/g, '');
         var firstSep = value.search(/[.,]/);
         if (firstSep !== -1) {
           value = value.slice(0, firstSep + 1) + value.slice(firstSep + 1).replace(/[.,]/g, '');
@@ -2738,7 +2670,11 @@
         if (!isNaN(numeric) && numeric > 999.99) {
           value = value.includes(',') ? '999,99' : '999.99';
         }
-        valorInput.value = value;
+        input.value = value;
+      }
+
+      valorInput.addEventListener('input', function () {
+        sanitizeGoalInput(valorInput);
       });
 
       salvarBtn.addEventListener('click', function () {
@@ -2815,6 +2751,7 @@
         if (document.visibilityState === 'hidden') return;
 
         var weekKey = currentWeekKey();
+        if (!metaMantidaDaSemanaAnterior) return;
         var lastPrompted = null;
         try { lastPrompted = cloudGet(LAST_PROMPT_KEY); } catch (e) {  }
         if (lastPrompted === weekKey) return;
@@ -2854,7 +2791,7 @@
           if (raw) {
             var parsed = JSON.parse(raw);
             if (parsed && typeof parsed.valor === 'number') {
-              return { valor: parsed.valor, tipo: (parsed.tipo === 'liquido') ? 'liquido' : 'bruto' };
+              return { valor: parsed.valor, tipo: (parsed.tipo === 'liquido') ? 'liquido' : 'bruto', retroativa: !!parsed.retroativa };
             }
           }
         } catch (e) {  }
@@ -2879,16 +2816,22 @@
         if (weekBoxBtn) weekBoxBtn.classList.remove('is-below', 'is-above', 'is-undefined');
 
         if (!cfg) {
-          if (weekBoxPercentEl) weekBoxPercentEl.textContent = '0% (ND)';
-          if (weekBoxThumbEl) weekBoxThumbEl.textContent = '';
-          if (weekBoxBtn) weekBoxBtn.classList.add('is-undefined');
+          if (weekBoxPercentEl) weekBoxPercentEl.textContent = I18N.t('metacard.porDefinir');
+          if (weekBoxThumbEl) weekBoxThumbEl.textContent = '→';
+          if (weekBoxBtn) {
+            weekBoxBtn.classList.add('is-undefined');
+            weekBoxBtn.setAttribute('aria-label', I18N.t('metacard.porDefinir'));
+          }
         } else {
           var achieved = computeWeekEarnings(cfg.tipo, browsedMonday);
           var percent  = (cfg.valor > 0) ? Math.round((achieved / cfg.valor) * 100) : 0;
           if (percent < 0) percent = 0;
           if (weekBoxPercentEl) weekBoxPercentEl.textContent = percent + '%';
           if (weekBoxThumbEl) weekBoxThumbEl.textContent = (percent >= 100) ? '👍' : '👎';
-          if (weekBoxBtn) weekBoxBtn.classList.add(percent >= 100 ? 'is-above' : 'is-below');
+          if (weekBoxBtn) {
+            weekBoxBtn.classList.add(percent >= 100 ? 'is-above' : 'is-below');
+            weekBoxBtn.removeAttribute('aria-label');
+          }
         }
 
         if (weekBoxBtn) weekBoxBtn.__weekData = { monday: browsedMonday, cfg: cfg };
@@ -2927,6 +2870,55 @@
         if (histBackdrop) histBackdrop.classList.remove('visible');
       }
 
+      var retroTipoAtual = 'bruto';
+      var retroWeekKey = null;
+      function setRetroTipo (tipo) {
+        retroTipoAtual = tipo;
+        var isBruto = tipo === 'bruto';
+        if (retroBrutoBtn) {
+          retroBrutoBtn.classList.toggle('active', isBruto);
+          retroBrutoBtn.setAttribute('aria-pressed', isBruto ? 'true' : 'false');
+        }
+        if (retroLiquidoBtn) {
+          retroLiquidoBtn.classList.toggle('active', !isBruto);
+          retroLiquidoBtn.setAttribute('aria-pressed', !isBruto ? 'true' : 'false');
+        }
+      }
+      function openRetroModal (monday) {
+        if (!retroBackdrop || !monday) return;
+        retroWeekKey = dateKeyFor(monday);
+        if (retroPeriodEl) retroPeriodEl.textContent = formatWeekPeriodFull(monday);
+        if (retroValorInput) retroValorInput.value = '';
+        setRetroTipo('bruto');
+        if (window.closeAllOverlays) window.closeAllOverlays();
+        retroBackdrop.classList.add('visible');
+      }
+      function closeRetroModal () {
+        if (retroBackdrop) retroBackdrop.classList.remove('visible');
+        retroWeekKey = null;
+      }
+
+      if (retroBrutoBtn) retroBrutoBtn.addEventListener('click', function () { setRetroTipo('bruto'); });
+      if (retroLiquidoBtn) retroLiquidoBtn.addEventListener('click', function () { setRetroTipo('liquido'); });
+      if (retroValorInput) retroValorInput.addEventListener('input', function () { sanitizeGoalInput(retroValorInput); });
+      if (retroSalvarBtn) retroSalvarBtn.addEventListener('click', function () {
+        if (!retroWeekKey || !retroValorInput) return;
+        var valorNum = parseFloat(retroValorInput.value.replace(',', '.'));
+        if (isNaN(valorNum) || valorNum <= 0) return;
+        if (valorNum > 999.99) valorNum = 999.99;
+        try {
+          cloudSet(storageKeyForWeek(retroWeekKey), JSON.stringify({ valor: valorNum, tipo: retroTipoAtual, percent: 0, retroativa: true }));
+          setMetaZeradaForWeek(retroWeekKey, false);
+        } catch (e) { return; }
+        closeRetroModal();
+        renderWeekBox();
+      });
+      if (retroBackdrop) {
+        retroBackdrop.addEventListener('click', function (e) {
+          if (e.target === retroBackdrop) closeRetroModal();
+        });
+      }
+
       // Presentation-only access to the existing weekly goal and history.
       window.MetaSemanalRead = {
         forDate: function (date) {
@@ -2948,6 +2940,10 @@
         weekBoxBtn.addEventListener('click', function () {
           var data = weekBoxBtn.__weekData;
           if (!data) return;
+          if (!data.cfg) {
+            openRetroModal(data.monday);
+            return;
+          }
           populateHistModal(data.monday, data.cfg);
           openHistModal();
         });
@@ -2960,6 +2956,7 @@
       }
       document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape' && histBackdrop && histBackdrop.classList.contains('visible')) closeHistModal();
+        if (e.key === 'Escape' && retroBackdrop && retroBackdrop.classList.contains('visible')) closeRetroModal();
       });
 
       renderWeekBox();

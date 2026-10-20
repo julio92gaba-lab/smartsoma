@@ -457,6 +457,13 @@
           align-items:center;
           padding:1rem;
         }
+        /* Mesmo que a verificação termine muito cedo, o cartão nunca pode
+           sobrepor-se à tela verde de arranque. */
+        html.splash-active #subExpiradaBackdrop{
+          visibility:hidden;
+          opacity:0 !important;
+          pointer-events:none !important;
+        }
         .mm-card{
           width:100%;
           max-width:400px;
@@ -1286,6 +1293,15 @@
         .meta-semanal-week-box-btn.is-below{ background:rgba(228,87,76,0.16); }
         .meta-semanal-week-box-btn.is-above{ background:rgba(30,158,90,0.18); }
         .meta-semanal-week-box-btn.is-undefined{ background:rgba(28,43,58,0.08); }
+        .meta-semanal-week-box-btn.is-undefined .meta-semanal-week-box-percent{
+          font-size:0.6875rem;
+          font-weight:700;
+          color:var(--brand-green);
+        }
+        .meta-semanal-week-box-btn.is-undefined .meta-semanal-week-box-thumb{
+          font-size:0.875rem;
+          color:var(--brand-green);
+        }
         .meta-semanal-week-box-period{
           font-size:0.5625rem;
           font-weight:600;

@@ -48,7 +48,7 @@ test('web launch retains PWA service worker registration', () => {
   assert.equal(registered, '/sw.js');
 });
 
-test('startup splash stays visible until its minimum time and actual fade', () => {
+test('startup splash stays visible until its minimum time and actual fade', async () => {
   const html = fs.readFileSync('app.html', 'utf8');
   const splashScript = html.match(/<script>\s*(\/\* ── Splash:[\s\S]*?)<\/script>/)[1];
   const app = fs.readFileSync('app.js', 'utf8').replace(/\r\n/g, '\n');
@@ -82,6 +82,43 @@ test('startup splash stays visible until its minimum time and actual fade', () =
   Object.defineProperty(event, 'propertyName', { value: 'opacity' });
   splash.dispatchEvent(event);
   assert.equal(w.document.getElementById('splash'), null);
+  await Promise.resolve();
+  assert.equal(w.document.documentElement.classList.contains('splash-active'), false);
+  dom.window.close();
+});
+
+test('subscription modal waits for the green splash to finish fading', () => {
+  const html = fs.readFileSync('app.html', 'utf8');
+  const css = fs.readFileSync('app.css', 'utf8');
+  assert.match(css, /html\.splash-active #subExpiradaBackdrop\s*\{[^}]*visibility:hidden;[^}]*opacity:0 !important;[^}]*pointer-events:none !important;/);
+  const splashScript = html.match(/<script>\s*(\/\* ── Splash:[\s\S]*?)<\/script>/)[1];
+  const dom = new JSDOM('<div id="splash"></div><div id="appRoot"></div>', { runScripts: 'outside-only' });
+  const w = dom.window;
+  let now = 0, opened = 0;
+  const timers = [];
+  w.Date.now = () => now;
+  w.setTimeout = (fn, delay) => { timers.push({ fn, at: now + delay }); };
+  function advance(to) {
+    for (;;) {
+      timers.sort((a, b) => a.at - b.at);
+      if (!timers.length || timers[0].at > to) break;
+      const next = timers.shift(); now = next.at; next.fn();
+    }
+    now = to;
+  }
+  w.eval(splashScript);
+  w.abrirModalSubExpirada = () => { opened++; };
+  w.abrirModalSubExpirada();
+  assert.equal(w.document.getElementById('appRoot').inert, true);
+  advance(3000);
+  assert.equal(opened, 0);
+  const event = new w.Event('transitionend');
+  Object.defineProperty(event, 'propertyName', { value: 'opacity' });
+  w.document.getElementById('splash').dispatchEvent(event);
+  advance(3249);
+  assert.equal(opened, 0);
+  advance(3250);
+  assert.equal(opened, 1);
   dom.window.close();
 });
 

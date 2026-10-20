@@ -4,38 +4,27 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const { JSDOM } = require('jsdom');
 
-test('Android explains unavailable purchases and blocks the web checkout', () => {
-  const dom = new JSDOM('<div id="subExpiradaCard"><h3 id="subExpiradaTitle">Original</h3><p class="mm-helper-text">Trial</p><button id="subExpiradaBtnSemanal">Plano</button><button id="subExpiradaBtnMensal">Plano</button><button id="subExpiradaSairBtn">Sair</button></div>', { runScripts: 'outside-only' });
-  const { window } = dom;
-  let checkouts = 0, signouts = 0;
-  for (const id of ['subExpiradaBtnSemanal', 'subExpiradaBtnMensal']) window.document.getElementById(id).addEventListener('click', () => checkouts++);
-  window.document.getElementById('subExpiradaSairBtn').addEventListener('click', () => signouts++);
-  window.eval(fs.readFileSync('scripts/native-billing-ui.js', 'utf8'));
-  assert.match(window.document.querySelector('.mm-helper-text').textContent, /Google Play estão em preparação/);
-  assert.match(window.document.querySelector('.mm-helper-text').dataset.original, /mesma conta/);
-  window.document.getElementById('subExpiradaBtnSemanal').click();
-  window.document.getElementById('subExpiradaBtnMensal').click();
-  window.document.getElementById('subExpiradaSairBtn').click();
-  assert.equal(checkouts, 0); assert.equal(signouts, 1);
-  dom.window.close();
-});
-
-test('only the Android package receives the billing preparation screen', () => {
-  const script = fs.readFileSync('scripts/prepare-capacitor.cjs', 'utf8');
-  const web = fs.readFileSync('app.html', 'utf8');
-  assert.match(script, /native-billing-ui\.js/);
-  assert.match(script, /sub-expired-plans[^}]*display:none!important/);
-  assert.doesNotMatch(web, /native-billing-ui\.js/);
-});
-
-test('Android preserves a connection error that was already displayed', () => {
-  const dom = new JSDOM('<div id="subExpiradaCard"><h3 id="subExpiradaTitle">Ligação necessária</h3><p class="mm-helper-text">Verifica a ligação.</p></div>', { runScripts: 'outside-only' });
+test('Android is consumption-only and can recheck without signing in again', () => {
+  const dom = new JSDOM('<div id="subExpiradaCard"><h3 id="subExpiradaTitle">Original</h3><p class="mm-helper-text">Trial</p><div class="sub-expired-plans"><button>€2</button></div><p class="cancelar-sub-note">trial</p><div class="mm-secondary-action"><button id="subExpiradaSairBtn">Sair</button></div></div><section id="cancelarSubscricaoSection"></section>', { runScripts: 'outside-only' });
+  let rechecks = 0; dom.window.verificarPlano = () => rechecks++;
   dom.window.eval(fs.readFileSync('scripts/native-billing-ui.js', 'utf8'));
-  const title = dom.window.document.getElementById('subExpiradaTitle');
   const text = dom.window.document.querySelector('.mm-helper-text');
-  assert.equal(title.textContent, 'Ligação necessária');
-  assert.equal(text.textContent, 'Verifica a ligação.');
-  assert.equal(title.dataset.original, 'Subscrição no Android');
-  assert.match(text.dataset.original, /Google Play/);
+  assert.equal(dom.window.document.getElementById('subExpiradaTitle').textContent, 'Subscrição não encontrada');
+  assert.match(text.textContent, /www\.smartsoma\.pt/);
+  assert.equal(text.querySelector('a'), null);
+  assert.equal(dom.window.document.querySelector('.sub-expired-plans'), null);
+  assert.equal(dom.window.document.getElementById('cancelarSubscricaoSection'), null);
+  dom.window.document.getElementById('subExpiradaReverBtn').click();
+  assert.equal(rechecks, 1); dom.window.close();
+});
+
+test('Android explains an unpaid subscription without offering a payment flow', () => {
+  const dom = new JSDOM('<div id="subExpiradaCard"><h3 id="subExpiradaTitle">Original</h3><p class="mm-helper-text">Trial</p><div class="mm-secondary-action"><button id="subExpiradaSairBtn">Sair</button></div></div>', { runScripts: 'outside-only' });
+  dom.window.eval(fs.readFileSync('scripts/native-billing-ui.js', 'utf8'));
+  dom.window.atualizarMensagemSubscricao({ status: 'unpaid' }, true);
+  const text = dom.window.document.querySelector('.mm-helper-text');
+  assert.equal(dom.window.document.getElementById('subExpiradaTitle').textContent, 'Subscrição precisa de atenção');
+  assert.match(text.textContent, /regulariza a tua subscrição/i);
+  assert.equal(text.querySelector('a'), null);
   dom.window.close();
 });

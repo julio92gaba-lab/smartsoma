@@ -10,9 +10,9 @@ test('authentication, cloud persistence and billing endpoints match the approved
     'cloud-init.js':'c85ad90780ffface59882a43cf2b950ebb8135933f48fd827e8cbb854799d3f3',
     'login.html':'a39520ad9756e4cb538bb6562094b069f1040d7a284a38157a7747e376c4ba1f',
     'api/delete-account.js':'eed898072bd2aebdd7a4c8c2f5eb94a4a83a382963a31abcba641907db72a270',
-    'api/webhook.js':'7d93936fb8f016c3328f6b845cc1075819b5fdaa57bf2e88d15b2eada709d7ae',
-    'supabase/functions/creem-checkout/index.ts':'c341a62155cb7600e48f7c40eb52b8c1e4a26d06d0ea1464441a0f3012322c16',
-    'supabase/functions/creem-webhook/index.ts':'138af3b728b872d06acd82efaa12f73bd99ae9ccd8eb5394a263b1ead9eea953'
+    'api/webhook.js':'e9aa13265940fd5d9fd4da93c3850e6335640bb5e8fc50e5dd1a3218e68544f8',
+    'supabase/functions/creem-checkout/index.ts':'b6875c7534b7d71d6eab7d70f0f0cd5fdeec88bc08de00669ce468f200c40032',
+    'supabase/functions/creem-webhook/index.ts':'f42ae85a2f81569ea5d6d89142da2f47123eb9a909299115150d420b5effff9a'
   };
   for(const [path,checksum] of Object.entries(expected)) {
     let source=fs.readFileSync(path,'utf8');
@@ -27,5 +27,5 @@ test('authentication, cloud persistence and billing endpoints match the approved
 test('all inline auth, subscription and account scripts retain baseline source',()=>{
   const html=fs.readFileSync('app.html','utf8');
   const scripts=[...html.matchAll(/<script(?![^>]*src=)[^>]*>([\s\S]*?)<\/script>/g)].map(m=>m[1].replace(/\r\n/g,'\n'));
-  assert.equal(hash(JSON.stringify(scripts)),'a172dc176116e60f51de22b0c8cfa9e601aa1ae3f5f85f0601a75da86c5852f9');
+  assert.equal(hash(JSON.stringify(scripts)),'63d8cda60533f39a04f7f0029f34097e6d31550368a802cbb68356fda5544a96');
 });

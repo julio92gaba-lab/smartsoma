@@ -125,13 +125,29 @@
     </div>
 </div>
 <script>
-/* ── Splash: tempo mínimo de 3 s + atraso de 0.6 s no modal de subscrição ── */
+/* ── Splash: tempo mínimo de 3 s + modal só após sair do ecrã ── */
 (function(){
     var SPLASH_MIN_MS = 3000;
-    var MODAL_DELAY_MS = 600;
+    var MODAL_DELAY_MS = 250;
     var splashEl = document.getElementById('splash');
     var splashStart = Date.now();
-    var splashGone = false;
+    var modalPending = false;
+    document.documentElement.classList.add('splash-active');
+
+    function markSplashGone() {
+        document.documentElement.classList.remove('splash-active');
+    }
+    if (!splashEl) {
+        markSplashGone();
+    } else {
+        var splashObserver = new MutationObserver(function() {
+            if (!splashEl.isConnected) {
+                splashObserver.disconnect();
+                markSplashGone();
+            }
+        });
+        splashObserver.observe(document.body, { childList: true, subtree: true });
+    }
 
     /* Interceta a adição de 'fade-out' ao splash para garantir tempo mínimo */
     if (splashEl) {
@@ -142,10 +158,9 @@
                 var remaining = SPLASH_MIN_MS - elapsed;
                 if (remaining > 0) {
                     var args = arguments;
-                    setTimeout(function(){ _origAdd.apply(null, args); splashGone = true; }, remaining);
+                    setTimeout(function(){ _origAdd.apply(null, args); }, remaining);
                 } else {
                     _origAdd(cls);
-                    splashGone = true;
                 }
             } else {
                 _origAdd(cls);
@@ -153,18 +168,50 @@
         };
     }
 
-    /* Interceta a abertura do modal de subscrição para adicionar atraso após o splash */
+    function afterSplash(callback) {
+        var splash = document.getElementById('splash');
+        if (!splash || !splash.isConnected) {
+            setTimeout(callback, MODAL_DELAY_MS);
+            return;
+        }
+        var done = false;
+        var finish = function() {
+            if (done) return;
+            done = true;
+            setTimeout(callback, MODAL_DELAY_MS);
+        };
+        splash.addEventListener('transitionend', function(event) {
+            if (event.target === splash && event.propertyName === 'opacity') finish();
+        });
+        var observer = new MutationObserver(function() {
+            if (!splash.isConnected) {
+                observer.disconnect();
+                finish();
+            }
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+    }
+
+    /* Interceta a abertura do modal: bloqueia já, mas só o mostra quando
+       o splash verde tiver terminado e removido do ecrã. */
     var _origAbrir = null;
     Object.defineProperty(window, 'abrirModalSubExpirada', {
         get: function(){ return _origAbrir; },
         set: function(fn){
             _origAbrir = function(){
-                var waitForSplash = function(cb){
-                    var elapsed = Date.now() - splashStart;
-                    var wait = Math.max(0, SPLASH_MIN_MS - elapsed) + MODAL_DELAY_MS;
-                    setTimeout(cb, wait);
-                };
-                waitForSplash(fn);
+                /* Bloqueia já a interação atrás do splash; o cartão só fica
+                   visível depois da animação terminar. */
+                var appRoot = document.getElementById('appRoot');
+                if (appRoot) {
+                    appRoot.inert = true;
+                    appRoot.setAttribute('aria-hidden', 'true');
+                }
+                if (modalPending) return;
+                modalPending = true;
+                afterSplash(function(){
+                    modalPending = false;
+                    if (!window.SmartSomaPro || !window.SmartSomaPro.isPro) fn();
+                });
             };
         },
         configurable: true
@@ -1380,13 +1427,10 @@
 
             <p class="meta-semanal-welcome visible" id="metaSemanalWelcomeModalText" data-i18n="meta.welcome">Defina sua meta de ganhos da semana. Pode alterar quando quiser.</p>
 
-            <div class="meta-fixas-section" id="metaFixasWelcomeSection">
-                <h3 class="mm-title" data-i18n="sheet.despesasFixas">Despesas Fixas</h3>
-                <div class="meta-fixas-list" id="metaFixasWelcomeListEl"></div>
-                <p class="meta-fixas-empty" id="metaFixasWelcomeEmptyEl" data-i18n="meta.fixasEmpty" hidden>Nenhuma despesa fixa cadastrada. Para usar esta opção, cadastre em Ajustes &rsaquo; Despesas Fixas.</p>
+            <div class="meta-fixas-section">
                 <div class="meta-fixas-row">
-                    <button type="button" class="meta-tipo-btn active" id="metaFixasWelcomeManterBtn" data-fixas="manter" aria-pressed="true" data-i18n="meta.fixasManter">Manter</button>
-                    <button type="button" class="meta-tipo-btn" id="metaFixasWelcomePularBtn" data-fixas="pular" aria-pressed="false" data-i18n="meta.fixasZerar">Zerar Despesas</button>
+                    <button type="button" class="meta-tipo-btn active" id="metaWelcomeManterBtn" aria-pressed="true" data-i18n="meta.manterMeta">Manter meta</button>
+                    <button type="button" class="meta-tipo-btn" id="metaWelcomeZerarBtn" aria-pressed="false" data-i18n="meta.zerarMeta">Zerar meta</button>
                 </div>
                 <p class="mm-helper-text" data-i18n="meta.podeAlterar">Pode alterar quando quiser.</p>
             </div>
@@ -1401,6 +1445,25 @@
             <p class="meta-semanal-hist-period" id="metaSemanalHistPeriodText"></p>
             <div class="meta-semanal-hist-body" id="metaSemanalHistBody"></div>
             <button type="button" class="mm-save-btn" id="metaSemanalHistFecharBtn" data-i18n="app.close">Fechar</button>
+        </div>
+    </div>
+
+    <div class="mm-backdrop" id="metaSemanalRetroModalBackdrop">
+        <div class="mm-card" role="dialog" aria-modal="true" aria-labelledby="metaSemanalRetroModalTitle" id="metaSemanalRetroModalCard">
+            <h3 class="mm-title" id="metaSemanalRetroModalTitle" data-i18n="meta.retroTitle">Meta Semanal Retroativa</h3>
+            <p class="meta-semanal-hist-period" id="metaSemanalRetroPeriodText"></p>
+            <p class="meta-semanal-welcome visible" data-i18n="meta.retroWelcome">Defina a meta apenas para esta semana. Não altera outros períodos.</p>
+
+            <div class="meta-semanal-row">
+                <div class="mm-value-input-wrap meta-semanal-input-wrap">
+                    <span class="mm-value-prefix">€</span>
+                    <input type="text" inputmode="decimal" class="mm-value-input" id="metaSemanalRetroValorInput" placeholder="0.00" data-i18n-aria="meta.valorAria" aria-label="Valor da meta semanal retroativa">
+                </div>
+                <button type="button" class="meta-tipo-btn active" id="metaRetroTipoBrutoBtn" aria-pressed="true" data-i18n="meta.bruto">Bruto</button>
+                <button type="button" class="meta-tipo-btn" id="metaRetroTipoLiquidoBtn" aria-pressed="false" data-i18n="meta.liquido">Líquido</button>
+            </div>
+
+            <button type="button" class="mm-save-btn" id="metaSemanalRetroSalvarBtn" data-i18n="app.save">Salvar</button>
         </div>
     </div>
 
@@ -1578,7 +1641,7 @@
                     !Number.isFinite(saved.checkedAt) || !Number.isFinite(saved.until) ||
                     saved.checkedAt > now || saved.until <= now || saved.until > saved.checkedAt + PLANO_CACHE_MAX_MS) return null;
                 const end = saved.sub.status === 'trialing' ? (saved.sub.trial_ends_at || saved.sub.current_period_end) : saved.sub.current_period_end;
-                if (!end && saved.sub.status !== 'active') return null;
+                if (!end) return null;
                 if (end && (!Number.isFinite(new Date(end).getTime()) || saved.until > new Date(end).getTime())) return null;
                 return saved;
             } catch (e) { return null; }
@@ -1594,7 +1657,11 @@
             if (title && !title.dataset.original) title.dataset.original = title.textContent;
             if (text && !text.dataset.original) text.dataset.original = text.textContent;
             if (title) title.textContent = semLigacao ? 'Ligação necessária' : title.dataset.original;
-            if (text) text.textContent = semLigacao ? 'Liga-te à internet para confirmar a tua subscrição e continuar.' : text.dataset.original;
+            if (text) {
+                if (semLigacao) text.textContent = 'Liga-te à internet para confirmar a tua subscrição e continuar.';
+                else if (text.dataset.nativeMessage) text.innerHTML = text.dataset.nativeMessage;
+                else text.textContent = text.dataset.original;
+            }
             if (plans) plans.style.display = semLigacao ? 'none' : '';
             if (note) note.style.display = semLigacao ? 'none' : '';
         }
@@ -1702,17 +1769,24 @@
                     return;
                 }
 
-                let isActive = !!data && ['active', 'trialing'].indexOf(data.status) !== -1;
-                /* Cancelada: mantém acesso apenas até ao fim do trial/período já pago. */
-                if (data && data.status === 'canceled' && data.current_period_end) {
-                    isActive = new Date(data.current_period_end).getTime() >= Date.now();
-                }
+                const hasFutureDate = function(value) {
+                    const time = new Date(value || '').getTime();
+                    return Number.isFinite(time) && time > Date.now();
+                };
+                const trialEnd = data && (data.trial_ends_at || data.current_period_end);
+                const isActive = !!data && (
+                    (data.status === 'trialing' && hasFutureDate(trialEnd)) ||
+                    ((data.status === 'active' || data.status === 'canceled') && hasFutureDate(data.current_period_end))
+                );
                 window.SmartSomaPro.isPro = isActive;
                 window.SmartSomaPro.entitlementChecked = true;
                 if (isActive) guardarPlanoOffline(user, data);
                 else { try { localStorage.removeItem(PLANO_CACHE_PREFIX + user.id); } catch (e) { } }
 
                 aplicarEstadoPlano(isActive ? data : null);
+                if (typeof window.atualizarMensagemSubscricao === 'function') {
+                    window.atualizarMensagemSubscricao(data, !isActive);
+                }
                 mostrarErroLigacao(false);
 
                 /* Sem subscrição válida: modal de escolha de plano (não dispensável) */
@@ -1862,6 +1936,7 @@
             }
         }
         window.abrirModalSubExpirada = abrirModalSubExpirada;
+        window.verificarPlano = verificarPlano;
 
         /* ── Atualiza bandeira e código no botão de idioma do cabeçalho ── */
         function atualizarBotaoIdiomaHeader() {

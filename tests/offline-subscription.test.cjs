@@ -70,7 +70,7 @@ test('reconnection revalidates before confirming access and rejects cancelled en
   const now = Date.now();
   let resolveQuery;
   const control = { query: () => new Promise(resolve => { resolveQuery = resolve; }) };
-  const saved = JSON.stringify({ sub: { status: 'active' }, checkedAt: now, until: now + 60000 });
+  const saved = JSON.stringify({ sub: { status: 'active', current_period_end: new Date(now + 60000).toISOString() }, checkedAt: now, until: now + 60000 });
   const a = await startGate(t, control, saved, false);
   Object.defineProperty(a.w.navigator, 'onLine', { value: true, configurable: true });
   a.w.dispatchEvent(new a.w.Event('online'));
@@ -84,7 +84,7 @@ test('reconnection revalidates before confirming access and rejects cancelled en
 
 test('network failures use the cache, but server errors do not', async t => {
   const now = Date.now();
-  const saved = JSON.stringify({ sub: { status: 'active' }, checkedAt: now, until: now + 60000 });
+  const saved = JSON.stringify({ sub: { status: 'active', current_period_end: new Date(now + 60000).toISOString() }, checkedAt: now, until: now + 60000 });
   const network = await startGate(t, { query: async () => ({ data: null, error: { message: 'Failed to fetch' } }) }, saved);
   assert.equal(network.w.SmartSomaPro.isPro, true);
   assert.equal(network.w.SmartSomaPro.entitlementChecked, false);

@@ -91,11 +91,15 @@ serve(async (req) => {
       .maybeSingle()
     if (subscriptionError) return json({ error: "Não foi possível validar a subscrição" }, 500)
 
+    const now = Date.now()
+    const trialEnd = subscription?.trial_ends_at || subscription?.current_period_end
+    const currentPeriodEnd = subscription?.current_period_end
+    const hasFutureDate = (value: string | null | undefined) =>
+      !!value && Number.isFinite(new Date(value).getTime()) && new Date(value).getTime() > now
     const hasAccess = subscription && (
-      subscription.status === "active" ||
-      subscription.status === "trialing" ||
-      (subscription.status === "canceled" && subscription.current_period_end &&
-        new Date(subscription.current_period_end).getTime() > Date.now())
+      (subscription.status === "trialing" && hasFutureDate(trialEnd)) ||
+      (subscription.status === "active" && hasFutureDate(currentPeriodEnd)) ||
+      (subscription.status === "canceled" && hasFutureDate(currentPeriodEnd))
     )
     if (hasAccess) return json({ error: "Já existe uma subscrição válida" }, 409)
 
