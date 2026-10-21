@@ -3794,7 +3794,7 @@
       }
 
       function loadDayBadges (d) {
-        var badges = { uber: 0, bolt: 0, despesas: 0, distancia: 0 };
+        var badges = { uber: 0, bolt: 0, despesas: 0, distancia: 0, ganhosExtras: [] };
         badges.plat = {}; badges.extras = 0;
         try {
           var raw = cloudGet(BADGES_STORAGE_PREFIX + dateKeyFor(d));
@@ -3804,6 +3804,7 @@
               if (parsed && typeof parsed[k] === 'number') badges[k] = parsed[k];
             }
             badges.plat = platExtrasFrom(parsed);
+            badges.ganhosExtras = ganhosExtrasFrom(parsed);
             badges.extras = platSum(badges.plat) + ganhosExtrasBruto(parsed);
           }
         } catch (e) {  }
@@ -4102,6 +4103,12 @@
         var expenseRows = expenseEntries.map(function (item) {
           return '<div class="semana-day-card-row is-expense"><span class="row-label">' + escHtml(item.descricao) + '</span><span class="row-value">' + formatEuro(item.valor) + '</span></div>';
         }).join('') || '<div class="semana-day-card-row"><span class="row-label">Sem despesas registadas</span><span class="row-value">—</span></div>';
+        var extraEarningsRows = badges.ganhosExtras.map(function (item) {
+          return '<div class="semana-day-card-row is-extra-earning"><span class="row-label"><span>' + escHtml(item.descricao) + '</span><small>' + I18N.t('fmt.dayMonth', { d: d.getDate(), m: MESES_MINUS()[d.getMonth()] }) + '</small></span><span class="row-value">' + formatEuro(item.valor) + '</span></div>';
+        }).join('');
+        var extraEarningsSection = extraEarningsRows
+          ? '<div class="semana-day-card-extra-earnings"><span>Ganhos extras</span>' + extraEarningsRows + '</div>'
+          : '';
         var weekday = DIAS_FULL()[weekdayIndex] + (weekdayIndex < 5 ? '-feira' : '');
         var longDate = I18N.t('fmt.dayMonth', { d: d.getDate(), m: MESES_MINUS()[d.getMonth()] });
 
@@ -4134,6 +4141,7 @@
               '</div>' +
             '</div>' +
             '<div class="semana-day-card-expenses"><span>Despesas do dia</span>' + expenseRows + '<div class="semana-day-card-expense-total"><span>Total</span><strong>' + formatEuro(despesasDia) + '</strong></div></div>' +
+            extraEarningsSection +
           '</div>';
         card.appendChild(details);
         header.addEventListener('click', function (event) {
@@ -4236,7 +4244,7 @@
 
         var tbody = document.createElement('tbody');
 
-        var sumUber = 0, sumBolt = 0, sumExtras = 0, sumDespesas = 0, sumKm = 0, bestRevenueDay = null;
+        var sumUber = 0, sumBolt = 0, sumExtras = 0, sumDespesas = 0, sumKm = 0, weekIncludedExtraEarnings = 0, bestRevenueDay = null;
         var meta = window.MetaSemanalRead && window.MetaSemanalRead.forDate(week.monday);
         var activeDays = 0, earningsActiveDays = 0;
 
@@ -4260,6 +4268,9 @@
           sumExtras   += dayBadges.extras;
           sumDespesas += despesasDia;
           sumKm       += dayBadges.distancia;
+          weekIncludedExtraEarnings += dayBadges.ganhosExtras.reduce(function (sum, item) {
+            return sum + (item.incluidoBruto ? item.valor : 0);
+          }, 0);
 
           var dayTotal = dayBadges.uber + dayBadges.bolt + dayBadges.extras;
           if (!bestRevenueDay || dayTotal > bestRevenueDay.value) {
@@ -4352,6 +4363,11 @@
         }
         revenueFooter.innerHTML = '<span class="semana-revenue-title">Melhor da semana</span>' +
           '<span class="semana-revenue-best">' + bestRevenueLabel + '</span>';
+        if (weekIncludedExtraEarnings > 0) {
+          revenueFooter.insertAdjacentHTML('beforeend',
+            '<span class="semana-revenue-title">Ganhos extras</span>' +
+            '<span class="semana-revenue-extra">Incluído no valor semanal: € ' + formatPlainNumber(weekIncludedExtraEarnings) + '</span>');
+        }
         scrollWrap.appendChild(revenueFooter);
         var summary = document.createElement('div');
         summary.className = 'semana-week-summary semana-goal-card';

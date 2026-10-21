@@ -2497,5 +2497,37 @@ body.ui-v2 #proWelcomeToast { right:calc(var(--app-gutter) + 20px); }
 .ui-v2 .ui-metrics + .ui-extra-earnings:not([hidden]) { margin-top:16px; }
 .ui-v2 .ui-extra-earnings + .ui-dashboard-bottom { margin-top:0; }
 .ui-v2 .ui-extra-earnings[hidden] + .ui-dashboard-bottom { margin-top:16px; }
+
+/* Ganhos extras ficam no respetivo dia e resumem-se na faturação semanal. */
+.ui-v2 #homeListPageSemana .semana-day-card-extra-earnings {
+  display:grid;
+  gap:8px;
+  padding-top:12px;
+  border-top:1px solid var(--card-line);
+}
+.ui-v2 #homeListPageSemana .semana-day-card-extra-earnings > span {
+  color:var(--muted);
+  font-size:.62rem;
+  font-weight:800;
+  letter-spacing:.055em;
+  text-transform:uppercase;
+}
+.ui-v2 #homeListPageSemana .semana-day-card-extra-earnings .row-label { display:grid; gap:2px; }
+.ui-v2 #homeListPageSemana .semana-day-card-extra-earnings .row-label small { color:var(--muted); font-size:.62rem; }
+.ui-v2 #homeListPageSemana .semana-day-card-extra-earnings .row-value { color:#2878c7; }
+.ui-v2 #homeListPageSemana .semana-revenue-extra {
+  width:max-content;
+  max-width:100%;
+  overflow:hidden;
+  padding:5px 8px;
+  border:1px solid color-mix(in srgb,#2878c7 28%,transparent);
+  border-radius:999px;
+  background:color-mix(in srgb,#2878c7 10%,transparent);
+  color:#2167af;
+  font-size:.64rem;
+  font-weight:800;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
 /* O card descontinuado não pode voltar a surgir por markup legado em desktop. */
 body.ui-v2 .ss-driver-card { display:none !important; }

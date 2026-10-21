@@ -530,7 +530,7 @@
     return new Promise(function (resolve, reject) {
       var replayDomReady = installDomReadyReplay();
       var script = document.createElement('script');
-      script.src = 'app.js?v=18';
+      script.src = 'app.js?v=19';
       script.async = false;
       script.onload = function () {
         if (replayDomReady) replayDomReady.flush();
