@@ -105,8 +105,8 @@
     <link rel="stylesheet" href="app.css">
     <link rel="preload" href="fonts/BricolageGrotesque-latin.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="fonts/DMSans-latin.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="ui-v2.css?v=33">
-    <script src="ui-v2.js?v=27" defer></script>
+    <link rel="stylesheet" href="ui-v2.css?v=34">
+    <script src="ui-v2.js?v=28" defer></script>
     <script src="supabase.min.js"></script>
 <link rel="icon" type="image/png" sizes="192x192" href="/favicon.png">
 </head>
@@ -400,7 +400,7 @@
                                                 </span>
                                             </span>
                                             <span class="list-row-title" data-i18n="ganhos.uber">Ganhos Uber</span>
-                                            <span class="list-row-value" id="badgeUber">€ 0.00</span>
+                                            <span class="list-row-value" id="badgeUber">0.00 €</span>
                                             <span class="ganhos-tile-ticks" aria-hidden="true"></span>
                                         </button>
                                         <button type="button" class="list-row ganhos-tile ganhos-tile-income ganhos-tile-scroll-item" id="listRowBolt" data-i18n-aria="ganhos.bolt" aria-label="Ganhos Bolt" aria-haspopup="true" aria-expanded="false">
@@ -414,7 +414,7 @@
                                                 </span>
                                             </span>
                                             <span class="list-row-title" data-i18n="ganhos.bolt">Ganhos Bolt</span>
-                                            <span class="list-row-value" id="badgeBolt">€ 0.00</span>
+                                            <span class="list-row-value" id="badgeBolt">0.00 €</span>
                                             <span class="ganhos-tile-ticks" aria-hidden="true"></span>
                                         </button>
                                     </div>
@@ -431,7 +431,7 @@
                                             </span>
                                         </span>
                                         <span class="list-row-title" data-i18n="ganhos.despesas">Despesas</span>
-                                        <span class="list-row-value" id="badgeDespesas">€ 0.00</span>
+                                        <span class="list-row-value" id="badgeDespesas">0.00 €</span>
                                         <span class="list-row-subtitle" id="despesasTileSubtitle" data-i18n="ganhos.despesasSub">Despesas fixas entram na segunda-feira.</span>
                                         <span class="ganhos-tile-ticks" aria-hidden="true"></span>
                                     </button>
@@ -482,7 +482,7 @@
                                                 </svg>
                                             </span>
                                                     <span class="dash-main-label" id="dashLiquidoLabel" data-i18n="resumo.liquido">Líquido</span>
-                                                    <span class="dash-main-value" id="summaryLiquidoValue">€0.00</span>
+                                                    <span class="dash-main-value" id="summaryLiquidoValue">0.00 €</span>
                                                 </div>
                                             </div>
 
@@ -505,7 +505,7 @@
                                             </svg>
                                         </span>
                                                 <span class="dash-tile-label" id="dashBrutoLabel" data-i18n="resumo.bruto">Bruto</span>
-                                                <span class="dash-tile-value" id="summaryBrutoValue">€0.00</span>
+                                                <span class="dash-tile-value" id="summaryBrutoValue">0.00 €</span>
                                                 <span class="dash-tile-ticks" aria-hidden="true"></span>
                                             </div>
 
@@ -519,7 +519,7 @@
                                             </svg>
                                         </span>
                                                 <span class="dash-tile-label" data-i18n="resumo.despesas">Despesas</span>
-                                                <span class="dash-tile-value" id="summaryDespesasValue">€0.00</span>
+                                                <span class="dash-tile-value" id="summaryDespesasValue">0.00 €</span>
                                                 <span class="dash-tile-ticks" aria-hidden="true"></span>
                                             </div>
 
@@ -1208,8 +1208,8 @@
             <p class="mm-subtitle-date" id="platExtraModalDate"></p>
             <div class="mm-value-form">
                 <div class="mm-value-input-wrap">
-                    <span class="mm-value-prefix">€</span>
                     <input type="text" inputmode="decimal" class="mm-value-input" id="platExtraValorInput" placeholder="0.00" data-i18n-aria="plat.valorAria" aria-label="Valor recebido">
+                    <span class="mm-value-prefix">€</span>
                 </div>
                 <button type="button" class="mm-save-btn" id="platExtraSalvarBtn" data-i18n="app.save">Guardar</button>
             </div>
@@ -1279,8 +1279,8 @@
             <p class="semana-expense-edit-desc" id="semanaDespesaEditDesc"></p>
             <p class="mm-subtitle-date" id="semanaDespesaEditDate"></p>
             <div class="mm-value-input-wrap">
-                <span class="mm-value-prefix">€</span>
                 <input type="text" inputmode="decimal" class="mm-value-input" id="semanaDespesaEditValorInput" placeholder="0.00" data-i18n-aria="despesaEdit.valorAria" aria-label="Valor da despesa">
+                <span class="mm-value-prefix">€</span>
             </div>
             <div class="meta-semanal-row" id="semanaDespesaEditFixedTypes" hidden>
                 <button type="button" class="meta-tipo-btn active" id="semanaDespesaEditPercentBtn" aria-pressed="true" data-i18n="despesaEdit.percent">Percentagem</button>
@@ -1308,8 +1308,8 @@
             <p class="mm-subtitle-date" id="uberModalDate"></p>
             <div class="mm-value-form">
                 <div class="mm-value-input-wrap">
-                    <span class="mm-value-prefix">€</span>
                     <input type="text" inputmode="decimal" class="mm-value-input" id="uberValorInput" placeholder="0.00" data-i18n-aria="uber.valorAria" aria-label="Valor recebido na Uber">
+                    <span class="mm-value-prefix">€</span>
                 </div>
                 <button type="button" class="mm-save-btn" id="uberSalvarBtn" data-i18n="app.save">Guardar</button>
             </div>
@@ -1322,8 +1322,8 @@
             <p class="mm-subtitle-date" id="boltModalDate"></p>
             <div class="mm-value-form">
                 <div class="mm-value-input-wrap">
-                    <span class="mm-value-prefix">€</span>
                     <input type="text" inputmode="decimal" class="mm-value-input" id="boltValorInput" placeholder="0.00" data-i18n-aria="bolt.valorAria" aria-label="Valor recebido na Bolt">
+                    <span class="mm-value-prefix">€</span>
                 </div>
                 <button type="button" class="mm-save-btn" id="boltSalvarBtn" data-i18n="app.save">Guardar</button>
             </div>
@@ -1338,8 +1338,8 @@
             <div class="mm-value-form">
                 <input type="text" class="mm-desc-input" id="despesasSemanaDescInput" data-i18n-ph="dia.descPh" placeholder="DESCRIÇÃO" data-i18n-aria="dia.descAria" aria-label="Descrição da despesa">
                 <div class="mm-value-input-wrap">
-                    <span class="mm-value-prefix">€</span>
                     <input type="text" inputmode="decimal" class="mm-value-input" id="despesasSemanaValorInput" placeholder="0.00" data-i18n-aria="dia.valorAria" aria-label="Valor gasto em despesas">
+                    <span class="mm-value-prefix">€</span>
                 </div>
                 <button type="button" class="mm-save-btn" id="despesasSemanaSalvarBtn" data-i18n="app.save">Guardar</button>
             </div>
@@ -1423,8 +1423,8 @@
 
             <div class="meta-semanal-row">
                 <div class="mm-value-input-wrap meta-semanal-input-wrap">
-                    <span class="mm-value-prefix">€</span>
                     <input type="text" inputmode="decimal" class="mm-value-input" id="metaSemanalValorInput" placeholder="0.00" data-i18n-aria="meta.valorAria" aria-label="Valor da meta semanal">
+                    <span class="mm-value-prefix">€</span>
                 </div>
                 <button type="button" class="meta-tipo-btn active" id="metaTipoBrutoBtn" data-tipo="bruto" aria-pressed="true" data-i18n="meta.bruto">Bruto</button>
                 <button type="button" class="meta-tipo-btn" id="metaTipoLiquidoBtn" data-tipo="liquido" aria-pressed="false" data-i18n="meta.liquido">Líquido</button>
@@ -1485,8 +1485,8 @@
 
             <div class="meta-semanal-row">
                 <div class="mm-value-input-wrap meta-semanal-input-wrap">
-                    <span class="mm-value-prefix">€</span>
                     <input type="text" inputmode="decimal" class="mm-value-input" id="metaSemanalRetroValorInput" placeholder="0.00" data-i18n-aria="meta.valorAria" aria-label="Valor da meta semanal retroativa">
+                    <span class="mm-value-prefix">€</span>
                 </div>
                 <button type="button" class="meta-tipo-btn active" id="metaRetroTipoBrutoBtn" aria-pressed="true" data-i18n="meta.bruto">Bruto</button>
                 <button type="button" class="meta-tipo-btn" id="metaRetroTipoLiquidoBtn" aria-pressed="false" data-i18n="meta.liquido">Líquido</button>
@@ -1509,11 +1509,11 @@
         <div class="sub-expired-plans">
             <button type="button" class="sub-expired-plan-btn" id="subExpiradaBtnSemanal" data-plan="semanal">
                 <span class="sub-expired-plan-name">Plano Semanal</span>
-                <span class="sub-expired-plan-price">€2 / semana</span>
+                <span class="sub-expired-plan-price">2 € / semana</span>
             </button>
             <button type="button" class="sub-expired-plan-btn" id="subExpiradaBtnMensal" data-plan="mensal">
                 <span class="sub-expired-plan-name">Plano Mensal</span>
-                <span class="sub-expired-plan-price">€5 / mês</span>
+                <span class="sub-expired-plan-price">5 € / mês</span>
             </button>
         </div>
         <p class="cancelar-sub-note">15 dias de trial · A primeira cobrança é feita no fim do trial · Cancela antes para não pagar</p>
@@ -1572,7 +1572,7 @@
 
 
 <script src="heic2any.min.js?v=12"></script>
-<script src="cloud-init.js?v=17"></script>
+<script src="cloud-init.js?v=18"></script>
 
 
     <!-- ── SmartSoma Pro: checkout + modal + verificação de plano ── -->

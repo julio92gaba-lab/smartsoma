@@ -16,8 +16,8 @@ test('income replaces a daily platform value and preserves other platforms', t =
   a.input('uberValorInput', '80'); a.click('uberSalvarBtn');
   const saved = JSON.parse(a.cache['homeBadgeValores:' + dateKey(new Date())]);
   assert.equal(saved.uber, 80); assert.equal(saved.bolt, 30);
-  assert.equal(a.el('summaryBrutoValue').textContent, '€110.00');
-  assert.equal(a.el('summaryLiquidoValue').textContent, '€110.00');
+  assert.equal(a.el('summaryBrutoValue').textContent, '110.00 €');
+  assert.equal(a.el('summaryLiquidoValue').textContent, '110.00 €');
 });
 
 test('income caps and custom platform values use original storage', t => {
@@ -26,7 +26,17 @@ test('income caps and custom platform values use original storage', t => {
   assert.equal(a.w.HomeBadges.get().uber, 999.99);
   a.w.HomeBadges.setPlat('custom-test', 40);
   assert.equal(a.w.HomeBadges.getPlat('custom-test'), 40);
-  assert.equal(a.el('summaryBrutoValue').textContent, '€1039.99');
+  assert.equal(a.el('summaryBrutoValue').textContent, '1039.99 €');
+});
+
+test('monetary values and entry fields place the euro symbol after the amount', t => {
+  const a = createApp(); t.after(a.close);
+  for (const id of ['badgeUber','badgeBolt','badgeDespesas','summaryBrutoValue','summaryLiquidoValue','summaryDespesasValue']) {
+    assert.match(a.el(id).textContent,/\d(?:\.\d{2})? €/);
+  }
+  for (const field of Array.from(a.w.document.querySelectorAll('.mm-value-input-wrap')).filter(field => field.querySelector('.mm-value-prefix'))) {
+    assert.equal(field.lastElementChild.classList.contains('mm-value-prefix'),true);
+  }
 });
 
 test('total mileage persists and updates summary', t => {

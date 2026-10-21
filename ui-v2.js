@@ -156,13 +156,12 @@
       var n=button('',function(){go(key);},'ui-nav-item');
       n.dataset.uiRoute=key; n.innerHTML=svg(key)+'<span class="ui-nav-short" aria-hidden="true"></span>'; nav.querySelector('nav').append(n);
     });
-    var header=create('header','ui-header','<div class="ui-header-personal"><button type="button" id="uiHeaderAvatar" class="ui-header-avatar"></button><div class="ui-header-copy"><p id="uiHeaderDate" class="ui-eyebrow"></p><h1 id="uiHeaderTitle"></h1></div></div><div class="ui-header-actions"><button type="button" id="uiReceivable" class="ui-icon-button">'+svg('receivable')+'</button><button type="button" id="uiAdd" class="ui-add">'+svg('plus')+'</button></div>');
+    var header=create('header','ui-header','<div class="ui-header-personal"><button type="button" id="uiHeaderAvatar" class="ui-header-avatar"></button><div class="ui-header-copy"><p id="uiHeaderDate" class="ui-eyebrow"></p><h1 id="uiHeaderTitle"></h1></div></div><div class="ui-header-actions"><button type="button" id="uiAdd" class="ui-add">'+svg('plus')+'</button></div>');
     $('appRoot').prepend(header);
     $('uiHeaderAvatar').addEventListener('click',openSettingsProfile);
     var headerAvatar=$('headerAvatarBtn');
     if(headerAvatar)headerAvatar.addEventListener('click',function(e){e.preventDefault();e.stopImmediatePropagation();openSettingsProfile();},true);
     $('uiAdd').addEventListener('click',function(){if(window.SmartSomaReceivable)SmartSomaReceivable.close();window.closeProfileSheetPublic(); if(window.SmartSomaUI.openEntry) SmartSomaUI.openEntry(); else PlataformaModals.uber.open();});
-    $('uiReceivable').setAttribute('aria-label',say('Valor a receber','Amount receivable'));
     if(window.Capacitor&&window.Capacitor.isNativePlatform()) $('openTermosMenuBtn').target='_self';
     $('homeListPageSemana').prepend(heading('semana'));
     $('tamanhoOptionP').querySelector('.tamanho-option-letter').textContent='A';
@@ -296,7 +295,7 @@
     document.addEventListener('semanaPageShown',schedule);
     schedule();
   }
-  function money(value) { return Number(value).toLocaleString(I18N.t('lang.code'),{style:'currency',currency:'EUR'}); }
+  function money(value) { return Number(value).toLocaleString(I18N.t('lang.code'),{minimumFractionDigits:2,maximumFractionDigits:2})+' €'; }
   function syncSidebarAccount(){
     var name=$('sheetUsername').textContent.trim()||say('Utilizador','User');
     var source=document.querySelector('#sheetAvatar img');
@@ -410,7 +409,7 @@
     // Same calculations as the weekly table, including current fixed expenses.
     // Only presentation changes; no cached amounts or persisted data are rewritten.
     var totals=days.reduce(function(s,d){s.gross+=d.gross;s.net+=d.net;s.expenses+=d.expenses;s.km+=d.km;return s;},{gross:0,net:0,expenses:0,km:0});
-    [['summaryBrutoValue','gross'],['summaryLiquidoValue','net'],['summaryDespesasValue','expenses']].forEach(function(pair){$(pair[0]).textContent='€'+totals[pair[1]].toFixed(2);});
+    [['summaryBrutoValue','gross'],['summaryLiquidoValue','net'],['summaryDespesasValue','expenses']].forEach(function(pair){$(pair[0]).textContent=totals[pair[1]].toFixed(2)+' €';});
     $('summaryDistanciaValue').textContent=(Math.round(totals.km*10)/10)+' km';
     renderMetrics(days,totals);
     var goalWeek=MetaSemanalRead.forDate(ResumoPeriod.getRefDate());
@@ -558,7 +557,7 @@
     });
   }
   function setupExtraEarnings(){
-    var modal=create('div','ui-extra-edit-backdrop','<section class="ui-extra-edit-card" role="dialog" aria-modal="true" aria-labelledby="uiExtraEditTitle"><div class="ui-panel-head"><h2 id="uiExtraEditTitle">Editar ganho extra</h2><button type="button" id="uiExtraEditClose" class="ui-icon-button" aria-label="Fechar">×</button></div><p id="uiExtraEditDate" class="ui-extra-edit-date"></p><label><span>Descrição</span><input id="uiExtraEditDescription" maxlength="60"></label><label><span>Total do valor extra</span><div class="ui-entry-amount"><span>€</span><input id="uiExtraEditValue" inputmode="decimal" autocomplete="off" placeholder="0,00"></div></label><div class="ui-entry-switch-row"><strong>Incluído no valor bruto?</strong><button type="button" id="uiExtraEditGrossSwitch" class="ui-toggle" role="switch" aria-checked="false"></button></div><p class="ui-entry-switch-copy">Se incluíres os ganhos extras no valor bruto, confirmas que receberás o montante <strong>juntamente com os ganhos das plataformas</strong> e que este poderá ficar sujeito às mesmas taxas percentuais.<br><br>Se não assinalares esta opção, confirmas que já recebeste o valor e apenas pretendes apresentá-lo junto do montante que irás receber na semana.</p><p id="uiExtraEditError" class="ui-error" role="alert"></p><button type="button" id="uiExtraEditDelete" class="mm-delete-btn">Apagar ganho extra</button><button type="button" id="uiExtraEditSave" class="ui-button">Guardar</button></section>');
+    var modal=create('div','ui-extra-edit-backdrop','<section class="ui-extra-edit-card" role="dialog" aria-modal="true" aria-labelledby="uiExtraEditTitle"><div class="ui-panel-head"><h2 id="uiExtraEditTitle">Editar ganho extra</h2><button type="button" id="uiExtraEditClose" class="ui-icon-button" aria-label="Fechar">×</button></div><p id="uiExtraEditDate" class="ui-extra-edit-date"></p><label><span>Descrição</span><input id="uiExtraEditDescription" maxlength="60"></label><label><span>Total do valor extra</span><div class="ui-entry-amount"><input id="uiExtraEditValue" inputmode="decimal" autocomplete="off" placeholder="0,00"><span class="ui-entry-currency">€</span></div></label><div class="ui-entry-switch-row"><strong>Incluído no valor bruto?</strong><button type="button" id="uiExtraEditGrossSwitch" class="ui-toggle" role="switch" aria-checked="false"></button></div><p class="ui-entry-switch-copy">Se incluíres os ganhos extras no valor bruto, confirmas que receberás o montante <strong>juntamente com os ganhos das plataformas</strong> e que este poderá ficar sujeito às mesmas taxas percentuais.<br><br>Se não assinalares esta opção, confirmas que já recebeste o valor e apenas pretendes apresentá-lo junto do montante que irás receber na semana.</p><p id="uiExtraEditError" class="ui-error" role="alert"></p><button type="button" id="uiExtraEditDelete" class="mm-delete-btn">Apagar ganho extra</button><button type="button" id="uiExtraEditSave" class="ui-button">Guardar</button></section>');
     var confirm=create('div','ui-extra-delete-backdrop','<section class="ui-extra-delete-card" role="dialog" aria-modal="true" aria-labelledby="uiExtraDeleteTitle"><h2 id="uiExtraDeleteTitle">Apagar ganho extra?</h2><p>Esta ação não pode ser desfeita.</p><div><button type="button" id="uiExtraDeleteCancel" class="ui-button ui-secondary">Cancelar</button><button type="button" id="uiExtraDeleteConfirm" class="ui-button">Apagar</button></div></section>');
     modal.id='uiExtraEditBackdrop';confirm.id='uiExtraDeleteBackdrop';
     var editing=null;
@@ -620,13 +619,24 @@
     }
     function open(){window.closeAllOverlays();if($('uiEntryDialog').open)$('uiEntryDialog').close();cursor=monthStart(ownerMonth(mondayOf(new Date())));render();modal.classList.add('visible');}
     function close(){modal.classList.remove('visible');}
-    $('uiReceivable').addEventListener('click',open);$('uiReceivableClose').addEventListener('click',close);modal.addEventListener('click',function(e){if(e.target===modal)close();});
+    var weekPage=$('homeListPageSemana');
+    function openFromWeeklyGoal(event){
+      var card=event.target.closest('.semana-goal-card');
+      if(!card||!weekPage.contains(card))return;
+      open();
+    }
+    weekPage.addEventListener('click',openFromWeeklyGoal);
+    weekPage.addEventListener('keydown',function(event){
+      if((event.key!=='Enter'&&event.key!==' ')||!event.target.matches('.semana-goal-card'))return;
+      event.preventDefault();open();
+    });
+    $('uiReceivableClose').addEventListener('click',close);modal.addEventListener('click',function(e){if(e.target===modal)close();});
     $('uiReceivablePrev').addEventListener('click',function(){cursor=new Date(cursor.getFullYear(),cursor.getMonth()-1,1);render();});$('uiReceivableNext').addEventListener('click',function(){var currentMonth=monthStart(ownerMonth(mondayOf(new Date())));if(cursor.getTime()<currentMonth.getTime()){cursor=new Date(cursor.getFullYear(),cursor.getMonth()+1,1);render();}});
     window.SmartSomaReceivable={open:open,close:close,visible:function(){return modal.classList.contains('visible');}};
   }
   var entryMode='income',entryScreen='home',chosen=null,entryReturnFocus=null,extraOptions={incluidoBruto:false},restoreKmComponent=function(){},mountKmComponent=function(){};
   function setupEntry(){
-    var dialog=create('dialog','ui-entry-dialog','<form id="uiEntryForm"><div class="ui-panel-head"><h2 id="uiEntryTitle"></h2><button type="button" id="uiEntryClose" class="ui-icon-button" aria-label="Fechar">×</button></div><p class="ui-entry-section-label">Data:</p><button type="button" id="uiEntryDate" class="ui-entry-date-selector" aria-haspopup="dialog"></button><p id="uiEntryTypeLabel" class="ui-entry-section-label">Tipo:</p><div class="ui-entry-tabs" id="uiEntryTabs"><button type="button" id="uiEntryIncome"></button><button type="button" id="uiEntryExpense"></button><button type="button" id="uiEntryKm">KM</button></div><div id="uiEntryHomeContent"><p id="uiPlatformHint" class="ui-platform-hint"></p><div class="ui-platform-selector" id="uiPlatformSelector"><div id="uiPlatformChoices" class="ui-platform-choices"></div></div><div id="uiExtraIncomeLauncher" class="ui-extra-income-launcher"><p>Outros ganhos?</p><button type="button" id="uiOpenExtraIncome">Inserir ganhos extras</button></div></div><div id="uiEntryFormContent" hidden><label id="uiEntryDescriptionLabel"><span id="uiDescriptionLabel"></span><input id="uiEntryDescription" maxlength="60"></label><label><span id="uiValueLabel"></span><div class="ui-entry-amount"><span>€</span><input id="uiEntryValue" inputmode="decimal" autocomplete="off" required aria-label="Valor" placeholder="0,00"></div></label><div id="uiExtraIncomeOptions" hidden><div class="ui-entry-switch-row"><strong>Incluído no valor bruto?</strong><button type="button" id="uiExtraGrossSwitch" class="ui-toggle" role="switch" aria-checked="false"></button></div><p class="ui-entry-switch-copy">Se incluíres os ganhos extras no valor bruto, confirmas que receberás o montante <strong>juntamente com os ganhos das plataformas</strong> e que este poderá ficar sujeito às mesmas taxas percentuais.<br><br>Se não assinalares esta opção, confirmas que já recebeste o valor e apenas pretendes apresentá-lo junto do montante que irás receber na semana.</p></div><p id="uiEntryHint" class="ui-muted" aria-live="polite"></p><p id="uiEntryError" class="ui-error" role="alert"></p><button type="submit" id="uiEntrySave" class="ui-button"></button></div><div id="uiEntryKmContent" hidden></div></form>');
+    var dialog=create('dialog','ui-entry-dialog','<form id="uiEntryForm"><div class="ui-panel-head"><h2 id="uiEntryTitle"></h2><button type="button" id="uiEntryClose" class="ui-icon-button" aria-label="Fechar">×</button></div><p class="ui-entry-section-label">Data:</p><button type="button" id="uiEntryDate" class="ui-entry-date-selector" aria-haspopup="dialog"></button><p id="uiEntryTypeLabel" class="ui-entry-section-label">Tipo:</p><div class="ui-entry-tabs" id="uiEntryTabs"><button type="button" id="uiEntryIncome"></button><button type="button" id="uiEntryExpense"></button><button type="button" id="uiEntryKm">KM</button></div><div id="uiEntryHomeContent"><p id="uiPlatformHint" class="ui-platform-hint"></p><div class="ui-platform-selector" id="uiPlatformSelector"><div id="uiPlatformChoices" class="ui-platform-choices"></div></div><div id="uiExtraIncomeLauncher" class="ui-extra-income-launcher"><p>Outros ganhos?</p><button type="button" id="uiOpenExtraIncome">Inserir ganhos extras</button></div></div><div id="uiEntryFormContent" hidden><label id="uiEntryDescriptionLabel"><span id="uiDescriptionLabel"></span><input id="uiEntryDescription" maxlength="60"></label><label><span id="uiValueLabel"></span><div class="ui-entry-amount"><input id="uiEntryValue" inputmode="decimal" autocomplete="off" required aria-label="Valor" placeholder="0,00"><span class="ui-entry-currency">€</span></div></label><div id="uiExtraIncomeOptions" hidden><div class="ui-entry-switch-row"><strong>Incluído no valor bruto?</strong><button type="button" id="uiExtraGrossSwitch" class="ui-toggle" role="switch" aria-checked="false"></button></div><p class="ui-entry-switch-copy">Se incluíres os ganhos extras no valor bruto, confirmas que receberás o montante <strong>juntamente com os ganhos das plataformas</strong> e que este poderá ficar sujeito às mesmas taxas percentuais.<br><br>Se não assinalares esta opção, confirmas que já recebeste o valor e apenas pretendes apresentá-lo junto do montante que irás receber na semana.</p></div><p id="uiEntryHint" class="ui-muted" aria-live="polite"></p><p id="uiEntryError" class="ui-error" role="alert"></p><button type="submit" id="uiEntrySave" class="ui-button"></button></div><div id="uiEntryKmContent" hidden></div></form>');
     var backdrop=create('div','ui-entry-backdrop');dialog.id='uiEntryDialog';dialog.setAttribute('aria-labelledby','uiEntryTitle');dialog.setAttribute('aria-modal','true');document.body.append(backdrop,dialog);
     var retro=create('div','ui-entry-retro-backdrop','<section class="ui-entry-retro-card" role="dialog" aria-modal="true" aria-labelledby="uiEntryRetroTitle"><div class="ui-panel-head"><h2 id="uiEntryRetroTitle"></h2><button type="button" id="uiEntryRetroClose" class="ui-icon-button" aria-label="Fechar">×</button></div><p id="uiEntryRetroCopy"></p><div class="ui-entry-retro-actions"><button type="button" id="uiEntryRetroCancel" class="ui-button ui-secondary"></button><button type="button" id="uiEntryRetroConfirm" class="ui-button"></button></div></section>');
     var pendingEntry=null;document.body.append(retro);
@@ -676,7 +686,7 @@
       e.preventDefault();
       var value=Number($('uiEntryValue').value.trim().replace(',','.'));
       var desc=$('uiEntryDescription').value.trim();
-      if(!Number.isFinite(value)||value<0||value>999.99||!$('uiEntryValue').value.trim()||(entryMode==='expense'&&value===0)){$('uiEntryError').textContent=say('Insere um valor válido até 999,99 €.','Enter a valid amount up to €999.99.');return;}
+      if(!Number.isFinite(value)||value<0||value>999.99||!$('uiEntryValue').value.trim()||(entryMode==='expense'&&value===0)){$('uiEntryError').textContent=say('Insere um valor válido até 999,99 €.','Enter a valid amount up to 999.99 €.');return;}
       if(entryMode==='income'){
         if(!chosen){$('uiEntryError').textContent=say('Seleciona uma plataforma.','Select a platform.');return;}
         if(entryScreen==='extra'&&!desc){$('uiEntryError').textContent=say('Adiciona uma descrição.','Add a description.');return;}

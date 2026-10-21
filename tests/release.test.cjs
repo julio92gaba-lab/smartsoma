@@ -84,9 +84,12 @@ test('mobile daily expense deletion queues and synchronizes offline changes',asy
 test('amount receivable replaces notifications and closes before opening a new entry', t => {
   const today = new Date();
   const a = setup(t, { ['homeBadgeValores:'+dateKey(today)]:JSON.stringify({ ganhosExtras:[{ id:'x', descricao:'Bónus', valor:20, aindaReceber:true }] }) });
-  assert.ok(a.el('uiReceivable'));
+  assert.equal(a.el('uiReceivable'),null);
   assert.equal(a.el('uiNews'),null);
-  a.click('uiReceivable');
+  a.w.SmartSomaUI.go('semana');
+  const weeklyGoal=a.w.document.querySelector('.semana-goal-card');
+  assert.ok(weeklyGoal);assert.equal(weeklyGoal.getAttribute('role'),'button');assert.ok(weeklyGoal.querySelector('.semana-goal-card-click-icon'));
+  weeklyGoal.click();
   assert.ok(a.w.document.querySelector('.ui-receivable-backdrop.visible'));
   assert.match(a.el('uiReceivableWeek').textContent,/Sem\. \d/);
   assert.equal(a.el('uiReceivableExtra').hidden,false);
@@ -108,7 +111,7 @@ test('amount receivable highlights only the values in prior-week rows', t => {
   const monday=new Date(today);monday.setDate(today.getDate()-(today.getDay()+6)%7);
   const previousMonday=new Date(monday);previousMonday.setDate(monday.getDate()-7);
   const a=setup(t,{['homeBadgeValores:'+dateKey(previousMonday)]:JSON.stringify({uber:35})});
-  a.click('uiReceivable');
+  a.w.SmartSomaUI.go('semana');a.w.document.querySelector('.semana-goal-card').click();
   const currentOwner=a.w.SmartSomaWeeks.ownerMonth(monday),previousOwner=a.w.SmartSomaWeeks.ownerMonth(previousMonday);
   if(currentOwner.year!==previousOwner.year||currentOwner.month!==previousOwner.month)a.click('uiReceivablePrev');
   const row=[...a.el('uiReceivableRows').querySelectorAll('.ui-receivable-row')].find(node=>node.textContent.includes('Sem.'));
@@ -130,7 +133,7 @@ test('extra earnings are stored separately and enter gross only when selected', 
   const saved=JSON.parse(a.cache['homeBadgeValores:'+dateKey(new Date())]);
   assert.deepEqual(saved.ganhosExtras,[{id:saved.ganhosExtras[0].id,descricao:'Bónus semanal',valor:40,incluidoBruto:true}]);
   assert.equal(a.w.SmartSomaReadModel.day(new Date()).gross,40);
-  a.click('uiReceivable');
+  a.w.SmartSomaUI.go('semana');a.w.document.querySelector('.semana-goal-card').click();
   assert.match(a.el('uiReceivableValue').textContent,/40/);
   assert.equal(a.el('uiReceivableExtra').hidden,false);
   assert.match(a.el('uiReceivableExtra').textContent,/Incluído nos valores a receber/);
@@ -285,7 +288,7 @@ for (const [label,data,error,active] of [
 
 test('offline cache includes both new presentation assets and excludes test fixture',()=>{
   const source=fs.readFileSync('sw.js','utf8');
-  assert.match(source,/'\/ui-v2.js\?v=27'/); assert.match(source,/'\/ui-v2.css\?v=33'/);
+  assert.match(source,/'\/ui-v2.js\?v=28'/); assert.match(source,/'\/ui-v2.css\?v=34'/);
   assert.match(source,/'\/car.png\?v=2'/);
   assert.doesNotMatch(source,/__ui-test|visual-fixture/);
   assert.match(fs.readFileSync('.vercelignore','utf8'),/^tests\//m);
@@ -296,12 +299,12 @@ test('fixed expense creation and deletion require confirmation and refresh displ
   a.click('despesaTipoEuroBtn');a.input('despesaDescInput','Seguro');a.input('despesaValorInput','25');a.click('despesaSalvarBtn');await settle();
   const items=JSON.parse(a.cache.despesasFixas).items; assert.equal(items.length,1);assert.equal(items[0].valor,25);
   a.w.document.querySelector('[data-period="semana"]').click();await settle();
-  assert.equal(a.el('summaryDespesasValue').textContent,'€25.00');
-  assert.equal(a.el('summaryLiquidoValue').textContent,'€-25.00');
+  assert.equal(a.el('summaryDespesasValue').textContent,'25.00 €');
+  assert.equal(a.el('summaryLiquidoValue').textContent,'-25.00 €');
   a.w.document.querySelector('.ui-settings-subpage .despesa-delete-btn').click();
   assert.ok(a.el('despesaConfirmBackdrop').classList.contains('visible'));
   assert.ok(!JSON.parse(a.cache.despesasFixas).items[0].ate);
   a.click('despesaConfirmDeleteBtn');await settle();
   assert.ok(JSON.parse(a.cache.despesasFixas).items[0].ate);
-  assert.equal(a.el('summaryDespesasValue').textContent,'€0.00');
+  assert.equal(a.el('summaryDespesasValue').textContent,'0.00 €');
 });

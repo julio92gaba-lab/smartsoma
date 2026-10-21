@@ -381,8 +381,9 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
 .ui-platform-choice-avatar { display:grid; flex:0 0 48px; place-items:center; width:48px; height:48px; overflow:hidden; border:1px solid var(--card-line); border-radius:10px; background:var(--input-bg); font-size:.72rem; font-weight:800; }
 .ui-platform-choice-avatar img { width:100%; height:100%; object-fit:cover; }
 .ui-platform-choice-label { width:100%; overflow:hidden; color:var(--muted); font-size:.65rem; font-weight:700; text-align:center; text-overflow:ellipsis; white-space:nowrap; }
-.ui-entry-amount { display:flex; align-items:center; background:var(--input-bg); border:1px solid var(--card-line); border-radius:8px; padding-left:14px; }
-.ui-entry-amount input { border:0; font-size:1.4rem; }
+.ui-entry-amount { display:flex; align-items:center; gap:8px; background:var(--input-bg); border:1px solid var(--card-line); border-radius:8px; padding-right:14px; }
+.ui-entry-amount input { width:auto; flex:1; border:0; font-size:1.4rem; }
+.ui-entry-currency { flex:none; color:var(--ink); font-size:1.05rem; font-weight:700; }
 .ui-entry-dialog #uiEntryKmContent .mm-value-input-wrap { padding:0; background:transparent; border:0; border-radius:0; }
 .ui-entry-dialog #uiEntryKmContent .mm-value-input { min-height:0; font-size:1rem; }
 #uiEntrySave { width:100%; margin-top:0; }
@@ -593,6 +594,7 @@ body.ui-v2 #resumoPeriodControls .period-filter-row { background:transparent; }
   background:radial-gradient(circle at 100% 0,rgba(212,245,60,.16),transparent 42%),#0e3b2a;
   box-shadow:0 10px 24px rgba(11,45,30,.14);
   color:#f4f9ec;
+  cursor:pointer;
 }
 .ui-v2 #homeListPageSemana .semana-goal-card-head,
 .ui-v2 #homeListPageSemana .semana-goal-card-footer {
@@ -606,7 +608,12 @@ body.ui-v2 #resumoPeriodControls .period-filter-row { background:transparent; }
   font:800 .86rem/1 'Bricolage Grotesque',sans-serif;
 }
 .ui-v2 #homeListPageSemana .semana-goal-card-period { margin-left:6px; color:#b9cfc0; font:700 .68rem/1 'DM Sans',sans-serif; }
-.ui-v2 #homeListPageSemana .semana-goal-card-head > strong {
+.ui-v2 #homeListPageSemana .semana-goal-card-action {
+  display:grid;
+  justify-items:center;
+  gap:7px;
+}
+.ui-v2 #homeListPageSemana .semana-goal-card-action > strong {
   padding:6px 9px;
   border-radius:999px;
   background:var(--lime);
@@ -614,6 +621,8 @@ body.ui-v2 #resumoPeriodControls .period-filter-row { background:transparent; }
   font:.72rem/1 'Bricolage Grotesque',sans-serif;
   font-weight:900;
 }
+.ui-v2 #homeListPageSemana .semana-goal-card-click-icon { width:19px; height:19px; color:#fff; pointer-events:none; }
+.ui-v2 #homeListPageSemana .semana-goal-card:focus-visible { outline:2px solid #fff; outline-offset:3px; }
 .ui-v2 #homeListPageSemana .semana-goal-card-values { display:flex; align-items:baseline; flex-wrap:wrap; gap:7px; }
 .ui-v2 #homeListPageSemana .semana-goal-card-values > strong {
   color:#fff;
@@ -2416,9 +2425,9 @@ body.ui-v2 .ui-header #uiHeaderDate {
   background:#17211b;
   color:#eef4ec;
 }
-.ui-v2 .ui-header-actions :is(#uiReceivable,#uiAdd) { position:relative; width:35px; height:35px; }
-.ui-v2 .ui-header-actions :is(#uiReceivable,#uiAdd)::before { content:''; position:absolute; inset:-4.5px; }
-.ui-v2 .ui-header-actions :is(#uiReceivable,#uiAdd) svg { width:19px; height:19px; }
+.ui-v2 .ui-header-actions #uiAdd { position:relative; width:35px; height:35px; }
+.ui-v2 .ui-header-actions #uiAdd::before { content:''; position:absolute; inset:-4.5px; }
+.ui-v2 .ui-header-actions #uiAdd svg { width:19px; height:19px; }
 .ui-v2 .resumo-period-controls.is-sticky,
 .ui-v2 #homeListPageSemana .semana-filter-controls.is-sticky {
   background:var(--app-chrome);

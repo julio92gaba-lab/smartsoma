@@ -401,9 +401,9 @@
 "fixas.confirmNamed": "Tem certeza que deseja excluir \"{n}\"?",
 "fixas.tagFixa": "Fixa",
 "fixas.tagDia": "Do dia",
-"fixas.oncePerWeek": "€{v} (1x por semana)",
-"fixas.percentOfWeek": "€{v} ({p}% do bruto da semana)",
-"fixas.weeklyShort": "€{v} (semanal)",
+"fixas.oncePerWeek": "{v} € (1x por semana)",
+"fixas.percentOfWeek": "{v} € ({p}% do bruto da semana)",
+"fixas.weeklyShort": "{v} € (semanal)",
 "fixas.sufixoFixa": "{d} (FIXA)",
 "fixas.sufixoFixaPct": "{d} {p}% do Bruto (FIXA)",
 "fixas.retroTitle": "Retroativo?",
@@ -451,7 +451,7 @@
 "dist.percorridos": "{v} km percorridos",
 "meta.title": "Meta Semanal",
 "meta.welcome": "Defina sua meta de ganhos da semana na página inicial. Pode alterar sempre que quiser.",
-"meta.welcomeKept": "A semana começou. Quer manter a meta de €{v} {t} ou zerá-la?",
+"meta.welcomeKept": "A semana começou. Quer manter a meta de {v} € {t} ou zerá-la?",
 "meta.valorAria": "Valor da meta semanal",
 "meta.bruto": "Bruto",
 "meta.liquido": "Líquido",
@@ -459,7 +459,7 @@
 "meta.liquidos": "Líquidos",
 "meta.atual": "Meta atual",
 "meta.nenhuma": "Nenhuma",
-"meta.current": "{v}€ {t} / {p}%",
+"meta.current": "{v} € {t} / {p}%",
 "meta.fixasQuestion": "Manter as mesmas despesas fixas da semana passada?",
 "meta.fixasEmpty": "Nenhuma despesa fixa cadastrada. Para usar esta opção, cadastre em Ajustes › Despesas Fixas.",
 "meta.fixasManter": "Manter",
@@ -825,9 +825,9 @@
 "fixas.confirmNamed": "Are you sure you want to delete \"{n}\"?",
 "fixas.tagFixa": "Fixed",
 "fixas.tagDia": "Of the day",
-"fixas.oncePerWeek": "€{v} (1x per week)",
-"fixas.percentOfWeek": "€{v} ({p}% of the week's gross)",
-"fixas.weeklyShort": "€{v} (weekly)",
+"fixas.oncePerWeek": "{v} € (1x per week)",
+"fixas.percentOfWeek": "{v} € ({p}% of the week's gross)",
+"fixas.weeklyShort": "{v} € (weekly)",
 "fixas.sufixoFixa": "{d} (FIXED)",
 "fixas.sufixoFixaPct": "{d} {p}% of Gross (FIXED)",
 "fixas.retroTitle": "Retroactive?",
@@ -875,7 +875,7 @@
 "dist.percorridos": "{v} km travelled",
 "meta.title": "Weekly Goal",
 "meta.welcome": "Set your weekly earnings goal on the home screen. You can change it whenever you like.",
-"meta.welcomeKept": "A new week has started. Do you want to keep the €{v} {t} goal or clear it?",
+"meta.welcomeKept": "A new week has started. Do you want to keep the {v} € {t} goal or clear it?",
 "meta.valorAria": "Weekly goal amount",
 "meta.bruto": "Gross",
 "meta.liquido": "Net",
@@ -883,7 +883,7 @@
 "meta.liquidos": "Net",
 "meta.atual": "Current goal",
 "meta.nenhuma": "None",
-"meta.current": "€{v} {t} / {p}%",
+"meta.current": "{v} € {t} / {p}%",
 "meta.fixasQuestion": "Keep the same fixed expenses as last week?",
 "meta.fixasEmpty": "No fixed expenses registered. To use this option, register them in Settings › Fixed Expenses.",
 "meta.fixasManter": "Keep",
@@ -1461,7 +1461,7 @@
 
       function formatValor (item) {
         if (item.tipo === 'euro') {
-          return '€' + Number(item.valor).toFixed(2);
+          return Number(item.valor).toFixed(2) + ' €';
         }
         return Number(item.valor) + '%';
       }
@@ -1473,7 +1473,7 @@
         btnPercent.setAttribute('aria-pressed', isPercent ? 'true' : 'false');
         btnEuro.classList.toggle('active', !isPercent);
         btnEuro.setAttribute('aria-pressed', !isPercent ? 'true' : 'false');
-        valorInput.placeholder = isPercent ? '%' : '€';
+        valorInput.placeholder = isPercent ? '%' : '0.00 €';
       }
 
       btnPercent.addEventListener('click', function () { setTipo('percentual'); });
@@ -1884,7 +1884,7 @@
 
           var sub = document.createElement('div');
           sub.className = 'despesa-card-sub';
-          sub.textContent = '€' + Number(item.valor).toFixed(2);
+          sub.textContent = Number(item.valor).toFixed(2) + ' €';
 
           var delBtn = document.createElement('button');
           delBtn.type = 'button';
@@ -3042,8 +3042,8 @@
           : I18N.t('meta.histAbaixo', { p: percent });
 
         histBodyEl.innerHTML =
-          '<p class="meta-semanal-hist-line"><strong>' + I18N.t('meta.histDefinida') + '</strong> €' + cfg.valor.toFixed(2) + ' ' + label + '</p>' +
-          '<p class="meta-semanal-hist-line"><strong>' + I18N.t('meta.histGanho') + '</strong> €' + achieved.toFixed(2) + ' ' + label + '</p>' +
+          '<p class="meta-semanal-hist-line"><strong>' + I18N.t('meta.histDefinida') + '</strong> ' + cfg.valor.toFixed(2) + ' € ' + label + '</p>' +
+          '<p class="meta-semanal-hist-line"><strong>' + I18N.t('meta.histGanho') + '</strong> ' + achieved.toFixed(2) + ' € ' + label + '</p>' +
           '<p class="meta-semanal-hist-line meta-semanal-hist-status' + (atingiu ? '' : ' is-below') + '">' + statusTxt + '</p>';
       }
 
@@ -3357,7 +3357,7 @@
       // ---- Preenche os valores reais (Bruto, Despesas, Distância,
       // Líquido) do card de Resumo, de acordo com o período selecionado
       // (Dia / Semana / Mês) e a data de referência navegada acima.
-      // Antes esses campos ficavam sempre travados em €0.00 / 0.0 km.
+      // Antes estes campos ficavam sempre travados em 0.00 € / 0.0 km.
       (function () {
         var brutoEl     = document.getElementById('summaryBrutoValue');
         var despesasEl  = document.getElementById('summaryDespesasValue');
@@ -3367,7 +3367,7 @@
 
         function pad2 (n) { return n < 10 ? '0' + n : String(n); }
         function dateKeyFor (d) { return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
-        function formatEuro (v) { return '€' + Number(v).toFixed(2); }
+        function formatEuro (v) { return Number(v).toFixed(2) + ' €'; }
         function formatKm (v) {
           var n = Number(v);
           var str = (Math.round(n * 10) / 10).toString();
@@ -3557,7 +3557,7 @@
         }
         if (dashMetaValue) {
           dashMetaValue.classList.remove('is-empty');
-          dashMetaValue.textContent = '€' + formatValor(config.valor) + ' ' + TIPO_TITLE_OF(config.tipo);
+          dashMetaValue.textContent = formatValor(config.valor) + ' € ' + TIPO_TITLE_OF(config.tipo);
         }
         if (dashMetaPercent) {
           var percent = (typeof config.percent === 'number') ? config.percent : 0;
@@ -3647,7 +3647,7 @@
         return true;
       }
 
-      function formatEuro (v) { return '€ ' + Number(v).toFixed(2); }
+      function formatEuro (v) { return Number(v).toFixed(2) + ' €'; }
       function formatKm (v) {
         var n = Number(v);
         var str = (Math.round(n * 10) / 10).toString();
@@ -3830,7 +3830,7 @@
         return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
       }
 
-      function formatEuro (v) { return '€ ' + Number(v).toFixed(2); }
+      function formatEuro (v) { return Number(v).toFixed(2) + ' €'; }
       function formatKm (v) {
         var n = Number(v);
         var str = (Math.round(n * 10) / 10).toString();
@@ -4410,19 +4410,22 @@
         if (bestRevenueDay && bestRevenueDay.value > 0) {
           var bestDate = bestRevenueDay.date;
           bestRevenueLabel = capitalize(DIAS_FULL()[bestDate.getDay() === 0 ? 6 : bestDate.getDay() - 1]) + ', ' +
-            bestDate.getDate() + ' de ' + capitalize(MESES_MINUS()[bestDate.getMonth()]) + ' | € ' +
-            formatPlainNumber(bestRevenueDay.value);
+            bestDate.getDate() + ' de ' + capitalize(MESES_MINUS()[bestDate.getMonth()]) + ' | ' +
+            formatPlainNumber(bestRevenueDay.value) + ' €';
         }
         revenueFooter.innerHTML = '<span class="semana-revenue-title">Melhor da semana</span>' +
           '<span class="semana-revenue-best">' + bestRevenueLabel + '</span>';
         if (weekIncludedExtraEarnings > 0) {
           revenueFooter.insertAdjacentHTML('beforeend',
             '<span class="semana-revenue-title">Ganhos extras</span>' +
-            '<span class="semana-revenue-extra">Incluído no valor semanal: € ' + formatPlainNumber(weekIncludedExtraEarnings) + '</span>');
+            '<span class="semana-revenue-extra">Incluído no valor semanal: ' + formatPlainNumber(weekIncludedExtraEarnings) + ' €</span>');
         }
         scrollWrap.appendChild(revenueFooter);
         var summary = document.createElement('div');
         summary.className = 'semana-week-summary semana-goal-card';
+        summary.tabIndex = 0;
+        summary.setAttribute('role', 'button');
+        summary.setAttribute('aria-label', 'Abrir valor a receber');
         var achieved = meta && meta.config ? meta.achieved : sumBruto;
         var target = meta && meta.config ? meta.config.valor : null;
         var percent = meta && meta.config ? Math.max(0, meta.percent) : 0;
@@ -4437,7 +4440,9 @@
         summary.innerHTML =
           '<div class="semana-goal-card-head">' +
             '<span>' + summaryTitle + '</span>' +
-            '<strong>' + (target ? percent + '%' : '—') + '</strong>' +
+            '<span class="semana-goal-card-action"><strong>' + (target ? percent + '%' : '—') + '</strong>' +
+              '<svg class="semana-goal-card-click-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v8"/><path d="M12 12 9.6 9.6a1.7 1.7 0 0 0-2.4 2.4l3.9 5.1a3 3 0 0 0 2.4 1.2h1.7a3 3 0 0 0 3-3v-2.1a1.7 1.7 0 0 0-3.4 0v-1.5a1.7 1.7 0 0 0-3.4 0V8.8"/><path d="M5 4.5 6.8 6.3"/><path d="M18.7 4.5 16.9 6.3"/><path d="M3.5 10h2.6"/></svg>' +
+            '</span>' +
           '</div>' +
           '<div class="semana-goal-card-values">' +
             '<strong>' + formatEuro(achieved) + '</strong>' +
@@ -6860,7 +6865,7 @@
         scroller.querySelectorAll('.ganhos-tile-extra').forEach(function (btn) {
           var v = btn.querySelector('.list-row-value');
           var n = (window.HomeBadges && window.HomeBadges.getPlat) ? window.HomeBadges.getPlat(btn.getAttribute('data-pid')) : 0;
-          if (v) v.textContent = '€ ' + Number(n).toFixed(2);
+          if (v) v.textContent = Number(n).toFixed(2) + ' €';
         });
       }
 
@@ -6915,7 +6920,7 @@
 
           var value = document.createElement('span');
           value.className = 'list-row-value';
-          value.textContent = '€ 0.00';
+          value.textContent = '0.00 €';
 
           var ticks = document.createElement('span');
           ticks.className = 'ganhos-tile-ticks';
@@ -7548,7 +7553,7 @@
       var COR_PAPER  = [243, 248, 250];
       var COR_LINE   = [225, 232, 236];
 
-      function euro (v) { return '€ ' + Number(v || 0).toFixed(2); }
+      function euro (v) { return Number(v || 0).toFixed(2) + ' €'; }
 
       function gerarRelatorioPdf (year, month) {
         var jsPDF = window.jspdf.jsPDF;
