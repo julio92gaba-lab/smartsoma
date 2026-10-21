@@ -49,6 +49,24 @@ test('quick entry selects a past day with confirmation and keeps the current pag
   assert.deepEqual(a.errors,[]);
 });
 
+test('quick entry keeps its nested calendar and confirmation overlays above the entry form', t => {
+  const a = setup(t);
+  const source = fs.readFileSync('ui-v2.js','utf8');
+  const css = fs.readFileSync('ui-v2.css','utf8');
+  a.click('uiAdd');
+  assert.equal(a.el('uiEntryDialog').open,true);
+  a.click('uiEntryDate');
+  assert.equal(a.el('calendarModalBackdrop').classList.contains('visible'),true);
+  assert.equal(a.el('uiEntryDialog').open,true);
+  assert.match(source,/typeof entryDialog\.show==='function'\)entryDialog\.show\(\)/);
+  assert.doesNotMatch(source,/entryDialog\.showModal/);
+  assert.match(css,/\.ui-entry-dialog\s*\{[^}]*z-index:201;/);
+  assert.match(css,/#calendarModalBackdrop\s*\{\s*z-index:210;/);
+  assert.match(css,/\.ui-entry-retro-backdrop\s*\{[^}]*z-index:220;/);
+  assert.match(a.el('uiExtraIncomeOptions').innerHTML,/strong>juntamente com os ganhos das plataformas<\/strong>/);
+  assert.deepEqual(a.errors,[]);
+});
+
 test('mobile daily expense deletion queues and synchronizes offline changes',async t=>{
   const key='despesasDiarias:'+dateKey(new Date());
   const a=createApp({[key]:JSON.stringify({seq:1,items:[{id:1,descricao:'Combustível',valor:20}]})},{ui:true,cloudBoot:true,mobile:true});t.after(a.close);
@@ -121,6 +139,14 @@ test('extra earnings overview card edits and deletes the selected record without
   saved=JSON.parse(a.cache[key]);assert.deepEqual(saved.ganhosExtras,[]);
   assert.equal(a.el('uiExtraEarningsCard').hidden,true);
   assert.deepEqual(a.errors,[]);
+});
+
+test('overview spacing remains balanced with or without the optional extra earnings card', () => {
+  const css = fs.readFileSync('ui-v2.css','utf8');
+  assert.match(css,/\.ui-metrics \+ \.ui-extra-earnings:not\(\[hidden\]\)\s*\{\s*margin-top:16px;/);
+  assert.match(css,/\.ui-extra-earnings \+ \.ui-dashboard-bottom\s*\{\s*margin-top:0;/);
+  assert.match(css,/\.ui-extra-earnings\[hidden\] \+ \.ui-dashboard-bottom\s*\{\s*margin-top:16px;/);
+  assert.match(css,/#homeListPageSemana #semanaTechCard\s*\{\s*margin-inline:0; padding-inline:0;/);
 });
 
 test('custom platform creation, quick entry and confirmed deletion preserve earlier history', async t => {
@@ -244,7 +270,7 @@ for (const [label,data,error,active] of [
 
 test('offline cache includes both new presentation assets and excludes test fixture',()=>{
   const source=fs.readFileSync('sw.js','utf8');
-  assert.match(source,/'\/ui-v2.js\?v=24'/); assert.match(source,/'\/ui-v2.css\?v=30'/);
+  assert.match(source,/'\/ui-v2.js\?v=25'/); assert.match(source,/'\/ui-v2.css\?v=31'/);
   assert.match(source,/'\/car.png\?v=2'/);
   assert.doesNotMatch(source,/__ui-test|visual-fixture/);
   assert.match(fs.readFileSync('.vercelignore','utf8'),/^tests\//m);

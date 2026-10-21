@@ -2490,8 +2490,12 @@ body.ui-v2 #proWelcomeToast { right:calc(var(--app-gutter) + 20px); }
 /* A página Semana conserva o mesmo espaço lateral do restante da aplicação. */
 .ui-v2 #homeListPageSemana,
 .ui-v2 #homeListPageSemana #semanaTechCard { box-sizing:border-box; width:100%; max-width:100%; min-width:0; }
-.ui-v2 #homeListPageSemana #semanaTechCard { margin-inline:0; padding-inline:20px; }
+.ui-v2 #homeListPageSemana #semanaTechCard { margin-inline:0; padding-inline:0; }
 .ui-v2 #homeListPageSemana .semana-live-content,
 .ui-v2 #homeListPageSemana .semana-filter-controls { box-sizing:border-box; width:100%; max-width:100%; min-width:0; margin-inline:0; }
+/* Mantém a cadência entre os resumos, com ou sem o card opcional de ganhos extras. */
+.ui-v2 .ui-metrics + .ui-extra-earnings:not([hidden]) { margin-top:16px; }
+.ui-v2 .ui-extra-earnings + .ui-dashboard-bottom { margin-top:0; }
+.ui-v2 .ui-extra-earnings[hidden] + .ui-dashboard-bottom { margin-top:16px; }
 /* O card descontinuado não pode voltar a surgir por markup legado em desktop. */
 body.ui-v2 .ss-driver-card { display:none !important; }
