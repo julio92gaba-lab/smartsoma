@@ -12,6 +12,9 @@ test('the app uses a single mobile layout with a bounded responsive width', () =
   assert.match(css, /width:min\(100%,var\(--app-max-width\)\)/);
   assert.match(css, /max-width:var\(--app-max-width\)/);
   assert.match(css, /--app-gutter:max\(0px,calc\(\(100vw - var\(--app-max-width\)\) \/ 2\)\)/);
+  assert.match(css, /#homeListPageSemana \.semana-live-content,[\s\S]*margin-inline:0/);
+  assert.match(css, /\.ui-entry-dialog \{[^}]*inset:calc\(var\(--ui-header\) \+ 24px\) auto auto 50%;[^}]*transform:translateX\(-50%\)/);
+  assert.match(css, /\.ss-driver-card \{ display:none !important; \}/);
   assert.doesNotMatch(sw, /mobile-frame/);
 });
 

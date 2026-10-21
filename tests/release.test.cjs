@@ -90,14 +90,36 @@ test('extra earnings are stored separately and enter gross only when selected', 
   a.click('uiAdd'); a.click('uiOpenExtraIncome');
   assert.equal(a.el('uiEntryTitle').textContent,'Ganho extra');
   a.input('uiEntryDescription','Bónus semanal'); a.input('uiEntryValue','40');
-  a.click('uiExtraGrossSwitch'); a.click('uiExtraReceivableSwitch');
+  assert.equal(a.el('uiExtraReceivableSwitch'),null);
+  assert.doesNotMatch(a.el('uiExtraIncomeOptions').textContent,/Ainda a receber/);
+  a.click('uiExtraGrossSwitch');
   a.el('uiEntryForm').dispatchEvent(new a.w.Event('submit',{cancelable:true}));
   const saved=JSON.parse(a.cache['homeBadgeValores:'+dateKey(new Date())]);
-  assert.deepEqual(saved.ganhosExtras,[{id:saved.ganhosExtras[0].id,descricao:'Bónus semanal',valor:40,incluidoBruto:true,aindaReceber:true}]);
+  assert.deepEqual(saved.ganhosExtras,[{id:saved.ganhosExtras[0].id,descricao:'Bónus semanal',valor:40,incluidoBruto:true}]);
   assert.equal(a.w.SmartSomaReadModel.day(new Date()).gross,40);
   a.click('uiReceivable');
   assert.match(a.el('uiReceivableValue').textContent,/40/);
   assert.equal(a.el('uiReceivableExtra').hidden,false);
+  assert.match(a.el('uiReceivableExtra').textContent,/Incluído nos valores a receber/);
+  assert.deepEqual(a.errors,[]);
+});
+
+test('extra earnings overview card edits and deletes the selected record without changing its date', t => {
+  const yesterday=new Date();yesterday.setDate(yesterday.getDate()-1);
+  const key='homeBadgeValores:'+dateKey(yesterday);
+  const a=setup(t,{[key]:JSON.stringify({ganhosExtras:[{id:'extra-1',descricao:'Prémio',valor:25,incluidoBruto:false}]})});
+  assert.equal(a.el('uiExtraEarningsCard').hidden,false);
+  assert.match(a.el('uiExtraEarningsRows').textContent,/Prémio/);
+  a.el('uiExtraEarningsRows').querySelector('.ui-extra-earnings-edit').click();
+  assert.ok(a.el('uiExtraEditBackdrop') || a.w.document.querySelector('.ui-extra-edit-backdrop.visible'));
+  assert.equal(a.el('uiExtraEditDescription').value,'Prémio');
+  assert.match(a.el('uiExtraEditDate').textContent,/de/);
+  a.input('uiExtraEditDescription','Prémio atualizado');a.input('uiExtraEditValue','30');a.click('uiExtraEditGrossSwitch');a.click('uiExtraEditSave');
+  let saved=JSON.parse(a.cache[key]);
+  assert.deepEqual(saved.ganhosExtras,[{id:'extra-1',descricao:'Prémio atualizado',valor:30,incluidoBruto:true}]);
+  a.el('uiExtraEarningsRows').querySelector('.ui-extra-earnings-edit').click();a.click('uiExtraEditDelete');a.click('uiExtraDeleteConfirm');
+  saved=JSON.parse(a.cache[key]);assert.deepEqual(saved.ganhosExtras,[]);
+  assert.equal(a.el('uiExtraEarningsCard').hidden,true);
   assert.deepEqual(a.errors,[]);
 });
 
@@ -222,7 +244,7 @@ for (const [label,data,error,active] of [
 
 test('offline cache includes both new presentation assets and excludes test fixture',()=>{
   const source=fs.readFileSync('sw.js','utf8');
-  assert.match(source,/'\/ui-v2.js\?v=23'/); assert.match(source,/'\/ui-v2.css\?v=29'/);
+  assert.match(source,/'\/ui-v2.js\?v=24'/); assert.match(source,/'\/ui-v2.css\?v=30'/);
   assert.match(source,/'\/car.png\?v=2'/);
   assert.doesNotMatch(source,/__ui-test|visual-fixture/);
   assert.match(fs.readFileSync('.vercelignore','utf8'),/^tests\//m);

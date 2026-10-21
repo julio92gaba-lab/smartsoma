@@ -2308,13 +2308,15 @@
       return parsed.ganhosExtras.filter(function (item) {
         return item && Number(item.valor) > 0;
       }).map(function (item) {
-        return {
+        var extra = {
           id: String(item.id || ''),
           descricao: String(item.descricao || '').trim(),
           valor: Number(item.valor) || 0,
-          incluidoBruto: item.incluidoBruto === true,
-          aindaReceber: item.aindaReceber === true
+          incluidoBruto: item.incluidoBruto === true
         };
+        // Conserva o campo legado apenas nos registos que já o tinham.
+        if (item.aindaReceber === true) extra.aindaReceber = true;
+        return extra;
       });
     }
     function ganhosExtrasBruto (parsed) {
@@ -2323,11 +2325,10 @@
       }, 0);
     }
     function ganhosExtrasReceber (parsed) {
-      return ganhosExtrasFrom(parsed).reduce(function (sum, item) {
-        // Quando já entrou no bruto, o valor já faz parte do líquido e não
-        // pode ser somado uma segunda vez ao valor a receber.
-        return sum + (item.aindaReceber && !item.incluidoBruto ? item.valor : 0);
-      }, 0);
+      // A inclusão no bruto é agora a única forma de um ganho extra entrar
+      // no valor a receber. Mantemos a função para compatibilidade com dados
+      // antigos, sem voltar a somar registos já recebidos.
+      return 0;
     }
     window.GanhosExtras = {
       list: ganhosExtrasFrom,
@@ -3579,6 +3580,22 @@
         } catch (e) {  }
       }
 
+      function saveExtrasForDate (date, mutate) {
+        var key = BADGES_STORAGE_PREFIX + dateKey(date);
+        var data = {};
+        try { data = JSON.parse(cloudGet(key) || '{}'); } catch (e) { data = {}; }
+        var extras = ganhosExtrasFrom(data);
+        if (mutate(extras) === false) return false;
+        data.ganhosExtras = extras;
+        try { cloudSet(key, JSON.stringify(data)); } catch (e) { return false; }
+        if (dateKey(date) === dateKey()) {
+          badges.ganhosExtras = extras;
+          renderBadges();
+        }
+        try { document.dispatchEvent(new CustomEvent('homeBadgesSaved')); } catch (e) { }
+        return true;
+      }
+
       function formatEuro (v) { return '€ ' + Number(v).toFixed(2); }
       function formatKm (v) {
         var n = Number(v);
@@ -3683,12 +3700,32 @@
             id: String(item.id || ('extra-' + Date.now().toString(36))),
             descricao: String(item.descricao || '').trim(),
             valor: Math.min(Number(item.valor), 999.99),
-            incluidoBruto: item.incluidoBruto === true,
-            aindaReceber: item.aindaReceber === true
+            incluidoBruto: item.incluidoBruto === true
           });
           saveBadges();
           renderBadges();
           return true;
+        },
+        updateGanhoExtra: function (date, id, item) {
+          if (!id || !item || !(Number(item.valor) > 0)) return false;
+          return saveExtrasForDate(date, function (extras) {
+            var extra = extras.find(function (entry) { return entry.id === id; });
+            if (!extra) return false;
+            extra.descricao = String(item.descricao || '').trim();
+            extra.valor = Math.min(Number(item.valor), 999.99);
+            extra.incluidoBruto = item.incluidoBruto === true;
+            return true;
+          });
+        },
+        deleteGanhoExtra: function (date, id) {
+          if (!id) return false;
+          return saveExtrasForDate(date, function (extras) {
+            var before = extras.length;
+            var kept = extras.filter(function (entry) { return entry.id !== id; });
+            if (kept.length === before) return false;
+            extras.splice.apply(extras, [0, extras.length].concat(kept));
+            return true;
+          });
         },
         getGanhosExtras: function () { return ganhosExtrasFrom({ ganhosExtras: badges.ganhosExtras }); },
         reload: function () { loadBadges(); renderBadges(); },

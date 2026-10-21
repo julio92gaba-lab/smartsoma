@@ -153,6 +153,7 @@ test('Android project keeps its provisional identity, existing icon and minimal 
   const styles = fs.readFileSync('android/app/src/main/res/values/styles.xml', 'utf8');
   assert.ok(gradle.includes(`applicationId "${config.appId}"`));
   assert.match(manifest, /android:icon="@drawable\/smartsoma_icon"/);
+  assert.match(manifest, /android:name="\.MainActivity"[\s\S]*android:screenOrientation="portrait"/);
   assert.deepEqual([...manifest.matchAll(/<uses-permission android:name="([^"]+)"/g)].map(m => m[1]), ['android.permission.INTERNET', 'android.permission.POST_NOTIFICATIONS']);
   assert.match(styles, /windowSplashScreenAnimatedIcon">@drawable\/smartsoma_splash_icon<\/item>/);
   assert.match(styles, /windowSplashScreenBackground">#0E5830<\/item>/);

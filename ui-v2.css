@@ -356,7 +356,7 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
 .ui-fixed-expense-row { color:var(--brand-green); }
 .ui-entry-backdrop { position:fixed; z-index:200; top:var(--ui-header); right:0; bottom:0; left:0; visibility:hidden; opacity:0; background:rgba(5,15,9,.55); backdrop-filter:blur(4px); transition:opacity .18s ease; }
 .ui-entry-backdrop.visible { visibility:visible; opacity:1; }
-.ui-entry-dialog { position:fixed; z-index:201; top:calc(var(--ui-header) + 24px); width:min(420px,calc(100vw - 48px)); max-height:calc(82dvh - var(--ui-header)); overflow-y:auto; background:var(--card-bg); color:var(--ink); border:2px solid #142015; border-radius:14px; padding:20px; box-shadow:6px 6px 0 var(--brand-green),0 24px 80px #0005; }
+.ui-entry-dialog { position:fixed; z-index:201; inset:calc(var(--ui-header) + 24px) auto auto 50%; margin:0; transform:translateX(-50%); width:min(420px,calc(100vw - 48px)); max-height:calc(82dvh - var(--ui-header)); overflow-y:auto; background:var(--card-bg); color:var(--ink); border:2px solid #142015; border-radius:14px; padding:20px; box-shadow:6px 6px 0 var(--brand-green),0 24px 80px #0005; }
 .ui-entry-section-label { margin:14px 0 6px; color:var(--muted); font-size:.72rem; font-weight:800; letter-spacing:.5px; }
 .ui-entry-section-label + .ui-entry-date-selector { margin-top:0; }
 .ui-entry-date-selector { display:inline-flex; align-items:center; gap:7px; margin-top:10px; padding:7px 10px; border:1px solid var(--card-line); border-radius:8px; background:var(--input-bg); color:var(--ink); font-size:.68rem; font-weight:800; letter-spacing:.7px; }
@@ -399,6 +399,29 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
 .ui-toggle[aria-checked=true] { border-color:var(--brand-green); background:var(--brand-green); }
 .ui-toggle[aria-checked=true]::after { transform:translateX(18px); background:#fff; }
 .ui-entry-switch-copy { margin:6px 0 0; color:var(--muted); font-size:.72rem; line-height:1.45; text-align:left; }
+.ui-extra-earnings { display:grid; gap:8px; }
+.ui-extra-earnings .ui-panel-head { margin-bottom:2px; }
+.ui-extra-earnings-total { color:var(--brand-green); }
+.ui-extra-earnings-row { display:grid; grid-template-columns:minmax(0,1fr) auto 36px; align-items:center; gap:10px; min-height:48px; padding:9px 0; border-top:1px solid var(--card-line); }
+.ui-extra-earnings-copy { display:grid; min-width:0; gap:3px; }
+.ui-extra-earnings-copy strong { overflow:hidden; color:var(--ink); font-size:.82rem; text-overflow:ellipsis; white-space:nowrap; }
+.ui-extra-earnings-copy small,.ui-extra-edit-date { color:var(--muted); font-size:.68rem; }
+.ui-extra-earnings-row>b { color:var(--brand-green); font-size:.8rem; white-space:nowrap; }
+.ui-extra-earnings-edit { display:grid; place-items:center; width:36px; height:36px; padding:0; border:0; border-radius:8px; background:transparent; color:var(--brand-green); }
+.ui-extra-earnings-edit:hover { background:var(--input-bg); }
+.ui-extra-earnings-edit svg { width:17px; height:17px; }
+.ui-extra-edit-backdrop,.ui-extra-delete-backdrop { position:fixed; z-index:225; top:var(--ui-header); right:0; bottom:0; left:0; display:grid; place-items:start center; padding:24px; overflow-y:auto; visibility:hidden; opacity:0; background:rgba(5,15,9,.58); backdrop-filter:blur(4px); transition:opacity .18s ease,visibility .18s ease; }
+.ui-extra-delete-backdrop { z-index:226; }
+.ui-extra-edit-backdrop.visible,.ui-extra-delete-backdrop.visible { visibility:visible; opacity:1; }
+.ui-extra-edit-card,.ui-extra-delete-card { width:min(420px,100%); padding:20px; border:1px solid var(--card-line); border-radius:14px; background:var(--card-bg); color:var(--ink); box-shadow:0 24px 80px #0005; }
+.ui-extra-edit-card label { display:grid; gap:6px; margin-top:14px; font-size:.8rem; font-weight:600; }
+.ui-extra-edit-card input { width:100%; min-width:0; border:1px solid var(--card-line); border-radius:8px; background:var(--input-bg); color:var(--ink); padding:12px; font-size:1rem; }
+.ui-extra-edit-card .ui-entry-amount { margin-top:0; }
+.ui-extra-edit-card .ui-entry-amount input { border:0; font-size:1.4rem; }
+.ui-extra-edit-card .mm-delete-btn,.ui-extra-edit-card .ui-button { width:100%; margin-top:14px; }
+.ui-extra-delete-card h2 { margin:0; font-size:1.2rem; }
+.ui-extra-delete-card p { margin:10px 0 0; color:var(--muted); font-size:.84rem; }
+.ui-extra-delete-card>div { display:flex; justify-content:flex-end; gap:8px; margin-top:20px; }
 .ui-receivable-backdrop { position:fixed; z-index:220; top:var(--ui-header); right:0; bottom:0; left:0; display:grid; place-items:start center; padding:24px; overflow-y:auto; visibility:hidden; opacity:0; background:rgba(5,15,9,.58); backdrop-filter:blur(4px); transition:opacity .18s ease,visibility .18s ease; }
 .ui-receivable-backdrop.visible { visibility:visible; opacity:1; }
 .ui-receivable-card { width:min(420px,100%); padding:20px; border:1px solid var(--card-line); border-radius:14px; background:var(--card-bg); color:var(--ink); box-shadow:0 24px 80px #0005; }
@@ -2462,7 +2485,13 @@ body.ui-v2 .ui-sidebar { left:var(--app-gutter); right:var(--app-gutter); width:
 body.ui-v2 :is(.mm-backdrop,.modal-backdrop,.sheet-backdrop,.photo-view-backdrop,.screen-overlay,.ui-entry-backdrop,.ui-entry-retro-backdrop,.ui-receivable-backdrop,#langPopupModal,#checkoutLoadingOverlay,#splash) {
   left:var(--app-gutter); right:var(--app-gutter);
 }
+body.ui-v2 :is(.ui-extra-edit-backdrop,.ui-extra-delete-backdrop) { left:var(--app-gutter); right:var(--app-gutter); }
 body.ui-v2 #proWelcomeToast { right:calc(var(--app-gutter) + 20px); }
 /* A página Semana conserva o mesmo espaço lateral do restante da aplicação. */
 .ui-v2 #homeListPageSemana,
 .ui-v2 #homeListPageSemana #semanaTechCard { box-sizing:border-box; width:100%; max-width:100%; min-width:0; }
+.ui-v2 #homeListPageSemana #semanaTechCard { margin-inline:0; padding-inline:20px; }
+.ui-v2 #homeListPageSemana .semana-live-content,
+.ui-v2 #homeListPageSemana .semana-filter-controls { box-sizing:border-box; width:100%; max-width:100%; min-width:0; margin-inline:0; }
+/* O card descontinuado não pode voltar a surgir por markup legado em desktop. */
+body.ui-v2 .ss-driver-card { display:none !important; }
