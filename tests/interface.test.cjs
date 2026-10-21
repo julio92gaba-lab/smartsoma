@@ -133,7 +133,7 @@ test('fixed chrome has readable text and avatars use Supabase Storage',()=>{
   assert.match(app,/SmartSomaAvatarStorage\.upload\(avatarBlob\)/);
   assert.match(cloud,/sb\.storage\.from\('avatars'\)\.upload\(objectPath, blob,[\s\S]*upsert: true/);
   assert.match(cloud,/getPublicUrl\(objectPath\)/);
-  assert.match(cloud,/script\.src = 'app\.js\?v=25'/);
+  assert.match(cloud,/script\.src = 'app\.js\?v=26'/);
   assert.match(cloud,/\^\[A-Za-z0-9:\._-\]\{1,120\}\$/);
   assert.match(migration,/INSERT INTO storage\.buckets \(id, name, public, file_size_limit, allowed_mime_types\)/);
   assert.match(migration,/VALUES \([\s\S]*'avatars',[\s\S]*true,[\s\S]*NULL/);

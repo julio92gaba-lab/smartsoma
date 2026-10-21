@@ -211,7 +211,7 @@ test('PDF report is generated with the real bundled libraries', async t => {
   Capture.API=Original.API; a.w.jspdf.jsPDF=Capture;
   a.click('relatorioPageDownloadBtn'); await settle();
   assert.ok(pdf,'PDF save was called'); assert.match(pdf.name,/smartsoma-relatorio-\d{2}-\d{4}\.pdf/);
-  assert.ok(pdf.content.startsWith('%PDF-')); assert.match(pdf.content,/150\.00/);
+  assert.ok(pdf.content.startsWith('%PDF-')); assert.match(pdf.content,/150[.,]00/);
   assert.equal(a.el('relatorioPageDownloadBtn').disabled,false);
   assert.deepEqual(a.errors,[]);
 });
@@ -225,7 +225,7 @@ test('Android sends the generated PDF with real values to the native download ha
   a.click('relatorioPageDownloadBtn'); await settle();
   assert.ok(saved);assert.match(saved.filename,/^smartsoma-relatorio-\d{2}-\d{4}\.pdf$/);
   const pdf=Buffer.from(saved.base64,'base64').toString('latin1');
-  assert.ok(pdf.startsWith('%PDF-'));assert.match(pdf,/150\.00/);
+  assert.ok(pdf.startsWith('%PDF-'));assert.match(pdf,/150[.,]00/);
   assert.equal(a.el('relatorioPageDownloadBtn').disabled,false);
   assert.deepEqual(a.errors,[]);
 });
@@ -248,9 +248,41 @@ test('PDF includes fixed expenses in daily and monthly totals', async t => {
   Capture.API=Original.API; a.w.jspdf.jsPDF=Capture;
   a.click('relatorioPageDownloadBtn'); await settle();
   assert.ok(pdf); assert.equal(a.w.SmartSomaReadModel.day(monday).expenses,50);
-  const day=tables.find(table=>table.head?.[0]?.includes('Uber')).body.find(row=>String(row[0]).endsWith(String(monday.getDate()).padStart(2,'0')+'/'+String(monday.getMonth()+1).padStart(2,'0')));
-  assert.match(day.at(-4),/50[.,]00/); assert.match(day.at(-1),/50[.,]00/);
-  assert.match(pdf,/50\.00/); assert.deepEqual(a.errors,[]);
+  const day=tables.find(table=>table.head?.[0]?.includes('Plataformas')).body.find(row=>String(row[0]).endsWith(String(monday.getDate()).padStart(2,'0')+'/'+String(monday.getMonth()+1).padStart(2,'0')));
+  assert.match(day[3],/50[.,]00/); assert.match(day[4],/50[.,]00/);
+  assert.match(pdf,/50[.,]00/); assert.deepEqual(a.errors,[]);
+});
+
+test('PDF financeiro inclui gráficos, comparação semanal, metas e detalhes sem inventar categorias', async t => {
+  const today = new Date();
+  const middleOfMonth = new Date(today.getFullYear(), today.getMonth(), 15);
+  const monday = new Date(middleOfMonth); monday.setHours(0,0,0,0); monday.setDate(monday.getDate()-(monday.getDay()+6)%7);
+  const nextMonday = new Date(monday); nextMonday.setDate(nextMonday.getDate()+7);
+  const a=setup(t,{
+    ['homeBadgeValores:'+dateKey(monday)]:JSON.stringify({uber:120,bolt:45,distancia:90}),
+    ['homeBadgeValores:'+dateKey(new Date(monday.getTime()+86400000))]:JSON.stringify({uber:80,bolt:20,distancia:65}),
+    ['homeBadgeValores:'+dateKey(nextMonday)]:JSON.stringify({uber:160,bolt:30,distancia:100}),
+    ['despesasDiarias:'+dateKey(monday)]:JSON.stringify({items:[{descricao:'Combustível',valor:35}]}),
+    ['metaSemanalConfig:'+dateKey(monday)]:JSON.stringify({valor:200,tipo:'bruto'}),
+    ['metaSemanalConfig:'+dateKey(nextMonday)]:JSON.stringify({valor:250,tipo:'liquido'})
+  });
+  a.w.eval(fs.readFileSync('jspdf.umd.min.js','utf8'));
+  a.w.eval(fs.readFileSync('jspdf.plugin.autotable.min.js','utf8'));
+  const Original=a.w.jspdf.jsPDF; let pdf; const tables=[];
+  function Capture(options){const doc=new Original(options),autoTable=doc.autoTable.bind(doc);doc.autoTable=opts=>{tables.push(opts);return autoTable(opts);};doc.save=()=>{pdf=doc.output();};return doc;}
+  Capture.API=Original.API;a.w.jspdf.jsPDF=Capture;
+  a.click('relatorioPageDownloadBtn');await settle();
+  assert.ok(pdf?.startsWith('%PDF-'));
+  assert.match(pdf,/RELATÓRIO FINANCEIRO/);
+  assert.match(pdf,/Indicadores principais/);
+  assert.match(pdf,/Análise por plataforma/);
+  assert.match(pdf,/Comparação entre semanas/);
+  assert.match(pdf,/Metas financeiras/);
+  assert.ok(tables.some(table=>table.head?.[0]?.includes('Plataforma')));
+  assert.ok(tables.some(table=>table.head?.[0]?.includes('Indicador')));
+  assert.ok(tables.some(table=>table.head?.[0]?.includes('Descrição')));
+  assert.ok(!pdf.includes('Categoria'));
+  assert.deepEqual(a.errors,[]);
 });
 
 test('failed offline writes survive repeated attempts and resume after entitlement returns', async t => {

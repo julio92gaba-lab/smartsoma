@@ -7538,6 +7538,7 @@
             despesas: despesas,
             itens: itens,
             fixasDoDia: fixasDoDia,
+            ganhosExtras: ganhosExtrasFrom(badges.raw),
             bruto: bruto,
             liquido: bruto - despesas
           });
@@ -7556,7 +7557,7 @@
       var COR_PAPER  = [243, 248, 250];
       var COR_LINE   = [225, 232, 236];
 
-      function euro (v) { return Number(v || 0).toFixed(2) + ' €'; }
+      function euro (v) { return Number(v || 0).toFixed(2).replace('.', ',') + ' €'; }
 
       function gerarRelatorioPdf (year, month) {
         var jsPDF = window.jspdf.jsPDF;
@@ -7564,74 +7565,67 @@
         var pageW = doc.internal.pageSize.getWidth();
         var pageH = doc.internal.pageSize.getHeight();
         var margin = 42;
+        var contentW = pageW - margin * 2;
+        var CORES = {
+          ink: [21, 36, 27], green: [25, 120, 70], lime: [212, 245, 60],
+          red: [180, 68, 53], blue: [46, 117, 184], paper: [246, 243, 234],
+          card: [255, 254, 249], line: [221, 220, 210], muted: [104, 114, 104],
+          softGreen: [230, 244, 234], softRed: [253, 243, 241], softBlue: [238, 246, 253]
+        };
+        var isEnglish = I18N.getLang && I18N.getLang() === 'en';
+        var texto = isEnglish ? {
+          report: 'FINANCIAL REPORT', overview: 'Financial overview', summary: 'Key indicators',
+          gross: 'Gross earnings', expenses: 'Expenses', net: 'Net result', margin: 'Net margin',
+          days: 'Days with earnings', average: 'Average per working day', expenseRate: 'Expenses of earnings',
+          goals: 'Goal completion', dailyEvolution: 'Daily earnings and net result',
+          grossLegend: 'Gross earnings', netLegend: 'Net result', platformAnalysis: 'Platform analysis',
+          platformShare: 'Earnings distribution by platform', platformComparison: 'Platform comparison by week',
+          platform: 'Platform', share: 'Share', total: 'Total', otherEarnings: 'Included extra earnings',
+          expenseAnalysis: 'Expense analysis', expenseEvolution: 'Daily expenses', expenseImpact: 'Highest-impact expense descriptions',
+          description: 'Description', type: 'Type', amount: 'Amount', date: 'Date', oneOff: 'One-off', fixed: 'Fixed',
+          weeklyComparison: 'Weekly comparison', weeklyTrend: 'Weekly gross and net evolution', averageTrend: 'Average earnings per working day',
+          indicator: 'Indicator', variation: 'Variation', grossShort: 'Gross earnings', expensesShort: 'Expenses',
+          netShort: 'Net result', averageShort: 'Daily average', goalShort: 'Goal completion',
+          goalsTitle: 'Financial goals', goal: 'Goal', achieved: 'Achieved', completion: 'Completion', status: 'Status',
+          reached: 'Reached', remaining: 'Remaining', exceeded: 'Exceeded', notSet: 'Not set',
+          insights: 'Automatic insights', bestWeek: 'Best week', lowestWeek: 'Lowest week', bestDay: 'Best earning day',
+          bestPlatform: 'Top platform', largestExpense: 'Largest expense', noData: 'No records available for this insight.',
+          dailyDetail: 'Daily financial detail', platforms: 'Platforms', distance: 'Distance', mileage: 'Mileage',
+          expenseDetail: 'Expense records', fixedExpenses: 'Fixed expenses active in the period',
+          generated: 'Generated on', profile: 'Account', reportPeriod: 'Report period', noExpenses: 'No expense records in this period.',
+          noPlatforms: 'No platform earnings in this period.', noGoals: 'No financial goals were defined for the included weeks.',
+          weeklyPerformance: 'Weekly performance', period: 'Period', workingDay: 'working day', goalProgress: 'Goal progress'
+        } : {
+          report: 'RELATÓRIO FINANCEIRO', overview: 'Visão financeira', summary: 'Indicadores principais',
+          gross: 'Ganhos brutos', expenses: 'Despesas', net: 'Resultado líquido', margin: 'Margem líquida',
+          days: 'Dias com ganhos', average: 'Média por dia trabalhado', expenseRate: 'Despesas sobre ganhos',
+          goals: 'Cumprimento de metas', dailyEvolution: 'Ganhos e resultado líquido por dia',
+          grossLegend: 'Ganhos brutos', netLegend: 'Resultado líquido', platformAnalysis: 'Análise por plataforma',
+          platformShare: 'Distribuição dos ganhos por plataforma', platformComparison: 'Comparação por plataforma e semana',
+          platform: 'Plataforma', share: 'Participação', total: 'Total', otherEarnings: 'Ganhos extras incluídos',
+          expenseAnalysis: 'Análise de despesas', expenseEvolution: 'Despesas diárias', expenseImpact: 'Descrições com maior impacto',
+          description: 'Descrição', type: 'Tipo', amount: 'Valor', date: 'Data', oneOff: 'Avulsa', fixed: 'Fixa',
+          weeklyComparison: 'Comparação entre semanas', weeklyTrend: 'Evolução semanal de bruto e líquido', averageTrend: 'Média de ganhos por dia trabalhado',
+          indicator: 'Indicador', variation: 'Variação', grossShort: 'Ganhos brutos', expensesShort: 'Despesas',
+          netShort: 'Resultado líquido', averageShort: 'Média diária', goalShort: 'Meta alcançada',
+          goalsTitle: 'Metas financeiras', goal: 'Meta', achieved: 'Alcançado', completion: 'Cumprimento', status: 'Estado',
+          reached: 'Atingida', remaining: 'Em falta', exceeded: 'Excedida', notSet: 'Não definida',
+          insights: 'Indicadores automáticos', bestWeek: 'Melhor semana', lowestWeek: 'Semana com menor resultado', bestDay: 'Dia com maior faturação',
+          bestPlatform: 'Plataforma com maior rendimento', largestExpense: 'Maior despesa registada', noData: 'Não existem dados suficientes.',
+          dailyDetail: 'Detalhe financeiro diário', platforms: 'Plataformas', distance: 'Distância', mileage: 'Quilometragem',
+          expenseDetail: 'Registos de despesas', fixedExpenses: 'Despesas fixas ativas no período',
+          generated: 'Gerado em', profile: 'Conta', reportPeriod: 'Período do relatório', noExpenses: 'Não existem despesas registadas neste período.',
+          noPlatforms: 'Não existem ganhos por plataforma neste período.', noGoals: 'Não foram definidas metas nas semanas incluídas.',
+          weeklyPerformance: 'Desempenho semanal', period: 'Período', workingDay: 'dia trabalhado', goalProgress: 'Progresso das metas'
+        };
 
         var dados = coletarDadosDoMes(year, month);
         var dias = dados.dias;
         var extras = dados.plataformasExtras;
-
         var mesNome = I18N.capitalize(I18N.list('months.full')[month]);
         var diasAbbr = I18N.list('weekday.abbr');
         var geradoEm = new Date();
-        var geradoStr = pad2(geradoEm.getDate()) + '/' + pad2(geradoEm.getMonth() + 1) + '/' + geradoEm.getFullYear() +
-          ' ' + pad2(geradoEm.getHours()) + ':' + pad2(geradoEm.getMinutes());
-
-        // Totais do mês
-        var totBruto = 0, totDespesas = 0, totKm = 0, totUber = 0, totBolt = 0;
-        var totExtras = {};
-        extras.forEach(function (p) { totExtras[p.id] = 0; });
-        dias.forEach(function (dia) {
-          totBruto    += dia.bruto;
-          totDespesas += dia.despesas;
-          totKm       += dia.distancia;
-          totUber     += dia.uber;
-          totBolt     += dia.bolt;
-          extras.forEach(function (p) { totExtras[p.id] += dia.plat[p.id] || 0; });
-        });
-        var totLiquido = totBruto - totDespesas;
-
-        /* ---- Cabeçalho + rodapé, repetidos em cada página ----
-           header() é chamado tanto manualmente (antes da 1ª tabela)
-           quanto pelo didDrawPage do autoTable (em toda página nova,
-           página 1 incluída) — a trava evita desenhar duas vezes na
-           mesma página. */
-        var headeredPages = {};
-        function header () {
-          var pn = doc.internal.getCurrentPageInfo().pageNumber;
-          if (headeredPages[pn]) return;
-          headeredPages[pn] = true;
-          doc.setFillColor(COR_INK[0], COR_INK[1], COR_INK[2]);
-          doc.rect(0, 0, pageW, 64, 'F');
-          doc.setFillColor(COR_GREEN[0], COR_GREEN[1], COR_GREEN[2]);
-          doc.rect(0, 64, pageW, 3, 'F');
-          doc.setTextColor(255, 255, 255);
-          doc.setFont('helvetica', 'bold');
-          doc.setFontSize(16);
-          doc.text('smartsoma', margin, 32);
-          doc.setFont('helvetica', 'normal');
-          doc.setFontSize(9);
-          doc.setTextColor(220, 230, 234);
-          doc.text(I18N.t('relatorio.pdf.subtitulo'), margin, 47);
-          doc.setFont('helvetica', 'bold');
-          doc.setFontSize(13);
-          doc.setTextColor(255, 255, 255);
-          doc.text(mesNome + ' ' + year, pageW - margin, 36, { align: 'right' });
-        }
-        function footer (pageNum, pageCount) {
-          doc.setDrawColor(COR_LINE[0], COR_LINE[1], COR_LINE[2]);
-          doc.setLineWidth(0.5);
-          doc.line(margin, pageH - 34, pageW - margin, pageH - 34);
-          doc.setFont('helvetica', 'normal');
-          doc.setFontSize(7.5);
-          doc.setTextColor(140, 150, 158);
-          doc.text(I18N.t('relatorio.pdf.geradoEm', { v: geradoStr }), margin, pageH - 20);
-          doc.text(String(pageNum) + ' / ' + String(pageCount), pageW - margin, pageH - 20, { align: 'right' });
-        }
-
-        header();
-        var y = 100;
-
-        /* ---- Identificação: nome, email e plano da conta ----
-           Lê o perfil já guardado e o email da sessão (cloud-init.js). */
+        var geradoStr = pad2(geradoEm.getDate()) + '/' + pad2(geradoEm.getMonth() + 1) + '/' + geradoEm.getFullYear() + ' ' + pad2(geradoEm.getHours()) + ':' + pad2(geradoEm.getMinutes());
         var perfilNome = '';
         try {
           var perfilRaw = cloudGet('mydocs.profile');
@@ -7639,314 +7633,487 @@
             var perfilObj = JSON.parse(perfilRaw);
             if (perfilObj && perfilObj.name) perfilNome = perfilObj.name;
           }
-        } catch (e) {  }
+        } catch (e) { }
         if (!perfilNome) perfilNome = I18N.t('sheet.defaultUser');
         var perfilEmail = window.currentUserEmail || '—';
-        var perfilPlano = I18N.t('relatorio.pdf.plano');
 
-        doc.setFillColor(COR_PAPER[0], COR_PAPER[1], COR_PAPER[2]);
-        doc.roundedRect(margin, y, pageW - margin * 2, 46, 5, 5, 'F');
-        var idColW = (pageW - margin * 2 - 24) / 3;
-        [
-          [I18N.t('relatorio.pdf.nome'), perfilNome],
-          [I18N.t('relatorio.pdf.email'), perfilEmail],
-          [I18N.t('relatorio.pdf.plano'), perfilPlano]
-        ].forEach(function (par, i) {
-          var cx = margin + 12 + i * idColW;
-          doc.setFont('helvetica', 'normal');
-          doc.setFontSize(7.5);
-          doc.setTextColor(110, 122, 130);
-          doc.text(par[0], cx, y + 18);
-          doc.setFont('helvetica', 'bold');
-          doc.setFontSize(10.5);
-          doc.setTextColor(COR_INK[0], COR_INK[1], COR_INK[2]);
-          doc.text(par[1], cx, y + 33, { maxWidth: idColW - 14 });
-        });
-        y += 46 + 22;
-
-        /* ---- Resumo do mês: cartões coloridos ---- */
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(11);
-        doc.setTextColor(COR_INK[0], COR_INK[1], COR_INK[2]);
-        doc.text(I18N.t('relatorio.pdf.resumo'), margin, y);
-        y += 10;
-
-        var cardsBase = [
-          { label: I18N.t('relatorio.pdf.bruto'),    valor: totBruto,    cor: COR_GREEN },
-          { label: I18N.t('relatorio.pdf.despesas'), valor: totDespesas, cor: COR_RED },
-          { label: I18N.t('relatorio.pdf.liquido'),  valor: totLiquido,  cor: COR_INK },
-          { label: I18N.t('relatorio.pdf.distancia'), valor: null, texto: totKm.toFixed(0) + ' km', cor: COR_INK }
-        ];
-        var cardW = (pageW - margin * 2 - 3 * 8) / 4;
-        cardsBase.forEach(function (c, i) {
-          var cx = margin + i * (cardW + 8);
-          doc.setFillColor(COR_PAPER[0], COR_PAPER[1], COR_PAPER[2]);
-          doc.roundedRect(cx, y, cardW, 46, 5, 5, 'F');
-          doc.setFillColor(c.cor[0], c.cor[1], c.cor[2]);
-          doc.roundedRect(cx, y, 3.5, 46, 1.75, 1.75, 'F');
-          doc.setFont('helvetica', 'normal');
-          doc.setFontSize(7.5);
-          doc.setTextColor(110, 122, 130);
-          doc.text(c.label, cx + 10, y + 16);
-          doc.setFont('helvetica', 'bold');
-          doc.setFontSize(12.5);
-          doc.setTextColor(c.cor[0], c.cor[1], c.cor[2]);
-          doc.text(c.texto || euro(c.valor), cx + 10, y + 34);
-        });
-        y += 46 + 20;
-
-        // Cartões por plataforma (Uber, Bolt, extras) — quantas existirem
-        var plataformasCards = [
-          { label: 'Uber', valor: totUber },
-          { label: 'Bolt', valor: totBolt }
-        ].concat(extras.map(function (p) { return { label: p.nome, valor: totExtras[p.id] }; }));
-
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(9.5);
-        doc.setTextColor(COR_INK[0], COR_INK[1], COR_INK[2]);
-        doc.text(I18N.t('relatorio.pdf.porPlataforma'), margin, y);
-        y += 8;
-
-        var perRow = 4;
-        var pCardW = (pageW - margin * 2 - (perRow - 1) * 8) / perRow;
-        plataformasCards.forEach(function (c, i) {
-          var col = i % perRow;
-          var row = Math.floor(i / perRow);
-          var cx = margin + col * (pCardW + 8);
-          var cy = y + row * 38;
-          doc.setDrawColor(COR_LINE[0], COR_LINE[1], COR_LINE[2]);
-          doc.setLineWidth(0.75);
-          doc.roundedRect(cx, cy, pCardW, 30, 4, 4, 'S');
-          doc.setFont('helvetica', 'normal');
-          doc.setFontSize(7.5);
-          doc.setTextColor(110, 122, 130);
-          doc.text(c.label, cx + 8, cy + 12, { maxWidth: pCardW - 16 });
-          doc.setFont('helvetica', 'bold');
-          doc.setFontSize(10);
-          doc.setTextColor(COR_GREEN[0], COR_GREEN[1], COR_GREEN[2]);
-          doc.text(euro(c.valor), cx + 8, cy + 24);
-        });
-        y += Math.ceil(plataformasCards.length / perRow) * 38 + 24;
-
-        /* ---- Tabela dia a dia (com subtotal semanal) ---- */
-        var head = [[
-          I18N.t('semana.th.data'), 'Uber', 'Bolt'
-        ].concat(extras.map(function (p) { return p.nome; })).concat([
-          I18N.t('semana.th.despesas'), I18N.t('relatorio.pdf.kmAbbr'),
-          I18N.t('relatorio.pdf.bruto'), I18N.t('relatorio.pdf.liquido')
-        ])];
-
-        var body = [];
-        var semanasResumo = []; // p/ a seção "Resumo semanal" mais abaixo
-        var semanaAcc = null;
-        var semanaInicio = null;
-        function novaSemanaAcc () { return { uber: 0, bolt: 0, extras: {}, despesas: 0, km: 0, bruto: 0, liquido: 0 }; }
-        semanaAcc = novaSemanaAcc();
-
-        function linhaSemanaSubtotal () {
-          var row = [I18N.t('relatorio.pdf.subtotalSemana'), euro(semanaAcc.uber), euro(semanaAcc.bolt)];
-          extras.forEach(function (p) { row.push(euro(semanaAcc.extras[p.id] || 0)); });
-          row.push(euro(semanaAcc.despesas), semanaAcc.km.toFixed(0), euro(semanaAcc.bruto), euro(semanaAcc.liquido));
-          return row;
-        }
-
-        dias.forEach(function (dia, idx) {
-          if (semanaInicio === null) semanaInicio = dia.data;
-          var row = [
-            // weekday.abbr é Seg..Dom (0=Seg); getDay() do JS é Dom..Sáb
-            // (0=Dom) — por isso o +6 % 7 antes de indexar a lista.
-            diasAbbr[(dia.data.getDay() + 6) % 7] + ' ' + pad2(dia.data.getDate()) + '/' + pad2(month + 1),
-            euro(dia.uber), euro(dia.bolt)
-          ];
-          extras.forEach(function (p) { row.push(euro(dia.plat[p.id] || 0)); });
-          row.push(euro(dia.despesas), dia.distancia.toFixed(0), euro(dia.bruto), euro(dia.liquido));
-          body.push(row);
-
-          semanaAcc.uber += dia.uber;
-          semanaAcc.bolt += dia.bolt;
-          extras.forEach(function (p) { semanaAcc.extras[p.id] = (semanaAcc.extras[p.id] || 0) + (dia.plat[p.id] || 0); });
-          semanaAcc.despesas += dia.despesas;
-          semanaAcc.km += dia.distancia;
-          semanaAcc.bruto += dia.bruto;
-          semanaAcc.liquido += dia.liquido;
-
-          var ultimoDoMes = idx === dias.length - 1;
-          if (dia.data.getDay() === 0 || ultimoDoMes) {
-            body.push(linhaSemanaSubtotal());
-            semanasResumo.push({
-              inicio: semanaInicio, fim: dia.data,
-              bruto: semanaAcc.bruto, despesas: semanaAcc.despesas, liquido: semanaAcc.liquido
-            });
-            semanaAcc = novaSemanaAcc();
-            semanaInicio = null;
-          }
-        });
-
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(11);
-        doc.setTextColor(COR_INK[0], COR_INK[1], COR_INK[2]);
-        doc.text(I18N.t('relatorio.pdf.detalheDiario'), margin, y);
-        y += 8;
-
-        var nCols = head[0].length;
-        doc.autoTable({
-          head: head,
-          body: body,
-          startY: y,
-          margin: { left: margin, right: margin, top: 70, bottom: 44 },
-          styles: { font: 'helvetica', fontSize: 7.5, cellPadding: 4, textColor: COR_INK, lineColor: COR_LINE, lineWidth: 0.5 },
-          headStyles: { fillColor: COR_INK, textColor: 255, fontStyle: 'bold', fontSize: 7.5 },
-          alternateRowStyles: { fillColor: [249, 251, 252] },
-          columnStyles: (function () {
-            var cs = { 0: { fontStyle: 'bold', cellWidth: 46 } };
-            cs[nCols - 2] = { fontStyle: 'bold' };
-            cs[nCols - 1] = { fontStyle: 'bold', textColor: COR_GREEN };
-            return cs;
-          })(),
-          didParseCell: function (dataArg) {
-            var raw = dataArg.row.raw;
-            if (raw && raw[0] === I18N.t('relatorio.pdf.subtotalSemana')) {
-              dataArg.cell.styles.fillColor = [226, 244, 234];
-              dataArg.cell.styles.fontStyle = 'bold';
-              dataArg.cell.styles.textColor = COR_INK;
-            }
-          },
-          didDrawPage: function () {
-            header();
-          }
-        });
-        y = doc.lastAutoTable.finalY + 26;
-
-        /* ---- Detalhe das despesas (uma por uma, para achar um lançamento específico) ---- */
-        var despesasBody = [];
+        var totBruto = 0, totDespesas = 0, totKm = 0, totUber = 0, totBolt = 0, totGanhosExtras = 0;
+        var totExtras = {};
+        extras.forEach(function (p) { totExtras[p.id] = 0; });
         dias.forEach(function (dia) {
-          dia.itens.forEach(function (it) {
-            despesasBody.push([
-              pad2(dia.data.getDate()) + '/' + pad2(month + 1),
-              it.descricao || '—',
-              I18N.t('relatorio.pdf.avulsa'),
-              euro(it.valor)
-            ]);
-          });
-          dia.fixasDoDia.forEach(function (it) {
-            despesasBody.push([
-              pad2(dia.data.getDate()) + '/' + pad2(month + 1),
-              it.descricao || '—',
-              I18N.t('relatorio.pdf.fixa'),
-              euro(it.valor)
-            ]);
-          });
+          totBruto += dia.bruto;
+          totDespesas += dia.despesas;
+          totKm += dia.distancia;
+          totUber += dia.uber;
+          totBolt += dia.bolt;
+          totGanhosExtras += dia.ganhosExtras.reduce(function (sum, item) { return sum + (item.incluidoBruto ? item.valor : 0); }, 0);
+          extras.forEach(function (p) { totExtras[p.id] += dia.plat[p.id] || 0; });
         });
+        var totLiquido = totBruto - totDespesas;
+        var diasComGanhos = dias.filter(function (dia) { return dia.bruto > 0; }).length;
+        var margemLiquida = totBruto ? (totLiquido / totBruto) * 100 : 0;
+        var percentDespesas = totBruto ? (totDespesas / totBruto) * 100 : 0;
+        var mediaDiaria = diasComGanhos ? totBruto / diasComGanhos : 0;
 
-        // Lista de despesas (fixas e avulsas), uma por dia — aparece
-        // sempre, mesmo sem nenhuma, para o documento ficar completo e
-        // previsível em todo mês (nunca "sumir" uma seção sem explicação).
-        if (y > pageH - 140) { doc.addPage(); y = 96; }
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(11);
-        doc.setTextColor(COR_INK[0], COR_INK[1], COR_INK[2]);
-        doc.text(I18N.t('relatorio.pdf.detalheDespesas'), margin, y);
-        y += 10;
-        if (despesasBody.length) {
-          doc.autoTable({
-            head: [[I18N.t('relatorio.pdf.data'), I18N.t('relatorio.pdf.descricao'), I18N.t('relatorio.pdf.tipo'), I18N.t('relatorio.pdf.valor')]],
-            body: despesasBody,
-            startY: y,
-            margin: { left: margin, right: margin, top: 70, bottom: 44 },
-            styles: { font: 'helvetica', fontSize: 8, cellPadding: 5, textColor: COR_INK, lineColor: COR_LINE, lineWidth: 0.5 },
-            headStyles: { fillColor: COR_RED, textColor: 255, fontStyle: 'bold' },
-            alternateRowStyles: { fillColor: [253, 246, 245] },
-            columnStyles: { 0: { cellWidth: 55 }, 3: { fontStyle: 'bold', textColor: COR_RED, halign: 'right' } },
-            didDrawPage: function () { header(); }
+        var plataformas = [
+          { id: 'uber', nome: 'Uber', valor: totUber, cor: [25, 120, 70] },
+          { id: 'bolt', nome: 'Bolt', valor: totBolt, cor: [46, 117, 184] }
+        ].concat(extras.map(function (p, i) {
+          var paleta = [[130, 90, 190], [201, 126, 42], [30, 143, 145], [184, 72, 122]];
+          return { id: p.id, nome: p.nome, valor: totExtras[p.id] || 0, cor: paleta[i % paleta.length] };
+        })).filter(function (plataforma) { return plataforma.valor > 0; });
+        var totalPlataformas = plataformas.reduce(function (sum, plataforma) { return sum + plataforma.valor; }, 0);
+
+        var semanasPorChave = {};
+        dias.forEach(function (dia) {
+          var monday = mondayOfDate(dia.data);
+          var key = dateKeyFor(monday);
+          if (!semanasPorChave[key]) {
+            var sunday = new Date(monday.getTime()); sunday.setDate(monday.getDate() + 6);
+            semanasPorChave[key] = { key: key, monday: monday, sunday: sunday, bruto: 0, despesas: 0, liquido: 0, km: 0, diasComGanhos: 0, plataformas: {} };
+          }
+          var semana = semanasPorChave[key];
+          semana.bruto += dia.bruto;
+          semana.despesas += dia.despesas;
+          semana.liquido += dia.liquido;
+          semana.km += dia.distancia;
+          if (dia.bruto > 0) semana.diasComGanhos++;
+          semana.plataformas.uber = (semana.plataformas.uber || 0) + dia.uber;
+          semana.plataformas.bolt = (semana.plataformas.bolt || 0) + dia.bolt;
+          extras.forEach(function (p) { semana.plataformas[p.id] = (semana.plataformas[p.id] || 0) + (dia.plat[p.id] || 0); });
+        });
+        var semanas = Object.keys(semanasPorChave).map(function (key) { return semanasPorChave[key]; }).sort(function (a, b) { return a.monday - b.monday; });
+        semanas.forEach(function (semana, i) {
+          semana.numero = i + 1;
+          semana.rotulo = (isEnglish ? 'Week ' : 'Sem. ') + semana.numero;
+          semana.periodo = pad2(semana.monday.getDate()) + '/' + pad2(semana.monday.getMonth() + 1) + ' - ' + pad2(semana.sunday.getDate()) + '/' + pad2(semana.sunday.getMonth() + 1);
+          semana.mediaDiaria = semana.diasComGanhos ? semana.bruto / semana.diasComGanhos : 0;
+          semana.meta = null;
+          try {
+            var rawMeta = cloudGet('metaSemanalConfig:' + semana.key);
+            var parsedMeta = rawMeta ? JSON.parse(rawMeta) : null;
+            if (parsedMeta && Number(parsedMeta.valor) > 0) {
+              semana.meta = { valor: Number(parsedMeta.valor), tipo: parsedMeta.tipo === 'liquido' ? 'liquido' : 'bruto' };
+            }
+          } catch (e) { }
+          if (semana.meta) {
+            semana.metaRealizada = semana.meta.tipo === 'liquido' ? semana.liquido : semana.bruto;
+            semana.metaPercentual = Math.max(0, (semana.metaRealizada / semana.meta.valor) * 100);
+          }
+        });
+        var semanasComMeta = semanas.filter(function (semana) { return !!semana.meta; });
+        var cumprimentoMedioMetas = semanasComMeta.length ? semanasComMeta.reduce(function (sum, semana) { return sum + semana.metaPercentual; }, 0) / semanasComMeta.length : 0;
+
+        var despesasDetalhadas = [];
+        var despesasPorDescricao = {};
+        function adicionarDespesa(dia, item, tipo) {
+          var valor = Number(item.valor) || 0;
+          if (valor <= 0) return;
+          var descricao = String(item.descricao || '—');
+          despesasDetalhadas.push({ data: dia.data, descricao: descricao, tipo: tipo, valor: valor });
+          despesasPorDescricao[descricao] = (despesasPorDescricao[descricao] || 0) + valor;
+        }
+        dias.forEach(function (dia) {
+          dia.itens.forEach(function (item) { adicionarDespesa(dia, item, texto.oneOff); });
+          dia.fixasDoDia.forEach(function (item) { adicionarDespesa(dia, item, texto.fixed); });
+        });
+        var maioresDespesas = Object.keys(despesasPorDescricao).map(function (descricao) {
+          return { descricao: descricao, valor: despesasPorDescricao[descricao] };
+        }).sort(function (a, b) { return b.valor - a.valor; });
+
+        function setFill(cor) { doc.setFillColor(cor[0], cor[1], cor[2]); }
+        function setDraw(cor) { doc.setDrawColor(cor[0], cor[1], cor[2]); }
+        function setText(cor) { doc.setTextColor(cor[0], cor[1], cor[2]); }
+        function header() {
+          setFill(CORES.ink); doc.rect(0, 0, pageW, 66, 'F');
+          setFill(CORES.lime); doc.rect(0, 64, pageW, 3, 'F');
+          doc.setFont('helvetica', 'bold'); doc.setFontSize(18); doc.setTextColor(255, 255, 255);
+          doc.text('smart', margin, 31);
+          doc.setTextColor(CORES.lime[0], CORES.lime[1], CORES.lime[2]); doc.text('soma', margin + 47, 31);
+          doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.setTextColor(204, 219, 208);
+          doc.text(texto.report, margin, 47);
+          doc.setFont('helvetica', 'bold'); doc.setFontSize(12); doc.setTextColor(255, 255, 255);
+          doc.text(mesNome + ' ' + year, pageW - margin, 34, { align: 'right' });
+          doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(204, 219, 208);
+          doc.text(texto.reportPeriod, pageW - margin, 48, { align: 'right' });
+        }
+        function footer(pageNum, pageCount) {
+          setDraw(CORES.line); doc.setLineWidth(0.5); doc.line(margin, pageH - 34, pageW - margin, pageH - 34);
+          doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); setText(CORES.muted);
+          doc.text(texto.generated + ' ' + geradoStr, margin, pageH - 20);
+          doc.text(String(pageNum) + ' / ' + String(pageCount), pageW - margin, pageH - 20, { align: 'right' });
+        }
+        function newPage() { doc.addPage(); y = 94; }
+        function ensure(space) { if (y + space > pageH - 50) newPage(); }
+        function section(kicker, title, detail) {
+          ensure(detail ? 48 : 34);
+          doc.setFont('helvetica', 'bold'); doc.setFontSize(7.5); setText(CORES.green);
+          doc.text(kicker.toUpperCase(), margin, y);
+          doc.setFontSize(14); setText(CORES.ink); doc.text(title, margin, y + 17);
+          if (detail) {
+            doc.setFont('helvetica', 'normal'); doc.setFontSize(8); setText(CORES.muted);
+            var lines = doc.splitTextToSize(detail, contentW);
+            doc.text(lines, margin, y + 30);
+            y += 30 + lines.length * 9;
+          } else y += 26;
+        }
+        function drawLegend(items, x, cy) {
+          var cursor = x;
+          items.forEach(function (item) {
+            setFill(item.cor); doc.roundedRect(cursor, cy - 5, 8, 8, 2, 2, 'F');
+            doc.setFont('helvetica', 'normal'); doc.setFontSize(7); setText(CORES.muted);
+            doc.text(item.label, cursor + 12, cy + 1);
+            cursor += 16 + doc.getTextWidth(item.label);
           });
-          y = doc.lastAutoTable.finalY + 26;
-        } else {
-          doc.setFillColor(COR_PAPER[0], COR_PAPER[1], COR_PAPER[2]);
-          doc.roundedRect(margin, y, pageW - margin * 2, 28, 5, 5, 'F');
-          doc.setFont('helvetica', 'normal');
-          doc.setFontSize(8.5);
-          doc.setTextColor(110, 122, 130);
-          doc.text(I18N.t('relatorio.pdf.semDespesas'), margin + 12, y + 17);
-          y += 28 + 26;
+        }
+        function drawMetricGrid(cards) {
+          var columns = 4, gap = 7, cardH = 47;
+          var cardW = (contentW - gap * (columns - 1)) / columns;
+          cards.forEach(function (card, i) {
+            var row = Math.floor(i / columns), col = i % columns;
+            var x = margin + col * (cardW + gap), cy = y + row * (cardH + gap);
+            setFill(CORES.card); doc.roundedRect(x, cy, cardW, cardH, 6, 6, 'F');
+            setDraw(CORES.line); doc.setLineWidth(.6); doc.roundedRect(x, cy, cardW, cardH, 6, 6, 'S');
+            setFill(card.cor); doc.roundedRect(x, cy, 3, cardH, 2, 2, 'F');
+            doc.setFont('helvetica', 'normal'); doc.setFontSize(7); setText(CORES.muted);
+            var labelLines = doc.splitTextToSize(card.label, cardW - 18);
+            doc.text(labelLines, x + 10, cy + 14);
+            doc.setFont('helvetica', 'bold'); doc.setFontSize(card.size || 10.5); setText(card.cor);
+            doc.text(card.value, x + 10, cy + 36, { maxWidth: cardW - 16 });
+          });
+          y += Math.ceil(cards.length / columns) * (cardH + gap) + 8;
+        }
+        function drawEmptyChart(x, cy, w, h, message) {
+          setFill(CORES.paper); doc.roundedRect(x, cy, w, h, 7, 7, 'F');
+          doc.setFont('helvetica', 'normal'); doc.setFontSize(8); setText(CORES.muted);
+          doc.text(message, x + w / 2, cy + h / 2, { align: 'center' });
+        }
+        function drawDailyBars(cy, title, valueFn, cor, limit) {
+          ensure(164);
+          doc.setFont('helvetica', 'bold'); doc.setFontSize(10); setText(CORES.ink); doc.text(title, margin, cy);
+          var chartY = cy + 14, chartH = 106, chartW = contentW;
+          var values = dias.map(valueFn), max = Math.max.apply(null, values.concat([0]));
+          if (max <= 0) { drawEmptyChart(margin, chartY, chartW, chartH, texto.noData); y = chartY + chartH + 14; return; }
+          setFill(CORES.card); doc.roundedRect(margin, chartY, chartW, chartH, 7, 7, 'F');
+          setDraw(CORES.line); doc.setLineWidth(.5); doc.roundedRect(margin, chartY, chartW, chartH, 7, 7, 'S');
+          var baseline = chartY + chartH - 20, plotH = chartH - 36, slot = (chartW - 22) / dias.length;
+          setDraw(CORES.line); doc.line(margin + 11, baseline, margin + chartW - 11, baseline);
+          dias.forEach(function (dia, i) {
+            var value = values[i], barH = Math.max(value > 0 ? 2 : 0, Math.abs(value) / max * plotH);
+            var x = margin + 11 + i * slot + Math.max(.4, (slot - Math.min(9, slot * .62)) / 2);
+            var width = Math.max(.8, Math.min(9, slot * .62));
+            setFill(value < 0 ? CORES.red : cor);
+            doc.roundedRect(x, value < 0 ? baseline : baseline - barH, width, barH, Math.min(2, width / 2), Math.min(2, width / 2), 'F');
+            if (i === 0 || i === dias.length - 1 || (dias.length > 10 && i % 5 === 0)) {
+              doc.setFont('helvetica', 'normal'); doc.setFontSize(5.8); setText(CORES.muted);
+              doc.text(String(dia.data.getDate()), x + width / 2, chartY + chartH - 7, { align: 'center' });
+            }
+          });
+          doc.setFont('helvetica', 'normal'); doc.setFontSize(6.5); setText(CORES.muted);
+          doc.text(euro(max), margin + chartW - 10, chartY + 12, { align: 'right' });
+          y = chartY + chartH + 14;
+        }
+        function drawDonut(cy) {
+          ensure(170);
+          doc.setFont('helvetica', 'bold'); doc.setFontSize(10); setText(CORES.ink); doc.text(texto.platformShare, margin, cy);
+          var chartY = cy + 14, chartH = 126;
+          setFill(CORES.card); doc.roundedRect(margin, chartY, contentW, chartH, 7, 7, 'F');
+          setDraw(CORES.line); doc.setLineWidth(.5); doc.roundedRect(margin, chartY, contentW, chartH, 7, 7, 'S');
+          if (!totalPlataformas) { drawEmptyChart(margin, chartY, contentW, chartH, texto.noPlatforms); y = chartY + chartH + 14; return; }
+          var cx = margin + 76, centerY = chartY + chartH / 2, radius = 39, angle = -Math.PI / 2;
+          plataformas.forEach(function (platform) {
+            var end = angle + (platform.valor / totalPlataformas) * Math.PI * 2;
+            var steps = Math.max(3, Math.ceil((end - angle) / .11));
+            setFill(platform.cor);
+            for (var step = 0; step < steps; step++) {
+              var startA = angle + (end - angle) * step / steps;
+              var endA = angle + (end - angle) * (step + 1) / steps;
+              doc.triangle(cx, centerY, cx + radius * Math.cos(startA), centerY + radius * Math.sin(startA), cx + radius * Math.cos(endA), centerY + radius * Math.sin(endA), 'F');
+            }
+            angle = end;
+          });
+          setFill(CORES.card); doc.circle(cx, centerY, 22, 'F');
+          doc.setFont('helvetica', 'bold'); doc.setFontSize(8); setText(CORES.ink);
+          doc.text(euro(totalPlataformas), cx, centerY - 1, { align: 'center' });
+          doc.setFont('helvetica', 'normal'); doc.setFontSize(6); setText(CORES.muted);
+          doc.text(texto.total, cx, centerY + 9, { align: 'center' });
+          var legendX = margin + 146, legendY = chartY + 22;
+          plataformas.slice(0, 6).forEach(function (platform, i) {
+            var lineY = legendY + i * 16;
+            setFill(platform.cor); doc.roundedRect(legendX, lineY - 6, 8, 8, 2, 2, 'F');
+            doc.setFont('helvetica', 'bold'); doc.setFontSize(7.5); setText(CORES.ink);
+            doc.text(platform.nome, legendX + 13, lineY, { maxWidth: 155 });
+            doc.setFont('helvetica', 'normal'); doc.setFontSize(7); setText(CORES.muted);
+            doc.text(euro(platform.valor) + '  ' + ((platform.valor / totalPlataformas) * 100).toFixed(1).replace('.', ',') + '%', margin + contentW - 12, lineY, { align: 'right' });
+          });
+          if (totGanhosExtras > 0) {
+            doc.setFont('helvetica', 'normal'); doc.setFontSize(7); setText(CORES.muted);
+            doc.text(texto.otherEarnings + ': ' + euro(totGanhosExtras), legendX, chartY + chartH - 14);
+          }
+          y = chartY + chartH + 14;
+        }
+        function drawPlatformBars(cy) {
+          ensure(148);
+          doc.setFont('helvetica', 'bold'); doc.setFontSize(10); setText(CORES.ink); doc.text(texto.platformComparison, margin, cy);
+          var chartY = cy + 14, chartH = Math.max(78, plataformas.length * 22 + 24);
+          if (!plataformas.length) { drawEmptyChart(margin, chartY, contentW, chartH, texto.noPlatforms); y = chartY + chartH + 14; return; }
+          setFill(CORES.card); doc.roundedRect(margin, chartY, contentW, chartH, 7, 7, 'F'); setDraw(CORES.line); doc.setLineWidth(.5); doc.roundedRect(margin, chartY, contentW, chartH, 7, 7, 'S');
+          var top = plataformas[0].valor;
+          plataformas.forEach(function (platform, i) {
+            var lineY = chartY + 19 + i * 22, x = margin + 106, barW = contentW - 186;
+            doc.setFont('helvetica', 'bold'); doc.setFontSize(7.5); setText(CORES.ink); doc.text(platform.nome, margin + 12, lineY + 4, { maxWidth: 86 });
+            setFill(CORES.paper); doc.roundedRect(x, lineY - 5, barW, 10, 4, 4, 'F');
+            setFill(platform.cor); doc.roundedRect(x, lineY - 5, Math.max(3, barW * platform.valor / top), 10, 4, 4, 'F');
+            doc.setFont('helvetica', 'bold'); doc.setFontSize(7.5); setText(platform.cor); doc.text(euro(platform.valor), margin + contentW - 12, lineY + 4, { align: 'right' });
+          });
+          y = chartY + chartH + 14;
+        }
+        function drawWeeklyBars(cy) {
+          ensure(162);
+          doc.setFont('helvetica', 'bold'); doc.setFontSize(10); setText(CORES.ink); doc.text(texto.weeklyTrend, margin, cy);
+          var chartY = cy + 14, chartH = 104, max = Math.max.apply(null, semanas.map(function (semana) { return Math.max(semana.bruto, Math.abs(semana.liquido)); }).concat([0]));
+          if (!max) { drawEmptyChart(margin, chartY, contentW, chartH, texto.noData); y = chartY + chartH + 14; return; }
+          setFill(CORES.card); doc.roundedRect(margin, chartY, contentW, chartH, 7, 7, 'F'); setDraw(CORES.line); doc.roundedRect(margin, chartY, contentW, chartH, 7, 7, 'S');
+          var baseline = chartY + chartH - 20, plotH = chartH - 36, group = (contentW - 24) / semanas.length;
+          semanas.forEach(function (semana, i) {
+            var x = margin + 12 + i * group, grossH = semana.bruto / max * plotH, netH = Math.abs(semana.liquido) / max * plotH;
+            setFill(CORES.green); doc.roundedRect(x + group * .2, baseline - grossH, Math.max(3, group * .23), grossH, 2, 2, 'F');
+            setFill(semana.liquido < 0 ? CORES.red : CORES.ink); doc.roundedRect(x + group * .52, semana.liquido < 0 ? baseline : baseline - netH, Math.max(3, group * .23), netH, 2, 2, 'F');
+            doc.setFont('helvetica', 'normal'); doc.setFontSize(6); setText(CORES.muted); doc.text(semana.rotulo, x + group / 2, chartY + chartH - 7, { align: 'center' });
+          });
+          drawLegend([{ label: texto.grossLegend, cor: CORES.green }, { label: texto.netLegend, cor: CORES.ink }], margin + 12, chartY + 14);
+          y = chartY + chartH + 14;
+        }
+        function drawAverageTrend(cy) {
+          ensure(118);
+          doc.setFont('helvetica', 'bold'); doc.setFontSize(10); setText(CORES.ink); doc.text(texto.averageTrend, margin, cy);
+          var chartY = cy + 14, chartH = 72, values = semanas.map(function (semana) { return semana.mediaDiaria; });
+          var max = Math.max.apply(null, values.concat([0]));
+          if (!max) { drawEmptyChart(margin, chartY, contentW, chartH, texto.noData); y = chartY + chartH + 14; return; }
+          setFill(CORES.card); doc.roundedRect(margin, chartY, contentW, chartH, 7, 7, 'F'); setDraw(CORES.line); doc.roundedRect(margin, chartY, contentW, chartH, 7, 7, 'S');
+          var points = [];
+          semanas.forEach(function (semana, i) {
+            var x = margin + 22 + (semanas.length === 1 ? 0 : i * (contentW - 44) / (semanas.length - 1));
+            var py = chartY + 16 + (1 - semana.mediaDiaria / max) * (chartH - 34);
+            points.push({ x: x, y: py, label: semana.rotulo });
+          });
+          setDraw(CORES.blue); doc.setLineWidth(1.5);
+          for (var i = 1; i < points.length; i++) doc.line(points[i - 1].x, points[i - 1].y, points[i].x, points[i].y);
+          points.forEach(function (point) {
+            setFill(CORES.blue); doc.circle(point.x, point.y, 2.8, 'F');
+            doc.setFont('helvetica', 'normal'); doc.setFontSize(6); setText(CORES.muted); doc.text(point.label, point.x, chartY + chartH - 7, { align: 'center' });
+          });
+          y = chartY + chartH + 14;
+        }
+        function drawGoalProgress(cy) {
+          ensure(132);
+          doc.setFont('helvetica', 'bold'); doc.setFontSize(10); setText(CORES.ink); doc.text(texto.goalProgress, margin, cy);
+          var chartY = cy + 14, chartH = Math.max(62, semanasComMeta.length * 20 + 22);
+          if (!semanasComMeta.length) { drawEmptyChart(margin, chartY, contentW, chartH, texto.noGoals); y = chartY + chartH + 14; return; }
+          setFill(CORES.card); doc.roundedRect(margin, chartY, contentW, chartH, 7, 7, 'F'); setDraw(CORES.line); doc.roundedRect(margin, chartY, contentW, chartH, 7, 7, 'S');
+          semanasComMeta.forEach(function (semana, i) {
+            var lineY = chartY + 18 + i * 20, x = margin + 62, barW = contentW - 132;
+            doc.setFont('helvetica', 'bold'); doc.setFontSize(7); setText(CORES.ink); doc.text(semana.rotulo, margin + 12, lineY + 4);
+            setFill(CORES.paper); doc.roundedRect(x, lineY - 5, barW, 9, 4, 4, 'F');
+            setFill(semana.metaPercentual >= 100 ? CORES.green : CORES.lime); doc.roundedRect(x, lineY - 5, Math.min(barW, barW * semana.metaPercentual / 100), 9, 4, 4, 'F');
+            doc.setFont('helvetica', 'bold'); doc.setFontSize(7); setText(semana.metaPercentual >= 100 ? CORES.green : CORES.ink);
+            doc.text(semana.metaPercentual.toFixed(0) + '%', margin + contentW - 12, lineY + 4, { align: 'right' });
+          });
+          y = chartY + chartH + 14;
+        }
+        function variation(current, previous) {
+          if (!previous) return '—';
+          var percent = ((current - previous) / Math.abs(previous)) * 100;
+          return (percent > 0 ? '+' : '') + percent.toFixed(1).replace('.', ',') + '%';
+        }
+        function renderTable(head, body, options) {
+          options = options || {};
+          doc.autoTable({
+            head: [head], body: body, startY: y,
+            margin: { left: margin, right: margin, top: 76, bottom: 44 },
+            styles: { font: 'helvetica', fontSize: options.fontSize || 7.5, cellPadding: options.cellPadding || 4.5, textColor: CORES.ink, lineColor: CORES.line, lineWidth: .45, overflow: 'linebreak' },
+            headStyles: { fillColor: options.headColor || CORES.ink, textColor: 255, fontStyle: 'bold', fontSize: options.headFontSize || 7.4 },
+            alternateRowStyles: { fillColor: options.altColor || [250, 250, 247] },
+            columnStyles: options.columnStyles || {},
+            didParseCell: options.didParseCell
+          });
+          y = doc.lastAutoTable.finalY + 20;
+        }
+        function showInsight(x, cy, width, label, value, cor) {
+          setFill(CORES.card); doc.roundedRect(x, cy, width, 47, 6, 6, 'F'); setDraw(CORES.line); doc.setLineWidth(.55); doc.roundedRect(x, cy, width, 47, 6, 6, 'S');
+          setFill(cor); doc.roundedRect(x, cy, 3, 47, 2, 2, 'F');
+          doc.setFont('helvetica', 'normal'); doc.setFontSize(7); setText(CORES.muted); doc.text(label, x + 10, cy + 14, { maxWidth: width - 18 });
+          doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); setText(CORES.ink);
+          var lines = doc.splitTextToSize(value, width - 18); doc.text(lines.slice(0, 2), x + 10, cy + 28);
         }
 
-        /* ---- Resumo semanal: bruto, despesas, líquido e diferença em
-           relação à semana anterior (mesmo período Seg–Dom das outras
-           seções). ---- */
-        if (y > pageH - 140) { doc.addPage(); y = 96; }
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(11);
-        doc.setTextColor(COR_INK[0], COR_INK[1], COR_INK[2]);
-        doc.text(I18N.t('relatorio.pdf.resumoSemanal'), margin, y);
-        y += 10;
-        doc.autoTable({
-          head: [[
-            I18N.t('relatorio.pdf.periodo'), I18N.t('relatorio.pdf.bruto'),
-            I18N.t('relatorio.pdf.despesas'), I18N.t('relatorio.pdf.liquido'),
-            I18N.t('relatorio.pdf.diferenca')
-          ]],
-          body: semanasResumo.map(function (sem, i) {
-            var diffTxt = '—';
-            if (i > 0) {
-              var diff = sem.liquido - semanasResumo[i - 1].liquido;
-              diffTxt = (Math.abs(diff) < 0.005) ? euro(0) : (diff > 0 ? '+ ' : '- ') + euro(Math.abs(diff));
-            }
-            return [
-              pad2(sem.inicio.getDate()) + '/' + pad2(sem.inicio.getMonth() + 1) + ' – ' +
-                pad2(sem.fim.getDate()) + '/' + pad2(sem.fim.getMonth() + 1),
-              euro(sem.bruto), euro(sem.despesas), euro(sem.liquido), diffTxt
-            ];
-          }),
-          startY: y,
-          margin: { left: margin, right: margin, top: 70, bottom: 44 },
-          styles: { font: 'helvetica', fontSize: 8.5, cellPadding: 5.5, textColor: COR_INK, lineColor: COR_LINE, lineWidth: 0.5 },
-          headStyles: { fillColor: COR_INK, textColor: 255, fontStyle: 'bold' },
-          alternateRowStyles: { fillColor: [249, 251, 252] },
-          columnStyles: { 3: { fontStyle: 'bold', textColor: COR_GREEN }, 4: { fontStyle: 'bold' } },
-          didParseCell: function (dataArg) {
-            if (dataArg.column.index === 4 && dataArg.section === 'body') {
-              var txt = String(dataArg.cell.raw);
-              if (txt.indexOf('+') === 0) dataArg.cell.styles.textColor = COR_GREEN;
-              else if (txt.indexOf('-') === 0) dataArg.cell.styles.textColor = COR_RED;
-            }
-          },
-          didDrawPage: function () { header(); }
-        });
-        y = doc.lastAutoTable.finalY + 26;
+        var y = 92;
+        setFill(CORES.ink); doc.roundedRect(margin, y, contentW, 54, 8, 8, 'F');
+        setFill(CORES.lime); doc.roundedRect(margin, y, 5, 54, 3, 3, 'F');
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(16); doc.setTextColor(255, 255, 255);
+        doc.text(texto.overview, margin + 18, y + 22);
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.setTextColor(204, 219, 208);
+        doc.text(perfilNome + ' · ' + perfilEmail, margin + 18, y + 39, { maxWidth: contentW - 180 });
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(CORES.lime[0], CORES.lime[1], CORES.lime[2]);
+        doc.text(mesNome + ' ' + year, pageW - margin - 16, y + 30, { align: 'right' });
+        y += 76;
 
-        /* ---- Despesas fixas ativas no período (referência) ---- */
+        section(texto.report, texto.summary);
+        drawMetricGrid([
+          { label: texto.gross, value: euro(totBruto), cor: CORES.green },
+          { label: texto.expenses, value: euro(totDespesas), cor: CORES.red },
+          { label: texto.net, value: euro(totLiquido), cor: totLiquido >= 0 ? CORES.green : CORES.red },
+          { label: texto.margin, value: margemLiquida.toFixed(1).replace('.', ',') + '%', cor: margemLiquida >= 0 ? CORES.green : CORES.red },
+          { label: texto.days, value: String(diasComGanhos), cor: CORES.blue },
+          { label: texto.average, value: euro(mediaDiaria), cor: CORES.blue },
+          { label: texto.expenseRate, value: percentDespesas.toFixed(1).replace('.', ',') + '%', cor: CORES.red },
+          { label: texto.goals, value: semanasComMeta.length ? cumprimentoMedioMetas.toFixed(0) + '%' : '—', cor: CORES.green }
+        ]);
+        drawDailyBars(y, texto.dailyEvolution, function (dia) { return dia.bruto; }, CORES.green);
+        drawDonut(y);
+
+        newPage();
+        section('01', texto.platformAnalysis, texto.platformComparison);
+        drawPlatformBars(y);
+        if (plataformas.length) {
+          var platformHead = [texto.platform].concat(semanas.map(function (semana) { return semana.rotulo; })).concat([texto.total, texto.share]);
+          var platformBody = plataformas.map(function (platform) {
+            return [platform.nome].concat(semanas.map(function (semana) { return euro(semana.plataformas[platform.id] || 0); })).concat([
+              euro(platform.valor), ((platform.valor / totalPlataformas) * 100).toFixed(1).replace('.', ',') + '%'
+            ]);
+          });
+          renderTable(platformHead, platformBody, {
+            fontSize: 7, cellPadding: 4,
+            columnStyles: (function () { var styles = { 0: { fontStyle: 'bold' } }; styles[platformHead.length - 2] = { fontStyle: 'bold', halign: 'right' }; styles[platformHead.length - 1] = { halign: 'right' }; return styles; })()
+          });
+        } else {
+          drawEmptyChart(margin, y, contentW, 54, texto.noPlatforms); y += 68;
+        }
+
+        newPage();
+        section('02', texto.expenseAnalysis, texto.expenseEvolution);
+        drawDailyBars(y, texto.expenseEvolution, function (dia) { return dia.despesas; }, CORES.red);
+        section('02', texto.expenseImpact);
+        if (maioresDespesas.length) {
+          renderTable([texto.description, texto.amount, texto.share], maioresDespesas.slice(0, 8).map(function (item) {
+            return [item.descricao, euro(item.valor), (totDespesas ? item.valor / totDespesas * 100 : 0).toFixed(1).replace('.', ',') + '%'];
+          }), {
+            headColor: CORES.red, altColor: CORES.softRed,
+            columnStyles: { 1: { fontStyle: 'bold', textColor: CORES.red, halign: 'right' }, 2: { halign: 'right' } }
+          });
+        } else {
+          drawEmptyChart(margin, y, contentW, 54, texto.noExpenses); y += 68;
+        }
+
+        newPage();
+        section('03', texto.weeklyComparison, texto.weeklyPerformance);
+        drawWeeklyBars(y);
+        drawAverageTrend(y);
+        var firstWeek = semanas[0], lastWeek = semanas[semanas.length - 1];
+        if (semanas.length) {
+          var comparisonHead = [texto.indicator].concat(semanas.map(function (semana) { return semana.rotulo; })).concat([texto.variation]);
+          var comparisonBody = [
+            [texto.grossShort].concat(semanas.map(function (semana) { return euro(semana.bruto); })).concat([variation(lastWeek.bruto, firstWeek.bruto)]),
+            [texto.expensesShort].concat(semanas.map(function (semana) { return euro(semana.despesas); })).concat([variation(lastWeek.despesas, firstWeek.despesas)]),
+            [texto.netShort].concat(semanas.map(function (semana) { return euro(semana.liquido); })).concat([variation(lastWeek.liquido, firstWeek.liquido)]),
+            [texto.averageShort].concat(semanas.map(function (semana) { return euro(semana.mediaDiaria); })).concat([variation(lastWeek.mediaDiaria, firstWeek.mediaDiaria)]),
+            [texto.goalShort].concat(semanas.map(function (semana) { return semana.meta ? semana.metaPercentual.toFixed(0) + '%' : '—'; })).concat(['—'])
+          ];
+          renderTable(comparisonHead, comparisonBody, {
+            fontSize: 6.9, cellPadding: 4,
+            didParseCell: function (cell) {
+              if (cell.section === 'body' && cell.column.index === comparisonHead.length - 1) {
+                var value = String(cell.cell.raw);
+                if (value.indexOf('+') === 0) cell.cell.styles.textColor = CORES.green;
+                if (value.indexOf('-') === 0) cell.cell.styles.textColor = CORES.red;
+                cell.cell.styles.fontStyle = 'bold';
+              }
+            }
+          });
+        }
+        section('04', texto.goalsTitle);
+        drawGoalProgress(y);
+        if (semanasComMeta.length) {
+          renderTable([texto.period, texto.goal, texto.achieved, texto.completion, texto.status], semanasComMeta.map(function (semana) {
+            var remaining = semana.meta.valor - semana.metaRealizada;
+            return [
+              semana.rotulo + ' (' + semana.periodo + ')',
+              euro(semana.meta.valor) + ' · ' + (semana.meta.tipo === 'liquido' ? texto.netShort : texto.grossShort),
+              euro(semana.metaRealizada), semana.metaPercentual.toFixed(1).replace('.', ',') + '%',
+              remaining <= 0 ? texto.reached : texto.remaining + ' ' + euro(remaining)
+            ];
+          }), {
+            columnStyles: { 2: { fontStyle: 'bold', halign: 'right' }, 3: { fontStyle: 'bold', halign: 'right' }, 4: { halign: 'right' } }
+          });
+        }
+
+        newPage();
+        section('05', texto.insights);
+        var bestWeek = semanas.length ? semanas.reduce(function (best, semana) { return semana.bruto > best.bruto ? semana : best; }, semanas[0]) : null;
+        var lowestWeek = semanas.length ? semanas.reduce(function (lowest, semana) { return semana.liquido < lowest.liquido ? semana : lowest; }, semanas[0]) : null;
+        var bestDay = dias.reduce(function (best, dia) { return dia.bruto > (best ? best.bruto : -1) ? dia : best; }, null);
+        var bestPlatform = plataformas.length ? plataformas.reduce(function (best, plataforma) { return plataforma.valor > best.valor ? plataforma : best; }, plataformas[0]) : null;
+        var insightItems = [
+          { label: texto.bestWeek, value: bestWeek && bestWeek.bruto > 0 ? bestWeek.rotulo + ' · ' + euro(bestWeek.bruto) : texto.noData, cor: CORES.green },
+          { label: texto.lowestWeek, value: lowestWeek ? lowestWeek.rotulo + ' · ' + euro(lowestWeek.liquido) : texto.noData, cor: lowestWeek && lowestWeek.liquido < 0 ? CORES.red : CORES.blue },
+          { label: texto.bestDay, value: bestDay && bestDay.bruto > 0 ? pad2(bestDay.data.getDate()) + '/' + pad2(bestDay.data.getMonth() + 1) + ' · ' + euro(bestDay.bruto) : texto.noData, cor: CORES.blue },
+          { label: texto.bestPlatform, value: bestPlatform ? bestPlatform.nome + ' · ' + euro(bestPlatform.valor) : texto.noData, cor: CORES.green },
+          { label: texto.largestExpense, value: maioresDespesas[0] ? maioresDespesas[0].descricao + ' · ' + euro(maioresDespesas[0].valor) : texto.noData, cor: CORES.red },
+          { label: texto.expenseRate, value: percentDespesas.toFixed(1).replace('.', ',') + '%', cor: CORES.red }
+        ];
+        insightItems.forEach(function (item, i) {
+          var columns = 2, gap = 10, width = (contentW - gap) / columns;
+          var x = margin + (i % columns) * (width + gap), cy = y + Math.floor(i / columns) * 55;
+          showInsight(x, cy, width, item.label, item.value, item.cor);
+        });
+        y += Math.ceil(insightItems.length / 2) * 55 + 12;
+
+        section('06', texto.dailyDetail, texto.platforms);
+        var dailyRows = dias.map(function (dia) {
+          var platformLines = [];
+          if (dia.uber) platformLines.push('Uber ' + euro(dia.uber));
+          if (dia.bolt) platformLines.push('Bolt ' + euro(dia.bolt));
+          extras.forEach(function (platform) { if (dia.plat[platform.id]) platformLines.push(platform.nome + ' ' + euro(dia.plat[platform.id])); });
+          if (dia.ganhosExtras.some(function (item) { return item.incluidoBruto; })) platformLines.push(texto.otherEarnings + ' ' + euro(ganhosExtrasBruto({ ganhosExtras: dia.ganhosExtras })));
+          return [
+            diasAbbr[(dia.data.getDay() + 6) % 7] + ' ' + pad2(dia.data.getDate()) + '/' + pad2(month + 1),
+            platformLines.length ? platformLines.join('\n') : '—', euro(dia.bruto), euro(dia.despesas), euro(dia.liquido), dia.distancia.toFixed(0) + ' km'
+          ];
+        });
+        renderTable([texto.date, texto.platforms, texto.grossShort, texto.expensesShort, texto.netShort, texto.mileage], dailyRows, {
+          fontSize: 7, cellPadding: 4,
+          columnStyles: { 0: { fontStyle: 'bold', cellWidth: 52 }, 1: { cellWidth: 200 }, 2: { halign: 'right' }, 3: { halign: 'right' }, 4: { fontStyle: 'bold', halign: 'right' }, 5: { halign: 'right' } },
+          didParseCell: function (cell) {
+            if (cell.section === 'body' && cell.column.index === 4 && String(cell.cell.raw).indexOf('-') === 0) cell.cell.styles.textColor = CORES.red;
+          }
+        });
+
+        section('07', texto.expenseDetail);
+        if (despesasDetalhadas.length) {
+          renderTable([texto.date, texto.description, texto.type, texto.amount], despesasDetalhadas.map(function (item) {
+            return [pad2(item.data.getDate()) + '/' + pad2(item.data.getMonth() + 1), item.descricao, item.tipo, euro(item.valor)];
+          }), {
+            headColor: CORES.red, altColor: CORES.softRed,
+            columnStyles: { 0: { cellWidth: 55 }, 3: { fontStyle: 'bold', textColor: CORES.red, halign: 'right' } }
+          });
+        } else {
+          drawEmptyChart(margin, y, contentW, 54, texto.noExpenses); y += 68;
+        }
+
         var fixasRegistradas = loadDespesasFixasCadastro().filter(function (item) {
           var fimMes = dateKeyFor(new Date(year, month + 1, 0));
           var inicioMes = dateKeyFor(new Date(year, month, 1));
           return (!item.ate || item.ate > inicioMes) && (!item.desde || item.desde <= fimMes);
         });
         if (fixasRegistradas.length) {
-          if (y > pageH - 120) { doc.addPage(); y = 96; }
-          doc.setFont('helvetica', 'bold');
-          doc.setFontSize(11);
-          doc.setTextColor(COR_INK[0], COR_INK[1], COR_INK[2]);
-          doc.text(I18N.t('relatorio.pdf.fixasCadastradas'), margin, y);
-          y += 8;
-          doc.autoTable({
-            head: [[I18N.t('relatorio.pdf.descricao'), I18N.t('relatorio.pdf.tipo'), I18N.t('relatorio.pdf.valor')]],
-            body: fixasRegistradas.map(function (item) {
-              var valorTxt = item.tipo === 'euro' ? euro(item.valor) : Number(item.valor) + ' %';
-              return [item.descricao, item.tipo === 'euro' ? I18N.t('relatorio.pdf.valorFixo') : I18N.t('relatorio.pdf.percentBruto'), valorTxt];
-            }),
-            startY: y,
-            margin: { left: margin, right: margin, top: 70, bottom: 44 },
-            styles: { font: 'helvetica', fontSize: 8, cellPadding: 4.5, textColor: COR_INK, lineColor: COR_LINE, lineWidth: 0.5 },
-            headStyles: { fillColor: COR_INK, textColor: 255, fontStyle: 'bold' },
-            alternateRowStyles: { fillColor: [249, 251, 252] },
-            didDrawPage: function () { header(); }
-          });
+          section('07', texto.fixedExpenses);
+          renderTable([texto.description, texto.type, texto.amount], fixasRegistradas.map(function (item) {
+            return [item.descricao, item.tipo === 'euro' ? I18N.t('relatorio.pdf.valorFixo') : I18N.t('relatorio.pdf.percentBruto'), item.tipo === 'euro' ? euro(item.valor) : Number(item.valor) + ' %'];
+          }), { columnStyles: { 2: { fontStyle: 'bold', halign: 'right' } } });
         }
 
         var pageCount = doc.internal.getNumberOfPages();
-        for (var p = 1; p <= pageCount; p++) {
-          doc.setPage(p);
-          footer(p, pageCount);
-        }
+        for (var page = 1; page <= pageCount; page++) { doc.setPage(page); header(); footer(page, pageCount); }
 
         var nomeFicheiro = 'smartsoma-relatorio-' + pad2(month + 1) + '-' + year + '.pdf';
         if (window.Capacitor && window.Capacitor.isNativePlatform() && window.Capacitor.getPlatform() === 'android') {

@@ -19,7 +19,7 @@ test('authentication, cloud persistence and billing endpoints match the approved
     // Explicitly approved Google account-selector fix, released before this UI correction.
     if(path==='login.html') source=source.replace(", queryParams: { prompt: 'select_account' }",'');
     // Baseline atualizado para a correção aprovada de arranque offline e aviso temporário.
-    if(path==='cloud-init.js') source=source.replace("script.src = 'app.js?v=25'", "script.src = 'app.js?v=13'");
+    if(path==='cloud-init.js') source=source.replace("script.src = 'app.js?v=26'", "script.src = 'app.js?v=13'");
     assert.equal(hash(source),checksum,path);
   }
 });
