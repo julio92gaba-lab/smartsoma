@@ -1181,6 +1181,16 @@
         return (Math.round(n * 10) / 10).toString();
       }
 
+      function loadSavedTotalKm () {
+        try {
+          var raw = cloudGet('homeBadgeValores:' + distDateKey());
+          if (!raw) return 0;
+          var parsed = JSON.parse(raw);
+          return Math.max(0, Number(parsed && parsed.distancia) || 0);
+        } catch (e) {  }
+        return 0;
+      }
+
       function resetInicioFimState () {
         kmInicioCommitted = null;
         kmFimCommitted = null;
@@ -1249,6 +1259,10 @@
         var saved = loadInicioFimState();
         if (!saved || saved.inicio === null) {
           resetInicioFimState();
+          if (valorInput) {
+            var totalKm = loadSavedTotalKm();
+            valorInput.value = totalKm > 0 ? fmtKm(totalKm) : '';
+          }
           setModo('total');
           return;
         }
@@ -4262,11 +4276,12 @@
           d.setDate(week.monday.getDate() + i);
           var dayBadges = loadDayBadges(d);
           var despesasDia = sumExpenseEntries(loadDayVariableExpenseEntries(d));
+          var despesasResumoDia = sumExpenseEntries(loadDayExpenseEntries(d));
 
           sumUber     += dayBadges.uber;
           sumBolt     += dayBadges.bolt;
           sumExtras   += dayBadges.extras;
-          sumDespesas += despesasDia;
+          sumDespesas += despesasResumoDia;
           sumKm       += dayBadges.distancia;
           weekIncludedExtraEarnings += dayBadges.ganhosExtras.reduce(function (sum, item) {
             return sum + (item.incluidoBruto ? item.valor : 0);

@@ -133,7 +133,7 @@ test('fixed chrome has readable text and avatars use Supabase Storage',()=>{
   assert.match(app,/SmartSomaAvatarStorage\.upload\(avatarBlob\)/);
   assert.match(cloud,/sb\.storage\.from\('avatars'\)\.upload\(objectPath, blob,[\s\S]*upsert: true/);
   assert.match(cloud,/getPublicUrl\(objectPath\)/);
-  assert.match(cloud,/script\.src = 'app\.js\?v=19'/);
+  assert.match(cloud,/script\.src = 'app\.js\?v=20'/);
   assert.match(cloud,/\^\[A-Za-z0-9:\._-\]\{1,120\}\$/);
   assert.match(migration,/INSERT INTO storage\.buckets \(id, name, public, file_size_limit, allowed_mime_types\)/);
   assert.match(migration,/VALUES \([\s\S]*'avatars',[\s\S]*true,[\s\S]*NULL/);
@@ -266,8 +266,24 @@ test('weekly list cards keep a stable header, compact spacing and expand normall
   const mondayRow=[...a.w.document.querySelectorAll('.semana-week-block tbody tr')].find(row=>row.querySelector('.semana-cell-date')?.textContent===mondayDate);
   const mondayFinancial=[...mondayRow.querySelectorAll('.semana-metric-financeiro')].map(el=>el.textContent);
   assert.deepEqual(mondayFinancial,['€ 150.00','€ 20.00','€ 130.00']);
+  const quickSummary=mondayRow.closest('.semana-week-block').querySelector('.semana-revenue-quick').textContent;
+  assert.match(quickSummary,/Despesas: € 50.00/);assert.match(quickSummary,/Líquido: € 100.00/);
   assert.match(a.w.document.querySelector('.semana-metric-tabs').parentElement.querySelector('thead').textContent,/Ganhos.*KM.*€ \/ KM/);
   assert.match(a.el('semanaExpensesSlot').textContent,/€ 20.00.*€ 50.00/);
+  assert.deepEqual(a.errors,[]);
+});
+
+test('new entry always resets to today and restores the saved total mileage',t=>{
+  const today=new Date(),yesterday=new Date(today);yesterday.setDate(today.getDate()-1);
+  const a=setup(t);
+  a.w.GanhosDate.set(yesterday);a.click('uiAdd');
+  assert.equal(dateKey(a.w.GanhosDate.get()),dateKey(today));
+  a.click('uiEntryClose');a.w.GanhosDate.set(yesterday);a.click('uiAdd');
+  assert.equal(dateKey(a.w.GanhosDate.get()),dateKey(today));
+  a.click('uiEntryKm');assert.equal(a.el('distanciaValorInput').value,'');
+  a.input('distanciaValorInput','115');a.click('distanciaSalvarBtn');
+  a.click('uiAdd');a.click('uiEntryKm');
+  assert.equal(a.el('distanciaValorInput').value,'115');
   assert.deepEqual(a.errors,[]);
 });
 

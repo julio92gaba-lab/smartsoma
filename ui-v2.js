@@ -689,9 +689,13 @@
     GanhosDate.onChange(function(){if(dialog.open)renderEntry();});
     SmartSomaUI.openEntry=openEntry;
   }
+  function resetEntryDateToToday(){
+    var today=new Date();today.setHours(0,0,0,0);
+    GanhosDate.set(today);
+  }
   function openEntry(mode){
     if(window.SmartSomaReceivable)SmartSomaReceivable.close();window.closeAllOverlays();window.closeProfileSheetPublic();entryReturnFocus=document.activeElement;
-    GanhosDate.set(new Date());
+    resetEntryDateToToday();
     entryMode=mode||'income';entryScreen=mode==='expense'?'expense':mode==='km'?'km':'home';chosen=null;extraOptions={incluidoBruto:false};$('uiEntryValue').value='';$('uiEntryDescription').value='';renderEntry();
     var entryDialog=$('uiEntryDialog');entryDialog.previousElementSibling.classList.add('visible');
     if(!entryDialog.open&&typeof entryDialog.show==='function')entryDialog.show();
