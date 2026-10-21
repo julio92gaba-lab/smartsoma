@@ -14,7 +14,7 @@ test('Capacitor uses a separate generated web directory and compatible versions'
   assert.match(fs.readFileSync('.gitignore', 'utf8'), /^capacitor-web\/$/m);
   assert.match(fs.readFileSync('.vercelignore', 'utf8'), /^capacitor-web\/$/m);
   const prepare = fs.readFileSync('scripts/prepare-capacitor.cjs', 'utf8');
-  for (const required of ['index.html', 'app.html', 'login.html', 'FUNDO.png', 'cloud-init.js', 'manifest.json']) {
+  for (const required of ['index.html', 'app.html', 'login.html', 'FUNDO.png', 'tap-hand-neon.png', 'cloud-init.js', 'manifest.json']) {
     assert.ok(prepare.includes(`'${required}'`), required);
   }
   assert.doesNotMatch(prepare, /['"](?:\.env|package-lock\.json|supabase\/|api\/)/);

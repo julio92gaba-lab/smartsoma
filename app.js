@@ -4444,7 +4444,7 @@
           '<div class="semana-goal-card-head">' +
             '<span>' + summaryTitle + '</span>' +
             '<span class="semana-goal-card-action"><strong>' + (target ? percent + '%' : '—') + '</strong>' +
-              '<svg class="semana-goal-card-click-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 11V4a2 2 0 0 0-4 0v11.5"/><path d="M8 11.5V10a2 2 0 0 0-4 0v4.5a5.5 5.5 0 0 0 1.6 3.9L9 21.8"/><path d="M8 11.5v-1a2 2 0 0 1 4 0v2"/><path d="M12 12.5v-1a2 2 0 0 1 4 0v2"/><path d="M16 13.5v-1a2 2 0 0 1 4 0v3.7a5.8 5.8 0 0 1-1.7 4.1L16.5 22H10"/><path d="m4 4-1.5-1.5"/><path d="M12 3V1"/><path d="m20 4 1.5-1.5"/></svg>' +
+              '<img class="semana-goal-card-click-icon" src="tap-hand-neon.png?v=1" alt="" aria-hidden="true">' +
             '</span>' +
           '</div>' +
           '<div class="semana-goal-card-values">' +

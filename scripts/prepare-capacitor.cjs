@@ -9,7 +9,7 @@ const files = [
   'sw.js', 'manifest.json', 'supabase.min.js', 'heic2any.min.js',
   'jspdf.umd.min.js', 'jspdf.plugin.autotable.min.js',
   '01uber.png', '02bolt.png', '04despesas.png', '05distancia.png',
-  'car.png', 'favicon.png', 'FUNDO.png', 'icon-192.png', 'icon-512.png', 'lista.png',
+  'car.png', 'tap-hand-neon.png', 'favicon.png', 'FUNDO.png', 'icon-192.png', 'icon-512.png', 'lista.png',
   'logo.png', 'logo-home.png', 'logopeq.png', 'tabela.png',
   'wallpaper-light.webp', 'wallpaper-dark.webp',
   'ganhos.jpeg', 'resumo.jpeg', 'despesasfixas.jpeg', 'detalhes.jpeg',

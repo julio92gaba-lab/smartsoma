@@ -88,7 +88,7 @@ test('amount receivable replaces notifications and closes before opening a new e
   assert.equal(a.el('uiNews'),null);
   a.w.SmartSomaUI.go('semana');
   const weeklyGoal=a.w.document.querySelector('.semana-goal-card');
-  assert.ok(weeklyGoal);assert.equal(weeklyGoal.getAttribute('role'),'button');assert.ok(weeklyGoal.querySelector('.semana-goal-card-click-icon'));
+  assert.ok(weeklyGoal);assert.equal(weeklyGoal.getAttribute('role'),'button');assert.match(weeklyGoal.querySelector('.semana-goal-card-click-icon').getAttribute('src'),/tap-hand-neon\.png\?v=1/);
   weeklyGoal.click();
   assert.ok(a.w.document.querySelector('.ui-receivable-backdrop.visible'));
   assert.match(a.el('uiReceivableWeek').textContent,/Sem\. \d/);
@@ -289,6 +289,7 @@ for (const [label,data,error,active] of [
 test('offline cache includes both new presentation assets and excludes test fixture',()=>{
   const source=fs.readFileSync('sw.js','utf8');
   assert.match(source,/'\/ui-v2.js\?v=28'/); assert.match(source,/'\/ui-v2.css\?v=35'/);
+  assert.match(source,/'\/tap-hand-neon\.png\?v=1'/);
   assert.match(source,/'\/car.png\?v=2'/);
   assert.doesNotMatch(source,/__ui-test|visual-fixture/);
   assert.match(fs.readFileSync('.vercelignore','utf8'),/^tests\//m);
