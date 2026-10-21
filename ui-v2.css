@@ -433,7 +433,9 @@ body.ui-v2.theme-dark .despesa-type-btn.active { background:var(--lime); color:#
 .ui-receivable-extra strong { color:var(--brand-green); }.ui-receivable-extra small { grid-column:1/-1; color:var(--muted); }
 .ui-receivable-history { margin-top:20px; }.ui-receivable-month { display:grid; grid-template-columns:34px 1fr 34px; align-items:center; gap:8px; }
 .ui-receivable-month h3 { margin:0; font-size:.92rem; text-align:center; }.ui-receivable-month .ui-icon-button { width:34px; height:34px; font-size:1.25rem; }
-.ui-receivable-row { padding:12px 2px; border-bottom:1px solid var(--card-line); color:var(--ink); font-size:.84rem; font-weight:700; }
+.ui-receivable-row { display:flex; justify-content:space-between; gap:12px; padding:12px 2px; border-bottom:1px solid var(--card-line); color:var(--ink); font-size:.84rem; font-weight:700; }
+.ui-receivable-row-label { min-width:0; }
+.ui-receivable-row-value { color:var(--brand-green); font-weight:800; white-space:nowrap; }
 .ui-v2 .ui-help-hero { padding:30px; border-radius:16px; background:#0e3b2a; color:#f4f9ec; margin-bottom:24px; }
 .ui-help-hero h2 { font-size:2rem; margin:12px 0; }
 .ui-help-hero a { color:#d4f53c; font-size:1rem; }

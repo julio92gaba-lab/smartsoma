@@ -87,9 +87,15 @@
     if(list)list.scrollTop=0;
     window.scrollTo({top:0,left:0,behavior:'instant'});
   }
+  function resetTransientRouteState(){
+    if(window.GanhosDate&&typeof window.GanhosDate.resetToToday==='function')window.GanhosDate.resetToToday();
+    if(window.ResumoPeriod&&typeof window.ResumoPeriod.reset==='function')window.ResumoPeriod.reset();
+    document.dispatchEvent(new CustomEvent('smartSomaTransientStateReset'));
+  }
   function go(key) {
     if (key === 'default' || key === 'ganhos' || key === 'despesas') key = 'resumo';
     if (!returning && routeHistory[routeHistory.length - 1] !== key) routeHistory.push(key);
+    if(route!==key)resetTransientRouteState();
     document.body.classList.remove('ui-mobile-nav-hidden');
     if (window.SmartSomaSettings) window.SmartSomaSettings.close();
     if (key !== 'semana') calendarWeekSelection = false;
@@ -190,9 +196,9 @@
     }
     viewControls.hidden=false;
     var originalGo=HomeNav.goToSection;
-    HomeNav.goToSection=function(key){ key=(key==='default'||key==='ganhos'||key==='despesas')?'resumo':key; if(!returning&&routeHistory[routeHistory.length-1]!==key)routeHistory.push(key); if(key!=='semana')calendarWeekSelection=false; route=key; if($('uiSettingsPage'))$('uiSettingsPage').hidden=true; originalGo(key==='downloads'?'relatorio':key); syncHeader(); };
+    HomeNav.goToSection=function(key){ key=(key==='default'||key==='ganhos'||key==='despesas')?'resumo':key; if(!returning&&routeHistory[routeHistory.length-1]!==key)routeHistory.push(key); if(route!==key)resetTransientRouteState(); if(key!=='semana')calendarWeekSelection=false; route=key; if($('uiSettingsPage'))$('uiSettingsPage').hidden=true; originalGo(key==='downloads'?'relatorio':key); syncHeader(); };
     // These original buttons call the private navigation function, so keep the shell in sync too.
-    $('btnVerMeuResumo').addEventListener('click',function(){route='resumo';syncHeader();});
+    $('btnVerMeuResumo').addEventListener('click',function(){go('resumo');});
     var observer=new MutationObserver(function(){syncHeader();syncSidebarAccount();});
     observer.observe($('profileSheet'),{attributes:true,subtree:true,attributeFilter:['class']});
     observer.observe($('sheetHandleTitle'),{childList:true,subtree:true,characterData:true});
@@ -608,7 +614,7 @@
       $('uiReceivableMonth').textContent=monthLabel(cursor);
       $('uiReceivableRows').replaceChildren();var today=new Date();today.setHours(0,0,0,0);
       var weeks=window.SmartSomaWeeks?SmartSomaWeeks.weeksForMonth(cursor.getFullYear(),cursor.getMonth()):[];
-      weeks.forEach(function(week,index){var monday=week.monday;if(monday>today||monday.getTime()===current.getTime())return;var row=create('div','ui-receivable-row');row.textContent=say('Sem. ','Week ')+(index+1)+' — '+money(weekTotals(monday).value);$('uiReceivableRows').append(row);});
+      weeks.forEach(function(week,index){var monday=week.monday;if(monday>today||monday.getTime()===current.getTime())return;var row=create('div','ui-receivable-row');var label=create('span','ui-receivable-row-label');var value=create('strong','ui-receivable-row-value');label.textContent=say('Sem. ','Week ')+(index+1)+' — ';value.textContent=money(weekTotals(monday).value);row.append(label,value);$('uiReceivableRows').append(row);});
       if(!$('uiReceivableRows').children.length){var empty=create('p','ui-muted');empty.textContent=say('Ainda não há semanas anteriores neste mês.','There are no previous weeks in this month yet.');$('uiReceivableRows').append(empty);}
       $('uiReceivableNext').disabled=cursor.getTime()>=currentMonth.getTime();
     }
@@ -688,6 +694,13 @@
     });
     GanhosDate.onChange(function(){if(dialog.open)renderEntry();});
     SmartSomaUI.openEntry=openEntry;
+    SmartSomaUI.resetEntry=function(){
+      closeRetro();
+      if(dialog.open)dialog.close();
+      entryMode='income';entryScreen='home';chosen=null;extraOptions={incluidoBruto:false};entryReturnFocus=null;
+      $('uiEntryValue').value='';$('uiEntryDescription').value='';restoreKmComponent();
+    };
+    document.addEventListener('smartSomaTransientStateReset',SmartSomaUI.resetEntry);
   }
   function resetEntryDateToToday(){
     var today=new Date();today.setHours(0,0,0,0);
@@ -767,6 +780,7 @@
     fixedAdd.id='uiFixedAdd';fixedAdd.setAttribute('aria-expanded','false');fixedForm.before(fixedAdd);fixedForm.hidden=true;
     document.addEventListener('fixedExpensesFormReset',resetFixedForm);
     document.addEventListener('fixedExpenseSaved',resetFixedForm);
+    document.addEventListener('smartSomaTransientStateReset',resetFixedForm);
     var helper=$('sheetScreenDespesasFixas').querySelector('.mm-helper-text');helper.removeAttribute('data-i18n');
     var help=$('sheetScreenAjuda').querySelector('.sheet-content');
     $('sheetScreenContacto').querySelector('.sheet-content').innerHTML='<section class="ui-help-hero"><p class="ui-eyebrow">SMARTSOMA</p><h2 id="uiHelpTitle"></h2><p data-ui-text="contactIntro"></p><form id="uiContactForm" class="ui-contact-form"><label for="uiContactName" data-ui-text="contactName"></label><input id="uiContactName" autocomplete="name" readonly><label for="uiContactEmail" data-ui-text="contactEmail"></label><input id="uiContactEmail" type="email" autocomplete="email" readonly><label for="uiContactSubject" data-ui-text="contactSubject"></label><input id="uiContactSubject" required maxlength="120"><label for="uiContactMessage" data-ui-text="contactMessage"></label><textarea id="uiContactMessage" required maxlength="5000" rows="5"></textarea><label for="uiContactAttachment" data-ui-text="contactAttachment"></label><input id="uiContactAttachment" type="file" accept="image/jpeg,image/png,image/webp,video/mp4,video/quicktime,video/webm"><small data-ui-text="contactHint"></small><button id="uiContactSend" class="ui-button" type="submit" data-ui-text="contactSend"></button><p id="uiContactStatus" role="status" aria-live="polite"></p></form><a href="mailto:contacto@smartsoma.pt">contacto@smartsoma.pt</a></section>';
@@ -830,6 +844,7 @@
       return true;
     }
     window.SmartSomaSettings={open:openSettingsSubpage,close:closeSettingsSubpage,back:backSettingsSubpage};
+    document.addEventListener('smartSomaTransientStateReset',function(){closeSettingsSubpage();});
 
     var previousScroll=0,navTimer;
     function syncMobileNavigation(scrollTop){

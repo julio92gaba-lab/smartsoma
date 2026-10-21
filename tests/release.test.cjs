@@ -103,6 +103,21 @@ test('amount receivable replaces notifications and closes before opening a new e
   assert.deepEqual(a.errors,[]);
 });
 
+test('amount receivable highlights only the values in prior-week rows', t => {
+  const today=new Date();today.setHours(0,0,0,0);
+  const monday=new Date(today);monday.setDate(today.getDate()-(today.getDay()+6)%7);
+  const previousMonday=new Date(monday);previousMonday.setDate(monday.getDate()-7);
+  const a=setup(t,{['homeBadgeValores:'+dateKey(previousMonday)]:JSON.stringify({uber:35})});
+  a.click('uiReceivable');
+  const currentOwner=a.w.SmartSomaWeeks.ownerMonth(monday),previousOwner=a.w.SmartSomaWeeks.ownerMonth(previousMonday);
+  if(currentOwner.year!==previousOwner.year||currentOwner.month!==previousOwner.month)a.click('uiReceivablePrev');
+  const row=[...a.el('uiReceivableRows').querySelectorAll('.ui-receivable-row')].find(node=>node.textContent.includes('Sem.'));
+  assert.ok(row);assert.match(row.querySelector('.ui-receivable-row-label').textContent,/Sem\. \d+ —/);
+  assert.match(row.querySelector('.ui-receivable-row-value').textContent,/€/);
+  assert.match(fs.readFileSync('ui-v2.css','utf8'),/\.ui-receivable-row-value\s*\{[^}]*color:var\(--brand-green\)/);
+  assert.deepEqual(a.errors,[]);
+});
+
 test('extra earnings are stored separately and enter gross only when selected', t => {
   const a = setup(t);
   a.click('uiAdd'); a.click('uiOpenExtraIncome');
@@ -270,7 +285,7 @@ for (const [label,data,error,active] of [
 
 test('offline cache includes both new presentation assets and excludes test fixture',()=>{
   const source=fs.readFileSync('sw.js','utf8');
-  assert.match(source,/'\/ui-v2.js\?v=26'/); assert.match(source,/'\/ui-v2.css\?v=32'/);
+  assert.match(source,/'\/ui-v2.js\?v=27'/); assert.match(source,/'\/ui-v2.css\?v=33'/);
   assert.match(source,/'\/car.png\?v=2'/);
   assert.doesNotMatch(source,/__ui-test|visual-fixture/);
   assert.match(fs.readFileSync('.vercelignore','utf8'),/^tests\//m);

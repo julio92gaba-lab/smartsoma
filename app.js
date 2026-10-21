@@ -1083,9 +1083,11 @@
 
     function closeAllOverlays () {
       if (window.SmartSomaReceivable && typeof window.SmartSomaReceivable.close === 'function') window.SmartSomaReceivable.close();
+      if (window.SmartSomaExtras && typeof window.SmartSomaExtras.close === 'function') window.SmartSomaExtras.close();
+      if (window.GanhosDate && typeof window.GanhosDate.close === 'function') window.GanhosDate.close();
       var entryDialog = document.getElementById('uiEntryDialog');
       if (entryDialog && entryDialog.open) entryDialog.close();
-      document.querySelectorAll('.mm-backdrop.visible').forEach(function (b) {
+      document.querySelectorAll('.mm-backdrop.visible,.modal-backdrop.visible,.ui-entry-retro-backdrop.visible,.ui-extra-edit-backdrop.visible,.ui-extra-delete-backdrop.visible').forEach(function (b) {
         b.classList.remove('visible');
         b.querySelectorAll('input.mm-value-input, input.despesa-desc-input, input.despesa-valor-input').forEach(function (inp) {
           if (inp.id === 'distanciaKmInicioInput' || inp.id === 'distanciaKmFimInput') return;
@@ -1633,6 +1635,11 @@
       setTipo('percentual');
       document.addEventListener('languageChanged', function () { renderDespesas(); formatRetroHint(); });
       document.addEventListener('despesasFixasChanged', renderDespesas);
+      document.addEventListener('smartSomaTransientStateReset', function () {
+        closeRetroPicker(false);
+        setRetroEnabled(false);
+        closeDeleteConfirm();
+      });
 
       // Exclui de vez todas as despesas fixas ainda ativas (mesma marca
       // .ate usada na exclusão manual, uma por uma, na página de Despesas
@@ -2197,6 +2204,19 @@
         pickerConfig = null;
       }
 
+      function resetToToday () {
+        var today = todayAtMidnight();
+        viewDate = new Date(today.getFullYear(), today.getMonth(), 1);
+        if (!isSameDay(today, selectedDate)) {
+          selectedDate = today;
+          updateDateBtnLabel();
+          notifyDateChange();
+        } else {
+          updateDateBtnLabel();
+        }
+        closeCalendarModal();
+      }
+
       calPrevBtn.addEventListener('click', function () {
         viewDate.setMonth(viewDate.getMonth() - 1);
         renderCalendar();
@@ -2243,6 +2263,7 @@
           openCalendarModal();
         },
         close: closeCalendarModal,
+        resetToToday: resetToToday,
         formatLabel: formatDateLabelLower,
         onChange: function (fn) {
           if (typeof fn === 'function') dateChangeListeners.push(fn);
@@ -3123,6 +3144,11 @@
         if (e.key === 'Escape' && histBackdrop && histBackdrop.classList.contains('visible')) closeHistModal();
         if (e.key === 'Escape' && retroBackdrop && retroBackdrop.classList.contains('visible')) closeRetroModal();
       });
+      document.addEventListener('smartSomaTransientStateReset', function () {
+        closeHistModal();
+        closeRetroModal();
+        if (window.MetaSemanalWelcomeModal) window.MetaSemanalWelcomeModal.close();
+      });
 
       renderWeekBox();
       if (window.GanhosDate && typeof window.GanhosDate.onChange === 'function') {
@@ -3315,7 +3341,18 @@
       refresh();
       document.addEventListener('languageChanged', refresh);
 
-      window.ResumoPeriod = { update: updatePeriodLabel, getWeekRange: getWeekRange, getRefDate: function () { return refDate; } };
+      function resetPeriod () {
+        refDate = todayAtMidnight();
+        periodChips.forEach(function (chip) {
+          var selected = chip.getAttribute('data-period') === 'semana';
+          chip.classList.toggle('selected', selected);
+          chip.setAttribute('aria-pressed', selected ? 'true' : 'false');
+        });
+        refresh();
+        document.dispatchEvent(new CustomEvent('resumoPeriodChanged'));
+      }
+
+      window.ResumoPeriod = { update: updatePeriodLabel, reset: resetPeriod, getWeekRange: getWeekRange, getRefDate: function () { return refDate; } };
 
       // ---- Preenche os valores reais (Bruto, Despesas, Distância,
       // Líquido) do card de Resumo, de acordo com o período selecionado
@@ -4640,6 +4677,10 @@
       if (expenseDeleteBackdrop) expenseDeleteBackdrop.addEventListener('click', function (e) {
         if (e.target === expenseDeleteBackdrop) expenseDeleteBackdrop.classList.remove('visible');
       });
+      document.addEventListener('smartSomaTransientStateReset', function () {
+        closeWeekExpenseEdit();
+        if (expenseDeleteBackdrop) expenseDeleteBackdrop.classList.remove('visible');
+      });
 
       var pickerBtn   = document.getElementById('semanaWeekPickerBtn');
       var pickerLabel = document.getElementById('semanaWeekPickerLabel');
@@ -4956,6 +4997,15 @@
         }
         currentWeekIndex = idx;
       }
+
+      function resetWeekFilters () {
+        pendingWeekSelection = null;
+        closeWeekPicker();
+        resetToCurrentWeek();
+        renderMonth();
+      }
+
+      document.addEventListener('smartSomaTransientStateReset', resetWeekFilters);
 
       document.addEventListener('semanaPageShown', function () {
         resetToCurrentWeek();
@@ -7329,8 +7379,15 @@
         });
         if (nextBtn) nextBtn.disabled = isMesAtual();
       }
+      function resetReportMonth () {
+        var now = new Date();
+        relYear = now.getFullYear();
+        relMonth = now.getMonth();
+        renderLabel();
+      }
       renderLabel();
       document.addEventListener('languageChanged', renderLabel);
+      document.addEventListener('smartSomaTransientStateReset', resetReportMonth);
 
       if (prevBtn) {
         prevBtn.addEventListener('click', function () {

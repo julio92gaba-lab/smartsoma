@@ -124,7 +124,7 @@ test('fixed chrome has readable text and avatars use Supabase Storage',()=>{
   assert.match(css,/#resumoPeriodControls\.is-sticky #resumoCurrentWeekLabel > span\s*\{\s*color:#c8d8cb;/);
   assert.match(css,/\.semana-filter-fields \.semana-week-picker-btn,[^{]*\{[^}]*background:#fff;[^}]*color:#183021;/);
   assert.match(css,/\.semana-week-picker-num,[^{]*\{[^}]*background:#fff;[^}]*color:#183021;/);
-  assert.match(html,/ui-v2\.css\?v=32/);
+  assert.match(html,/ui-v2\.css\?v=33/);
   assert.match(html,/accept="[^"]*\.heic[^"]*image\/heif/);
   assert.match(html,/<script src="heic2any\.min\.js\?v=12"><\/script>/);
   assert.match(app,/'image\/heic': true/);
@@ -133,7 +133,7 @@ test('fixed chrome has readable text and avatars use Supabase Storage',()=>{
   assert.match(app,/SmartSomaAvatarStorage\.upload\(avatarBlob\)/);
   assert.match(cloud,/sb\.storage\.from\('avatars'\)\.upload\(objectPath, blob,[\s\S]*upsert: true/);
   assert.match(cloud,/getPublicUrl\(objectPath\)/);
-  assert.match(cloud,/script\.src = 'app\.js\?v=20'/);
+  assert.match(cloud,/script\.src = 'app\.js\?v=21'/);
   assert.match(cloud,/\^\[A-Za-z0-9:\._-\]\{1,120\}\$/);
   assert.match(migration,/INSERT INTO storage\.buckets \(id, name, public, file_size_limit, allowed_mime_types\)/);
   assert.match(migration,/VALUES \([\s\S]*'avatars',[\s\S]*true,[\s\S]*NULL/);
@@ -196,6 +196,30 @@ test('weekly view choice is stored and survives section navigation',async t=>{
   assert.ok(a.w.document.body.classList.contains('semana-table-view'));
   a.w.SmartSomaUI.go('resumo');a.w.SmartSomaUI.go('semana');await settle();
   assert.ok(a.w.document.body.classList.contains('semana-table-view'));
+  assert.deepEqual(a.errors,[]);
+});
+
+test('section navigation resets transient dates and period filters without changing the week view',async t=>{
+  const a=setup(t),today=new Date(),yesterday=new Date(today);yesterday.setDate(today.getDate()-1);
+  a.click('periodChipDia');a.click('periodNavPrev');
+  assert.equal(a.w.document.querySelector('.period-chip.selected').dataset.period,'dia');
+  assert.equal(dateKey(a.w.ResumoPeriod.getRefDate()),dateKey(yesterday));
+  a.w.GanhosDate.set(yesterday);a.w.GanhosDate.open();
+  assert.equal(a.el('calendarModalBackdrop').classList.contains('visible'),true);
+  a.w.SmartSomaUI.go('downloads');await settle();
+  assert.equal(a.w.document.querySelector('.period-chip.selected').dataset.period,'semana');
+  assert.equal(dateKey(a.w.ResumoPeriod.getRefDate()),dateKey(today));
+  assert.equal(dateKey(a.w.GanhosDate.get()),dateKey(today));
+  assert.equal(a.el('calendarModalBackdrop').classList.contains('visible'),false);
+  const currentReportMonth=a.el('relatorioPageMonthLabel').textContent;
+  a.click('relatorioPageMonthPrev');assert.notEqual(a.el('relatorioPageMonthLabel').textContent,currentReportMonth);
+  a.w.SmartSomaUI.go('resumo');a.w.SmartSomaUI.go('downloads');await settle();
+  assert.equal(a.el('relatorioPageMonthLabel').textContent,currentReportMonth);
+  a.w.SmartSomaUI.go('semana');await settle();
+  const currentWeekMonth=a.el('semanaMonthLabel').textContent;
+  a.click('semanaMonthPrev');assert.notEqual(a.el('semanaMonthLabel').textContent,currentWeekMonth);
+  a.w.SmartSomaUI.go('resumo');a.w.SmartSomaUI.go('semana');await settle();
+  assert.equal(a.el('semanaMonthLabel').textContent,currentWeekMonth);
   assert.deepEqual(a.errors,[]);
 });
 
