@@ -1,18 +1,18 @@
 /* SmartSoma — Service Worker */
 
-const CACHE_NAME = 'smartsoma-v39';
+const CACHE_NAME = 'smartsoma-v40';
 const NETWORK_TIMEOUT = 1800; /* ms: sem resposta da rede, usa a cache se existir */
 
 const ASSETS_TO_CACHE = [
   '/app',
-  '/app.js?v=23',
+  '/app.js?v=24',
   '/app.css',
   '/ui-v2.js?v=28',
   '/ui-v2.css?v=35',
   '/car.png?v=2',
   '/fonts/BricolageGrotesque-latin.woff2',
   '/fonts/DMSans-latin.woff2',
-  '/cloud-init.js?v=19',
+  '/cloud-init.js?v=20',
   '/supabase.min.js',
   '/heic2any.min.js?v=12',
   '/pwa-install.js',
