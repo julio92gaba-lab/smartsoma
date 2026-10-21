@@ -4437,16 +4437,19 @@
         var summaryTitle = isCurrentWeek
           ? 'Meta da semana Atual'
           : 'Meta da semana <small class="semana-goal-card-period">' + formatWeekPeriodNumeric(week.monday) + '</small>';
+        var goalStatus = target
+          ? '/ ' + formatEuro(target)
+          : (isCurrentWeek ? 'Meta por definir' : 'Meta não definida');
         summary.innerHTML =
           '<div class="semana-goal-card-head">' +
             '<span>' + summaryTitle + '</span>' +
             '<span class="semana-goal-card-action"><strong>' + (target ? percent + '%' : '—') + '</strong>' +
-              '<svg class="semana-goal-card-click-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v8"/><path d="M12 12 9.6 9.6a1.7 1.7 0 0 0-2.4 2.4l3.9 5.1a3 3 0 0 0 2.4 1.2h1.7a3 3 0 0 0 3-3v-2.1a1.7 1.7 0 0 0-3.4 0v-1.5a1.7 1.7 0 0 0-3.4 0V8.8"/><path d="M5 4.5 6.8 6.3"/><path d="M18.7 4.5 16.9 6.3"/><path d="M3.5 10h2.6"/></svg>' +
+              '<svg class="semana-goal-card-click-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 3 14 9-6 1.5L10.5 20z"/><path d="M2 9h2.5"/><path d="m5 3.5-1.5-1.5"/><path d="M11.5 2v2.5"/></svg>' +
             '</span>' +
           '</div>' +
           '<div class="semana-goal-card-values">' +
             '<strong>' + formatEuro(achieved) + '</strong>' +
-            '<span>' + (target ? '/ ' + formatEuro(target) : 'Meta por definir') + '</span>' +
+            '<span>' + goalStatus + '</span>' +
           '</div>' +
           '<div class="semana-goal-card-track" role="progressbar" aria-label="Progresso da meta semanal" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + progress + '"><i style="width:' + progress + '%"></i></div>' +
           '<div class="semana-goal-card-footer">' +

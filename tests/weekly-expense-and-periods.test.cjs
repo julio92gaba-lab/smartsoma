@@ -114,8 +114,12 @@ test('week navigation updates the goal card and opens its retroactive editor', a
   t.after(app.close);
   app.w.SmartSomaUI.go('semana');
   await settle();
+  assert.equal(app.w.document.querySelector('.semana-goal-card-values > span').textContent, 'Meta por definir');
   app.click('semanaWeekPrev');
   await settle();
+  const historicGoalCard = app.w.document.querySelector('.semana-goal-card');
+  assert.equal(historicGoalCard.querySelector('.semana-goal-card-values > span').textContent, 'Meta não definida');
+  assert.ok(historicGoalCard.querySelector('.semana-goal-card-click-icon'));
   assert.equal(app.el('metaSemanalWeekBox').hidden, false);
   app.click('btnMetaSemanalSemanaConsultada');
   assert.equal(app.el('metaSemanalRetroModalBackdrop').classList.contains('visible'), true);

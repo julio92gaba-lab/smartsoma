@@ -621,7 +621,7 @@ body.ui-v2 #resumoPeriodControls .period-filter-row { background:transparent; }
   font:.72rem/1 'Bricolage Grotesque',sans-serif;
   font-weight:900;
 }
-.ui-v2 #homeListPageSemana .semana-goal-card-click-icon { width:19px; height:19px; color:#fff; pointer-events:none; }
+.ui-v2 #homeListPageSemana .semana-goal-card-click-icon { width:28px; height:28px; color:#fff; pointer-events:none; }
 .ui-v2 #homeListPageSemana .semana-goal-card:focus-visible { outline:2px solid #fff; outline-offset:3px; }
 .ui-v2 #homeListPageSemana .semana-goal-card-values { display:flex; align-items:baseline; flex-wrap:wrap; gap:7px; }
 .ui-v2 #homeListPageSemana .semana-goal-card-values > strong {
