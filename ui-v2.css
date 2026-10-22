@@ -2,7 +2,7 @@
 @font-face { font-family:'Bricolage Grotesque'; font-style:normal; font-weight:400 800; font-display:swap; src:url('fonts/BricolageGrotesque-latin.woff2') format('woff2'); }
 @font-face { font-family:'DM Sans'; font-style:normal; font-weight:400 800; font-display:swap; src:url('fonts/DMSans-latin.woff2') format('woff2'); }
 /* One document scroller. Do not trap wheel/touch in the legacy fixed-page containers. */
-html.ui-v2 { overflow-x:clip; overflow-y:auto; }
+html.ui-v2 { overflow-x:clip; overflow-y:auto; -webkit-text-size-adjust:100%; text-size-adjust:100%; }
 body.ui-v2 { overflow:visible; }
 body.ui-v2 #homeListView.home-list-view { overflow:visible; overscroll-behavior:auto; }
 html.ui-v2, body.ui-v2 {
@@ -1602,14 +1602,15 @@ body.ui-v2.theme-dark #homeListPageRelatorio .relatorio-period-controls { backgr
 /* Minha Semana: período e modo de visualização na mesma barra sticky. */
 .ui-v2 #homeListPageSemana .semana-filter-controls,
 .ui-v2 #homeListPageSemana .semana-filter-controls.is-sticky {
-  display:grid;
-  grid-template-columns:minmax(0,1fr) auto;
+  display:flex;
+  flex-wrap:wrap;
   align-items:center;
   gap:8px;
   min-height:0;
   padding:7px 8px;
 }
-.ui-v2 #homeListPageSemana .semana-filter-fields { display:block; min-width:0; }
+.ui-v2 #homeListPageSemana .semana-filter-controls > * { min-width:0; max-width:100%; }
+.ui-v2 #homeListPageSemana .semana-filter-fields { display:block; flex:1 1 16rem; min-width:0; }
 .ui-v2 #homeListPageSemana .semana-filter-fields > .period-nav-row,
 .ui-v2 #homeListPageSemana .semana-filter-divider { display:none; }
 .ui-v2 #homeListPageSemana .semana-filter-fields .semana-week-nav { display:block; min-width:0; }
@@ -1669,15 +1670,18 @@ body.ui-v2.theme-dark #homeListPageRelatorio .relatorio-period-controls { backgr
 .ui-v2 #homeListPageSemana .semana-week-picker-panel { display:none !important; }
 .ui-v2 #homeListPageSemana .semana-view-controls {
   display:flex;
+  flex:0 1 auto;
   align-items:center;
   justify-content:flex-end;
+  min-width:0;
   margin:0;
 }
 .ui-v2 #homeListPageSemana .semana-view-controls #subHeaderViewToggleGroup {
   display:grid;
-  grid-template:1fr / minmax(42px,auto) 38px;
+  grid-template:1fr / minmax(0,max-content) 38px;
   align-items:center;
-  width:96px;
+  width:fit-content;
+  max-width:100%;
   min-height:40px;
   gap:2px;
   margin:0;
