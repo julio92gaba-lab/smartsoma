@@ -2,7 +2,7 @@
 @font-face { font-family:'Bricolage Grotesque'; font-style:normal; font-weight:400 800; font-display:swap; src:url('fonts/BricolageGrotesque-latin.woff2') format('woff2'); }
 @font-face { font-family:'DM Sans'; font-style:normal; font-weight:400 800; font-display:swap; src:url('fonts/DMSans-latin.woff2') format('woff2'); }
 /* One document scroller. Do not trap wheel/touch in the legacy fixed-page containers. */
-html.ui-v2 { overflow-x:clip; overflow-y:auto; -webkit-text-size-adjust:100%; text-size-adjust:100%; }
+html.ui-v2 { overflow-x:clip; overflow-y:auto; }
 body.ui-v2 { overflow:visible; }
 body.ui-v2 #homeListView.home-list-view { overflow:visible; overscroll-behavior:auto; }
 html.ui-v2, body.ui-v2 {
@@ -2510,6 +2510,12 @@ body.ui-v2 #proWelcomeToast { right:calc(var(--app-gutter) + 20px); }
 .ui-v2 #homeListPageSemana .semana-filter-controls,
 .ui-v2 #homeListPageSemana .semana-summary-slot,
 .ui-v2 #homeListPageSemana .semana-week-block { box-sizing:border-box; width:100%; max-width:100%; min-width:0; margin-inline:0; }
+/* A grelha não pode aumentar a sua única coluna quando a fonte é Grande. */
+.ui-v2 #homeListPageSemana .semana-live-content { grid-template-columns:minmax(0,1fr); }
+.ui-v2 #homeListPageSemana .semana-live-content > * { min-width:0; max-width:100%; }
+/* O seletor ocupa uma linha própria; o alternador passa para a seguinte. */
+.ui-v2 #homeListPageSemana .semana-filter-fields { flex:1 1 100%; }
+.ui-v2 #homeListPageSemana .semana-view-controls { flex:1 1 100%; justify-content:center; }
 /* O aumento de texto não pode alargar a Semana nem recortar o conteúdo à direita. */
 .ui-v2 #homeListPageSemana .semana-goal-card-head,
 .ui-v2 #homeListPageSemana .semana-goal-card-footer { flex-wrap:wrap; min-width:0; }

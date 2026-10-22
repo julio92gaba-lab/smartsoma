@@ -20,9 +20,12 @@ test('the app uses a single fluid mobile layout in every browser viewport', () =
 
 test('week filters reflow safely when the app font is enlarged', () => {
   const css = fs.readFileSync('ui-v2.css', 'utf8');
-  assert.match(css, /html\.ui-v2\s*\{[^}]*-webkit-text-size-adjust:100%;[^}]*text-size-adjust:100%;/);
+  assert.doesNotMatch(css, /text-size-adjust/);
   assert.match(css, /\.semana-filter-controls\.is-sticky\s*\{[^}]*display:flex;[^}]*flex-wrap:wrap;/);
-  assert.match(css, /\.semana-filter-fields\s*\{[^}]*flex:1 1 16rem;[^}]*min-width:0;/);
+  assert.match(css, /\.semana-live-content\s*\{\s*grid-template-columns:minmax\(0,1fr\);\s*\}/);
+  assert.match(css, /\.semana-live-content > \*\s*\{\s*min-width:0;\s*max-width:100%;\s*\}/);
+  assert.match(css, /\.semana-filter-fields\s*\{\s*flex:1 1 100%;\s*\}/);
+  assert.match(css, /\.semana-view-controls\s*\{\s*flex:1 1 100%;\s*justify-content:center;\s*\}/);
   assert.match(css, /#subHeaderViewToggleGroup\s*\{[^}]*width:fit-content;[^}]*max-width:100%;/);
 });
 
