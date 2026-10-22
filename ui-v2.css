@@ -51,9 +51,9 @@ html.ui-v2.theme-dark, body.ui-v2.theme-dark {
 .ui-mobile-logo img { display:block; width:144px; height:auto; }
 .ui-v2 .page { margin-left:var(--sidebar); padding:calc(var(--ui-header) + 30px) clamp(24px,4vw,64px) 45px; }
 .ui-v2 .container { max-width:var(--max-w); padding:0; }
-.ui-v2 .home-list-view { position:relative; inset:auto; padding:0; transform:none; overflow:visible; }
-.ui-v2 .home-list-inner { display:block; max-width:none; }
-.ui-v2 .home-content { padding:0; }
+.ui-v2 .home-list-view { position:relative; inset:auto; min-width:0; max-width:100%; padding:0; transform:none; overflow:visible; }
+.ui-v2 .home-list-inner { display:block; width:100%; min-width:0; max-width:none; }
+.ui-v2 .home-content { min-width:0; padding:0; }
 .ui-page-intro { margin-bottom:25px; }
 .ui-page-intro h1 { display:none; }
 .ui-page-intro>p:last-child { margin:7px 0 0; color:var(--muted); font-size:.85rem; }
@@ -2487,10 +2487,10 @@ body.ui-v2.theme-dark #homeListPageSemana .semana-filter-fields .semana-week-pic
   .ui-v2 #homeListPageSemana .semana-revenue-best { white-space:normal; overflow-wrap:anywhere; }
 }
 
-/* Uma única interface mobile, centrada quando existe espaço nas laterais. */
-html.ui-v2 { --app-max-width:600px; --app-gutter:max(0px,calc((100vw - var(--app-max-width)) / 2)); background:#e4e9e2; }
+/* Uma única interface mobile fluida, inclusive no modo “Site para computador”. */
+html.ui-v2 { --app-gutter:0px; background:var(--paper); }
 html.ui-v2.theme-dark { background:#07100c; }
-body.ui-v2 { width:min(100%,var(--app-max-width)); max-width:var(--app-max-width); margin-inline:auto; min-height:100dvh; background:var(--paper); }
+body.ui-v2 { width:100%; max-width:none; margin:0; min-height:100dvh; background:var(--paper); }
 body.ui-v2 .ui-header,
 body.ui-v2 .ui-sidebar { left:var(--app-gutter); right:var(--app-gutter); width:auto; }
 body.ui-v2 :is(.mm-backdrop,.modal-backdrop,.sheet-backdrop,.photo-view-backdrop,.screen-overlay,.ui-entry-backdrop,.ui-entry-retro-backdrop,.ui-receivable-backdrop,#langPopupModal,#checkoutLoadingOverlay,#splash) {
@@ -2503,7 +2503,17 @@ body.ui-v2 #proWelcomeToast { right:calc(var(--app-gutter) + 20px); }
 .ui-v2 #homeListPageSemana #semanaTechCard { box-sizing:border-box; width:100%; max-width:100%; min-width:0; }
 .ui-v2 #homeListPageSemana #semanaTechCard { margin-inline:0; padding-inline:0; }
 .ui-v2 #homeListPageSemana .semana-live-content,
-.ui-v2 #homeListPageSemana .semana-filter-controls { box-sizing:border-box; width:100%; max-width:100%; min-width:0; margin-inline:0; }
+.ui-v2 #homeListPageSemana .semana-filter-controls,
+.ui-v2 #homeListPageSemana .semana-summary-slot,
+.ui-v2 #homeListPageSemana .semana-week-block { box-sizing:border-box; width:100%; max-width:100%; min-width:0; margin-inline:0; }
+/* O aumento de texto não pode alargar a Semana nem recortar o conteúdo à direita. */
+.ui-v2 #homeListPageSemana .semana-goal-card-head,
+.ui-v2 #homeListPageSemana .semana-goal-card-footer { flex-wrap:wrap; min-width:0; }
+.ui-v2 #homeListPageSemana .semana-goal-card-head > span:first-child,
+.ui-v2 #homeListPageSemana .semana-goal-card-footer > span,
+.ui-v2 #homeListPageSemana .semana-goal-card-values > span,
+.ui-v2 #homeListPageSemana .semana-earnings-subtitle { min-width:0; overflow-wrap:anywhere; }
+.ui-v2 #homeListPageSemana .semana-goal-card-action { flex:0 0 auto; }
 /* Mantém a cadência entre os resumos, com ou sem o card opcional de ganhos extras. */
 .ui-v2 .ui-metrics + .ui-extra-earnings:not([hidden]) { margin-top:16px; }
 .ui-v2 .ui-extra-earnings + .ui-dashboard-bottom { margin-top:0; }

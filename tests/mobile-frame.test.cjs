@@ -3,16 +3,16 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
 
-test('the app uses a single mobile layout with a bounded responsive width', () => {
+test('the app uses a single fluid mobile layout in every browser viewport', () => {
   const html = fs.readFileSync('app.html', 'utf8');
   const css = fs.readFileSync('ui-v2.css', 'utf8');
   const sw = fs.readFileSync('sw.js', 'utf8');
   assert.doesNotMatch(html, /mobile-frame\.js/);
-  assert.match(css, /--app-max-width:600px/);
-  assert.match(css, /width:min\(100%,var\(--app-max-width\)\)/);
-  assert.match(css, /max-width:var\(--app-max-width\)/);
-  assert.match(css, /--app-gutter:max\(0px,calc\(\(100vw - var\(--app-max-width\)\) \/ 2\)\)/);
-  assert.match(css, /#homeListPageSemana \.semana-live-content,[\s\S]*margin-inline:0/);
+  assert.doesNotMatch(css, /--app-max-width/);
+  assert.match(css, /html\.ui-v2 \{ --app-gutter:0px; background:var\(--paper\); \}/);
+  assert.match(css, /body\.ui-v2 \{ width:100%; max-width:none; margin:0; min-height:100dvh;/);
+  assert.match(css, /#homeListPageSemana \.semana-live-content,[\s\S]*\.semana-week-block \{ box-sizing:border-box; width:100%; max-width:100%; min-width:0; margin-inline:0; \}/);
+  assert.match(css, /\.semana-goal-card-head,[\s\S]*\.semana-goal-card-footer \{ flex-wrap:wrap; min-width:0; \}/);
   assert.match(css, /\.ui-entry-dialog \{[^}]*inset:calc\(var\(--ui-header\) \+ 24px\) auto auto 50%;[^}]*transform:translateX\(-50%\)/);
   assert.match(css, /\.ss-driver-card \{ display:none !important; \}/);
   assert.doesNotMatch(sw, /mobile-frame/);
